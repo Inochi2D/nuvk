@@ -19,6 +19,7 @@ public import nuvk.core.vk.sync;
 public import nuvk.core.vk.queue;
 public import nuvk.core.vk.cmdbuffer;
 public import nuvk.core.vk.pipeline;
+public import nuvk.core.vk.texture;
 
 // Sharing
 version(Windows) {

@@ -8,7 +8,7 @@ class NuvkFence : NuvkDeviceObject {
 @nogc:
 public:
     this(NuvkDevice device) {
-        super(device, NuvkObjectSharing.processLocal);
+        super(device, NuvkProcessSharing.processLocal);
     }
 }
 
@@ -18,7 +18,7 @@ public:
 class NuvkSemaphore : NuvkDeviceObject {
 @nogc:
 public:
-    this(NuvkDevice device, NuvkObjectSharing sharing) {
+    this(NuvkDevice device, NuvkProcessSharing sharing) {
         super(device, sharing);
     }
 }

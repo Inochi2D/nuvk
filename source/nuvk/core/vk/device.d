@@ -98,7 +98,7 @@ public:
         Creates a buffer
     */
     override
-    NuvkBuffer createBuffer(NuvkBufferUsage usage, NuvkBufferSharing sharing, uint size, NuvkObjectSharing processSharing) {
+    NuvkBuffer createBuffer(NuvkBufferUsage usage, NuvkDeviceSharing sharing, uint size, NuvkProcessSharing processSharing) {
         return nogc_new!NuvkVkBuffer(this, usage, sharing, size, processSharing);
     }
 
@@ -106,10 +106,17 @@ public:
         Creates a texture
     */
     override
-    NuvkTexture createTexture(NuvkObjectSharing processSharing = NuvkObjectSharing.processLocal) {
-        return null;
+    NuvkTexture createTexture(NuvkTextureDescriptor descriptor, NuvkDeviceSharing deviceSharing, NuvkProcessSharing processSharing = NuvkProcessSharing.processLocal) {
+        return nogc_new!NuvkVkTexture(this, descriptor, deviceSharing, processSharing);
     }
-
+    
+    /**
+        Creates a sampler
+    */
+    override
+    NuvkSampler createSampler(NuvkSamplerDescriptor descriptor) {
+        return nogc_new!NuvkVkSampler(this, descriptor);
+    }
 
     /**
         Creates a fence.
@@ -123,7 +130,7 @@ public:
         Creates a semaphore.
     */
     override
-    NuvkSemaphore createSemaphore(NuvkObjectSharing processSharing) {
+    NuvkSemaphore createSemaphore(NuvkProcessSharing processSharing) {
         return nogc_new!NuvkVkSemaphore(this, processSharing);
     }
 

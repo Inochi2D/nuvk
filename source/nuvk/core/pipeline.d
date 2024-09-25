@@ -67,7 +67,7 @@ public:
         Creates a graphics pipeline
     */
     this(NuvkDevice owner, NuvkGraphicsPipelineDescriptor descriptor) {
-        super(owner, NuvkObjectSharing.processLocal);
+        super(owner, NuvkProcessSharing.processLocal);
         this.pipelineKind = NuvkPipelineKind.graphics;
     }
 
@@ -75,7 +75,7 @@ public:
         Creates a compute pipeline
     */
     this(NuvkDevice owner, NuvkComputePipelineDescriptor descriptor) {
-        super(owner, NuvkObjectSharing.processLocal);
+        super(owner, NuvkProcessSharing.processLocal);
         this.pipelineKind = NuvkPipelineKind.compute;
     }
 

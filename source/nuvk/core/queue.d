@@ -40,7 +40,7 @@ public:
         Constructor
     */
     this(NuvkDevice device, NuvkCommandQueueKind kind) {
-        super(device, NuvkObjectSharing.processLocal);
+        super(device, NuvkProcessSharing.processLocal);
     }
 
     /**

@@ -42,15 +42,15 @@ private:
     VkBuffer buffer;
     bool mapped;
 
-    void createBuffer(NuvkObjectSharing processSharing) {
+    void createBuffer(NuvkProcessSharing processSharing) {
         auto device = cast(VkDevice)this.getOwner().getHandle();
         auto deviceInfo = cast(NuvkVkDeviceInfo)this.getOwner().getDeviceInfo();
         auto usage = this.getBufferUsage();
-        auto sharing = this.getBufferSharing();
+        auto deviceSharing = this.getDeviceSharing();
         int memoryIndex;
         VkFlags flags;
 
-        if (sharing == NuvkBufferSharing.deviceShared) {
+        if (deviceSharing == NuvkDeviceSharing.deviceShared) {
             flags |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 
             // Staging buffers should be host coherent
@@ -84,7 +84,7 @@ private:
 
         // Allocate memory.
         {
-            if (processSharing == NuvkObjectSharing.processShared) {
+            if (processSharing == NuvkProcessSharing.processShared) {
 
                 VkExportMemoryAllocateInfo exportInfo;
                 exportInfo.handleTypes = NuvkVkMemorySharingFlagBit;
@@ -150,7 +150,7 @@ public:
     /**
         Constructor
     */
-    this(NuvkDevice device, NuvkBufferUsage usage, NuvkBufferSharing sharing, ulong size, NuvkObjectSharing processSharing) {
+    this(NuvkDevice device, NuvkBufferUsage usage, NuvkDeviceSharing sharing, ulong size, NuvkProcessSharing processSharing) {
         super(device, usage, sharing, size, processSharing);
         this.createBuffer(processSharing);
     }
@@ -166,7 +166,7 @@ public:
     */
     override
     bool upload(void* data, ulong size, ulong offset = 0) {
-        if (this.getBufferSharing() != NuvkBufferSharing.deviceShared)
+        if (this.getDeviceSharing() != NuvkDeviceSharing.deviceShared)
             return false;
 
         import core.stdc.string : memcpy;
@@ -194,7 +194,7 @@ public:
     */
     override
     bool map(ref void* mapTo, ulong size, ulong offset = 0) {
-        if (this.getBufferSharing() != NuvkBufferSharing.deviceShared)
+        if (this.getDeviceSharing() != NuvkDeviceSharing.deviceShared)
             return false;
 
         auto device = cast(VkDevice)this.getOwner().getHandle();
@@ -225,7 +225,7 @@ public:
     */
     override
     bool unmap() {
-        if (this.getBufferSharing() != NuvkBufferSharing.deviceShared)
+        if (this.getDeviceSharing() != NuvkDeviceSharing.deviceShared)
             return false;
         
         auto device = cast(VkDevice)this.getOwner().getHandle();

@@ -47,10 +47,10 @@ class NuvkVkSemaphore : NuvkSemaphore {
 private:
     VkSemaphore semaphore;
 
-    void createSemaphore(NuvkObjectSharing processSharing) {
+    void createSemaphore(NuvkProcessSharing processSharing) {
         auto device = cast(VkDevice)this.getOwner().getHandle();
 
-        if (processSharing == NuvkObjectSharing.processShared) {
+        if (processSharing == NuvkProcessSharing.processShared) {
 
             // Export info
             VkExportSemaphoreCreateInfo exportInfo;
@@ -100,7 +100,7 @@ public:
             vkDestroySemaphore(device, semaphore, null);
     }
 
-    this(NuvkDevice device, NuvkObjectSharing processSharing) {
+    this(NuvkDevice device, NuvkProcessSharing processSharing) {
         super(device, processSharing);
         this.createSemaphore(processSharing);
     }

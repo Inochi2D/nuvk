@@ -6,7 +6,7 @@ import numem.all;
 /**
     Whether the object is shared
 */
-enum NuvkObjectSharing {
+enum NuvkProcessSharing {
 
     /**
         Object should be process local
@@ -19,6 +19,22 @@ enum NuvkObjectSharing {
         A handle is exported that can be passed between processes.
     */
     processShared,
+}
+
+/**
+    Sharing mode for a buffer
+*/
+enum NuvkDeviceSharing {
+    
+    /**
+        Buffer is local to the GPU
+    */
+    deviceLocal,
+    
+    /**
+        Buffer is shared with the CPU
+    */
+    deviceShared
 }
 
 /**
@@ -57,12 +73,17 @@ public:
     /**
         Creates a buffer.
     */
-    abstract NuvkBuffer createBuffer(NuvkBufferUsage usage, NuvkBufferSharing sharing, uint size, NuvkObjectSharing processSharing = NuvkObjectSharing.processLocal);
+    abstract NuvkBuffer createBuffer(NuvkBufferUsage usage, NuvkDeviceSharing sharing, uint size, NuvkProcessSharing processSharing = NuvkProcessSharing.processLocal);
 
     /**
         Creates a texture
     */
-    abstract NuvkTexture createTexture(NuvkObjectSharing processSharing = NuvkObjectSharing.processLocal);
+    abstract NuvkTexture createTexture(NuvkTextureDescriptor descriptor, NuvkDeviceSharing deviceSharing, NuvkProcessSharing processSharing = NuvkProcessSharing.processLocal);
+    
+    /**
+        Creates a sampler
+    */
+    abstract NuvkSampler createSampler(NuvkSamplerDescriptor descriptor);
 
     /**
         Creates a fence.
@@ -72,7 +93,7 @@ public:
     /**
         Creates a semaphore.
     */
-    abstract NuvkSemaphore createSemaphore(NuvkObjectSharing processSharing = NuvkObjectSharing.processLocal);
+    abstract NuvkSemaphore createSemaphore(NuvkProcessSharing processSharing = NuvkProcessSharing.processLocal);
 
     /**
         Creates a graphics pipeline.
@@ -98,7 +119,7 @@ class NuvkDeviceObject : NuvkObject {
 @nogc:
 private:
     NuvkDevice owner;
-    NuvkObjectSharing sharing;
+    NuvkProcessSharing sharing;
     ulong shareHandle;
     bool wasHandleSet;
 
@@ -138,7 +159,7 @@ public:
     /**
         Creates a new device object.
     */
-    this(NuvkDevice owner, NuvkObjectSharing sharing) {
+    this(NuvkDevice owner, NuvkProcessSharing sharing) {
         this.owner = owner;
         this.sharing = sharing;
     }
@@ -155,7 +176,7 @@ public:
         Gets the sharing state of the object.
     */
     final
-    NuvkObjectSharing getSharing() {
+    NuvkProcessSharing getSharing() {
         return sharing;
     }
 

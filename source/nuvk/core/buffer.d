@@ -43,29 +43,13 @@ enum NuvkBufferUsage {
 }
 
 /**
-    Sharing mode for a buffer
-*/
-enum NuvkBufferSharing {
-    
-    /**
-        Buffer is local to the GPU
-    */
-    deviceLocal,
-    
-    /**
-        Buffer is shared with the CPU
-    */
-    deviceShared
-}
-
-/**
     A buffer
 */
 abstract
 class NuvkBuffer : NuvkDeviceObject {
 @nogc:
 private:
-    NuvkBufferSharing sharing;
+    NuvkDeviceSharing deviceSharing;
     NuvkBufferUsage usage;
     ulong size;
 
@@ -74,9 +58,9 @@ public:
     /**
         Constructor
     */
-    this(NuvkDevice owner, NuvkBufferUsage usage, NuvkBufferSharing sharing, ulong size, NuvkObjectSharing processSharing) {
+    this(NuvkDevice owner, NuvkBufferUsage usage, NuvkDeviceSharing deviceSharing, ulong size, NuvkProcessSharing processSharing) {
         super(owner, processSharing);
-        this.sharing = sharing;
+        this.deviceSharing = deviceSharing;
         this.usage = usage;
         this.size = size;
     }
@@ -84,13 +68,15 @@ public:
     /**
         Gets the sharing mode of the buffer
     */
-    NuvkBufferSharing getBufferSharing() {
-        return sharing;
+    final
+    NuvkDeviceSharing getDeviceSharing() {
+        return deviceSharing;
     }
 
     /**
         Gets the usage of the buffer
     */
+    final
     NuvkBufferUsage getBufferUsage() {
         return usage;
     }
@@ -98,6 +84,7 @@ public:
     /**
         Gets the size of the buffer in bytes.
     */
+    final
     ulong getSize() {
         return size;
     }

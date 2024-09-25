@@ -1,4 +1,5 @@
 module nuvk.core;
+import std.traits;
 
 public import nuvk.core.context;
 public import nuvk.core.buffer;
@@ -42,4 +43,48 @@ public:
     ref void* getHandle() {
         return handle;
     }
+}
+
+/**
+    Represents a range
+*/
+struct NuvkRange(T) if (isNumeric!T) {
+@nogc:
+    /**
+        Start of the range
+    */
+    T start;
+    
+    /**
+        End of the range
+    */
+    T end;
+
+
+    /**
+        Gets the length of the range
+    */
+    T getLength() {
+        return end-start;
+    }
+}
+
+/**
+    A RGB color
+*/
+struct NuvkColor {
+@nogc:
+    float r;
+    float g;
+    float b;
+    float a;
+}
+
+/**
+    A 3D extent
+*/
+struct NuvkExtent3D(T) if (isNumeric!T) {
+    T width;
+    T height;
+    T depth;
 }

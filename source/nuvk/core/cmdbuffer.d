@@ -160,7 +160,7 @@ public:
         Creates a command buffer
     */
     this(NuvkDevice device, NuvkCommandQueue queue) {
-        super(device, NuvkObjectSharing.processLocal);
+        super(device, NuvkProcessSharing.processLocal);
         this.queue = queue;
         this.status = NuvkCommandBufferStatus.idle;
     }
