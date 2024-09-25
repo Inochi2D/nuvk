@@ -33,6 +33,18 @@ protected:
     */
     abstract NuvkSwapchain onCreateSwapchain();
 
+    /**
+        Updates all outdated swapchains
+    */
+    final
+    void updateSwapchains() {
+        foreach(swapchain; this.getSwapchains()) {
+            if (swapchain.isSwapchainOutdated()) {
+                swapchain.update();
+            }
+        }
+    }
+
 
 public:
     this(NuvkDevice device) {

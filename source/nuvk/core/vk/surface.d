@@ -51,6 +51,7 @@ private:
     }
 
     void updateSurfaceCapabilities() {
+        VkPhysicalDevice physicalDevice = cast(VkPhysicalDevice)this.getOwner().getDeviceInfo().getHandle();
 
         // Capabilities
         enforce(
@@ -107,12 +108,7 @@ public:
     void update() {
         // Needed so that the swapchain knows our current size.
         this.updateSurfaceCapabilities();
-
-        foreach(swapchain; this.getSwapchains()) {
-            if (swapchain.isSwapchainOutdated()) {
-                swapchain.update();
-            }
-        }
+        this.updateSwapchains();
     }
 }
 
@@ -150,7 +146,7 @@ private:
         }
 
         VkSurfaceFormatKHR surfaceFormat = chooseSurfaceFormat(surface.getSurfaceFormats());
-        VkPresentModeKHR presentMode = choosePresentMode(surface.getSurfaceFormats());
+        VkPresentModeKHR presentMode = choosePresentMode(surface.getSurfacePresentModes());
         VkSurfaceCapabilitiesKHR surfaceCaps = surface.getCapabilities();
 
         // Minimized?
@@ -167,7 +163,7 @@ private:
         swapchainCreateInfo.imageUsage = surfaceCaps.supportedUsageFlags;
         swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
         swapchainCreateInfo.preTransform = surfaceCaps.currentTransform;
-        swapchainCreateInfo.compositeAlpha = surfaceCaps.supportedCompositeAlpha;
+        swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
         swapchainCreateInfo.presentMode = presentMode;
         swapchainCreateInfo.clipped = VK_FALSE;
 

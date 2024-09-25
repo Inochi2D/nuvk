@@ -35,7 +35,6 @@ class NuvkVkDeviceInfo : NuvkDeviceInfo {
 private:
     weak_vector!VkQueueFamilyProperties queueFamilyProperties;
     weak_vector!VkExtensionProperties extensionProperties;
-    NuvkVkDeviceSurfaceCapability surfaceCapability;
 
     VkPhysicalDevice physicalDevice;
     VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
@@ -199,13 +198,13 @@ public:
 /**
     Gets all of the extensions available
 */
-weak_vector!VkExtensionProperties nuvkVkContextGetAllExtensions() @nogc {
-    weak_vector!VkExtensionProperties extensionProps;
+vector!VkExtensionProperties nuvkVkContextGetAllExtensions() @nogc {
+    vector!VkExtensionProperties extensionProps;
     
     uint extensionCount;
     vkEnumerateInstanceExtensionProperties(null, &extensionCount, null);
 
-    extensionProps = weak_vector!VkExtensionProperties(extensionCount);
+    extensionProps = vector!VkExtensionProperties(extensionCount);
     vkEnumerateInstanceExtensionProperties(null, &extensionCount, extensionProps.data());
     return extensionProps;
 }
@@ -213,13 +212,13 @@ weak_vector!VkExtensionProperties nuvkVkContextGetAllExtensions() @nogc {
 /**
     Gets all of the validation layers available
 */
-weak_vector!VkLayerProperties nuvkVkContextGetAllLayers() @nogc {
-    weak_vector!VkLayerProperties layerProps;
+vector!VkLayerProperties nuvkVkContextGetAllLayers() @nogc {
+    vector!VkLayerProperties layerProps;
     
     uint layerCount;
     vkEnumerateInstanceLayerProperties(&layerCount, null);
 
-    layerProps = weak_vector!VkLayerProperties(layerCount);
+    layerProps = vector!VkLayerProperties(layerCount);
     vkEnumerateInstanceLayerProperties(&layerCount, layerProps.data());
     return layerProps;
 }
@@ -233,53 +232,79 @@ private:
     VkInstance instance;
     
     VkDebugUtilsMessengerEXT debugCallback;
-    
-    
-    bool createInstance(const(char)*[] requiredExtensions) {
-        VkInstanceCreateInfo instanceCreateInfo;
-        
-        // Read properties
-        weak_vector!VkExtensionProperties extensionProperties = 
-            nuvkVkContextGetAllExtensions();
-        weak_vector!VkLayerProperties layerProperties = 
-            nuvkVkContextGetAllLayers();
 
-        // Vectors which store them
-        weak_vector!(const(char)*) extensions = 
-            weak_vector!(const(char)*)(requiredExtensions);
-        weak_vector!(const(char)*) layers;
+    NuvkVkRequestList requestedExtensions;
+    NuvkVkRequestList requestedLayers;
+
+    void initInstanceInfo() {
+        vector!VkExtensionProperties supportedExtensions
+            = nuvkVkContextGetAllExtensions();
+        vector!VkLayerProperties supportedLayers
+            = nuvkVkContextGetAllLayers();
+
+        vector!nstring supportedExtensionStrings;
+        vector!nstring supportedLayerStrings;
+
+        foreach(ref extension; supportedExtensions) {
+            supportedExtensionStrings ~= nstring(extension.extensionName.ptr);
+        }
+
+        foreach(ref layer; supportedLayers) {
+            supportedLayerStrings ~= nstring(layer.layerName.ptr);
+        }
+
+        requestedExtensions = NuvkVkRequestList(supportedExtensionStrings);
+        requestedLayers = NuvkVkRequestList(supportedLayerStrings);
+    }
+
+    void createInstance(const(char)*[] requiredExtensions) {
+        nuvkVkInitVulkan();
+        this.initInstanceInfo();
+
+        VkInstanceCreateInfo instanceCreateInfo;
 
         // Extensions
         {
-            foreach(requiredExtension; nuvkVkInstanceRequiredExtensions) {
-                foreach(ref VkExtensionProperties prop; extensionProperties) {
+            foreach(requiredExtension; requiredExtensions) {
+                requestedExtensions.add(cast(string)fromStringz(requiredExtension));
+            }
 
-                    string extensionName = cast(string)fromStringz(prop.extensionName.ptr);
-                    if (extensionName == requiredExtension)
-                        extensions ~= prop.extensionName.ptr;
-                }
+            foreach(requiredExtension; nuvkVkInstanceRequiredExtensions) {
+                requestedExtensions.add(requiredExtension);
             }
         }
 
         // Layers
         debug {
             foreach(debugLayer; nuvkVkDebugLayers) {
-                foreach(VkLayerProperties layerProperty; layerProperties) {
-                    string layerName = cast(string)fromStringz(layerProperty.layerName.ptr);
-                    
-                    if (debugLayer == layerName) {
-                        layers ~= layerProperty.layerName.ptr;
-                    }
-                }
+                requestedLayers.add(debugLayer);
+            }
+
+            import core.stdc.stdio : printf;
+
+            foreach(i, extension; requestedExtensions.getRequests()) {
+                printf("[Nuvk::Vulkan] instance extension[%d] = %s\n", cast(uint)i, extension);
+            }
+
+            foreach(i, layer; requestedLayers.getRequests()) {
+                printf("[Nuvk::Vulkan] instance layer[%d] = %s\n", cast(uint)i, layer);
             }
         }
 
-        instanceCreateInfo.enabledExtensionCount = cast(uint)extensions.size();
-        instanceCreateInfo.ppEnabledExtensionNames = extensions.data();
-        instanceCreateInfo.enabledLayerCount = cast(uint)layers.size();
-        instanceCreateInfo.ppEnabledLayerNames = layers.data();
+        auto extensions = requestedExtensions.getRequests();
+        auto layers = requestedLayers.getRequests();
 
-        return vkCreateInstance(&instanceCreateInfo, null, &instance) == VK_SUCCESS;
+        instanceCreateInfo.enabledExtensionCount = cast(uint)extensions.length;
+        instanceCreateInfo.ppEnabledExtensionNames = extensions.ptr;
+        instanceCreateInfo.enabledLayerCount = cast(uint)layers.length;
+        instanceCreateInfo.ppEnabledLayerNames = layers.ptr;
+
+        enforce(
+            vkCreateInstance(&instanceCreateInfo, null, &instance) == VK_SUCCESS,
+            nstring("Failed creating Vulkan Instance!")
+        );
+
+        this.setHandle(instance);
     }
 
     void setupDebugCallback() {
@@ -338,11 +363,10 @@ public:
     }
 
     this(const(char)*[] requiredExtensions) {
-        nuvkVkInitVulkan();
-        enforce(createInstance(requiredExtensions), nstring("Failed to create vulkan instance!"));
+        this.createInstance(requiredExtensions);
         loadInstanceLevelFunctionsExt(instance);
         loadDeviceLevelFunctionsExt(instance);
-        setupDebugCallback();
+        this.setupDebugCallback();
         
         enforce(enumerateDevices(), nstring("Failed to enumerate devices"));
     }

@@ -125,3 +125,60 @@ bool nuvkVkCloseSharedHandle(ulong handle) @nogc {
         return close(cast(int)handle) == 0;
     }
 }
+
+/**
+    A list of requests
+*/
+struct NuvkVkRequestList {
+@nogc:
+private:
+    vector!nstring supportedRequests;
+    vector!nstring requestedStore;
+    vector!(const(char)*) requestedOut;
+
+public:
+    ~this() {
+        nogc_delete(supportedRequests);
+        nogc_delete(requestedStore);
+        nogc_delete(requestedOut);
+    }
+
+    this(ref vector!nstring supported) {
+        this.supportedRequests = vector!nstring(supported[]);
+    }
+
+    /**
+        Gets whether string is in the supported list
+    */
+    bool isSupported(string slice) {
+        foreach(ref request; supportedRequests) {
+            if (request[] == slice)
+                return true;
+        }
+        return false;
+    }
+
+    /**
+        Adds an item
+    */
+    void add(string toAdd) {
+        if (isSupported(toAdd)) {
+
+            // Don't allow duplicates
+            foreach(existing; requestedStore) {
+                if (existing[] == toAdd)
+                    return;
+            }
+
+            requestedStore ~= nstring(toAdd);
+            requestedOut ~= requestedStore[$-1].toCString();
+        }
+    }
+
+    /**
+        Gets the list of requests for use.
+    */
+    const(char)*[] getRequests() {
+        return requestedOut[];
+    }
+}

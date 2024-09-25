@@ -81,7 +81,7 @@ public:
 
     Returns null if context creation failed.
 */
-NuvkContext nuvkCreateContext(NuvkContextType type, const(char)*[] requiredExtensions = null) {
+NuvkContext nuvkCreateContext(NuvkContextType type, const(char)*[] requiredExtensions = null) @nogc {
     if (type == NuvkContextType.vulkan) {
         return nogc_new!NuvkVkContext(requiredExtensions);
     }
