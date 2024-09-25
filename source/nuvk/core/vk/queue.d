@@ -172,7 +172,7 @@ public:
     */
     override
     NuvkCommandBuffer createCommandBuffer() {
-        return nogc_new!NuvkVkCommandBuffer(this.getOwner(), this, commandPool);   
+        return nogc_new!NuvkVkCommandBuffer(this.getOwner(), this);   
     }
 
     /**
@@ -181,5 +181,13 @@ public:
     override
     void await() {
         vkQueueWaitIdle(queue);
+    }
+
+    /**
+        Gets the command pool
+    */
+    final
+    VkCommandPool getCommandPool() {
+        return commandPool;
     }
 }

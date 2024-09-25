@@ -133,6 +133,23 @@ enum NuvkCommandBufferStatus {
 }
 
 /**
+    Usage for the command buffer.
+*/
+enum NuvkCommandBufferUsage {
+    
+    /**
+        Buffer is recorded once, then reused.
+    */
+    oneShot,
+
+    /**
+        Command buffer is reusable, clearing its contents
+        after submission.
+    */
+    reusable
+}
+
+/**
     A command buffer
 
     Command buffers store commands to send to the GPU.
@@ -188,7 +205,7 @@ public:
     /**
         Sets the index buffer being used for rendering.
     */
-    abstract void setIndexBuffer(NuvkBuffer indexBuffer, uint offset, uint stride, uint index);
+    abstract void setIndexBuffer(NuvkBuffer indexBuffer, uint offset, NuvkBufferIndexType indexType);
 
     /**
         Configures the command buffer to use the specified pipeline
@@ -249,7 +266,7 @@ public:
         Submit the current contents of the command buffer
         into the command queue the buffer was created from.
     */
-    abstract void submit();
+    abstract void submit(NuvkFence signalFence);
 
     /**
         Gets the queue kind associated with this command buffer.

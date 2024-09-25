@@ -23,10 +23,10 @@ VkFormat toVkImageFormat(NuvkTextureFormat format) @nogc {
             return VK_FORMAT_R8G8_SRGB;
 
         case NuvkTextureFormat.rgba8Unorm:
-            return VK_FORMAT_R8G8B8_UNORM;
+            return VK_FORMAT_R8G8B8A8_UNORM;
 
         case NuvkTextureFormat.rgba8UnormSRGB:
-            return VK_FORMAT_R8G8B8_SRGB;
+            return VK_FORMAT_R8G8B8A8_SRGB;
 
         case NuvkTextureFormat.bgra8Unorm:
             return VK_FORMAT_B8G8R8A8_UNORM;
@@ -128,6 +128,82 @@ VkImageAspectFlagBits toVkAspectFlags(NuvkTextureFormat format) @nogc {
 }
 
 /**
+    Converts a sampler addressing mode into its vulkan counterpart
+*/
+VkSamplerAddressMode toVkAddressMode(NuvkSamplerAddressMode addressMode) @nogc {
+    final switch(addressMode) {
+        case NuvkSamplerAddressMode.clampToEdge:
+            return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+
+        case NuvkSamplerAddressMode.mirrorClampToEdge:
+            return VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
+        
+        case NuvkSamplerAddressMode.repeat:
+            return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+
+        case NuvkSamplerAddressMode.mirrorRepeat:
+            return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+
+        case NuvkSamplerAddressMode.clampToBorderColor:
+            return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+    }
+}
+
+/**
+    Converts a filter into its vulkan filter
+*/
+VkFilter toVkFilter(NuvkSamplerTextureFilter filter) @nogc {
+    final switch(filter) {
+        case NuvkSamplerTextureFilter.linear:
+            return VK_FILTER_LINEAR;
+        case NuvkSamplerTextureFilter.nearest:
+            return VK_FILTER_NEAREST;
+    }
+}
+
+/**
+    Converts a filter into its vulkan filter
+*/
+VkSamplerMipmapMode toVkMimpmapMode(NuvkSamplerMipmapFilter filter) @nogc {
+    final switch(filter) {
+        case NuvkSamplerMipmapFilter.nearest:
+        case NuvkSamplerMipmapFilter.notMipmapped:
+            return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+        case NuvkSamplerMipmapFilter.linear:
+            return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    }
+}
+
+VkCompareOp toVkCompareOp(NuvkSamplerCompareOp compOp) @nogc {
+    final switch(compOp) {
+
+        case NuvkSamplerCompareOp.never:
+            return VK_COMPARE_OP_NEVER;
+
+        case NuvkSamplerCompareOp.less:
+            return VK_COMPARE_OP_LESS;
+
+        case NuvkSamplerCompareOp.equal:
+            return VK_COMPARE_OP_EQUAL;
+
+        case NuvkSamplerCompareOp.lessEqual:
+            return VK_COMPARE_OP_LESS_OR_EQUAL;
+
+        case NuvkSamplerCompareOp.greater:
+            return VK_COMPARE_OP_GREATER;
+
+        case NuvkSamplerCompareOp.greaterEqual:
+            return VK_COMPARE_OP_GREATER_OR_EQUAL;
+
+        case NuvkSamplerCompareOp.notEqual:
+            return VK_COMPARE_OP_NOT_EQUAL;
+
+        case NuvkSamplerCompareOp.always:
+            return VK_COMPARE_OP_ALWAYS;
+    }
+}
+
+/**
     A texture
 */
 class NuvkVkTexture : NuvkTexture {
@@ -139,26 +215,49 @@ private:
     void createTexture(NuvkProcessSharing processSharing) {
         auto device = cast(VkDevice)this.getOwner().getHandle();
         auto deviceInfo = cast(NuvkVkDeviceInfo)this.getOwner().getDeviceInfo();
+        auto physicalDevice = cast(VkPhysicalDevice)this.getOwner().getDeviceInfo().getHandle();
         NuvkTextureDescriptor descriptor = this.getDescriptor();
         VkMemoryRequirements memoryRequirements;
         int memoryIndex;
-        VkFlags flags;
+        import core.stdc.stdio : printf;
 
-        // Create texture
+
+        VkImageCreateInfo imageCreateInfo;
+        VkImageFormatProperties imageProperties;
+        
+        // Fill out image info
         {
-            VkImageCreateInfo imageCreateInfo;
             imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            imageCreateInfo.format = descriptor.format.toVkImageFormat();
             imageCreateInfo.imageType = descriptor.type.toVkImageType();
             imageCreateInfo.tiling = descriptor.tiling.toVkImageTiling();
             imageCreateInfo.samples = descriptor.type.toVkSampleCount(descriptor.samples);
             imageCreateInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
             imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-            imageCreateInfo.flags = flags;
             imageCreateInfo.extent.width = descriptor.extents.width;
             imageCreateInfo.extent.height = descriptor.extents.height;
             imageCreateInfo.extent.depth = descriptor.extents.depth;
             imageCreateInfo.mipLevels = descriptor.mipLevels;
             imageCreateInfo.arrayLayers = descriptor.arrayLayers;
+        }
+        
+        // Get maximums
+        {
+            enforce(
+                vkGetPhysicalDeviceImageFormatProperties(physicalDevice, imageCreateInfo.format, imageCreateInfo.imageType, imageCreateInfo.tiling, imageCreateInfo.usage, imageCreateInfo.flags, &imageProperties) == VK_SUCCESS,
+                nstring("Texture format not supported!")
+            );
+        }
+
+        // Create texture
+        {
+            VkExternalMemoryImageCreateInfo imageExternalInfo;
+
+            // Handle types needs to be specified when sharing here.
+            if (processSharing == NuvkProcessSharing.processShared) {
+                imageExternalInfo.handleTypes = NuvkVkMemorySharingFlagBit;
+                imageCreateInfo.pNext = &imageExternalInfo;
+            }
 
             enforce(
                 vkCreateImage(device, &imageCreateInfo, null, &image) == VK_SUCCESS,
@@ -170,7 +269,7 @@ private:
         {
             vkGetImageMemoryRequirements(device, image, &memoryRequirements);
 
-            memoryIndex = deviceInfo.getMatchingMemoryIndex(memoryRequirements.memoryTypeBits, flags);
+            memoryIndex = deviceInfo.getMatchingMemoryIndex(memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
             enforce(
                 memoryIndex >= 0, 
                 nstring("Failed finding suitable memory for the requested buffer")
@@ -228,20 +327,32 @@ protected:
     }
 
 public:
+    /**
+        Destructor
+    */
+    ~this() {
+        auto device = cast(VkDevice)this.getOwner().getHandle();
+        
+        if (image != VK_NULL_HANDLE)
+            vkDestroyImage(device, image, null);
+
+        if (deviceMemory != VK_NULL_HANDLE)
+            vkFreeMemory(device, deviceMemory, null);
+    }
 
     /**
         Constructor
     */
-    this(NuvkDevice device, NuvkTextureDescriptor descriptor, NuvkDeviceSharing deviceSharing, NuvkProcessSharing processSharing) {
-        super(device, descriptor, deviceSharing, processSharing);
+    this(NuvkDevice device, NuvkTextureDescriptor descriptor, NuvkProcessSharing processSharing) {
+        super(device, descriptor, processSharing);
         this.createTexture(processSharing);
     }
 
     /**
         Constructor
     */
-    this(NuvkDevice device, NuvkTextureFormat format, NuvkDeviceSharing deviceSharing, NuvkProcessSharing processSharing) {
-        super(device, format, deviceSharing, processSharing);
+    this(NuvkDevice device, NuvkTextureFormat format, NuvkProcessSharing processSharing) {
+        super(device, format, processSharing);
         this.createTexture(processSharing);
     }
 
@@ -298,6 +409,13 @@ private:
     }
 
 public:
+    ~this() {
+        auto device = cast(VkDevice)this.getOwner().getHandle();
+        
+        if (imageView != VK_NULL_HANDLE)
+            vkDestroyImageView(device, imageView, null);
+    }
+    
     this(NuvkDevice device, NuvkTexture texture, NuvkTextureViewDescriptor descriptor) {
         super(device, texture, descriptor);
         this.createTextureView(texture);
@@ -316,9 +434,57 @@ private:
 
     void createSampler() {
         auto device = cast(VkDevice)this.getOwner().getHandle();
+        NuvkSamplerDescriptor samplerDescriptor = this.getDescriptor();
+
+        VkSamplerCreateInfo samplerCreateInfo;
+
+        // Custom border color
+        VkSamplerCustomBorderColorCreateInfoEXT customBorderColor;
+        customBorderColor.format = VK_FORMAT_UNDEFINED;
+        customBorderColor.customBorderColor.float32 = samplerDescriptor.borderColor.colorData;
+        samplerCreateInfo.pNext = &customBorderColor;
+
+        // Sampler create info
+        samplerCreateInfo.addressModeU = samplerDescriptor.addressModeU.toVkAddressMode();
+        samplerCreateInfo.addressModeV = samplerDescriptor.addressModeV.toVkAddressMode();
+        samplerCreateInfo.addressModeW = samplerDescriptor.addressModeW.toVkAddressMode();
+        samplerCreateInfo.anisotropyEnable = samplerDescriptor.maxAnisotropy > 0 ? VK_TRUE : VK_FALSE;
+        samplerCreateInfo.maxAnisotropy = samplerDescriptor.maxAnisotropy;
+        samplerCreateInfo.borderColor = VK_BORDER_COLOR_FLOAT_CUSTOM_EXT;
+
+        if (samplerDescriptor.mipFilter == NuvkSamplerMipmapFilter.notMipmapped) {
+            samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+
+            samplerCreateInfo.minFilter = samplerDescriptor.minFilter.toVkFilter();
+            samplerCreateInfo.magFilter = samplerDescriptor.magFilter.toVkFilter();
+            samplerCreateInfo.minLod = 0;
+            samplerCreateInfo.maxLod = 0.25;
+        } else {
+            samplerCreateInfo.minFilter = samplerDescriptor.minFilter.toVkFilter();
+            samplerCreateInfo.magFilter = samplerDescriptor.magFilter.toVkFilter();
+            samplerCreateInfo.mipmapMode = samplerDescriptor.mipFilter.toVkMimpmapMode();
+            samplerCreateInfo.minLod = samplerDescriptor.lodClamp.start;
+            samplerCreateInfo.maxLod = samplerDescriptor.lodClamp.end;
+        }
+
+        samplerCreateInfo.unnormalizedCoordinates = samplerDescriptor.normalizeCoordinates ? VK_FALSE : VK_TRUE;
+        samplerCreateInfo.compareEnable = VK_TRUE;
+        samplerCreateInfo.compareOp = samplerDescriptor.compareOp.toVkCompareOp();
+        
+        enforce(
+            vkCreateSampler(device, &samplerCreateInfo, null, &sampler),
+            nstring("Failed creating sampler")
+        );
     }
 
 public:
+    ~this() {
+        auto device = cast(VkDevice)this.getOwner().getHandle();
+
+        if (sampler != VK_NULL_HANDLE)
+            vkDestroySampler(device, sampler, null);
+    }
+
     this(NuvkDevice device, NuvkSamplerDescriptor descriptor) {
         super(device, descriptor);
         this.createSampler();

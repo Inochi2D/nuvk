@@ -16,9 +16,23 @@ private {
         VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE,
         VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY,
         VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE,
-        VK_DYNAMIC_STATE_VERTEX_INPUT_EXT
+        VK_DYNAMIC_STATE_VERTEX_INPUT_EXT,
+        VK_DYNAMIC_STATE_DEPTH_BIAS,
+        VK_DYNAMIC_STATE_LINE_WIDTH
     ];
 }
+
+VkPipelineBindPoint toVkPipelineBindPoint(NuvkPipelineKind kind) @nogc {
+    final switch(kind) {
+        
+        case NuvkPipelineKind.compute:
+            return VK_PIPELINE_BIND_POINT_COMPUTE;
+
+        case NuvkPipelineKind.graphics:
+            return VK_PIPELINE_BIND_POINT_GRAPHICS;
+    }
+}
+
 /**
     A pipeline
 */

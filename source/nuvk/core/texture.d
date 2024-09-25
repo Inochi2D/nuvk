@@ -181,7 +181,7 @@ enum NuvkSamplerMipmapFilter {
     The comparison function used when doing a sample compare
     operation on a depth texture
 */
-enum NuvkSamplerCompFunc {
+enum NuvkSamplerCompareOp {
 
     /**
         Test never passes
@@ -234,10 +234,9 @@ enum NuvkSamplerCompFunc {
     Descriptor used to create a texture
 */
 struct NuvkTextureDescriptor {
-    NuvkDeviceSharing deviceSharing;
     NuvkTextureFormat format;
     NuvkTextureType type;
-    NuvkTextureTiling tiling;
+    NuvkTextureTiling tiling = NuvkTextureTiling.linear;
 
     NuvkExtent3D!uint extents = NuvkExtent3D!uint(1, 1, 1);
     int samples = 1;
@@ -297,7 +296,7 @@ struct NuvkSamplerDescriptor {
     /**
         Comparison function
     */
-    NuvkSamplerCompFunc compareFunc;
+    NuvkSamplerCompareOp compareOp;
 
     /**
         Range that mipmap LODs should be clamped to.
@@ -342,7 +341,7 @@ public:
     /**
         Constructor
     */
-    this(NuvkDevice device, NuvkTextureDescriptor descriptor, NuvkDeviceSharing deviceSharing, NuvkProcessSharing processSharing) {
+    this(NuvkDevice device, NuvkTextureDescriptor descriptor, NuvkProcessSharing processSharing) {
         super(device, processSharing);
         this.deviceSharing = deviceSharing;
         this.descriptor = descriptor;
@@ -351,12 +350,11 @@ public:
     /**
         Constructor
     */
-    this(NuvkDevice device, NuvkTextureFormat format, NuvkDeviceSharing deviceSharing, NuvkProcessSharing processSharing) {
+    this(NuvkDevice device, NuvkTextureFormat format, NuvkProcessSharing processSharing) {
         super(device, processSharing);
         this.deviceSharing = deviceSharing;
         this.descriptor.format = format;
         this.descriptor.samples = 1;
-        this.descriptor.deviceSharing = NuvkDeviceSharing.deviceLocal;
         this.descriptor.type = NuvkTextureType.texture2d;
     }
 
@@ -403,6 +401,30 @@ public:
     final
     int getSampleCount() {
         return descriptor.samples;
+    }
+
+    /**
+        Gets the width of the texture
+    */
+    final
+    uint getWidth() {
+        return descriptor.extents.width;
+    }
+
+    /**
+        Gets the height of the texture
+    */
+    final
+    uint getHeight() {
+        return descriptor.extents.height;
+    }
+
+    /**
+        Gets the depth of the texture.
+    */
+    final
+    uint getDepth() {
+        return descriptor.extents.depth;
     }
 }
 

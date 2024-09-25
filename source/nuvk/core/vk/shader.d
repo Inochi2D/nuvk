@@ -9,7 +9,9 @@ import numem.all;
     Converts shader stage to vulkan shader stage
 */
 VkShaderStageFlagBits toVkShaderStage(NuvkShaderStage stage) @nogc {
-    VkShaderStageFlagBits outStage;
+    // NOTE: VkShaderStageFlagBits's minimum value is *1*
+    // Therefore we use a uint here.
+    uint outStage = 0;
 
     if (stage & NuvkShaderStage.vertex)
         outStage |= VK_SHADER_STAGE_VERTEX_BIT;
@@ -20,7 +22,7 @@ VkShaderStageFlagBits toVkShaderStage(NuvkShaderStage stage) @nogc {
     if (stage & NuvkShaderStage.compute)
         outStage |= VK_SHADER_STAGE_COMPUTE_BIT;
 
-    return outStage;
+    return cast(VkShaderStageFlagBits)outStage;
 }
 
 
@@ -88,6 +90,7 @@ public:
         super(device, module_, stage);
         this.parseInfo(module_, stage);
         this.initializeShader();
+        this.initializeDiscriptors();
     }
 
     /**

@@ -1,7 +1,6 @@
 module nuvk.core.shader;
 import nuvk.spirv;
 import nuvk.core;
-import nuvk.core.device;
 import numem.all;
 
 /**
@@ -12,22 +11,22 @@ enum NuvkShaderStage {
     /**
         Invalid shader stage
     */
-    none = 0x00,
+    none        = 0x00,
 
     /**
         A vertex shader
     */
-    vertex = 0x01,
+    vertex      = 0x01,
 
     /**
         A fragment shader
     */
-    fragment = 0x02,
+    fragment    = 0x02,
 
     /**
         A compute shader
     */
-    compute = 0x04,
+    compute     = 0x04,
 
     /**
         Vertex and fragment stage

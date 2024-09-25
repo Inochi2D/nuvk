@@ -11,6 +11,7 @@ public import nuvk.core.pipeline;
 public import nuvk.core.sync;
 public import nuvk.core.queue;
 public import nuvk.core.cmdbuffer;
+public import nuvk.core.surface;
 
 /**
     Base type of Nuvk objects.
@@ -74,10 +75,15 @@ struct NuvkRange(T) if (isNumeric!T) {
 */
 struct NuvkColor {
 @nogc:
-    float r;
-    float g;
-    float b;
-    float a;
+    union {
+        float[4] colorData;
+        struct {
+            float r;
+            float g;
+            float b;
+            float a;
+        }
+    }
 }
 
 /**

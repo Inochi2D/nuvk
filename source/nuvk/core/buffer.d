@@ -43,6 +43,22 @@ enum NuvkBufferUsage {
 }
 
 /**
+    The type of the elements in a index buffer.
+*/
+enum NuvkBufferIndexType {
+
+    /**
+        16-bit index buffer
+    */
+    uint16,
+    
+    /**
+        32-bit index buffer
+    */
+    uint32,
+}
+
+/**
     A buffer
 */
 abstract

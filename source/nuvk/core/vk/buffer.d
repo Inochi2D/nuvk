@@ -34,6 +34,15 @@ VkBufferUsageFlags toVkBufferUsageFlags(NuvkBufferUsage usage) @nogc {
     return flags;
 }
 
+VkIndexType toVkIndexType(NuvkBufferIndexType indexType) @nogc {
+    final switch(indexType) {
+        case NuvkBufferIndexType.uint16:
+            return VK_INDEX_TYPE_UINT16;
+        case NuvkBufferIndexType.uint32:
+            return VK_INDEX_TYPE_UINT32;
+    }
+}
+
 class NuvkVkBuffer : NuvkBuffer {
 @nogc:
 private:
@@ -60,10 +69,18 @@ private:
 
         // Create buffer
         {
+            VkExternalMemoryBufferCreateInfo bufferExternalInfo;
+
             VkBufferCreateInfo bufferInfo;
             bufferInfo.size = this.getSize();
             bufferInfo.usage = usage;
             bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+            // Handle types needs to be specified when sharing here.
+            if (processSharing == NuvkProcessSharing.processShared) {
+                bufferExternalInfo.handleTypes = NuvkVkMemorySharingFlagBit;
+                bufferInfo.pNext = &bufferExternalInfo;
+            }
 
             enforce(
                 vkCreateBuffer(device, &bufferInfo, null, &buffer) == VK_SUCCESS,

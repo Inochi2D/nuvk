@@ -10,8 +10,10 @@ private {
     const const(char)*[] nuvkVkDeviceRequiredExtensions = [
         "VK_EXT_vertex_input_dynamic_state",
         "VK_EXT_extended_dynamic_state",
+        "VK_EXT_extended_dynamic_state2",
         "VK_KHR_swapchain",
         "VK_KHR_dynamic_rendering",
+        "VK_EXT_custom_border_color",
         NuvkVkMemorySharingExtName,
         NuvkVkSemaphoreSharingExtName,
     ];
@@ -26,7 +28,7 @@ private:
     VkDevice device;
     weak_vector!VkDeviceQueueCreateInfo queueInfos;
 
-    void loadDevice() {
+    void createDevice() {
     	VkPhysicalDeviceFeatures features;
         VkPhysicalDeviceFeatures2 features2;
 
@@ -35,13 +37,25 @@ private:
 
         // Device features
         {
+            vkGetPhysicalDeviceFeatures2(physicalDevice, &features2);
+
+
             VkPhysicalDeviceDynamicRenderingFeatures dynamicRenderingFeatures;
             VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT vertexInputDynamicStateFeature;
+            VkPhysicalDeviceExtendedDynamicStateFeaturesEXT extendedDynamicStateFeature;
+            VkPhysicalDeviceExtendedDynamicState2FeaturesEXT extendedDynamicState2Feature;
+            VkPhysicalDeviceCustomBorderColorFeaturesEXT customBorderColorFeature;
+
+            extendedDynamicStateFeature.extendedDynamicState = VK_TRUE;
+            extendedDynamicState2Feature.extendedDynamicState2 = VK_TRUE;
+            customBorderColorFeature.customBorderColors = VK_TRUE;
 
             dynamicRenderingFeatures.dynamicRendering = VK_TRUE;
             vertexInputDynamicStateFeature.vertexInputDynamicState = VK_TRUE;
 
-            vkGetPhysicalDeviceFeatures2(physicalDevice, &features2);
+            extendedDynamicState2Feature.pNext = &customBorderColorFeature;
+            extendedDynamicStateFeature.pNext = &extendedDynamicState2Feature;
+            vertexInputDynamicStateFeature.pNext = &extendedDynamicStateFeature;
             dynamicRenderingFeatures.pNext = &vertexInputDynamicStateFeature;
             features2.pNext = &dynamicRenderingFeatures;
         }
@@ -61,7 +75,6 @@ private:
             nstring("Device creation failed!")
         );
 
-        loadDeviceLevelFunctionsExt(device);
         this.setHandle(device);
     }
 
@@ -83,7 +96,7 @@ public:
     this(NuvkContext owner, NuvkDeviceInfo info) {
         super(owner, info);
         this.initDeviceQueueInfos();
-        this.loadDevice();
+        this.createDevice();
     }
 
     /**
@@ -106,8 +119,8 @@ public:
         Creates a texture
     */
     override
-    NuvkTexture createTexture(NuvkTextureDescriptor descriptor, NuvkDeviceSharing deviceSharing, NuvkProcessSharing processSharing = NuvkProcessSharing.processLocal) {
-        return nogc_new!NuvkVkTexture(this, descriptor, deviceSharing, processSharing);
+    NuvkTexture createTexture(NuvkTextureDescriptor descriptor, NuvkProcessSharing processSharing = NuvkProcessSharing.processLocal) {
+        return nogc_new!NuvkVkTexture(this, descriptor, processSharing);
     }
     
     /**
@@ -156,6 +169,15 @@ public:
     override
     NuvkCommandQueue createQueue(NuvkCommandQueueKind kind) {
         return nogc_new!NuvkVkCommandQueue(this, kind);
+    }
+
+    /**
+        Creates a surface from a handle created by your windowing
+        library.
+    */
+    override
+    NuvkSurface createSurfaceFromHandle(void* handle) {
+        return nogc_new!NuvkVkSurface(this, cast(VkSurfaceKHR)handle);
     }
 
     /**

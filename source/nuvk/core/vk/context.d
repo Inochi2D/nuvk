@@ -13,12 +13,13 @@ private {
     }
 
     const string[] nuvkVkDebugLayers = [
-        "VK_LAYER_KHRONOS_validation"
+        "VK_LAYER_KHRONOS_validation",
     ];
 
     const string[] nuvkVkInstanceRequiredExtensions = [
         "VK_KHR_surface",
-        "VK_KHR_debug_utils"
+        "VK_EXT_debug_utils",
+        "VK_EXT_layer_settings",
     ];
 }
 
@@ -27,6 +28,7 @@ class NuvkVkDeviceInfo : NuvkDeviceInfo {
 private:
     weak_vector!VkQueueFamilyProperties queueFamilyProperties;
     weak_vector!VkExtensionProperties extensionProperties;
+    NuvkVkDeviceSurfaceCapability surfaceCapability;
 
     VkPhysicalDevice physicalDevice;
     VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
@@ -228,15 +230,23 @@ private:
     
     bool createInstance(const(char)*[] requiredExtensions) {
         VkInstanceCreateInfo instanceCreateInfo;
+        
+        // Read properties
+        weak_vector!VkExtensionProperties extensionProperties = 
+            nuvkVkContextGetAllExtensions();
+        weak_vector!VkLayerProperties layerProperties = 
+            nuvkVkContextGetAllLayers();
+
+        // Vectors which store them
         weak_vector!(const(char)*) extensions = 
             weak_vector!(const(char)*)(requiredExtensions);
         weak_vector!(const(char)*) layers;
 
         // Extensions
         {
-            auto extensionProperties = nuvkVkContextGetAllExtensions();
             foreach(requiredExtension; nuvkVkInstanceRequiredExtensions) {
-                foreach(VkExtensionProperties prop; extensionProperties) {
+                foreach(ref VkExtensionProperties prop; extensionProperties) {
+
                     string extensionName = cast(string)fromStringz(prop.extensionName.ptr);
                     if (extensionName == requiredExtension)
                         extensions ~= prop.extensionName.ptr;
@@ -246,8 +256,6 @@ private:
 
         // Layers
         debug {
-            auto layerProperties = nuvkVkContextGetAllLayers();
-
             foreach(debugLayer; nuvkVkDebugLayers) {
                 foreach(VkLayerProperties layerProperty; layerProperties) {
                     string layerName = cast(string)fromStringz(layerProperty.layerName.ptr);
@@ -268,19 +276,21 @@ private:
     }
 
     void setupDebugCallback() {
-        VkDebugUtilsMessengerCreateInfoEXT debugCallbackInfo;
-        debugCallbackInfo.messageSeverity = 
-            VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
-            VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-            VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
-        debugCallbackInfo.messageType = 
-            VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-            VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
-        debugCallbackInfo.pfnUserCallback = &nuvkVkDbgCallback;
-        enforce(
-            vkCreateDebugUtilsMessengerEXT(instance, &debugCallbackInfo, null, &debugCallback) == VK_SUCCESS,
-            nstring("Could not create debug messenger!")
-        );
+        debug {
+            VkDebugUtilsMessengerCreateInfoEXT debugCallbackInfo;
+            debugCallbackInfo.messageSeverity = 
+                VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
+                VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+                VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
+            debugCallbackInfo.messageType = 
+                VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
+            debugCallbackInfo.pfnUserCallback = &nuvkVkDbgCallback;
+            enforce(
+                vkCreateDebugUtilsMessengerEXT(instance, &debugCallbackInfo, null, &debugCallback) == VK_SUCCESS,
+                nstring("Could not create debug messenger!")
+            );
+        }
     }
 
     void cleanupDebugCallback() {
@@ -324,6 +334,7 @@ public:
         nuvkVkInitVulkan();
         enforce(createInstance(requiredExtensions), nstring("Failed to create vulkan instance!"));
         loadInstanceLevelFunctionsExt(instance);
+        loadDeviceLevelFunctionsExt(instance);
         setupDebugCallback();
         
         enforce(enumerateDevices(), nstring("Failed to enumerate devices"));

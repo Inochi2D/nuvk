@@ -78,7 +78,7 @@ public:
     /**
         Creates a texture
     */
-    abstract NuvkTexture createTexture(NuvkTextureDescriptor descriptor, NuvkDeviceSharing deviceSharing, NuvkProcessSharing processSharing = NuvkProcessSharing.processLocal);
+    abstract NuvkTexture createTexture(NuvkTextureDescriptor descriptor, NuvkProcessSharing processSharing = NuvkProcessSharing.processLocal);
     
     /**
         Creates a sampler
@@ -109,6 +109,12 @@ public:
         Creates a new command queue
     */
     abstract NuvkCommandQueue createQueue(NuvkCommandQueueKind kind);
+
+    /**
+        Creates a surface from a handle created by your windowing
+        library.
+    */
+    abstract NuvkSurface createSurfaceFromHandle(void* handle);
 }
 
 /**

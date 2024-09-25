@@ -2,6 +2,7 @@ module nuvk.core.vk.sync;
 import nuvk.core.vk;
 import nuvk.core;
 import numem.all;
+
 /**
     A fence
 */
