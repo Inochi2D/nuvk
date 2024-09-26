@@ -15,7 +15,7 @@ class NuvkFence : NuvkDeviceObject {
 @nogc:
 public:
     this(NuvkDevice device) {
-        super(device, NuvkProcessSharing.processLocal);
+        super(device);
     }
 }
 
@@ -24,8 +24,37 @@ public:
 */
 class NuvkSemaphore : NuvkDeviceObject {
 @nogc:
+private:
+    NuvkProcessSharing sharing;
+
 public:
+
+    /**
+        Constructor
+    */
     this(NuvkDevice device, NuvkProcessSharing sharing) {
-        super(device, sharing);
+        super(device);
+        this.sharing = sharing;
+    }
+
+    /**
+        Gets the sharing state of the object.
+    */
+    final
+    NuvkProcessSharing getSharing() {
+        return sharing;
+    }
+
+    abstract ulong getSharedHandle();
+}
+
+/**
+    An event
+*/
+class NuvkEvent : NuvkDeviceObject {
+@nogc:
+public:
+    this(NuvkDevice device) {
+        super(device);
     }
 }

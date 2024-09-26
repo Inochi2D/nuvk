@@ -115,7 +115,14 @@ public:
     /**
         Creates a new command queue
     */
-    abstract NuvkCommandQueue createQueue(NuvkCommandQueueKind kind);
+    abstract NuvkCommandQueue createQueue(NuvkQueueSpecialization specialization = NuvkQueueSpecialization.none);
+
+    /**
+        Destroys a queue.
+
+        calling nogc_delete on a queue will automatically invoke this.
+    */
+    abstract void destroyQueue(NuvkCommandQueue queue);
 
     /**
         Creates a surface from a handle created by your windowing
@@ -125,14 +132,48 @@ public:
 }
 
 /**
-    A Nuvk object owned by a device.
+    A Nuvk Object owned by a device.
 */
 abstract
 class NuvkDeviceObject : NuvkObject {
 @nogc:
 private:
     NuvkDevice owner;
+
+public:
+
+    /**
+        Creates a new device object.
+    */
+    this(NuvkDevice owner) {
+        this.owner = owner;
+    }
+
+    /**
+        Gets the owner of this object.
+    */
+    final
+    ref NuvkDevice getOwner() {
+        return owner;
+    }
+}
+
+/**
+    A Nuvk resources.
+
+    Resources are memory allocations visible to the GPU.
+    This includes buffers, textures, and the like.
+*/
+abstract
+class NuvkResource : NuvkDeviceObject {
+@nogc:
+private:
     NuvkProcessSharing sharing;
+
+    // Sharing
+    // NOTE: All NuvkResource types should support sharing
+    // As such having a shared implementation here is less
+    // of a headache.
     ulong shareHandle;
     bool wasHandleSet;
 
@@ -163,6 +204,9 @@ protected:
 
 public:
 
+    /**
+        Destructor
+    */
     ~this() {
         if(wasHandleSet) {
             this._iCloseSharedHandle();
@@ -170,19 +214,11 @@ public:
     }
 
     /**
-        Creates a new device object.
+        Constructor
     */
     this(NuvkDevice owner, NuvkProcessSharing sharing) {
-        this.owner = owner;
+        super(owner);
         this.sharing = sharing;
-    }
-
-    /**
-        Gets the owner of this object.
-    */
-    final
-    ref NuvkDevice getOwner() {
-        return owner;
     }
 
     /**
@@ -199,16 +235,5 @@ public:
     final
     ulong getSharedHandle() {
         return shareHandle;
-    }
-
-    /**
-        Override function to change how handle
-        closing is handled.
-    */
-    final
-    void stopSharing() {
-        if(wasHandleSet) {
-            this._iCloseSharedHandle();
-        }
     }
 }

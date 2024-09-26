@@ -95,7 +95,7 @@ public:
         Creates shader
     */
     this(NuvkDevice device, NuvkSpirvModule module_, NuvkShaderStage stage) {
-        super(device, NuvkProcessSharing.processLocal);
+        super(device);
         this.module_ = module_;
         this.stage = stage;
     }

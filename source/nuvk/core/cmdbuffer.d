@@ -84,6 +84,22 @@ enum NuvkPrimitive {
 }
 
 /**
+    Sets the filling mode for triangles
+*/
+enum NuvkFillMode {
+
+    /**
+        Draw triangles filled
+    */
+    fill,
+    
+    /**
+        Draw triangle outlines
+    */
+    lines
+}
+
+/**
     Action GPU should perform at the end of the rendering pass.
 */
 enum NuvkStoreAction {
@@ -157,6 +173,22 @@ enum NuvkCommandBufferUsage {
 }
 
 /**
+    Rendering stages
+*/
+enum NuvkRenderStage {
+
+    /**
+        Vertex shader stage
+    */
+    vertex,
+    
+    /**
+        Fragment shader stage
+    */
+    fragment,
+}
+
+/**
     A command buffer
 
     Command buffers store commands to send to the GPU.
@@ -178,112 +210,97 @@ protected:
         this.status = status;
     }
 
+    /**
+        Implements the logic to create a NuvkRenderEncoder.
+    */
+    abstract NuvkRenderEncoder onBeginRenderPass();
+
+    /**
+        Implements the logic to create a NuvkComputeEncoder.
+    */
+    abstract NuvkComputeEncoder onBeginComputePass();
+
+    /**
+        Implements the logic to create a NuvkTransferEncoder.
+    */
+    abstract NuvkTransferEncoder onBeginTransferPass();
+
 public:
 
     /**
         Creates a command buffer
     */
     this(NuvkDevice device, NuvkCommandQueue queue) {
-        super(device, NuvkProcessSharing.processLocal);
+        super(device);
         this.queue = queue;
         this.status = NuvkCommandBufferStatus.idle;
     }
 
     /**
-        Resets the command buffer; allowing the buffer to be re-recorded.
+        Begins a render pass, returning a lightweight
+        NuvkRenderEncoder.
+    */
+    final
+    NuvkRenderEncoder beginRenderPass() {
+        enforce(
+            (queue.getSpecialization() & NuvkQueueSpecialization.graphics),
+            nstring("Queue does not support encoding render commands!")
+        );
+
+        return this.onBeginRenderPass();
+    }
+
+    /**
+        Begins a compute pass, returning a lightweight
+        NuvkComputeEncoder.
+    */
+    final
+    NuvkComputeEncoder beginComputePass() {
+        enforce(
+            (queue.getSpecialization() & NuvkQueueSpecialization.compute),
+            nstring("Queue does not support encoding compute commands!")
+        );
+
+        return this.onBeginComputePass();
+    }
+
+    /**
+        Begins a transfer pass, returning a lightweight
+        NuvkTransferEncoder.
+    */
+    final
+    NuvkTransferEncoder beginTransferPass() {
+        enforce(
+            (queue.getSpecialization() & NuvkQueueSpecialization.transfer),
+            nstring("Queue does not support encoding transfer commands!")
+        );
+
+        return this.onBeginTransferPass();
+    }
+
+    /**
+        Resets the command buffer.
+
+        This allows reusing the command buffer between frames.
     */
     abstract bool reset();
 
     /**
-        Begins recording into the command buffer
+        Presents the surface
     */
-    abstract bool begin();
+    abstract void present(NuvkSurface surface);
 
     /**
-        Ends recording into the command buffer
+        Commits the commands stored in the command buffer
+        to the command queue
     */
-    abstract bool end();
+    abstract void commit();
 
     /**
-        Sets the vertex buffer being used for rendering.
+        Blocks the current thread until the command queue
+        is finished rendering the buffer.
     */
-    abstract void setVertexBuffer(NuvkBuffer vertexBuffer, uint offset, uint stride, uint index);
-
-    /**
-        Sets the index buffer being used for rendering.
-    */
-    abstract void setIndexBuffer(NuvkBuffer indexBuffer, uint offset, NuvkBufferIndexType indexType);
-
-    /**
-        Configures the command buffer to use the specified pipeline
-    */
-    abstract void setPipeline(NuvkPipeline pipeline);
-
-    /**
-        Configures what winding is used for the front face for rendering
-    */
-    abstract void setFrontFace(NuvkWinding winding);
-
-    /**
-        Configures the culling mode used for rendering
-    */
-    abstract void setCulling(NuvkCulling culling);
-
-    /**
-        Configures the viewport
-    */
-    abstract void setViewport(rect viewport);
-
-    /**
-        Configures the scissor rectangle
-    */
-    abstract void setScissorRect(rect scissor);
-
-    /**
-        Sets the store action for the specified color
-    */
-    abstract void setColorStoreAction(NuvkStoreAction action, uint color);
-
-    /**
-        Sets the store action for the stencil buffer
-    */
-    abstract void setStencilStoreAction(NuvkStoreAction action);
-
-    /**
-        Sets the store action for the depth buffer
-    */
-    abstract void setDepthStoreAction(NuvkStoreAction action);
-
-    /**
-        Sets the color for the constant blend color blending mode.
-    */
-    abstract void setBlendColor(float r, float g, float b,float a);
-
-    /**
-        Draws a primitive
-    */
-    abstract void draw(NuvkPrimitive primitive, uint start, uint count);
-
-    /**
-        Draws a primitive using bound index buffers
-    */
-    abstract void drawIndexed(NuvkPrimitive primitive, uint start, uint count);
-
-    /**
-        Submit the current contents of the command buffer
-        into the command queue the buffer was created from.
-    */
-    abstract void submit(NuvkFence signalFence);
-
-    /**
-        Gets the queue kind associated with this command buffer.
-
-        The queue kind specifies which operations are possible.
-    */
-    final
-    NuvkCommandQueueKind getQueueKind() {
-        return queue.getQueueKind();
-    }
+    abstract void awaitCompletion();
 
     /**
         Gets the queue associated with this command buffer.
@@ -300,4 +317,259 @@ public:
     NuvkCommandBufferStatus getStatus() {
         return status;
     }
+}
+
+
+abstract
+class NuvkEncoder {
+@nogc:
+private:
+    NuvkCommandBuffer commandBuffer;
+
+public:
+
+    // We don't own any memory.
+    ~this() { }
+
+    /**
+        Constructor
+    */
+    this(NuvkCommandBuffer buffer) {
+        this.commandBuffer = buffer;
+    }
+
+    /**
+        Pushes a debug group onto the command buffer's stack
+        This is useful for render debugging.
+    */
+    abstract void pushDebugGroup(nstring name);
+
+    /**
+        Pops a debug group from the command buffer's stack
+        This is useful for render debugging.
+    */
+    abstract void popDebugGroup();
+
+    /**
+        Encodes a command that makes the GPU wait for a fence.
+    */
+    abstract void waitFor(NuvkFence fence, NuvkRenderStage before);
+
+    /**
+        Encodes a command that makes the GPU signal a fence.
+    */
+    abstract void signal(NuvkFence fence, NuvkRenderStage after);
+
+    /**
+        Ends encoding the commands to the buffer.
+    */
+    abstract void endEncoding();
+
+    /**
+        Gets the device which this encoder belongs to.
+    */
+    final
+    NuvkDevice getOwner() {
+        return commandBuffer.getOwner();
+    }
+
+    /**
+        Gets the command buffer the encoder belongs to
+    */
+    final
+    NuvkCommandBuffer getCommandBuffer() {
+        return commandBuffer;
+    }
+}
+
+/**
+    A lightweight object for submitting rendering commands
+    to a command buffer.
+*/
+abstract
+class NuvkRenderEncoder : NuvkEncoder {
+@nogc:
+public:
+
+    /**
+        Constructor
+    */
+    this(NuvkCommandBuffer buffer) {
+        super(buffer);
+    }
+
+    /**
+        Sets the active pipeline
+    */
+    abstract void setPipeline(NuvkPipeline pipeline);
+
+    /**
+        Configures the active rendering pipeline with 
+        the specified viewport.
+    */
+    abstract void setViewport(recti viewport);
+
+    /**
+        Configures the active rendering pipeline with 
+        the specified scissor rectangle.
+    */
+    abstract void setScissorRect(recti scissor);
+
+    /**
+        Configures the active rendering pipeline with 
+        the specified culling mode.
+    */
+    abstract void setCulling(NuvkCulling culling);
+
+    /**
+        Configures the active rendering pipeline with 
+        the specified triangle front face winding.
+    */
+    abstract void setFrontFace(NuvkWinding winding);
+
+    /**
+        Configures the active rendering pipeline with 
+        the specified triangle fill mode.
+    */
+    abstract void setFillMode(NuvkFillMode fillMode);
+
+    /**
+        Sets the vertex buffer in use.
+    */
+    abstract void setVertexBuffer(NuvkBuffer buffer, uint offset, uint stride, int index);
+
+    /**
+        Encodes a command which makes the command buffer draw
+        the currently bound render state.
+    */
+    abstract void draw(NuvkPrimitive primitive, uint offset, uint count);
+
+    /**
+        Encodes a command which makes the command buffer draw
+        the currently bound render state, using a index buffer
+        to iterate over the vertex buffers.
+    */
+    abstract void drawIndexed(NuvkPrimitive primitive, uint offset, uint count);
+
+    /**
+        Encodes a rendering barrier that enforces 
+        a specific order for read/write operations.
+    */
+    abstract void waitBarrier(NuvkResource resource, NuvkRenderStage before, NuvkRenderStage after);
+}
+
+/**
+    A lightweight object for submitting compute commands
+    to a command buffer.
+*/
+abstract
+class NuvkComputeEncoder : NuvkEncoder {
+@nogc:
+public:
+
+    /**
+        Constructor
+    */
+    this(NuvkCommandBuffer buffer) {
+        super(buffer);
+    }
+
+    /**
+        Sets a buffer in the compute pass
+    */
+    abstract void setBuffer(NuvkBuffer buffer, uint offset, int index);
+
+    /**
+        Sets a texture in the compute pass
+    */
+    abstract void setTexture(NuvkTexture buffer, int index);
+
+    /**
+        Sets a sampler in the compute pass
+    */
+    abstract void setSampler(NuvkSampler buffer, int index);
+
+    /**
+        Dispatches the compute kernel
+    */
+    abstract void dispatch(vec3i groupCounts);
+
+    /**
+        Encodes a rendering barrier that enforces 
+        a specific order for read/write operations.
+    */
+    abstract void waitBarrier(NuvkResource resource, NuvkRenderStage before, NuvkRenderStage after);
+}
+
+/**
+    Optimization mode to use for texture optimization state changes
+*/
+enum NuvkOptimizationMode {
+
+    /**
+        Optimize for CPU access
+    */
+    optimizeForCPU,
+    
+    /**
+        Optimize for GPU access
+    */
+    optimizeForGPU
+}
+
+/**
+    A lightweight object for submitting transfer commands
+    to a command buffer.
+*/
+abstract
+class NuvkTransferEncoder : NuvkEncoder {
+@nogc:
+public:
+
+    /**
+        Constructor
+    */
+    this(NuvkCommandBuffer buffer) {
+        super(buffer);
+    }
+
+    /**
+        Submits a command which generates mipmaps for the
+        specified texture
+    */
+    abstract void generateMipmaps(NuvkTexture texture);
+
+    /**
+        Copies data between 2 buffers
+    */
+    abstract void copy(NuvkBuffer from, uint sourceOffset, NuvkBuffer to, uint destOffset, uint size);
+
+    /**
+        Copies data between a buffer and texture
+
+        Parameters:
+            `from` - The buffer to copy from
+            `sourceOffset` - Offset, in bytes, into the buffer to copy from
+            `sourcePxStride` - How many bytes there are in a single pixel
+            `copyRange` - The width and height to copy, and the destination coordinates in the texture to put them.
+            `to` - The texture to copy to
+            `arraySlice` - The texture array slice to copy into.
+            `mipLevel` - The texture mip level to copy into.
+    */
+    abstract void copy(NuvkBuffer from, uint sourceOffset, uint sourcePxStride, recti copyRange, NuvkTexture to, uint arraySlice = 0, uint mipLevel = 0);
+
+    /**
+        Copies data between 2 textures
+    */
+    abstract void copy(NuvkTexture from, NuvkTexture to);
+
+    /**
+        Encodes a command which optimizes the texture for the specified usage.
+    */
+    abstract void optimizeTextureFor(NuvkTexture texture, NuvkOptimizationMode mode, uint arraySlice = 0, uint mipLevel = 0);
+
+    /**
+        Encodes a command which synchronizes the resource between CPU and GPU.
+    */
+    abstract void synchronize(NuvkResource resource);
 }

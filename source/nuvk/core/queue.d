@@ -11,25 +11,29 @@ import nuvk.spirv;
 import numem.all;
 
 /**
-    The kind of a comand buffer
+    Enumerates the different kinds of specializations that a queue can have.
 */
-enum NuvkCommandQueueKind {
+enum NuvkQueueSpecialization {
 
     /**
-        Queue is used for rendering
+        Graphics specialization, supports graphics/render commands.
     */
-    render,
-    
-    /**
-        Queue is used for compute
-    */
-    compute,
+    graphics    = 0x01,
 
     /**
-        Queue is used for transferring things between objects
-        on the GPU.
+        Compute specialization, supports compute commands.
     */
-    transfer
+    compute     = 0x02,
+
+    /**
+        Transfer specialization, supports transfers.
+    */
+    transfer    = 0x04,
+
+    /**
+        No specialization, supports all commands.
+    */
+    none        = graphics | compute | transfer,
 }
 
 /**
@@ -39,36 +43,26 @@ abstract
 class NuvkCommandQueue : NuvkDeviceObject {
 @nogc:
 private:
-    NuvkCommandQueueKind kind;
+    NuvkQueueSpecialization specialization;
 
 public:
 
     /**
-        Constructor
+        Destructor
     */
-    this(NuvkDevice device, NuvkCommandQueueKind kind) {
-        super(device, NuvkProcessSharing.processLocal);
+    ~this() {
+
+        // Tell device to destroy this queue.
+        this.getOwner().destroyQueue(this);
     }
 
     /**
-        Encodes a command that makes the queue wait for a fence.
+        Constructor
     */
-    abstract void awaitFence(NuvkFence fence);
-    
-    /**
-        Encodes a command that makes the queue wait for a semaphore.
-    */
-    abstract void awaitSemaphore(NuvkSemaphore semaphore);
-
-    /**
-        Encodes a command that makes the queue wait for a fence.
-    */
-    abstract void signalFence(NuvkFence fence);
-    
-    /**
-        Encodes a command that makes the queue wait for a semaphore.
-    */
-    abstract void signalSemaphore(NuvkSemaphore semaphore);
+    this(NuvkDevice device, NuvkQueueSpecialization specialization) {
+        super(device);
+        this.specialization = specialization;
+    }
 
     /**
         Creates a command buffer
@@ -76,15 +70,16 @@ public:
     abstract NuvkCommandBuffer createCommandBuffer();
 
     /**
-        Waits on the queue items to finish executing.
+        Blocks the current thread until all submitted commands
+        have finished executing.
     */
     abstract void await();
 
     /**
-        Gets the kind of command queue this is.
+        Gets what this queue is specialized for
     */
     final
-    NuvkCommandQueueKind getQueueKind() {
-        return kind;
+    NuvkQueueSpecialization getSpecialization() {
+        return specialization;
     }
 }

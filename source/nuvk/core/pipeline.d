@@ -31,7 +31,6 @@ enum NuvkPipelineKind {
 */
 struct NuvkGraphicsPipelineDescriptor {
 @nogc:
-    
     /**
         The shader stages
     */
@@ -74,7 +73,7 @@ public:
         Creates a graphics pipeline
     */
     this(NuvkDevice owner, NuvkGraphicsPipelineDescriptor descriptor) {
-        super(owner, NuvkProcessSharing.processLocal);
+        super(owner);
         this.pipelineKind = NuvkPipelineKind.graphics;
     }
 
@@ -82,7 +81,7 @@ public:
         Creates a compute pipeline
     */
     this(NuvkDevice owner, NuvkComputePipelineDescriptor descriptor) {
-        super(owner, NuvkProcessSharing.processLocal);
+        super(owner);
         this.pipelineKind = NuvkPipelineKind.compute;
     }
 

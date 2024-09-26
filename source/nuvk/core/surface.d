@@ -48,7 +48,7 @@ protected:
 
 public:
     this(NuvkDevice device) {
-        super(device, NuvkProcessSharing.processLocal);
+        super(device);
     }
 
     /**
@@ -101,7 +101,7 @@ public:
         Constructor
     */
     this(NuvkDevice device, NuvkSurface surface) {
-        super(device, NuvkProcessSharing.processLocal);
+        super(device);
         this.surface = surface;
     }
 
@@ -117,4 +117,11 @@ public:
     NuvkSurface getSurface() {
         return surface;
     }
+
+    /**
+        Gets the next texture in the swapchain.
+
+        This texture is owned by the swapchain, do not free it.
+    */
+    abstract NuvkTexture getNext();
 }

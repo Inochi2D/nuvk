@@ -199,4 +199,12 @@ public:
         auto device = cast(VkDevice)this.getOwner().getHandle();
         return vkGetSwapchainStatusKHR(device, swapchain) == VK_ERROR_OUT_OF_DATE_KHR;
     }
+
+    /**
+        Gets the next texture in the swapchain
+    */
+    override
+    NuvkTexture getNext() {
+        return null;
+    }
 }

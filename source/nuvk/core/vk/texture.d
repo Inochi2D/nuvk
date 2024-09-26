@@ -10,12 +10,15 @@ import nuvk.core.vk;
 import nuvk.core;
 
 import numem.all;
+import inmath;
 
 /**
     Converts a nuvk texture format to a vulkan image format
 */
 VkFormat toVkImageFormat(NuvkTextureFormat format) @nogc {
     final switch(format) {
+        case NuvkTextureFormat.undefined:
+            return VK_FORMAT_UNDEFINED;
 
         case NuvkTextureFormat.a8Unorm:
             return VK_FORMAT_R8_UNORM;
@@ -361,6 +364,43 @@ public:
     this(NuvkDevice device, NuvkTextureFormat format, NuvkProcessSharing processSharing) {
         super(device, format, processSharing);
         this.createTexture(processSharing);
+    }
+
+    /**
+        Uploads texture data to the GPU.
+        The format of the data should match the result of `getFormat()`!
+
+        Parameters:  
+            `region` - The region to replace in the texture
+            `mipmapLevel` - The mipmap level to replace
+            `arrayLayer` - The array layer to replace
+            `source` - The source buffer to copy from
+            `rowStride` - The byte stride of a single row of pixels.
+            `size` - The amount of bytes in the data.
+    */
+    override
+    void upload(recti region, uint mipmapLevel, uint arrayLayer, void* source, uint rowStride, uint size) {
+        
+    }
+
+    
+    /**
+        Downloads texture data from the GPU.
+        The data returned will be in the format described by `getFormat()`!
+    
+        This method will immediately download data from the GPU without any synchronisation.
+        This should be called after all render operations to the texture are completed.
+
+        Parameters:  
+            `destination` - The destination buffer to copy into.
+            `rowStride` - The byte stride of a single row of pixels.
+            `from` - The region to read from the texture.
+            `mipmapLevel` - The mipmap level to replace.
+            `arrayLayer` - The array layer to replace.
+    */
+    override
+    void download(ref void* destination, uint rowStride, recti from, uint mipmapLevel, uint arrayLayer) {
+
     }
 
     /**

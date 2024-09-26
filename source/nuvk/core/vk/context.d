@@ -187,6 +187,42 @@ public:
     }
 
     /**
+        Gets the index of the transfer queue
+    */
+    ptrdiff_t getTransferQueueFamily() {
+        foreach(i, VkQueueFamilyProperties queue; queueFamilyProperties[]) {
+            if (queue.queueFlags & VK_QUEUE_TRANSFER_BIT) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+        Gets the index of the graphics queue
+    */
+    ptrdiff_t getGraphicsQueueFamily() {
+        foreach(i, VkQueueFamilyProperties queue; queueFamilyProperties[]) {
+            if (queue.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+        Gets the index of the graphics queue
+    */
+    ptrdiff_t getComputeQueueFamily() {
+        foreach(i, VkQueueFamilyProperties queue; queueFamilyProperties[]) {
+            if (queue.queueFlags & VK_QUEUE_COMPUTE_BIT) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
         Gets whether the device supports staging buffers.
     */
     override

@@ -60,6 +60,33 @@ private:
         );
     }
 
+protected:
+
+
+    /**
+        Implements the logic to create a NuvkRenderEncoder.
+    */
+    override
+    NuvkRenderEncoder onBeginRenderPass() {
+        return null;
+    }
+
+    /**
+        Implements the logic to create a NuvkComputeEncoder.
+    */
+    override
+    NuvkComputeEncoder onBeginComputePass() {
+        return null;
+    }
+
+    /**
+        Implements the logic to create a NuvkTransferEncoder.
+    */
+    override
+    NuvkTransferEncoder onBeginTransferPass() {
+        return null;
+    }
+
 public:
 
     ~this() {
@@ -79,203 +106,39 @@ public:
     }
 
     /**
-        Resets the command buffer; allowing the buffer to be re-recorded.
+        Resets the command buffer.
+
+        This allows reusing the command buffer between frames.
     */
     override
     bool reset() {
-        if (this.getStatus() != NuvkCommandBufferStatus.completed)
-            return false;
-        return vkResetCommandBuffer(commandBuffer, 0) == VK_SUCCESS;
+        return true;
     }
 
     /**
-        Begins recording into the command buffer
+        Presents the surface
     */
     override
-    bool begin() {
-        if (this.getStatus() != NuvkCommandBufferStatus.idle)
-            return false;
-
-        VkCommandBufferBeginInfo beginInfo;
-        bool success = vkBeginCommandBuffer(commandBuffer, &beginInfo) == VK_SUCCESS;
-        if (success) {
-            this.setStatus(NuvkCommandBufferStatus.recording);
-        }
-
-        return success;
-    }
-
-    /**
-        Ends recording into the command buffer
-    */
-    override
-    bool end() {
-        if (this.getStatus() != NuvkCommandBufferStatus.recording)
-            return false;
-        
-        bool success = vkEndCommandBuffer(commandBuffer) == VK_SUCCESS;
-        if (success) {
-            this.setStatus(NuvkCommandBufferStatus.recording);
-        }
-        return success;
-    }
-
-    /**
-        Configures the command buffer to use the specified pipeline
-    */
-    override
-    void setPipeline(NuvkPipeline pipeline) {
-        vkCmdBindPipeline(commandBuffer, pipeline.getPipelineKind().toVkPipelineBindPoint(), cast(VkPipeline)pipeline.getHandle());
-    }
-
-    /**
-        Sets the vertex buffer being used for rendering.
-    */
-    override
-    void setVertexBuffer(NuvkBuffer vertexBuffer, uint offset, uint stride, uint index) {
-        VkDeviceSize vkoffset = offset;
-        VkDeviceSize vkstride = stride;
-        VkBuffer buffer = cast(VkBuffer)vertexBuffer.getHandle();
-        vkCmdBindVertexBuffers2(
-            commandBuffer,
-            index,
-            1,
-            &buffer,
-            &vkoffset,
-            null,
-            &vkstride
-        );
-    }
-
-    /**
-        Sets the index buffer being used for rendering.
-    */
-    override
-    void setIndexBuffer(NuvkBuffer indexBuffer, uint offset, NuvkBufferIndexType indexType) {
-        vkCmdBindIndexBuffer(
-            commandBuffer,
-            cast(VkBuffer)indexBuffer.getHandle(),
-            cast(VkDeviceSize)offset,
-            indexType.toVkIndexType()
-        );
-    }
-
-    /**
-        Configures what winding is used for the front face for rendering
-    */
-    override
-    void setFrontFace(NuvkWinding winding) {
-        vkCmdSetFrontFace(commandBuffer, winding.toVkFrontFace());
-    }
-
-    /**
-        Configures the culling mode used for rendering
-    */
-    override
-    void setCulling(NuvkCulling culling) {
-        vkCmdSetCullMode(commandBuffer, culling.toVkCulling());
-    }
-
-    /**
-        Configures the viewport
-    */
-    override
-    void setViewport(rect viewport) {
-        VkViewport vkviewport;
-        vkviewport.x = viewport.x;
-        vkviewport.y = viewport.y;
-        vkviewport.width = viewport.width;
-        vkviewport.height = viewport.height;
-        vkviewport.minDepth = 0;
-        vkviewport.maxDepth = 1;
-        vkCmdSetViewport(commandBuffer, 0, 1, &vkviewport);
-    }
-
-    /**
-        Configures the scissor rectangle
-    */
-    override
-    void setScissorRect(rect scissor) {
-        VkRect2D scissorRect;
-        scissorRect.offset.x = cast(int)scissor.x;
-        scissorRect.offset.y = cast(int)scissor.y;
-        scissorRect.extent.width = cast(int)scissor.width;
-        scissorRect.extent.height = cast(int)scissor.height;
-        vkCmdSetScissor(commandBuffer, 0, 1, &scissorRect);
-    }
-
-    /**
-        Sets the store action for the specified color
-    */
-    override
-    void setColorStoreAction(NuvkStoreAction action, uint color) {
+    void present(NuvkSurface surface) {
         
     }
 
     /**
-        Sets the store action for the stencil buffer
+        Commits the commands stored in the command buffer
+        to the command queue
     */
     override
-    void setStencilStoreAction(NuvkStoreAction action) {
+    void commit() {
         
     }
 
     /**
-        Sets the store action for the depth buffer
+        Blocks the current thread until the command queue
+        is finished rendering the buffer.
     */
     override
-    void setDepthStoreAction(NuvkStoreAction action) {
-        
-    }
+    void awaitCompletion() {
 
-    /**
-        Sets the color for the constant blend color blending mode.
-    */
-    override
-    void setBlendColor(float r, float g, float b,float a) {
-        float[4] colors;
-        colors[0] = r;
-        colors[1] = g;
-        colors[2] = b;
-        colors[3] = a;
-        vkCmdSetBlendConstants(commandBuffer, colors);
-    }
-
-    /**
-        Draws a primitive
-    */
-    override
-    void draw(NuvkPrimitive primitive, uint start, uint count) {
-        vkCmdDraw(commandBuffer, count, 0, start, 0);
-    }
-
-    /**
-        Draws a primitive using bound index buffers
-    */
-    override
-    void drawIndexed(NuvkPrimitive primitive, uint start, uint count) {
-        vkCmdDrawIndexed(commandBuffer, count, 0, start, 0, 0);
-    }
-
-    /**
-        Submit the current contents of the command buffer
-        into the command queue the buffer was created from.
-    */
-    override
-    void submit(NuvkFence signalFence) {
-        auto queue = cast(VkQueue)this.getQueue().getHandle();
-        VkSubmitInfo submitInfo;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &commandBuffer;
-
-        VkFence fence = signalFence ? 
-            cast(VkFence)signalFence.getHandle() : 
-            VK_NULL_HANDLE;
-
-        enforce(
-            vkQueueSubmit(queue, 1, &submitInfo, fence),
-            nstring("Failed to submit command buffer!")
-        );
     }
 }
 

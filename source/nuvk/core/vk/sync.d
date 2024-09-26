@@ -54,6 +54,7 @@ class NuvkVkSemaphore : NuvkSemaphore {
 @nogc:
 private:
     VkSemaphore semaphore;
+    ulong shareHandle;
 
     void createSemaphore(NuvkProcessSharing processSharing) {
         auto device = cast(VkDevice)this.getOwner().getHandle();
@@ -74,7 +75,7 @@ private:
             );
 
             this.setHandle(semaphore);
-            this.setSharedHandle(nuvkVkGetSharedHandle(device, semaphore));
+            shareHandle = nuvkVkGetSharedHandle(device, semaphore);
         } else {
             // Semaphore info
             VkSemaphoreCreateInfo semaphoreInfo;
@@ -88,21 +89,12 @@ private:
         }
     }
 
-protected:
-
-    /**
-        Override this function to close shared handles.
-
-        Do not call this yourself.
-    */
-    override
-    void onShareHandleClose(ulong handle) {
-        nuvkVkCloseSharedHandle(handle);
-    }
-
 public:
     ~this() {
         auto device = cast(VkDevice)this.getOwner().getHandle();
+
+        if (shareHandle != 0) 
+            nuvkVkCloseSharedHandle(shareHandle);
 
         if (semaphore != VK_NULL_HANDLE)
             vkDestroySemaphore(device, semaphore, null);
@@ -111,5 +103,10 @@ public:
     this(NuvkDevice device, NuvkProcessSharing processSharing) {
         super(device, processSharing);
         this.createSemaphore(processSharing);
+    }
+
+    override
+    ulong getSharedHandle() {
+        return shareHandle;
     }
 }

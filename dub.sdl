@@ -1,8 +1,9 @@
-name "vktest"
-description "A minimal D application."
+name "nuvk"
+description "The Inochi2D rendering API"
 authors "cli-l"
 copyright "Copyright © 2024, cli-l"
-license "proprietary"
+license "BSD 2-clause"
+
 dependency "numem" version="~>0.20.0"
 dependency "erupted" version="~>2.1.98"
 dependency "inmath" version="~>1.3.0"

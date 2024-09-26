@@ -69,7 +69,7 @@ enum NuvkBufferIndexType {
     A buffer
 */
 abstract
-class NuvkBuffer : NuvkDeviceObject {
+class NuvkBuffer : NuvkResource {
 @nogc:
 private:
     NuvkDeviceSharing deviceSharing;

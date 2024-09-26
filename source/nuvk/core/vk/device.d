@@ -6,14 +6,13 @@
 */
 
 module nuvk.core.vk.device;
+import nuvk.core.vk.internal.queuemanager;
 import nuvk.core.vk;
 import nuvk.core;
 import nuvk.spirv;
 import numem.all;
 
 private {
-    const float nuvkVkDeviceQueuePriority = 1.0f;
-    
     const const(char)*[] nuvkVkDeviceRequiredExtensions = [
         "VK_EXT_vertex_input_dynamic_state",
         "VK_EXT_extended_dynamic_state",
@@ -32,14 +31,23 @@ private {
 class NuvkVkDevice : NuvkDevice {
 @nogc:
 private:
+    // Vulkan
     VkDevice device;
-    weak_vector!VkDeviceQueueCreateInfo queueInfos;
+
+    // Queues
+    NuvkCommandQueue transferQueue;
+    NuvkVkDeviceQueueManager queueManager;
+    
 
     void createDevice() {
-    	VkPhysicalDeviceFeatures features;
+
+        // Sets up the queue manager first
+        queueManager = nogc_new!NuvkVkDeviceQueueManager(this);
+
         VkPhysicalDeviceFeatures2 features2;
 
         auto physicalDevice = cast(VkPhysicalDevice)this.getDeviceInfo().getHandle();
+        auto queueCreateInfos = queueManager.getVkQueueCreateInfos();
 
 
         // Device features
@@ -68,9 +76,8 @@ private:
         }
 
         VkDeviceCreateInfo deviceCreateInfo;
-        deviceCreateInfo.queueCreateInfoCount = cast(uint)queueInfos.size();
-        deviceCreateInfo.pQueueCreateInfos = queueInfos.data();
-        deviceCreateInfo.pEnabledFeatures = &features;
+        deviceCreateInfo.queueCreateInfoCount = cast(uint)queueCreateInfos.length;
+        deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.ptr;
 
         deviceCreateInfo.enabledExtensionCount = cast(uint)nuvkVkDeviceRequiredExtensions.length;
         deviceCreateInfo.ppEnabledExtensionNames = cast(const(char*)*)nuvkVkDeviceRequiredExtensions.ptr;
@@ -85,24 +92,9 @@ private:
         this.setHandle(device);
     }
 
-    void initDeviceQueueInfos() {
-        auto deviceInfo = (cast(NuvkVkDeviceInfo)this.getDeviceInfo());
-        auto queueFamilies = deviceInfo.getQueueFamilyProperties();
-
-        foreach(i, family; queueFamilies) {
-            VkDeviceQueueCreateInfo queueCreateInfo;
-            queueCreateInfo.queueFamilyIndex = cast(uint)i;
-            queueCreateInfo.queueCount = 1;
-            queueCreateInfo.pQueuePriorities = &nuvkVkDeviceQueuePriority;
-
-            queueInfos ~= queueCreateInfo;
-        }
-    }
-
 public:
     this(NuvkContext owner, NuvkDeviceInfo info) {
         super(owner, info);
-        this.initDeviceQueueInfos();
         this.createDevice();
     }
 
@@ -174,8 +166,16 @@ public:
         Creates a new command queue
     */
     override
-    NuvkCommandQueue createQueue(NuvkCommandQueueKind kind) {
-        return nogc_new!NuvkVkCommandQueue(this, kind);
+    NuvkCommandQueue createQueue(NuvkQueueSpecialization specialiation) {
+        return queueManager.createQueue(specialiation);
+    }
+
+    /**
+        Creates a new command queue
+    */
+    override
+    void destroyQueue(NuvkCommandQueue queue) {
+        queueManager.removeQueue(cast(NuvkVkCommandQueue)queue);
     }
 
     /**
