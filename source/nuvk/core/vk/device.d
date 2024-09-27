@@ -15,11 +15,8 @@ import numem.all;
 private {
     const const(char)*[] nuvkVkDeviceRequiredExtensions = [
         "VK_EXT_vertex_input_dynamic_state",
-        "VK_EXT_extended_dynamic_state",
-        "VK_EXT_extended_dynamic_state2",
         "VK_KHR_create_renderpass2",
         "VK_KHR_depth_stencil_resolve",
-        "VK_KHR_dynamic_rendering",
         "VK_EXT_custom_border_color",
         "VK_KHR_swapchain",
         NuvkVkMemorySharingExtName,
@@ -47,6 +44,11 @@ private:
         queueManager = nogc_new!NuvkVkDeviceQueueManager(this);
 
         VkPhysicalDeviceFeatures2 features2;
+        VkPhysicalDeviceVulkan11Features vk11Features;
+        VkPhysicalDeviceVulkan12Features vk12Features;
+        VkPhysicalDeviceVulkan13Features vk13Features;
+        VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT vertexInputDynamicStateFeature;
+        VkPhysicalDeviceCustomBorderColorFeaturesEXT customBorderColorFeature;
 
         auto physicalDevice = cast(VkPhysicalDevice)this.getDeviceInfo().getHandle();
         auto queueCreateInfos = queueManager.getVkQueueCreateInfos();
@@ -54,27 +56,14 @@ private:
 
         // Device features
         {
+            vertexInputDynamicStateFeature.pNext = &customBorderColorFeature;
+            vk11Features.pNext = &vertexInputDynamicStateFeature;
+            vk12Features.pNext = &vk11Features;
+            vk13Features.pNext = &vk12Features;
+            features2.pNext = &vk13Features;
+
             vkGetPhysicalDeviceFeatures2(physicalDevice, &features2);
 
-
-            VkPhysicalDeviceDynamicRenderingFeatures dynamicRenderingFeatures;
-            VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT vertexInputDynamicStateFeature;
-            VkPhysicalDeviceExtendedDynamicStateFeaturesEXT extendedDynamicStateFeature;
-            VkPhysicalDeviceExtendedDynamicState2FeaturesEXT extendedDynamicState2Feature;
-            VkPhysicalDeviceCustomBorderColorFeaturesEXT customBorderColorFeature;
-
-            extendedDynamicStateFeature.extendedDynamicState = VK_TRUE;
-            extendedDynamicState2Feature.extendedDynamicState2 = VK_TRUE;
-            customBorderColorFeature.customBorderColors = VK_TRUE;
-
-            dynamicRenderingFeatures.dynamicRendering = VK_TRUE;
-            vertexInputDynamicStateFeature.vertexInputDynamicState = VK_TRUE;
-
-            extendedDynamicState2Feature.pNext = &customBorderColorFeature;
-            extendedDynamicStateFeature.pNext = &extendedDynamicState2Feature;
-            vertexInputDynamicStateFeature.pNext = &extendedDynamicStateFeature;
-            dynamicRenderingFeatures.pNext = &vertexInputDynamicStateFeature;
-            features2.pNext = &dynamicRenderingFeatures;
         }
 
         VkDeviceCreateInfo deviceCreateInfo;
@@ -85,6 +74,15 @@ private:
         deviceCreateInfo.ppEnabledExtensionNames = cast(const(char*)*)nuvkVkDeviceRequiredExtensions.ptr;
 
         deviceCreateInfo.pNext = &features2;
+
+        // Debug info
+        debug {
+            import core.stdc.stdio : printf;
+
+            foreach(i, extension; deviceCreateInfo.ppEnabledExtensionNames[0..deviceCreateInfo.enabledExtensionCount]) {
+                printf("[Nuvk::Vulkan] device extension[%d] = %s\n", cast(uint)i, extension);
+            }
+        }
 
 	    enforce(
             vkCreateDevice(physicalDevice, &deviceCreateInfo, null, &device) == VK_SUCCESS, 

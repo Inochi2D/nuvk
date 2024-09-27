@@ -13,6 +13,49 @@ import numem.all;
 import inmath;
 
 /**
+    Converts a vulkan image format to a nuvk texture format 
+*/
+NuvkTextureFormat toNuvkTextureFormat(VkFormat format) @nogc {
+    switch(format) {
+        default:
+            return NuvkTextureFormat.undefined;
+            
+        case VK_FORMAT_UNDEFINED:
+            return NuvkTextureFormat.undefined;
+
+        case VK_FORMAT_R8_UNORM:
+            return NuvkTextureFormat.a8Unorm;
+
+        case VK_FORMAT_R8_SRGB:
+            return NuvkTextureFormat.a8UnormSRGB;
+
+        case VK_FORMAT_R8G8_UNORM:
+            return NuvkTextureFormat.rg8Unorm;
+
+        case VK_FORMAT_R8G8_SRGB:
+            return NuvkTextureFormat.rg8UnormSRGB;
+
+        case VK_FORMAT_R8G8B8A8_UNORM:
+            return NuvkTextureFormat.rgba8Unorm;
+
+        case VK_FORMAT_R8G8B8A8_SRGB:
+            return NuvkTextureFormat.rgba8UnormSRGB;
+
+        case VK_FORMAT_B8G8R8A8_UNORM:
+            return NuvkTextureFormat.bgra8Unorm;
+
+        case VK_FORMAT_B8G8R8A8_SRGB:
+            return NuvkTextureFormat.bgra8UnormSRGB;
+
+        case VK_FORMAT_R32G32B32A32_SFLOAT:
+            return NuvkTextureFormat.rgba32Float;
+
+        case VK_FORMAT_D24_UNORM_S8_UINT:
+            return NuvkTextureFormat.depthStencil;
+    }
+}
+
+/**
     Converts a nuvk texture format to a vulkan image format
 */
 VkFormat toVkImageFormat(NuvkTextureFormat format) @nogc {
@@ -219,6 +262,7 @@ VkCompareOp toVkCompareOp(NuvkSamplerCompareOp compOp) @nogc {
 class NuvkVkTexture : NuvkTexture {
 @nogc:
 private:
+    bool isUserOwned;
     VkImage image;
     VkDeviceMemory deviceMemory;
 
@@ -341,13 +385,15 @@ public:
         Destructor
     */
     ~this() {
-        auto device = cast(VkDevice)this.getOwner().getHandle();
-        
-        if (image != VK_NULL_HANDLE)
-            vkDestroyImage(device, image, null);
+        if (isUserOwned) {
+            auto device = cast(VkDevice)this.getOwner().getHandle();
+            
+            if (image != VK_NULL_HANDLE)
+                vkDestroyImage(device, image, null);
 
-        if (deviceMemory != VK_NULL_HANDLE)
-            vkFreeMemory(device, deviceMemory, null);
+            if (deviceMemory != VK_NULL_HANDLE)
+                vkFreeMemory(device, deviceMemory, null);
+        }
     }
 
     /**
@@ -355,6 +401,7 @@ public:
     */
     this(NuvkDevice device, NuvkTextureDescriptor descriptor, NuvkProcessSharing processSharing) {
         super(device, descriptor, processSharing);
+        this.isUserOwned = true;
         this.createTexture(processSharing);
     }
 
@@ -363,7 +410,18 @@ public:
     */
     this(NuvkDevice device, NuvkTextureFormat format, NuvkProcessSharing processSharing) {
         super(device, format, processSharing);
+        this.isUserOwned = true;
         this.createTexture(processSharing);
+    }
+
+    /**
+        Constructor
+    */
+    this(NuvkDevice device, VkImage image, VkFormat format) {
+        super(device, format.toNuvkTextureFormat(), NuvkProcessSharing.processLocal);
+        this.isUserOwned = false;
+        this.image = image;
+        this.setHandle(this.image);
     }
 
     /**
@@ -448,7 +506,7 @@ private:
             descriptor.arraySlices.getLength();
 
         enforce(
-            vkCreateImageView(device, &imageViewCreateInfo, null, &imageView),
+            vkCreateImageView(device, &imageViewCreateInfo, null, &imageView) == VK_SUCCESS,
             nstring("Failed to create Vulkan image view!")
         );
 

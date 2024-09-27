@@ -73,7 +73,7 @@ struct NuvkRange(T) if (isNumeric!T) {
         Gets the length of the range
     */
     T getLength() {
-        return end-start;
+        return (end-start);
     }
 }
 
@@ -97,7 +97,39 @@ struct NuvkColor {
     A 3D extent
 */
 struct NuvkExtent3D(T) if (isNumeric!T) {
+@nogc:
     T width;
     T height;
     T depth;
+}
+
+/**
+    Clearing value.
+*/
+struct NuvkClearValue {
+@nogc:
+    this(float r, float g, float b, float a) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+    }
+
+    this(float depth, uint stencil) {
+        this.depth = depth;
+        this.stencil = stencil;
+    }
+
+    union {
+        struct {
+            float r;
+            float g;
+            float b;
+            float a;
+        }
+        struct {
+            float depth;
+            uint stencil;
+        }
+    }
 }

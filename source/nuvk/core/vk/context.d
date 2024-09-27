@@ -297,7 +297,11 @@ private:
         nuvkVkInitVulkan();
         this.initInstanceInfo();
 
+        VkApplicationInfo appInfo;
+        appInfo.apiVersion = VK_API_VERSION_1_3;
+
         VkInstanceCreateInfo instanceCreateInfo;
+        instanceCreateInfo.pApplicationInfo = &appInfo;
 
         // Extensions
         {

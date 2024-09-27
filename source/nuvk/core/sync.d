@@ -9,7 +9,7 @@ module nuvk.core.sync;
 import nuvk.core;
 
 /**
-    A fence
+    A fence which handles CPU<->GPU synchronization.
 */
 class NuvkFence : NuvkDeviceObject {
 @nogc:
@@ -17,6 +17,21 @@ public:
     this(NuvkDevice device) {
         super(device);
     }
+
+    /**
+        Gets the whether the fence is signaled.
+    */
+    abstract bool isSignaled();
+
+    /**
+        Wait for fence to be signalled.
+    */
+    abstract void await(ulong timeout);
+
+    /**
+        Resets the fence.
+    */
+    abstract void reset();
 }
 
 /**
@@ -45,6 +60,9 @@ public:
         return sharing;
     }
 
+    /**
+        Gets the shared handle
+    */
     abstract ulong getSharedHandle();
 }
 

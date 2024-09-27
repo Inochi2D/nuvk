@@ -9,6 +9,8 @@ module nuvk.core.surface;
 import nuvk.core;
 import numem.all;
 
+import inmath;
+
 /**
     Presentation mode for the surface
 */
@@ -149,6 +151,7 @@ class NuvkSwapchain : NuvkDeviceObject {
 @nogc:
 private:
     NuvkSurface surface;
+    NuvkSemaphore frameAvailable;
 
 protected:
     
@@ -160,7 +163,9 @@ protected:
 
 public:
 
-    ~this() { }
+    ~this() {
+        nogc_delete(frameAvailable);
+    }
 
     /**
         Constructor
@@ -168,6 +173,7 @@ public:
     this(NuvkDevice device, NuvkSurface surface) {
         super(device);
         this.surface = surface;
+        this.frameAvailable = device.createSemaphore();
     }
 
     /**
@@ -184,9 +190,17 @@ public:
     }
 
     /**
+        Gets the frame-available semaphore bound to this swapchain.
+    */
+    final
+    NuvkSemaphore getFrameAvailableSemaphore() {
+        return frameAvailable;
+    }
+
+    /**
         Gets the next texture in the swapchain.
 
         This texture is owned by the swapchain, do not free it.
     */
-    abstract NuvkTexture getNext();
+    abstract NuvkTextureView getNext();
 }

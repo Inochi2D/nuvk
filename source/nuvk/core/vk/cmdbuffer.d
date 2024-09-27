@@ -43,10 +43,13 @@ VkCullModeFlagBits toVkCulling(NuvkCulling culling) @nogc {
 class NuvkVkCommandBuffer : NuvkCommandBuffer {
 @nogc:
 private:
+
+    // Normal use command buffers
     weak_vector!VkCommandBuffer commandBuffers;
 
     VkCommandBuffer createCommandBuffer() {
-        VkCommandBuffer commandBuffer;
+        VkCommandBuffer bufferHandle = VK_NULL_HANDLE;
+
         auto device = cast(VkDevice)this.getOwner().getHandle();
         auto pool = (cast(NuvkVkCommandQueue)this.getQueue()).getCommandPool();
 
@@ -56,14 +59,18 @@ private:
         commandBufferInfo.commandBufferCount = 1;
 
         enforce(
-            vkAllocateCommandBuffers(device, &commandBufferInfo, &commandBuffer) == VK_SUCCESS,
+            vkAllocateCommandBuffers(device, &commandBufferInfo, &bufferHandle) == VK_SUCCESS,
             nstring("Failed to allocate command buffer")
         );
 
-        return commandBuffer;
+        return bufferHandle;
     }
 
     void freeCommandBuffers() {
+
+        // Await the fence
+        this.getInFlightFence().await(ulong.max);
+
         auto device = cast(VkDevice)this.getOwner().getHandle();
         auto pool = (cast(NuvkVkCommandQueue)this.getOwner()).getCommandPool();
 
@@ -73,13 +80,17 @@ private:
 
 protected:
 
+    override
+    void onBeginNewPass() {
+        this.freeCommandBuffers();
+    }
 
     /**
         Implements the logic to create a NuvkRenderEncoder.
     */
     override
-    NuvkRenderEncoder onBeginRenderPass() {
-        return null;
+    NuvkRenderEncoder onBeginRenderPass(ref NuvkRenderPassDescriptor descriptor) {
+        return nogc_new!NuvkVkRenderEncoder(this, descriptor, this.createCommandBuffer());
     }
 
     /**
@@ -118,7 +129,6 @@ public:
     */
     override
     bool reset() {
-
         this.freeCommandBuffers();
         return true;
     }
@@ -128,7 +138,28 @@ public:
     */
     override
     void present(NuvkSurface surface) {
+        this.getInFlightFence().await(ulong.max);
+
+        auto device = cast(VkDevice)this.getOwner().getHandle();
+        auto nuvkswapchain = (cast(NuvkVkSwapchain)surface.getSwapchain());
+        auto swapchain = cast(VkSwapchainKHR)nuvkswapchain.getHandle();
+        uint index = nuvkswapchain.getCurrentImageIndex();
+        auto queue = cast(VkQueue)this.getQueue().getHandle();
+
+        auto submitFinishSemaphore = cast(VkSemaphore)this.getSubmissionFinished().getHandle();
+        auto frameAvailable = cast(VkSemaphore)nuvkswapchain.getFrameAvailableSemaphore().getHandle();
+
+        VkSemaphore[2] waitSemaphores = [
+            submitFinishSemaphore,
+            frameAvailable,
+        ];
+
         VkPresentInfoKHR presentInfo;
+        presentInfo.swapchainCount = 1;
+        presentInfo.pSwapchains = &swapchain;
+        presentInfo.pImageIndices = &index;
+        presentInfo.waitSemaphoreCount = cast(uint)waitSemaphores.length;
+        presentInfo.pWaitSemaphores = waitSemaphores.ptr;
 
         vkQueuePresentKHR(cast(VkQueue)this.getQueue().getHandle(), &presentInfo);
     }
@@ -139,19 +170,360 @@ public:
     */
     override
     void commit() {
-        // auto device = cast(VkDevice)this.getOwner().getHandle();
-        // auto pool = (cast(NuvkVkCommandQueue)this.getOwner()).getCommandPool();
-        // auto queue = cast(VkQueue)this.getQueue().getHandle();
+        auto queue = cast(VkQueue)this.getQueue().getHandle();
+        auto submitFinishSemaphore = cast(VkSemaphore)this.getSubmissionFinished().getHandle();
+    
+        VkSubmitInfo submitInfo;
+        submitInfo.waitSemaphoreCount = 0;
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = &submitFinishSemaphore;
+        submitInfo.commandBufferCount = cast(uint)commandBuffers.size();
+        submitInfo.pCommandBuffers = commandBuffers.data();
+
+        vkQueueSubmit(queue, 1, &submitInfo, cast(VkFence)this.getInFlightFence().getHandle());
+        this.setStatus(NuvkCommandBufferStatus.submitted);
+    }
+}
+
+/**
+    Gets vulkan equivalent of NuvkLoadOp
+*/
+VkAttachmentLoadOp toVkLoadOp(NuvkLoadOp loadOp) @nogc {
+    final switch(loadOp) {
+        case NuvkLoadOp.dontCare:
+            return VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        case NuvkLoadOp.load:
+            return VK_ATTACHMENT_LOAD_OP_LOAD;
+        case NuvkLoadOp.clear:
+            return VK_ATTACHMENT_LOAD_OP_CLEAR;
+    }
+}
+
+/**
+    Gets vulkan equivalent of NuvkStoreOp
+*/
+VkAttachmentStoreOp toVkStoreOp(NuvkStoreOp storeOp) @nogc {
+    final switch(storeOp) {
+
+        // Normal rendering
+        case NuvkStoreOp.dontCare:
+            return VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        case NuvkStoreOp.store:
+            return VK_ATTACHMENT_STORE_OP_STORE;
+
+        // Multisample resolve
+        case NuvkStoreOp.multisampleResolve:
+            return VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        case NuvkStoreOp.storeAndMultisampleResolve:
+            return VK_ATTACHMENT_STORE_OP_STORE;
+    }
+}
+
+VkResolveModeFlagBits toVkResolveMode(NuvkStoreOp storeOp) @nogc {
+    final switch(storeOp) {
+        case NuvkStoreOp.dontCare:
+        case NuvkStoreOp.store:
+            return VK_RESOLVE_MODE_NONE;
+        case NuvkStoreOp.multisampleResolve:
+        case NuvkStoreOp.storeAndMultisampleResolve:
+            return VK_RESOLVE_MODE_SAMPLE_ZERO_BIT;
+    }
+}
+
+/**
+    A lightweight object for submitting rendering commands
+    to a command buffer.
+*/
+class NuvkVkRenderEncoder : NuvkRenderEncoder {
+@nogc:
+private:
+    NuvkVkCommandBuffer parent;
+    VkCommandBuffer writeBuffer;
+
+    void beginRendering() {
+        NuvkRenderPassDescriptor descriptor = this.getDescriptor();
+
+        VkRenderingInfo renderInfo;
+        renderInfo.layerCount = 1;
+        renderInfo.renderArea.offset.x = descriptor.renderArea.x;
+        renderInfo.renderArea.offset.y = descriptor.renderArea.y;
+        renderInfo.renderArea.extent.width = descriptor.renderArea.width;
+        renderInfo.renderArea.extent.height = descriptor.renderArea.height;
+
+        weak_vector!VkImageMemoryBarrier memoryBarriers;
+
+        weak_vector!VkRenderingAttachmentInfo colorAttachments
+            = weak_vector!VkRenderingAttachmentInfo(descriptor.colorAttachments.size());
+        VkRenderingAttachmentInfo depthStencilAttachment;
+
+        // Color attachments
+        {
+            foreach(i; 0..descriptor.colorAttachments.size()) {
+                NuvkVkTextureView nuvkTextureView = cast(NuvkVkTextureView)descriptor.colorAttachments[i].texture;
+
+                colorAttachments[i].imageView = 
+                    cast(VkImageView)nuvkTextureView.getHandle();
+                colorAttachments[i].imageLayout                 = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+                colorAttachments[i].loadOp                      = descriptor.colorAttachments[i].loadOp.toVkLoadOp();
+                colorAttachments[i].storeOp                     = descriptor.colorAttachments[i].storeOp.toVkStoreOp();
+                colorAttachments[i].resolveMode                 = descriptor.colorAttachments[i].storeOp.toVkResolveMode();
+                colorAttachments[i].clearValue.color.float32[0] = descriptor.colorAttachments[i].clearValue.r;
+                colorAttachments[i].clearValue.color.float32[1] = descriptor.colorAttachments[i].clearValue.g;
+                colorAttachments[i].clearValue.color.float32[2] = descriptor.colorAttachments[i].clearValue.b;
+                colorAttachments[i].clearValue.color.float32[3] = descriptor.colorAttachments[i].clearValue.a;
+
+                if (descriptor.colorAttachments[i].resolveTexture) {
+                    colorAttachments[i].resolveImageView = 
+                        cast(VkImageView)descriptor.colorAttachments[i].resolveTexture.getHandle();
+                    colorAttachments[i].resolveImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+                }
+
+                VkImageMemoryBarrier memoryBarrier;
+                memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+                memoryBarrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+                memoryBarrier.image = cast(VkImage)nuvkTextureView.getTexture().getHandle();
+                memoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                memoryBarrier.subresourceRange.baseMipLevel = 0;
+                memoryBarrier.subresourceRange.levelCount = 1;
+                memoryBarrier.subresourceRange.baseArrayLayer = 0;
+                memoryBarrier.subresourceRange.layerCount = 1;
+
+                memoryBarriers ~= memoryBarrier;
+            }
+
+            renderInfo.colorAttachmentCount = cast(uint)colorAttachments.size();
+            renderInfo.pColorAttachments = colorAttachments.data();
+        }
+
+        // Depth-stencil attachments.
+        {
+            if (descriptor.depthStencilAttachment.texture) {
+                depthStencilAttachment.imageView = 
+                    cast(VkImageView)descriptor.depthStencilAttachment.texture.getHandle();
+                depthStencilAttachment.imageLayout                      = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR;
+                depthStencilAttachment.loadOp                           = descriptor.depthStencilAttachment.loadOp.toVkLoadOp();
+                depthStencilAttachment.storeOp                          = descriptor.depthStencilAttachment.storeOp.toVkStoreOp();
+                depthStencilAttachment.resolveMode                      = descriptor.depthStencilAttachment.storeOp.toVkResolveMode();
+                depthStencilAttachment.clearValue.depthStencil.depth    = descriptor.depthStencilAttachment.clearValue.depth;
+                depthStencilAttachment.clearValue.depthStencil.stencil  = descriptor.depthStencilAttachment.clearValue.stencil;
+                
+                if (descriptor.depthStencilAttachment.resolveTexture) {
+                    depthStencilAttachment.resolveImageView = 
+                        cast(VkImageView)descriptor.depthStencilAttachment.resolveTexture.getHandle();
+                    depthStencilAttachment.resolveImageLayout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR;
+                }
+
+                renderInfo.pDepthAttachment = &depthStencilAttachment;
+                renderInfo.pStencilAttachment = &depthStencilAttachment;
+            }
+        }
+
+        VkCommandBufferBeginInfo beginInfo;
+        enforce(
+            vkBeginCommandBuffer(writeBuffer, &beginInfo) == VK_SUCCESS,
+            nstring("Failed to begin command buffer")
+        );
+
+        // Swap image type
+        vkCmdPipelineBarrier(
+            writeBuffer,
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+            0,
+            0,
+            null,
+            0,
+            null,
+            cast(uint)memoryBarriers.size(),
+            memoryBarriers.data()
+        );
+
+        vkCmdBeginRendering(writeBuffer, &renderInfo);
+    }
+
+    void endRendering() {
+        NuvkRenderPassDescriptor descriptor = this.getDescriptor();
+
+        weak_vector!VkImageMemoryBarrier memoryBarriers;
+
+        foreach(i; 0..descriptor.colorAttachments.size()) {
+            NuvkVkTextureView nuvkTextureView = cast(NuvkVkTextureView)descriptor.colorAttachments[i].texture;
+
+            VkImageMemoryBarrier memoryBarrier;
+            memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            memoryBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            memoryBarrier.image = cast(VkImage)nuvkTextureView.getTexture().getHandle();
+            memoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            memoryBarrier.subresourceRange.baseMipLevel = 0;
+            memoryBarrier.subresourceRange.levelCount = 1;
+            memoryBarrier.subresourceRange.baseArrayLayer = 0;
+            memoryBarrier.subresourceRange.layerCount = 1;
+
+            memoryBarriers ~= memoryBarrier;
+        }
+
+        vkCmdEndRendering(writeBuffer);
+
+        // Swap image type
+        vkCmdPipelineBarrier(
+            writeBuffer,
+            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            0,
+            0,
+            null,
+            0,
+            null,
+            cast(uint)memoryBarriers.size(),
+            memoryBarriers.data()
+        );
+
+        vkEndCommandBuffer(writeBuffer);
+        parent.commandBuffers ~= writeBuffer;
+        nogc_delete(this);
+    }
+
+public:
+
+    /**
+        Constructor
+    */
+    this(NuvkVkCommandBuffer parent, ref NuvkRenderPassDescriptor descriptor, VkCommandBuffer rDestination) {
+        super(parent, descriptor);
+        this.parent = parent;
+        this.writeBuffer = rDestination;
+        this.beginRendering();
     }
 
     /**
-        Blocks the current thread until the command queue
-        is finished rendering the buffer.
+        Pushes a debug group onto the command buffer's stack
+        This is useful for render debugging.
     */
     override
-    void awaitCompletion() {
-        auto queue = cast(VkQueue)this.getQueue().getHandle();
-        vkQueueWaitIdle(queue);
+    void pushDebugGroup(nstring name) {
+        
+    }
+
+    /**
+        Pops a debug group from the command buffer's stack
+        This is useful for render debugging.
+    */
+    override
+    void popDebugGroup() {
+        
+    }
+
+    /**
+        Encodes a command that makes the GPU wait for a fence.
+    */
+    override
+    void waitFor(NuvkFence fence, NuvkRenderStage before) {
+        
+    }
+
+    /**
+        Encodes a command that makes the GPU signal a fence.
+    */
+    override
+    void signal(NuvkFence fence, NuvkRenderStage after) {
+        
+    }
+
+    /**
+        Ends encoding the commands to the buffer.
+    */
+    override
+    void endEncoding() {
+        this.endRendering();
+    }
+
+    /**
+        Sets the active pipeline
+    */
+    override
+    void setPipeline(NuvkPipeline pipeline) {
+        
+    }
+
+    /**
+        Configures the active rendering pipeline with 
+        the specified viewport.
+    */
+    override
+    void setViewport(recti viewport) {
+        
+    }
+
+    /**
+        Configures the active rendering pipeline with 
+        the specified scissor rectangle.
+    */
+    override
+    void setScissorRect(recti scissor) {
+        
+    }
+
+    /**
+        Configures the active rendering pipeline with 
+        the specified culling mode.
+    */
+    override
+    void setCulling(NuvkCulling culling) {
+        
+    }
+
+    /**
+        Configures the active rendering pipeline with 
+        the specified triangle front face winding.
+    */
+    override
+    void setFrontFace(NuvkWinding winding) {
+        
+    }
+
+    /**
+        Configures the active rendering pipeline with 
+        the specified triangle fill mode.
+    */
+    override
+    void setFillMode(NuvkFillMode fillMode) {
+        
+    }
+
+    /**
+        Sets the vertex buffer in use.
+    */
+    override
+    void setVertexBuffer(NuvkBuffer buffer, uint offset, uint stride, int index) {
+        
+    }
+
+    /**
+        Encodes a command which makes the command buffer draw
+        the currently bound render state.
+    */
+    override
+    void draw(NuvkPrimitive primitive, uint offset, uint count) {
+        
+    }
+
+    /**
+        Encodes a command which makes the command buffer draw
+        the currently bound render state, using a index buffer
+        to iterate over the vertex buffers.
+    */
+    override
+    void drawIndexed(NuvkPrimitive primitive, uint offset, uint count) {
+        
+    }
+
+    /**
+        Encodes a rendering barrier that enforces 
+        a specific order for read/write operations.
+    */
+    override
+    void waitBarrier(NuvkResource resource, NuvkRenderStage before, NuvkRenderStage after) {
+
     }
 }
 

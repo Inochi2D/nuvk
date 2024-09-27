@@ -184,6 +184,13 @@ public:
 class NuvkVkSwapchain : NuvkSwapchain {
 @nogc:
 private:
+    NuvkFence swapchainFence;
+    uint prevImageIndex;
+    uint currentImageIndex;
+
+    vector!NuvkTexture textures;
+    vector!NuvkTextureView views;
+
     VkSwapchainKHR swapchain = VK_NULL_HANDLE;
 
     void createSwapchain(NuvkVkSurface surface) {
@@ -192,38 +199,79 @@ private:
         // Destroy swapchain if it already exists
         if (swapchain != VK_NULL_HANDLE) {
             vkDestroySwapchainKHR(device, swapchain, null);
+            nogc_delete(textures);
+            textures.resize(0);
+            views.resize(0);
+
+            swapchain = VK_NULL_HANDLE;
+            this.setHandle(VK_NULL_HANDLE);
         }
 
         VkSurfaceFormatKHR surfaceFormat = surface.getVkSurfaceFormat();
         VkPresentModeKHR presentMode = surface.getVkPresentMode();
         VkSurfaceCapabilitiesKHR surfaceCaps = surface.getCapabilities();
 
-        // Minimized?
-        if (surfaceCaps.maxImageExtent.width == 0 || surfaceCaps.maxImageExtent.height == 0) {
-            return;
+        // Swapchain creation
+        {
+
+            // Minimized?
+            if (surfaceCaps.maxImageExtent.width == 0 || surfaceCaps.maxImageExtent.height == 0) {
+                return;
+            }
+
+            VkSwapchainCreateInfoKHR swapchainCreateInfo;
+            swapchainCreateInfo.minImageCount = surfaceCaps.minImageCount+1;
+            swapchainCreateInfo.imageFormat = surfaceFormat.format;
+            swapchainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
+            swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+            swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+            swapchainCreateInfo.imageExtent = VkExtent2D(
+                clamp(surfaceCaps.currentExtent.width, surfaceCaps.minImageExtent.width, surfaceCaps.maxImageExtent.width),
+                clamp(surfaceCaps.currentExtent.height, surfaceCaps.minImageExtent.height, surfaceCaps.maxImageExtent.height),
+            );
+            swapchainCreateInfo.imageArrayLayers = 1;
+            swapchainCreateInfo.preTransform = surfaceCaps.currentTransform;
+            swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+            swapchainCreateInfo.presentMode = presentMode;
+            swapchainCreateInfo.clipped = VK_FALSE;
+            swapchainCreateInfo.surface = cast(VkSurfaceKHR)surface.getHandle();
+
+            enforce(
+                vkCreateSwapchainKHR(device, &swapchainCreateInfo, null, &swapchain) == VK_SUCCESS,
+                nstring("Failed to create swapchain")
+            );
+
+            this.setHandle(swapchain);
         }
 
-        VkSwapchainCreateInfoKHR swapchainCreateInfo;
-        swapchainCreateInfo.minImageCount = surfaceCaps.minImageCount+1;
-        swapchainCreateInfo.imageFormat = surfaceFormat.format;
-        swapchainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
-        swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-        swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        swapchainCreateInfo.imageExtent = VkExtent2D(
-            clamp(surfaceCaps.currentExtent.width, surfaceCaps.minImageExtent.width, surfaceCaps.maxImageExtent.width),
-            clamp(surfaceCaps.currentExtent.height, surfaceCaps.minImageExtent.height, surfaceCaps.maxImageExtent.height),
-        );
-        swapchainCreateInfo.imageArrayLayers = 1;
-        swapchainCreateInfo.preTransform = surfaceCaps.currentTransform;
-        swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-        swapchainCreateInfo.presentMode = presentMode;
-        swapchainCreateInfo.clipped = VK_FALSE;
-        swapchainCreateInfo.surface = cast(VkSurfaceKHR)surface.getHandle();
+        // NuvkTexture creation
+        {
+            weak_vector!VkImage swapchainImages;
+            uint swapchainImageCount;
+            vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount, null);
 
-        enforce(
-            vkCreateSwapchainKHR(device, &swapchainCreateInfo, null, &swapchain) == VK_SUCCESS,
-            nstring("Failed to create swapchain")
-        );
+            swapchainImages = weak_vector!VkImage(swapchainImageCount);
+            enforce(
+                vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount, swapchainImages.data()) == VK_SUCCESS,
+                nstring("Failed to create swapchain images.")
+            );
+
+            foreach(i; 0..swapchainImages.size()) {
+                auto texture = nogc_new!NuvkVkTexture(this.getOwner(), swapchainImages[i], surfaceFormat.format);
+
+                NuvkTextureViewDescriptor viewDescriptor;
+                viewDescriptor.type = NuvkTextureType.texture2d;
+                viewDescriptor.format = surfaceFormat.format.toNuvkTextureFormat();
+                viewDescriptor.arraySlices = NuvkRange!int(0, 1);
+                viewDescriptor.mipLevels = NuvkRange!int(0, 1);
+
+                auto view = texture.createTextureView(viewDescriptor);
+
+                views ~= view;
+                textures ~= texture;
+            }
+        }
+
     }
 
 protected:
@@ -231,6 +279,9 @@ protected:
     override
     void update() {
         NuvkVkSurface surface = cast(NuvkVkSurface)this.getSurface();
+        swapchainFence = nogc_new!NuvkVkFence(this.getOwner());
+        swapchainFence.reset();
+
         this.createSwapchain(surface);
     }
 
@@ -257,7 +308,29 @@ public:
         Gets the next texture in the swapchain
     */
     override
-    NuvkTexture getNext() {
+    NuvkTextureView getNext() {
+        auto frameAvailable = cast(VkSemaphore)this.getFrameAvailableSemaphore().getHandle();
+        auto device = cast(VkDevice)this.getOwner().getHandle();
+
+        uint cImageIndex = 0;
+
+        if (vkAcquireNextImageKHR(device, swapchain, ulong.max, frameAvailable, VK_NULL_HANDLE, &cImageIndex) == VK_SUCCESS) {
+            currentImageIndex = cImageIndex;
+            return views[currentImageIndex];
+        }
         return null;
+    }
+
+    final
+    NuvkTextureView getCurrent() {
+        return views[currentImageIndex];
+    }
+
+    /**
+        Gets the index of the current image.
+    */
+    final
+    uint getCurrentImageIndex() {
+        return currentImageIndex;
     }
 }

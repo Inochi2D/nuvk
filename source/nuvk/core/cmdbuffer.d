@@ -135,13 +135,6 @@ enum NuvkCommandBufferStatus {
     recording,
 
     /**
-        Recording to the command buffer has finished.
-
-        Recording can be submitted by calling submit()
-    */
-    completed,
-
-    /**
         The command buffer has been submitted.
 
         You may not reset the command buffer while it's under submission.
@@ -189,6 +182,129 @@ enum NuvkRenderStage {
 }
 
 /**
+    Load operation for an attachment
+*/
+enum NuvkLoadOp {
+    /**
+        GPU may discard existing content.
+
+        Data after discard is undefined.
+    */
+    dontCare,
+
+    /**
+        GPU should load the existing image data.
+    */
+    load,
+    
+    /**
+        GPU should clear the existing image data.
+    */
+    clear
+}
+
+/**
+    Store operation for an attachment
+*/
+enum NuvkStoreOp {
+
+    /**
+        GPU may discard existing content.
+
+        Data after discard is undefined.
+    */
+    dontCare,
+    
+    /**
+        GPU should store new image data into the texture
+    */
+    store,
+
+    /**
+        GPU resolves multisampled textures to 1 sample per pixel.
+
+        Data is stored in the resolve texture.
+    */
+    multisampleResolve,
+
+    /**
+        GPU stores multisampled data to multisample texture, 
+        resolves the data to 1 sample per pixel
+        and stores the result in the resolve texture.
+    */
+    storeAndMultisampleResolve
+}
+
+/**
+    A render pass attachment
+*/
+struct NuvkRenderPassAttachment {
+@nogc:
+
+    /**
+        Attached texture
+    */
+    NuvkTextureView texture;
+    
+    /**
+        Texture load operation
+    */
+    NuvkLoadOp loadOp;
+    
+    /**
+        Texture store operation
+    */
+    NuvkStoreOp storeOp;
+    
+    /**
+        Attached resolve texture.
+
+        This may be null if `storeOp` is NOT `multisampleResolve`.
+    */
+    NuvkTextureView resolveTexture;
+
+    /**
+        The value to clear with if `loadOp` is `clear`.
+    */
+    NuvkClearValue clearValue;
+}
+
+struct NuvkRenderPassDescriptor {
+@nogc nothrow:
+
+    /**
+        The rendering area
+    */
+    recti renderArea;
+
+    /**
+        Color attachment for the render pass
+    */
+    weak_vector!NuvkRenderPassAttachment colorAttachments;
+
+    /**
+        Depth-stencil attachment for the render pass
+    */
+    NuvkRenderPassAttachment depthStencilAttachment;
+
+    /**
+        Destructor
+    */
+    ~this() {
+        nogc_delete(colorAttachments);
+    }
+
+    /**
+        Copy constructor
+    */
+    this(ref NuvkRenderPassDescriptor other) {
+        this.renderArea = other.renderArea;
+        this.colorAttachments = weak_vector!NuvkRenderPassAttachment(other.colorAttachments);
+        this.depthStencilAttachment = other.depthStencilAttachment;
+    }
+}
+
+/**
     A command buffer
 
     Command buffers store commands to send to the GPU.
@@ -197,8 +313,29 @@ abstract
 class NuvkCommandBuffer : NuvkDeviceObject {
 @nogc:
 private:
+    NuvkSemaphore submissionFinished;
+    NuvkFence inFlightFence;
+
     NuvkCommandQueue queue;
     NuvkCommandBufferStatus status;
+
+    void updateStatus() {
+        if (this.getStatus() == NuvkCommandBufferStatus.submitted) {
+            if (inFlightFence.isSignaled()) {
+                this.setStatus(NuvkCommandBufferStatus.idle);
+                this.onBeginNewPass();
+            }
+        }
+    }
+
+    bool beginPass() {
+        if (this.getStatus() == NuvkCommandBufferStatus.idle) {
+            this.setStatus(NuvkCommandBufferStatus.recording);
+            inFlightFence.reset();
+        }
+
+        return this.getStatus() == NuvkCommandBufferStatus.recording;
+    }
 
 protected:
 
@@ -211,9 +348,30 @@ protected:
     }
 
     /**
+        Gets the submission fence.
+    */
+    final
+    NuvkFence getInFlightFence() {
+        return inFlightFence;
+    }
+
+    /**
+        Gets the submission fence.
+    */
+    final
+    NuvkSemaphore getSubmissionFinished() {
+        return submissionFinished;
+    }
+
+    /**
+        Implements the logic to begin a new pass of command encoding.
+    */
+    abstract void onBeginNewPass();
+
+    /**
         Implements the logic to create a NuvkRenderEncoder.
     */
-    abstract NuvkRenderEncoder onBeginRenderPass();
+    abstract NuvkRenderEncoder onBeginRenderPass(ref NuvkRenderPassDescriptor descriptor);
 
     /**
         Implements the logic to create a NuvkComputeEncoder.
@@ -234,6 +392,9 @@ public:
         super(device);
         this.queue = queue;
         this.status = NuvkCommandBufferStatus.idle;
+
+        this.inFlightFence = device.createFence();
+        this.submissionFinished = device.createSemaphore();
     }
 
     /**
@@ -241,13 +402,17 @@ public:
         NuvkRenderEncoder.
     */
     final
-    NuvkRenderEncoder beginRenderPass() {
+    NuvkRenderEncoder beginRenderPass(ref NuvkRenderPassDescriptor renderPassDescriptor) {
         enforce(
             (queue.getSpecialization() & NuvkQueueSpecialization.graphics),
             nstring("Queue does not support encoding render commands!")
         );
 
-        return this.onBeginRenderPass();
+        this.updateStatus();
+        if (this.beginPass())
+            return this.onBeginRenderPass(renderPassDescriptor);
+        else 
+            return null;
     }
 
     /**
@@ -261,7 +426,11 @@ public:
             nstring("Queue does not support encoding compute commands!")
         );
 
-        return this.onBeginComputePass();
+        this.updateStatus();
+        if (this.beginPass())
+            return this.onBeginComputePass();
+        else 
+            return null;
     }
 
     /**
@@ -275,7 +444,11 @@ public:
             nstring("Queue does not support encoding transfer commands!")
         );
 
-        return this.onBeginTransferPass();
+        this.updateStatus();
+        if (this.beginPass())
+            return this.onBeginTransferPass();
+        else 
+            return null;
     }
 
     /**
@@ -300,7 +473,11 @@ public:
         Blocks the current thread until the command queue
         is finished rendering the buffer.
     */
-    abstract void awaitCompletion();
+    final
+    void awaitCompletion(ulong timeout = ulong.max) {
+        inFlightFence.await(timeout);
+        inFlightFence.reset();
+    }
 
     /**
         Gets the queue associated with this command buffer.
@@ -318,7 +495,6 @@ public:
         return status;
     }
 }
-
 
 abstract
 class NuvkEncoder {
@@ -362,6 +538,9 @@ public:
 
     /**
         Ends encoding the commands to the buffer.
+
+        This renders this encoder instance invalid.
+        Do not try to use a encoder after ending it.
     */
     abstract void endEncoding();
 
@@ -389,13 +568,27 @@ public:
 abstract
 class NuvkRenderEncoder : NuvkEncoder {
 @nogc:
+private:
+    NuvkRenderPassDescriptor descriptor;
+
+protected:
+
+    /**
+        Gets the descriptor for a render pass.
+    */
+    final
+    ref NuvkRenderPassDescriptor getDescriptor() {
+        return descriptor;
+    }
+
 public:
 
     /**
         Constructor
     */
-    this(NuvkCommandBuffer buffer) {
+    this(NuvkCommandBuffer buffer, ref NuvkRenderPassDescriptor descriptor) {
         super(buffer);
+        this.descriptor = descriptor;
     }
 
     /**

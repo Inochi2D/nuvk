@@ -24,6 +24,7 @@ private:
         VkExportSemaphoreCreateInfo exportInfo;
 
         VkFenceCreateInfo fenceInfo;
+        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
         
         enforce(
             vkCreateFence(device, &fenceInfo, null, &fence) == VK_SUCCESS,
@@ -44,6 +45,24 @@ public:
     this(NuvkDevice device) {
         super(device);
         this.createFence();
+    }
+
+    override
+    bool isSignaled() {
+        auto device = cast(VkDevice)this.getOwner().getHandle();
+        return vkGetFenceStatus(device, fence) == VK_SUCCESS;
+    }
+
+    override
+    void await(ulong timeout) {
+        auto device = cast(VkDevice)this.getOwner().getHandle();
+        vkWaitForFences(device, 1, &fence, VK_TRUE, timeout);
+    }
+
+    override
+    void reset() {
+        auto device = cast(VkDevice)this.getOwner().getHandle();
+        vkResetFences(device, 1, &fence);
     }
 }
 
