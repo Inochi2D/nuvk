@@ -128,7 +128,7 @@ public:
         Creates a surface from a handle created by your windowing
         library.
     */
-    abstract NuvkSurface createSurfaceFromHandle(void* handle);
+    abstract NuvkSurface createSurfaceFromHandle(void* handle, NuvkPresentMode presentMode, NuvkTextureFormat textureFormat);
 }
 
 /**

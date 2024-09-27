@@ -17,9 +17,11 @@ private {
         "VK_EXT_vertex_input_dynamic_state",
         "VK_EXT_extended_dynamic_state",
         "VK_EXT_extended_dynamic_state2",
-        "VK_KHR_swapchain",
+        "VK_KHR_create_renderpass2",
+        "VK_KHR_depth_stencil_resolve",
         "VK_KHR_dynamic_rendering",
         "VK_EXT_custom_border_color",
+        "VK_KHR_swapchain",
         NuvkVkMemorySharingExtName,
         NuvkVkSemaphoreSharingExtName,
     ];
@@ -183,8 +185,8 @@ public:
         library.
     */
     override
-    NuvkSurface createSurfaceFromHandle(void* handle) {
-        return nogc_new!NuvkVkSurface(this, cast(VkSurfaceKHR)handle);
+    NuvkSurface createSurfaceFromHandle(void* handle, NuvkPresentMode presentMode, NuvkTextureFormat textureFormat) {
+        return nogc_new!NuvkVkSurface(this, presentMode, textureFormat, cast(VkSurfaceKHR)handle);
     }
 
     /**

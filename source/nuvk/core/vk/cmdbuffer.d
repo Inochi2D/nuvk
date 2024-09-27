@@ -43,9 +43,10 @@ VkCullModeFlagBits toVkCulling(NuvkCulling culling) @nogc {
 class NuvkVkCommandBuffer : NuvkCommandBuffer {
 @nogc:
 private:
-    VkCommandBuffer commandBuffer;
+    weak_vector!VkCommandBuffer commandBuffers;
 
-    void createCommandBuffer() {
+    VkCommandBuffer createCommandBuffer() {
+        VkCommandBuffer commandBuffer;
         auto device = cast(VkDevice)this.getOwner().getHandle();
         auto pool = (cast(NuvkVkCommandQueue)this.getQueue()).getCommandPool();
 
@@ -58,6 +59,16 @@ private:
             vkAllocateCommandBuffers(device, &commandBufferInfo, &commandBuffer) == VK_SUCCESS,
             nstring("Failed to allocate command buffer")
         );
+
+        return commandBuffer;
+    }
+
+    void freeCommandBuffers() {
+        auto device = cast(VkDevice)this.getOwner().getHandle();
+        auto pool = (cast(NuvkVkCommandQueue)this.getOwner()).getCommandPool();
+
+        if (commandBuffers.size() > 0)
+            vkFreeCommandBuffers(device, pool, cast(uint)commandBuffers.size(), commandBuffers.data());
     }
 
 protected:
@@ -90,11 +101,7 @@ protected:
 public:
 
     ~this() {
-        auto device = cast(VkDevice)this.getOwner().getHandle();
-        auto pool = (cast(NuvkVkCommandQueue)this.getOwner()).getCommandPool();
-
-        if (commandBuffer != VK_NULL_HANDLE)
-            vkFreeCommandBuffers(device, pool, 1, &commandBuffer);
+        this.freeCommandBuffers();
     }
 
     /**
@@ -102,7 +109,6 @@ public:
     */
     this(NuvkDevice device, NuvkCommandQueue queue) {
         super(device, queue);
-        this.createCommandBuffer();
     }
 
     /**
@@ -112,6 +118,8 @@ public:
     */
     override
     bool reset() {
+
+        this.freeCommandBuffers();
         return true;
     }
 
@@ -120,7 +128,9 @@ public:
     */
     override
     void present(NuvkSurface surface) {
-        
+        VkPresentInfoKHR presentInfo;
+
+        vkQueuePresentKHR(cast(VkQueue)this.getQueue().getHandle(), &presentInfo);
     }
 
     /**
@@ -129,7 +139,9 @@ public:
     */
     override
     void commit() {
-        
+        // auto device = cast(VkDevice)this.getOwner().getHandle();
+        // auto pool = (cast(NuvkVkCommandQueue)this.getOwner()).getCommandPool();
+        // auto queue = cast(VkQueue)this.getQueue().getHandle();
     }
 
     /**
@@ -138,7 +150,8 @@ public:
     */
     override
     void awaitCompletion() {
-
+        auto queue = cast(VkQueue)this.getQueue().getHandle();
+        vkQueueWaitIdle(queue);
     }
 }
 

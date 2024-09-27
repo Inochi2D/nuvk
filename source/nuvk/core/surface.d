@@ -10,23 +10,52 @@ import nuvk.core;
 import numem.all;
 
 /**
+    Presentation mode for the surface
+*/
+enum NuvkPresentMode {
+    
+    /**
+        Frames are immediately submitted to the surface
+
+        This may result in screen tearing    
+    */
+    immediate,
+
+    /**
+        Frames are buffered and submitted to the surface
+        synchronized to the vertical blanking interval.
+    */
+    vsync,
+
+    /**
+        Frames are buffered and submitted to the surface
+        synchronized to the vertical blanking interval,
+        while allowing submission at higher rates.
+    */
+    tripleBuffered
+}
+
+/**
     A surface that can be rendered to
 */
 abstract
 class NuvkSurface : NuvkDeviceObject {
 @nogc:
 private:
-    weak_vector!NuvkSwapchain swapchains;
+    NuvkSwapchain swapchain;
+    NuvkPresentMode presentMode;
+    NuvkTextureFormat textureFormat;
+    vec2i surfaceSize;
+
+    void updateSwapchainState(bool parentChanged = false) {
+        if (!swapchain)
+            swapchain = this.onCreateSwapchain();
+
+        if (parentChanged || swapchain.isSwapchainOutdated())
+            swapchain.update();
+    }
 
 protected:
-
-    /**
-        Gets a list of swapchains bound to this surface
-    */
-    final
-    NuvkSwapchain[] getSwapchains() {
-        return swapchains[];
-    }
 
     /**
         Creates a swapchain that can be rendered with
@@ -34,39 +63,82 @@ protected:
     abstract NuvkSwapchain onCreateSwapchain();
 
     /**
-        Updates all outdated swapchains
+        Gets whether it is possible to use the specified texture format.
     */
-    final
-    void updateSwapchains() {
-        foreach(swapchain; this.getSwapchains()) {
-            if (swapchain.isSwapchainOutdated()) {
-                swapchain.update();
-            }
-        }
-    }
-
+    abstract bool isFormatValid(NuvkTextureFormat textureFormat);
+    
+    /**
+        Gets whether it is possible to use the specified presentation mode.
+    */
+    abstract bool isPresentModeValid(NuvkPresentMode presentMode);
 
 public:
-    this(NuvkDevice device) {
+
+    /**
+        Constructor
+    */
+    this(NuvkDevice device, NuvkPresentMode presentMode, NuvkTextureFormat textureFormat) {
         super(device);
+        this.presentMode = presentMode;
+        this.textureFormat = textureFormat;
     }
 
     /**
-        Creates a swapchain that can be rendered with
+        Gets the presentation mode of the surface
     */
     final
-    NuvkSwapchain createSwapchain() {
-        NuvkSwapchain swapchain = this.onCreateSwapchain();
-        if (swapchain) 
-            swapchains ~= swapchain;
-        
-        return swapchain;
+    NuvkPresentMode getPresentationMode() {
+        return presentMode;
     }
 
     /**
-        Updates the surface
+        Sets the presentation mode of the surface.
+
+        This will invalidate the swapchain!
     */
-    abstract void update();
+    final
+    void setPresentationMode(NuvkPresentMode presentMode) {
+        enforce(
+            isPresentModeValid(presentMode),
+            nstring("Specified presentation mode not supported!")
+        );
+
+        this.presentMode = presentMode;
+        this.updateSwapchainState(true);
+    }
+
+    /**
+        Gets the presentation mode of the surface
+    */
+    final
+    NuvkTextureFormat getFormat() {
+        return textureFormat;
+    }
+
+    /**
+        Sets the presentation mode of the surface.
+
+        This will invalidate the swapchain!
+    */
+    final
+    void setFormat(NuvkTextureFormat textureFormat) {
+        enforce(
+            isFormatValid(textureFormat),
+            nstring("Specified format not supported!")
+        );
+
+        this.textureFormat = textureFormat;
+        this.updateSwapchainState(true);
+    }
+
+    /**
+        Gets the swapchain for the surface
+    */
+    final
+    NuvkSwapchain getSwapchain() {
+        this.updateSwapchainState(true);
+        return swapchain;
+    }
 }
 
 /**
@@ -88,14 +160,7 @@ protected:
 
 public:
 
-    ~this() {
-        foreach(i; 0..surface.swapchains.size()) {
-            if (surface.swapchains[i] is this) {
-                surface.swapchains.remove(i);
-                break;
-            }
-        }
-    }
+    ~this() { }
 
     /**
         Constructor
