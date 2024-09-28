@@ -1,0 +1,92 @@
+DLSL:
+
+# Module Scope
+Module              < (Comment / DeclGlobal)+ eoi
+
+# Attributes
+AttribList          < (AttribUDA / AttribBuiltin)*
+AttribUDA           <- :'@' identifier ;ParamList(Expr)?
+AttribBuiltin       <- ('in' / 'out' / 'const') :blank
+
+# Declarations
+DeclGlobal          <- DeclImport / (AttribList? (DeclStruct / DeclVar / DeclFunc))
+DeclFuncLocal       <- DeclImport / (AttribList? (DeclVar))
+DeclStruct          < :'struct' Identifier Block(AttribList? DeclVar)
+DeclVar             < (DeclVarArray / DeclVarSingle) eos
+DeclVarSingle       < TypeBasic Identifier ('=' Expr)?
+DeclVarArray        < TypeArray Identifier (('=' ExprArrayAssign) / ';')
+DeclImport          <- :'import' List(Identifier, '.') eos
+
+# Functions
+DeclFunc            < Type Identifier ParamList(FuncParam) Block(FuncBody)
+FuncParam           < (AttribList? Type Identifier)
+FuncBody            < Stmt*
+
+# Base Items
+eos                 <: ';'
+Comment             <  ;CommentDoc / :(CommentSingleLine / CommentMultiLine)
+CommentSingleLine   <- :'//' ~(!endOfLine .)*
+CommentMultiLine    <- :'/*' ~(!"*/" .)* :'*/'
+CommentDoc          <- :'/**' ~(!"*/" .)* :'*/'
+
+# Types
+TypeArray           <- ;TypeBasic :'[' ;Integer? :']'
+TypeBasic           <- identifier :spacing+
+Type                <~ TypeArray / TypeBasic
+
+# Identifiers
+Identifier          <~ (identifier :spacing+)
+IdentifierList      <- List(~(identifier :spacing+), '.')
+
+# Constants
+Integer             <- ~([0-9]+) !('.' / 'f')
+Number              <- ~(([0-9]+) ('.' [0-9]+)?) :'f'?
+True                <~ "true"
+False               <~ "false"
+
+# Blocks and parameters
+Block(ChildT)       < :'{' (Comment? ChildT Comment?)* :'}'
+ParamList(ListT)    < :'(' OptList(ListT, ',') :')'
+ForeachPList        < :'(' (Type Identifier / Identifier) :';' ForeachRange :')'
+ForeachRange        < (Expr :'..' Expr) / Expr
+ForPList            < :'(' StmtDecl :';' Expr :'..' StmtAssign :')'
+
+# Statements
+Stmt                <  (StmtIf / StmtForeach / StmtFor / StmtReturn / StmtDiscard / StmtDecl / StmtAssign / StmtExpr)
+StmtDecl            <  DeclFuncLocal
+StmtAssign          <  IdentifierList :'=' Expr eos
+StmtExpr            <  Expr eos
+StmtReturn          <^ :'return' Expr? eos
+StmtDiscard         <^ :'discard' eos
+StmtIf              <  :'if' ParamList(Expr) Block(Stmt)
+StmtForeach         <  :'foreach' ForeachPList Block(Stmt)
+StmtFor             <  :'for' ForPList Block(Stmt)
+
+# Expressions
+Expr                < ExprCompare / ExprTerm
+ExprCompare         < ExprTerm ('!=' / '==' / '>=' / '<=' / '>' / '<') ExprTerm
+ExprTerm            < ExprFact (ExprAdd / ExprSub / ExprCompare)*
+ExprAdd             < :'+' Expr
+ExprSub             < :'-' Expr
+ExprFact            < ExprPrimary (ExprMul / ExprDiv)*
+ExprMul             < :'*' ExprPrimary
+ExprDiv             < :'/' ExprPrimary
+ExprPrimary         < (ExprParens / ExprRange / ExprIndex / ExprNeg / ExprPos / ExprNot / Integer / Number / True / False / ExprIden)
+ExprParens          < :'(' Expr :')'
+ExprNeg             < :'-' ExprPrimary
+ExprPos             < :'+' ExprPrimary
+ExprNot             < :'!' ExprPrimary
+ExprIndex           < :'[' ExprPrimary :']'
+ExprRange           < :'[' ExprPrimary :'..' ExprPrimary :']'
+
+# Variable/function access
+ExprIden            < ExprCall / ExprVar 
+ExprVar             < IdentifierList (:'[' Expr :']')?
+ExprCall            < IdentifierList ParamList(Expr)
+
+# Special Expressions
+ExprArrayAssign     < :'[' List(Expr, ',') :']'
+
+# Utilities
+OptList(Elem, Sep)  <- Elem? ((:Sep Elem) / :Sep)*  # List that allows 0 or more elements
+List(Elem, Sep)     <- Elem ((:Sep Elem) / :Sep)*   # List that allows 1 or more elements
