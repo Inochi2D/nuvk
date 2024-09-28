@@ -11,7 +11,7 @@ dependency "erupted" version="~>2.1.98"
 targetPath "out/"
 
 workingDirectory "out/"
-excludedSourceFiles "source/nuvk/compiler/*"
+excludedSourceFiles "source/nuvk/dlsl/compiler/*"
 
 configuration "build" {
 	targetType "library"
