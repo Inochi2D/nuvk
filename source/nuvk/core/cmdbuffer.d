@@ -300,8 +300,10 @@ struct NuvkRenderPassDescriptor {
 
     /**
         The rendering area
+
+        By default it will render to everything.
     */
-    recti renderArea;
+    recti renderArea = recti(0, 0, int.max, int.max);
 
     /**
         Color attachment for the render pass
