@@ -5,27 +5,14 @@ copyright "Copyright © 2024, cli-l"
 license "BSD 2-clause"
 
 dependency "numem" version="~>0.20.1"
-dependency "erupted" version="~>2.1.98"
 dependency "inmath" version="~>1.3.0"
+dependency "erupted" version="~>2.1.98"
 
 targetPath "out/"
 
 workingDirectory "out/"
 excludedSourceFiles "source/nuvk/compiler/*"
-stringImportPaths "res/"
 
 configuration "build" {
 	targetType "library"
-}
-
-configuration "demo" {
-	dependency "bindbc-sdl" version="~>1.4.8"
-	targetType "executable"
-	copyFiles "libs/SDL2.dll"
-	versions "SDL_2_28"
-}
-
-configuration "compileShaders" {
-	targetType "none"
-	preGenerateCommands "build-aux/build_shaders.sh"
 }

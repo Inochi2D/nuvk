@@ -1,0 +1,29 @@
+name "triangle"
+description "Nuvk triangle example"
+authors "Luna"
+copyright "Copyright © 2024, Luna"
+license "BSD 2-clause"
+targetPath "../../out/triangle"
+workingDirectory "../../out/triangle"
+
+stringImportPaths "../common/"
+
+copyFiles "../common/libs/SDL2.dll"
+dependency "bindbc-sdl" version="~>1.4.8"
+dependency "numem" version="*"
+dependency "inmath" version="*"
+dependency "nuvk" path="../../"
+
+versions "SDL_2_28"
+
+configuration "default" {
+	targetType "executable"
+}
+
+configuration "shaders" {
+	targetType "none"
+
+	preGenerateCommands \
+		"glslc ../common/shaders/triangle.vert -o ../common/shaders/triangle_vert.spv" \
+		"glslc ../common/shaders/triangle.frag -o ../common/shaders/triangle_frag.spv"
+}

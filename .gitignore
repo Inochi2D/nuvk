@@ -19,10 +19,3 @@ vktest-test-*
 out/
 
 *.spv
-libs/
-
-# User can add SPIRV tools themselves.
-tools/
-
-# Exclude test app
-source/app.d

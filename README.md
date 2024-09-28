@@ -14,7 +14,6 @@ This library is just meant for use in Inochi Creator and Inochi Session, but it 
 
 Contributions are welcome.
 
-
 ## What's `nuvk.compiler` about?
 
 To faciliate ease of use between Vulkan and Metal with Nuvk, we'll be writing our own shader language.
@@ -22,6 +21,10 @@ To faciliate ease of use between Vulkan and Metal with Nuvk, we'll be writing ou
 This shader language will compile to SPIRV, then be transpiled via SPIRV-Cross, if neccesary.
 
 This layer also allows early introspection of the SPIRV code to allow automatic creation of descriptor sets and the like.
+
+## Examples
+
+Examples can be found in the `examples/` directory.
 
 ## System Requirements
 
@@ -36,10 +39,11 @@ Vulkan 1.3 is required to run NuVk.
  * `VK_KHR_debug_utils`
 
 #### Required Device Extensions
- * `VK_EXT_vertex_input_dynamic_state`
- * `VK_EXT_extended_dynamic_state`
+ * `VK_EXT_primitive_topology_list_restart`
+ * `VK_KHR_create_renderpass2`
+ * `VK_KHR_depth_stencil_resolve`
+ * `VK_EXT_custom_border_color`
  * `VK_KHR_swapchain`
- * `VK_KHR_dynamic_rendering`
  * `VK_KHR_external_memory`
  * `VK_KHR_external_memory_win32` (Windows)
  * `VK_KHR_external_memory_fd` (POSIX)
