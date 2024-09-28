@@ -15,6 +15,7 @@ import numem.all;
 private {
     const const(char)*[] nuvkVkDeviceRequiredExtensions = [
         "VK_EXT_vertex_input_dynamic_state",
+        "VK_EXT_primitive_topology_list_restart",
         "VK_KHR_create_renderpass2",
         "VK_KHR_depth_stencil_resolve",
         "VK_EXT_custom_border_color",
@@ -49,6 +50,7 @@ private:
         VkPhysicalDeviceVulkan13Features vk13Features;
         VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT vertexInputDynamicStateFeature;
         VkPhysicalDeviceCustomBorderColorFeaturesEXT customBorderColorFeature;
+        VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT topologyRestartFeature;
 
         auto physicalDevice = cast(VkPhysicalDevice)this.getDeviceInfo().getHandle();
         auto queueCreateInfos = queueManager.getVkQueueCreateInfos();
@@ -56,6 +58,7 @@ private:
 
         // Device features
         {
+            customBorderColorFeature.pNext = &topologyRestartFeature;
             vertexInputDynamicStateFeature.pNext = &customBorderColorFeature;
             vk11Features.pNext = &vertexInputDynamicStateFeature;
             vk12Features.pNext = &vk11Features;

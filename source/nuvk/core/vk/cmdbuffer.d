@@ -369,6 +369,31 @@ private:
         );
 
         vkCmdBeginRendering(writeBuffer, &renderInfo);
+
+        VkRect2D scissorRect;
+        scissorRect.offset.x = descriptor.renderArea.x;
+        scissorRect.offset.y = descriptor.renderArea.y;
+        scissorRect.extent.width = descriptor.renderArea.width;
+        scissorRect.extent.height = descriptor.renderArea.height;
+
+        VkViewport viewport;
+        viewport.minDepth = 0;
+        viewport.maxDepth = 1;
+        viewport.x = descriptor.renderArea.x;
+        viewport.y = descriptor.renderArea.y;
+        viewport.width = descriptor.renderArea.width;
+        viewport.height = descriptor.renderArea.height;
+
+        vkCmdSetScissor(writeBuffer, 0, 1, &scissorRect);
+        vkCmdSetViewport(writeBuffer, 0, 1, &viewport);
+        vkCmdSetPrimitiveRestartEnable(writeBuffer, VK_TRUE);
+        vkCmdSetPrimitiveTopology(writeBuffer, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+        vkCmdSetVertexInputEXT(writeBuffer, 0, null, 0, null);
+        vkCmdSetBlendConstants(writeBuffer, [0, 0, 0, 0]);
+        vkCmdSetLineWidth(writeBuffer, 1);
+        vkCmdSetDepthBias(writeBuffer, 0, 0, 0);
+        vkCmdSetCullMode(writeBuffer, VK_CULL_MODE_NONE);
+        vkCmdBindVertexBuffers2(writeBuffer, 0, 0, null, null, null, null);
     }
 
     void endRendering() {
@@ -443,21 +468,20 @@ public:
         
     }
 
-    /**
-        Encodes a command that makes the GPU wait for a fence.
-    */
-    override
-    void waitFor(NuvkFence fence, NuvkRenderStage before) {
-        
-    }
+    // /**
+    //     Encodes a command that makes the GPU wait for a fence.
+    // */
+    // override
+    // void waitFor(NuvkSemaphore fence, NuvkRenderStage before) {
+    // }
 
-    /**
-        Encodes a command that makes the GPU signal a fence.
-    */
-    override
-    void signal(NuvkFence fence, NuvkRenderStage after) {
+    // /**
+    //     Encodes a command that makes the GPU signal a fence.
+    // */
+    // override
+    // void signal(NuvkSemaphore fence, NuvkRenderStage after) {
         
-    }
+    // }
 
     /**
         Ends encoding the commands to the buffer.
@@ -472,6 +496,7 @@ public:
     */
     override
     void setPipeline(NuvkPipeline pipeline) {
+        vkCmdBindPipeline(writeBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, cast(VkPipeline)pipeline.getHandle());
         
     }
 
@@ -481,7 +506,14 @@ public:
     */
     override
     void setViewport(recti viewport) {
-        
+        VkViewport vp;
+        vp.minDepth = 0;
+        vp.maxDepth = 1;
+        vp.x = viewport.x;
+        vp.y = viewport.y;
+        vp.width = viewport.width;
+        vp.height = viewport.height;
+        vkCmdSetViewport(writeBuffer, 0, 1, &vp);
     }
 
     /**
@@ -490,7 +522,12 @@ public:
     */
     override
     void setScissorRect(recti scissor) {
-        
+        VkRect2D sc;
+        sc.offset.x = scissor.x;
+        sc.offset.y = scissor.y;
+        sc.extent.width = scissor.width;
+        sc.extent.height = scissor.height;
+        vkCmdSetScissor(writeBuffer, 0, 1, &sc);
     }
 
     /**
@@ -499,7 +536,7 @@ public:
     */
     override
     void setCulling(NuvkCulling culling) {
-        
+        vkCmdSetCullMode(writeBuffer, culling.toVkCulling());
     }
 
     /**
@@ -508,7 +545,7 @@ public:
     */
     override
     void setFrontFace(NuvkWinding winding) {
-        
+        vkCmdSetFrontFace(writeBuffer, winding.toVkFrontFace());
     }
 
     /**
@@ -525,7 +562,18 @@ public:
     */
     override
     void setVertexBuffer(NuvkBuffer buffer, uint offset, uint stride, int index) {
-        
+        VkBuffer pBuffer = cast(VkBuffer)buffer.getHandle();
+        VkDeviceSize pOffset = offset;
+        VkDeviceSize pStride = stride;
+        vkCmdBindVertexBuffers2(writeBuffer, index, 1, &pBuffer, &pOffset, null, &pStride);
+    }
+
+    /**
+        Sets the vertex buffer in use.
+    */
+    override
+    void setIndexBuffer(NuvkBuffer buffer, uint offset, NuvkBufferIndexType indexType) {
+        vkCmdBindIndexBuffer(writeBuffer, cast(VkBuffer)buffer.getHandle(), offset, indexType.toVkIndexType());
     }
 
     /**
@@ -534,7 +582,7 @@ public:
     */
     override
     void draw(NuvkPrimitive primitive, uint offset, uint count) {
-        
+        vkCmdDraw(writeBuffer, count, 1, offset, 0);
     }
 
     /**

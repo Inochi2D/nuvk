@@ -574,15 +574,15 @@ public:
     */
     abstract void popDebugGroup();
 
-    /**
-        Encodes a command that makes the GPU wait for a fence.
-    */
-    abstract void waitFor(NuvkFence fence, NuvkRenderStage before);
+    // /**
+    //     Encodes a command that makes the GPU wait for a semaphore.
+    // */
+    // abstract void waitFor(NuvkSemaphore semaphore, NuvkRenderStage before);
 
-    /**
-        Encodes a command that makes the GPU signal a fence.
-    */
-    abstract void signal(NuvkFence fence, NuvkRenderStage after);
+    // /**
+    //     Encodes a command that makes the GPU signal a semaphore.
+    // */
+    // abstract void signal(NuvkSemaphore semaphore, NuvkRenderStage after);
 
     /**
         Ends encoding the commands to the buffer.
@@ -678,6 +678,11 @@ public:
         Sets the vertex buffer in use.
     */
     abstract void setVertexBuffer(NuvkBuffer buffer, uint offset, uint stride, int index);
+
+    /**
+        Sets the vertex buffer in use.
+    */
+    abstract void setIndexBuffer(NuvkBuffer buffer, uint offset, NuvkBufferIndexType indexType);
 
     /**
         Encodes a command which makes the command buffer draw

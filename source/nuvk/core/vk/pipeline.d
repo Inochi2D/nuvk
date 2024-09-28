@@ -97,7 +97,8 @@ private:
             // Input assembly state
             VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateInfo;
             inputAssemblyStateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-            inputAssemblyStateInfo.primitiveRestartEnable = VK_FALSE;
+            inputAssemblyStateInfo.primitiveRestartEnable = VK_TRUE;
+    
             graphicsPipelineCreateInfo.pInputAssemblyState = &inputAssemblyStateInfo;
 
             // Tessellation state
@@ -152,6 +153,8 @@ private:
                 nstring("Failed to create graphics pipeline!")
             );
         }
+        
+        this.setHandle(pipeline);
     }
 
     void createComputePipeline(ref NuvkComputePipelineDescriptor computeInfo) {
