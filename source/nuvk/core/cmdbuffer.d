@@ -677,7 +677,7 @@ public:
     /**
         Sets the vertex buffer in use.
     */
-    abstract void setVertexBuffer(NuvkBuffer buffer, uint offset, uint stride, int index);
+    abstract void setVertexBuffer(NuvkBuffer buffer, uint offset, int index);
 
     /**
         Sets the vertex buffer in use.

@@ -22,8 +22,6 @@ private {
         VK_DYNAMIC_STATE_FRONT_FACE,
         VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE,
         VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY,
-        VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE,
-        VK_DYNAMIC_STATE_VERTEX_INPUT_EXT,
         VK_DYNAMIC_STATE_DEPTH_BIAS,
         VK_DYNAMIC_STATE_LINE_WIDTH
     ];
@@ -37,6 +35,34 @@ VkPipelineBindPoint toVkPipelineBindPoint(NuvkPipelineKind kind) @nogc {
 
         case NuvkPipelineKind.graphics:
             return VK_PIPELINE_BIND_POINT_GRAPHICS;
+    }
+}
+
+VkFormat toVkFormat(NuvkVertexFormat vertexFormat) @nogc {
+    final switch(vertexFormat) {
+        case NuvkVertexFormat.invalid:
+            return VK_FORMAT_UNDEFINED;
+        
+        case NuvkVertexFormat.float32:
+            return VK_FORMAT_R32_SFLOAT;
+        
+        case NuvkVertexFormat.vec2:
+            return VK_FORMAT_R32G32_SFLOAT;
+        
+        case NuvkVertexFormat.vec3:
+            return VK_FORMAT_R32G32B32_SFLOAT;
+        
+        case NuvkVertexFormat.vec4:
+            return VK_FORMAT_R32G32B32A32_SFLOAT;
+    }
+}
+
+VkVertexInputRate toVkInputRate(NuvkInputRate rate) @nogc {
+    final switch(rate) {
+        case NuvkInputRate.vertex:
+            return VK_VERTEX_INPUT_RATE_VERTEX;
+        case NuvkInputRate.instance:
+            return VK_VERTEX_INPUT_RATE_INSTANCE;
     }
 }
 
@@ -55,6 +81,9 @@ private:
         VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo;
         weak_vector!VkPipelineShaderStageCreateInfo shaderStates;
         weak_vector!VkDescriptorSetLayout descriptorSetLayouts;
+
+        weak_vector!VkVertexInputBindingDescription   bindingDescriptions;
+        weak_vector!VkVertexInputAttributeDescription attributeDescriptions;
         
         // Shader state
         foreach(shader; graphicsInfo.shaders) {
@@ -89,6 +118,30 @@ private:
             );
         }
 
+        // Pipeline attributes and bindings
+        {
+            foreach(ref binding; graphicsInfo.bindings) {
+                VkVertexInputBindingDescription bdesc;
+                bdesc.binding = binding.binding;
+                bdesc.stride = binding.stride;
+                bdesc.inputRate = binding.inputRate.toVkInputRate();
+
+                bindingDescriptions ~= bdesc;
+            }
+
+            foreach(i, ref attribute; graphicsInfo.attributes) {
+                VkFormat fmt = cast(VkFormat)(attribute.format.toVkFormat() | VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT);
+
+                VkVertexInputAttributeDescription adesc;
+                adesc.binding = attribute.binding;
+                adesc.format = fmt;
+                adesc.location = attribute.location;
+                adesc.offset = attribute.offset;
+
+                attributeDescriptions ~= adesc;
+            }
+        }
+
         // Pipeline
         {
             graphicsPipelineCreateInfo.stageCount = cast(uint)shaderStates.size();
@@ -121,13 +174,13 @@ private:
 
             // Multisample state
             VkPipelineMultisampleStateCreateInfo multisampleStateInfo;
-            multisampleStateInfo.sampleShadingEnable = VK_FALSE;
-            multisampleStateInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-            multisampleStateInfo.minSampleShading = 1.0f;
-            multisampleStateInfo.pSampleMask = null;
-            multisampleStateInfo.alphaToCoverageEnable = VK_FALSE;
-            multisampleStateInfo.alphaToOneEnable = VK_FALSE;
-            graphicsPipelineCreateInfo.pMultisampleState = &multisampleStateInfo;
+            multisampleStateInfo.sampleShadingEnable        = VK_FALSE;
+            multisampleStateInfo.rasterizationSamples       = VK_SAMPLE_COUNT_1_BIT;
+            multisampleStateInfo.minSampleShading           = 1.0f;
+            multisampleStateInfo.pSampleMask                = null;
+            multisampleStateInfo.alphaToCoverageEnable      = VK_FALSE;
+            multisampleStateInfo.alphaToOneEnable           = VK_FALSE;
+            graphicsPipelineCreateInfo.pMultisampleState    = &multisampleStateInfo;
 
             // Color blending state
             VkPipelineColorBlendStateCreateInfo colorBlendStateInfo;
@@ -135,10 +188,17 @@ private:
 
             // Dynamic state
             VkPipelineDynamicStateCreateInfo dynamicStateInfo;
-            dynamicStateInfo.dynamicStateCount = cast(uint)nuvkVkDynamicState.length;
-            dynamicStateInfo.pDynamicStates = nuvkVkDynamicState.ptr;
-            graphicsPipelineCreateInfo.pDynamicState = &dynamicStateInfo;
+            dynamicStateInfo.dynamicStateCount          = cast(uint)nuvkVkDynamicState.length;
+            dynamicStateInfo.pDynamicStates             = nuvkVkDynamicState.ptr;
+            graphicsPipelineCreateInfo.pDynamicState    = &dynamicStateInfo;
             
+            VkPipelineVertexInputStateCreateInfo vertexInput;
+            vertexInput.vertexAttributeDescriptionCount     = cast(uint)attributeDescriptions.size();
+            vertexInput.vertexBindingDescriptionCount       = cast(uint)bindingDescriptions.size();
+            vertexInput.pVertexAttributeDescriptions        = attributeDescriptions.data();
+            vertexInput.pVertexBindingDescriptions          = bindingDescriptions.data();
+            graphicsPipelineCreateInfo.pVertexInputState    = &vertexInput;
+
             // Render create info
             VkPipelineRenderingCreateInfo renderCreateInfo;
             renderCreateInfo.viewMask = 0;

@@ -108,6 +108,8 @@ private:
             extensionProperties = weak_vector!VkExtensionProperties(deviceExtensionSupportCount);
             vkEnumerateDeviceExtensionProperties(physicalDevice, null, &deviceExtensionSupportCount, extensionProperties.data());   
         }
+
+        
     }
 
 public:
@@ -150,6 +152,13 @@ public:
     */
     VkQueueFamilyProperties[] getQueueFamilyProperties() {
         return queueFamilyProperties[];
+    }
+
+    /**
+        Gets the limits of the device.
+    */
+    VkPhysicalDeviceLimits getLimits() {
+        return deviceProperties.limits;
     }
 
     /**

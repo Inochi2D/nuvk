@@ -9,13 +9,14 @@ module nuvk.core.vk.buffer;
 import nuvk.core.vk;
 import nuvk.core;
 import numem.all;
+import inmath;
 
 
 /**
     Converts NuvkBufferUsage to a VkBufferUsageFlags, usable by Vulkan.
 */
 VkBufferUsageFlags toVkBufferUsageFlags(NuvkBufferUsage usage) @nogc {
-    VkBufferUsageFlags flags;
+    uint flags = 0;
 
     if (usage & NuvkBufferUsage.staging)
         flags |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
@@ -38,7 +39,7 @@ VkBufferUsageFlags toVkBufferUsageFlags(NuvkBufferUsage usage) @nogc {
     if (usage & NuvkBufferUsage.indirect)
         flags |= VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
 
-    return flags;
+    return cast(VkBufferUsageFlags)flags;
 }
 
 VkIndexType toVkIndexType(NuvkBufferIndexType indexType) @nogc {
@@ -57,6 +58,13 @@ private:
     VkDeviceMemory deviceMemory;
     VkBuffer buffer;
     bool mapped;
+
+    VkDeviceSize allocatedSize;
+    VkDeviceSize requiredAlignment;
+
+    VkDeviceSize alignToAllowedSize(VkDeviceSize in_, VkDeviceSize offset) {
+        return min((in_ + (in_ % requiredAlignment)) - offset, allocatedSize);
+    }
 
     void createBuffer(NuvkProcessSharing processSharing) {
         auto device = cast(VkDevice)this.getOwner().getHandle();
@@ -80,7 +88,7 @@ private:
 
             VkBufferCreateInfo bufferInfo;
             bufferInfo.size = this.getSize();
-            bufferInfo.usage = usage;
+            bufferInfo.usage = usage.toVkBufferUsageFlags();
             bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
             // Handle types needs to be specified when sharing here.
@@ -88,7 +96,7 @@ private:
                 bufferExternalInfo.handleTypes = NuvkVkMemorySharingFlagBit;
                 bufferInfo.pNext = &bufferExternalInfo;
             }
-
+            
             enforce(
                 vkCreateBuffer(device, &bufferInfo, null, &buffer) == VK_SUCCESS,
                 nstring("Failed creating buffer")
@@ -104,6 +112,9 @@ private:
                 memoryIndex >= 0, 
                 nstring("Failed finding suitable memory for the requested buffer")
             );
+
+            allocatedSize = memoryRequirements.size;
+            requiredAlignment = memoryRequirements.alignment;
         }
 
         // Allocate memory.
@@ -200,12 +211,13 @@ public:
         VkMappedMemoryRange memoryRange;
         memoryRange.memory = deviceMemory;
         memoryRange.offset = offset;
-        memoryRange.size = size;
+        memoryRange.size = this.alignToAllowedSize(size, offset);
 
         if (vkMapMemory(device, memoryRange.memory, memoryRange.offset, memoryRange.size, 0, &dataBuffer) == VK_SUCCESS) {
             memcpy(dataBuffer, data+offset, size);
-            vkUnmapMemory(device, deviceMemory);
             vkFlushMappedMemoryRanges(device, 1, &memoryRange);
+            vkUnmapMemory(device, deviceMemory);
+            return true;
         }
 
         return false;
@@ -227,7 +239,7 @@ public:
             VkMappedMemoryRange memoryRange;
             memoryRange.memory = deviceMemory;
             memoryRange.offset = offset;
-            memoryRange.size = size;
+            memoryRange.size = this.alignToAllowedSize(size, offset);
 
             mapped = true;
 
@@ -261,14 +273,14 @@ public:
             memoryRange.size = this.getSize();
 
             mapped = false;
-            
-            vkUnmapMemory(device, deviceMemory);
 
             // Non-staging buffers need to tell the GPU to flush buffer.
             // It doesn't matter if this succeeds or not.
             if (this.getBufferUsage() != NuvkBufferUsage.staging) {
                 vkFlushMappedMemoryRanges(device, 1, &memoryRange);
             }
+            
+            vkUnmapMemory(device, deviceMemory);
         }
         return false;
     }

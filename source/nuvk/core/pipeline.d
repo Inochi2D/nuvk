@@ -27,6 +27,65 @@ enum NuvkPipelineKind {
 }
 
 /**
+    Input rate
+*/
+enum NuvkInputRate {
+    /**
+        Input is per-vertex
+    */
+    vertex,
+
+    /**
+        Input is per-instance
+    */
+    instance
+}
+
+/**
+    A vertex attribute
+*/
+struct NuvkVertexAttribute {
+
+    /**
+        Binding point
+    */
+    uint binding;
+
+    /**
+        Byte-offset of attribute
+    */
+    uint offset;
+
+    /**
+        Location that the attribute is bound to
+    */
+    uint location;
+
+    /**
+        The format of the attribute
+    */
+    NuvkVertexFormat format;
+}
+
+struct NuvkVertexBinding {
+
+    /**
+        Binding point
+    */
+    uint binding;
+
+    /**
+        Stride 
+    */
+    uint stride;
+
+    /**
+        InputRate 
+    */
+    NuvkInputRate inputRate;
+}
+
+/**
     Creation information for a graphics pipeline
 */
 struct NuvkGraphicsPipelineDescriptor {
@@ -37,10 +96,26 @@ struct NuvkGraphicsPipelineDescriptor {
     weak_vector!NuvkShader shaders;
 
     /**
+        Vertex bindings
+
+        May be empty if no vertex shader is specified.
+    */
+    vector!NuvkVertexBinding bindings;
+
+    /**
+        Vertex attributes
+
+        May be empty if no vertex shader is specified.
+    */
+    vector!NuvkVertexAttribute attributes;
+
+    /**
         Copy constructor
     */
     this(ref NuvkGraphicsPipelineDescriptor createInfo) nothrow {
         this.shaders = weak_vector!NuvkShader(createInfo.shaders[]);
+        this.bindings = vector!NuvkVertexBinding(createInfo.bindings[]);
+        this.attributes = vector!NuvkVertexAttribute(createInfo.attributes[]);
     }
 
     /**

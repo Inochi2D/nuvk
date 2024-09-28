@@ -66,6 +66,38 @@ enum NuvkBufferIndexType {
 }
 
 /**
+    Vertex format
+*/
+enum NuvkVertexFormat {
+
+    /**
+        Format is invalid
+    */
+    invalid,
+
+    /**
+        32-bit floating point value
+    */
+    float32,
+
+    /**
+        2D Vector of single precision floats.
+    */
+    vec2,
+    
+    /**
+        3D Vector of single precision floats.
+    */
+    vec3,
+    
+    /**
+        4D Vector of single precision floats.
+    */
+    vec4
+    
+}
+
+/**
     A buffer
 */
 abstract
@@ -119,6 +151,16 @@ public:
         Returns whether mapping succeeded.
     */
     abstract bool upload(void* data, ulong size, ulong offset = 0);
+
+    /**
+        Uploads data to GPU memory
+        NOTE: Only shared buffers may be mapped.
+
+        Returns whether mapping succeeded.
+    */
+    bool upload(T)(T[] data, ulong offset = 0) {
+        return this.upload(data.ptr, T.sizeof*data.length, offset);
+    }
 
     /**
         Maps the buffer's memory for reading/writing.

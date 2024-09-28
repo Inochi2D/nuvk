@@ -388,12 +388,10 @@ private:
         vkCmdSetViewport(writeBuffer, 0, 1, &viewport);
         vkCmdSetPrimitiveRestartEnable(writeBuffer, VK_TRUE);
         vkCmdSetPrimitiveTopology(writeBuffer, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
-        vkCmdSetVertexInputEXT(writeBuffer, 0, null, 0, null);
         vkCmdSetBlendConstants(writeBuffer, [0, 0, 0, 0]);
         vkCmdSetLineWidth(writeBuffer, 1);
         vkCmdSetDepthBias(writeBuffer, 0, 0, 0);
         vkCmdSetCullMode(writeBuffer, VK_CULL_MODE_NONE);
-        vkCmdBindVertexBuffers2(writeBuffer, 0, 0, null, null, null, null);
     }
 
     void endRendering() {
@@ -561,11 +559,10 @@ public:
         Sets the vertex buffer in use.
     */
     override
-    void setVertexBuffer(NuvkBuffer buffer, uint offset, uint stride, int index) {
+    void setVertexBuffer(NuvkBuffer buffer, uint offset, int index) {
         VkBuffer pBuffer = cast(VkBuffer)buffer.getHandle();
         VkDeviceSize pOffset = offset;
-        VkDeviceSize pStride = stride;
-        vkCmdBindVertexBuffers2(writeBuffer, index, 1, &pBuffer, &pOffset, null, &pStride);
+        vkCmdBindVertexBuffers(writeBuffer, index, 1, &pBuffer, &pOffset);
     }
 
     /**
