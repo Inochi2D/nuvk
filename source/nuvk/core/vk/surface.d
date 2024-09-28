@@ -135,6 +135,12 @@ public:
         this.enumerateCapabilities();
     }
 
+    override
+    vec2u getSize() {
+        this.enumerateCapabilities();
+        return vec2u(capability.surfaceCaps.maxImageExtent.width, capability.surfaceCaps.maxImageExtent.height);
+    }
+
     /**
         Gets the capabilities of the surface.
     */
@@ -184,32 +190,40 @@ public:
 class NuvkVkSwapchain : NuvkSwapchain {
 @nogc:
 private:
-    NuvkFence swapchainFence;
-    uint prevImageIndex;
-    uint currentImageIndex;
+    // Synchronization
+    uint currentImageIndex = 0;
 
+    // Swapchain
+    VkSwapchainKHR swapchain = VK_NULL_HANDLE;
     vector!NuvkTexture textures;
     vector!NuvkTextureView views;
 
-    VkSwapchainKHR swapchain = VK_NULL_HANDLE;
 
-    void createSwapchain(NuvkVkSurface surface) {
+    void createSwapchain(NuvkVkSurface surface, bool forceRecreate=false) {
         auto device = cast(VkDevice)this.getOwner().getHandle();
 
         // Destroy swapchain if it already exists
-        if (swapchain != VK_NULL_HANDLE) {
-            vkDestroySwapchainKHR(device, swapchain, null);
-            nogc_delete(textures);
-            textures.resize(0);
-            views.resize(0);
+        if (swapchain != VK_NULL_HANDLE || forceRecreate) {
+            if (swapchain != VK_NULL_HANDLE) {
+                this.getOwner().awaitAll();
+                vkDestroySwapchainKHR(device, swapchain, null);
 
-            swapchain = VK_NULL_HANDLE;
-            this.setHandle(VK_NULL_HANDLE);
+                swapchain = VK_NULL_HANDLE;
+                this.setHandle(swapchain);
+            }
+
+            this.textures.clear();
+            this.views.clear();
+
+            this.currentImageIndex = 0;            
+            this.resetSyncObjects();
         }
 
+        vec2u surfaceSize = surface.getSize();
         VkSurfaceFormatKHR surfaceFormat = surface.getVkSurfaceFormat();
         VkPresentModeKHR presentMode = surface.getVkPresentMode();
         VkSurfaceCapabilitiesKHR surfaceCaps = surface.getCapabilities();
+
 
         // Swapchain creation
         {
@@ -226,8 +240,8 @@ private:
             swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
             swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
             swapchainCreateInfo.imageExtent = VkExtent2D(
-                clamp(surfaceCaps.currentExtent.width, surfaceCaps.minImageExtent.width, surfaceCaps.maxImageExtent.width),
-                clamp(surfaceCaps.currentExtent.height, surfaceCaps.minImageExtent.height, surfaceCaps.maxImageExtent.height),
+                clamp(surfaceSize.x, surfaceCaps.minImageExtent.width, surfaceCaps.maxImageExtent.width),
+                clamp(surfaceSize.y, surfaceCaps.minImageExtent.height, surfaceCaps.maxImageExtent.height),
             );
             swapchainCreateInfo.imageArrayLayers = 1;
             swapchainCreateInfo.preTransform = surfaceCaps.currentTransform;
@@ -256,32 +270,28 @@ private:
                 nstring("Failed to create swapchain images.")
             );
 
-            foreach(i; 0..swapchainImages.size()) {
-                auto texture = nogc_new!NuvkVkTexture(this.getOwner(), swapchainImages[i], surfaceFormat.format);
+            this.textures.resize(swapchainImageCount);
+            this.views.resize(swapchainImageCount);
 
+            foreach(i; 0..swapchainImageCount) {
                 NuvkTextureViewDescriptor viewDescriptor;
                 viewDescriptor.type = NuvkTextureType.texture2d;
                 viewDescriptor.format = surfaceFormat.format.toNuvkTextureFormat();
                 viewDescriptor.arraySlices = NuvkRange!int(0, 1);
                 viewDescriptor.mipLevels = NuvkRange!int(0, 1);
 
-                auto view = texture.createTextureView(viewDescriptor);
-
-                views ~= view;
-                textures ~= texture;
+                this.textures[i] = nogc_new!NuvkVkTexture(this.getOwner(), swapchainImages[i], surfaceFormat.format, surfaceSize);
+                this.views[i] = this.textures[i].createTextureView(viewDescriptor);
             }
         }
-
     }
 
 protected:
 
     override
-    void update() {
+    void update(bool forceRecreate=false) {
         NuvkVkSurface surface = cast(NuvkVkSurface)this.getSurface();
-        swapchainFence = nogc_new!NuvkVkFence(this.getOwner());
-        swapchainFence.reset();
-
+        surface.enumerateCapabilities();
         this.createSwapchain(surface);
     }
 
@@ -296,34 +306,37 @@ public:
     }
 
     /**
-        Whether the swapchain is outdated.
-    */
-    override
-    bool isSwapchainOutdated() {
-        auto device = cast(VkDevice)this.getOwner().getHandle();
-        return vkGetSwapchainStatusKHR(device, swapchain) == VK_ERROR_OUT_OF_DATE_KHR;
-    }
-
-    /**
         Gets the next texture in the swapchain
     */
     override
     NuvkTextureView getNext() {
-        auto frameAvailable = cast(VkSemaphore)this.getFrameAvailableSemaphore().getHandle();
+        
+        // Window is minimized or something, we got no images.
+        if (swapchain == VK_NULL_HANDLE) 
+            return null;
+
+        auto frameAvailableFence = this.getFrameAvailableFence();
+        auto frameAvailableFencePtr = cast(VkFence)this.getFrameAvailableFence().getHandle();
         auto device = cast(VkDevice)this.getOwner().getHandle();
 
-        uint cImageIndex = 0;
-
-        if (vkAcquireNextImageKHR(device, swapchain, ulong.max, frameAvailable, VK_NULL_HANDLE, &cImageIndex) == VK_SUCCESS) {
-            currentImageIndex = cImageIndex;
-            return views[currentImageIndex];
+        VkResult status = vkAcquireNextImageKHR(device, swapchain, ulong.max, VK_NULL_HANDLE, frameAvailableFencePtr, &currentImageIndex);
+        if (status == VK_ERROR_OUT_OF_DATE_KHR) {
+            this.update(true);
+            return this.getNext();
         }
+
+        if (status == VK_SUCCESS) {
+            frameAvailableFence.await(ulong.max);
+            frameAvailableFence.reset();
+            return this.views[currentImageIndex];
+        }
+        
         return null;
     }
 
     final
     NuvkTextureView getCurrent() {
-        return views[currentImageIndex];
+        return this.views[currentImageIndex];
     }
 
     /**

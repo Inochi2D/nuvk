@@ -10,6 +10,8 @@ import nuvk.core;
 import nuvk.spirv;
 import numem.all;
 
+import inmath;
+
 /**
     Whether the object is shared
 */
@@ -116,6 +118,11 @@ public:
         Creates a new command queue
     */
     abstract NuvkCommandQueue createQueue(NuvkQueueSpecialization specialization = NuvkQueueSpecialization.none);
+
+    /**
+        Waits for all queues to be idle.
+    */
+    abstract void awaitAll();
 
     /**
         Destroys a queue.

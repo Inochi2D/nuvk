@@ -37,6 +37,37 @@ VkCullModeFlagBits toVkCulling(NuvkCulling culling) @nogc {
     }
 }
 
+VkPipelineStageFlags toVkPipelineStage(NuvkRenderStage renderStage, NuvkBarrierScope scope_) @nogc {
+    VkPipelineStageFlags stage;
+    if (scope_ == NuvkBarrierScope.renderTargets) {
+        stage |= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    }
+
+    if (scope_ == NuvkBarrierScope.buffers) {
+        stage |= VK_PIPELINE_STAGE_VERTEX_INPUT_BIT;
+    }
+    
+    final switch(renderStage) {
+
+        case NuvkRenderStage.mesh:
+            stage |= VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT;
+            break;
+
+        case NuvkRenderStage.vertex:
+            stage |= VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
+            break;
+
+        case NuvkRenderStage.fragment:
+            stage |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+            break;
+    }
+    return stage;
+}
+
+VkAccessFlagBits getAccessFlag(bool read) {
+    return read ? VK_ACCESS_MEMORY_READ_BIT : VK_ACCESS_MEMORY_WRITE_BIT;
+}
+
 /**
     Command buffer
 */
@@ -63,19 +94,24 @@ private:
             nstring("Failed to allocate command buffer")
         );
 
+        VkCommandBufferBeginInfo beginInfo;
+        enforce(
+            vkBeginCommandBuffer(bufferHandle, &beginInfo) == VK_SUCCESS,
+            nstring("Failed to begin command buffer")
+        );
+
         return bufferHandle;
     }
 
     void freeCommandBuffers() {
 
-        // Await the fence
-        this.getInFlightFence().await(ulong.max);
-
         auto device = cast(VkDevice)this.getOwner().getHandle();
-        auto pool = (cast(NuvkVkCommandQueue)this.getOwner()).getCommandPool();
+        auto pool = (cast(NuvkVkCommandQueue)this.getQueue()).getCommandPool();
 
-        if (commandBuffers.size() > 0)
+        if (commandBuffers.size() > 0) {
             vkFreeCommandBuffers(device, pool, cast(uint)commandBuffers.size(), commandBuffers.data());
+            commandBuffers.resize(0);
+        }
     }
 
 protected:
@@ -123,35 +159,24 @@ public:
     }
 
     /**
-        Resets the command buffer.
-
-        This allows reusing the command buffer between frames.
-    */
-    override
-    bool reset() {
-        this.freeCommandBuffers();
-        return true;
-    }
-
-    /**
         Presents the surface
     */
     override
     void present(NuvkSurface surface) {
-        this.getInFlightFence().await(ulong.max);
+        enforce(
+            this.getStatus() == NuvkCommandBufferStatus.submitted,
+            nstring("Nothing to present.")
+        );
 
-        auto device = cast(VkDevice)this.getOwner().getHandle();
         auto nuvkswapchain = (cast(NuvkVkSwapchain)surface.getSwapchain());
         auto swapchain = cast(VkSwapchainKHR)nuvkswapchain.getHandle();
         uint index = nuvkswapchain.getCurrentImageIndex();
         auto queue = cast(VkQueue)this.getQueue().getHandle();
 
         auto submitFinishSemaphore = cast(VkSemaphore)this.getSubmissionFinished().getHandle();
-        auto frameAvailable = cast(VkSemaphore)nuvkswapchain.getFrameAvailableSemaphore().getHandle();
 
-        VkSemaphore[2] waitSemaphores = [
+        VkSemaphore[1] waitSemaphores = [
             submitFinishSemaphore,
-            frameAvailable,
         ];
 
         VkPresentInfoKHR presentInfo;
@@ -160,8 +185,10 @@ public:
         presentInfo.pImageIndices = &index;
         presentInfo.waitSemaphoreCount = cast(uint)waitSemaphores.length;
         presentInfo.pWaitSemaphores = waitSemaphores.ptr;
-
-        vkQueuePresentKHR(cast(VkQueue)this.getQueue().getHandle(), &presentInfo);
+        
+        if (vkQueuePresentKHR(queue, &presentInfo) == VK_ERROR_OUT_OF_DATE_KHR) {
+            this.reset();
+        }
     }
 
     /**
@@ -180,8 +207,8 @@ public:
         submitInfo.commandBufferCount = cast(uint)commandBuffers.size();
         submitInfo.pCommandBuffers = commandBuffers.data();
 
-        vkQueueSubmit(queue, 1, &submitInfo, cast(VkFence)this.getInFlightFence().getHandle());
         this.setStatus(NuvkCommandBufferStatus.submitted);
+        vkQueueSubmit(queue, 1, &submitInfo, cast(VkFence)this.getInFlightFence().getHandle());
     }
 }
 
@@ -245,10 +272,6 @@ private:
 
         VkRenderingInfo renderInfo;
         renderInfo.layerCount = 1;
-        renderInfo.renderArea.offset.x = descriptor.renderArea.x;
-        renderInfo.renderArea.offset.y = descriptor.renderArea.y;
-        renderInfo.renderArea.extent.width = descriptor.renderArea.width;
-        renderInfo.renderArea.extent.height = descriptor.renderArea.height;
 
         weak_vector!VkImageMemoryBarrier memoryBarriers;
 
@@ -260,9 +283,12 @@ private:
         {
             foreach(i; 0..descriptor.colorAttachments.size()) {
                 NuvkVkTextureView nuvkTextureView = cast(NuvkVkTextureView)descriptor.colorAttachments[i].texture;
+                NuvkTexture nuvkTexture = nuvkTextureView.getTexture();
+                
+                // Ensure that the clip area is always within valid bounds.
+                descriptor.renderArea.clip(recti(0, 0, nuvkTexture.getWidth(), nuvkTexture.getHeight()));
 
-                colorAttachments[i].imageView = 
-                    cast(VkImageView)nuvkTextureView.getHandle();
+                colorAttachments[i].imageView                   = cast(VkImageView)nuvkTextureView.getHandle();
                 colorAttachments[i].imageLayout                 = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
                 colorAttachments[i].loadOp                      = descriptor.colorAttachments[i].loadOp.toVkLoadOp();
                 colorAttachments[i].storeOp                     = descriptor.colorAttachments[i].storeOp.toVkStoreOp();
@@ -298,8 +324,13 @@ private:
         // Depth-stencil attachments.
         {
             if (descriptor.depthStencilAttachment.texture) {
-                depthStencilAttachment.imageView = 
-                    cast(VkImageView)descriptor.depthStencilAttachment.texture.getHandle();
+                NuvkVkTextureView nuvkTextureView = cast(NuvkVkTextureView)descriptor.depthStencilAttachment.texture;
+                NuvkTexture nuvkTexture = nuvkTextureView.getTexture();
+                
+                // Ensure that the clip area is always within valid bounds.
+                descriptor.renderArea.clip(recti(0, 0, nuvkTexture.getWidth(), nuvkTexture.getHeight()));
+                
+                depthStencilAttachment.imageView                        = cast(VkImageView)nuvkTextureView.getHandle();
                 depthStencilAttachment.imageLayout                      = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR;
                 depthStencilAttachment.loadOp                           = descriptor.depthStencilAttachment.loadOp.toVkLoadOp();
                 depthStencilAttachment.storeOp                          = descriptor.depthStencilAttachment.storeOp.toVkStoreOp();
@@ -318,16 +349,15 @@ private:
             }
         }
 
-        VkCommandBufferBeginInfo beginInfo;
-        enforce(
-            vkBeginCommandBuffer(writeBuffer, &beginInfo) == VK_SUCCESS,
-            nstring("Failed to begin command buffer")
-        );
+        renderInfo.renderArea.offset.x = descriptor.renderArea.x;
+        renderInfo.renderArea.offset.y = descriptor.renderArea.y;
+        renderInfo.renderArea.extent.width = descriptor.renderArea.width;
+        renderInfo.renderArea.extent.height = descriptor.renderArea.height;
 
         // Swap image type
         vkCmdPipelineBarrier(
             writeBuffer,
-            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
             VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
             0,
             0,
@@ -368,7 +398,7 @@ private:
         vkCmdPipelineBarrier(
             writeBuffer,
             VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
             0,
             0,
             null,

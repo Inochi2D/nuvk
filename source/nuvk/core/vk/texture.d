@@ -417,8 +417,16 @@ public:
     /**
         Constructor
     */
-    this(NuvkDevice device, VkImage image, VkFormat format) {
-        super(device, format.toNuvkTextureFormat(), NuvkProcessSharing.processLocal);
+    this(NuvkDevice device, VkImage image, VkFormat format, vec2u size) {
+
+        // Descriptor
+        NuvkTextureDescriptor descriptor;
+        descriptor.format = format.toNuvkTextureFormat();
+        descriptor.extents.width = size.x;
+        descriptor.extents.height = size.y;
+
+        super(device, descriptor, NuvkProcessSharing.processLocal);
+
         this.isUserOwned = false;
         this.image = image;
         this.setHandle(this.image);

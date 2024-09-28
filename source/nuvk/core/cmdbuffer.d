@@ -171,6 +171,11 @@ enum NuvkCommandBufferUsage {
 enum NuvkRenderStage {
 
     /**
+        Mesh shader stage
+    */
+    mesh,
+
+    /**
         Vertex shader stage
     */
     vertex,
@@ -179,6 +184,27 @@ enum NuvkRenderStage {
         Fragment shader stage
     */
     fragment,
+}
+
+/**
+    Scope of a barrier
+*/
+enum NuvkBarrierScope {
+
+    /**
+        Barrier affects buffers
+    */
+    buffers,
+    
+    /**
+        Barrier affects render targets
+    */
+    renderTargets,
+    
+    /**
+        Barrier affects textures
+    */
+    textures
 }
 
 /**
@@ -321,17 +347,23 @@ private:
 
     void updateStatus() {
         if (this.getStatus() == NuvkCommandBufferStatus.submitted) {
+            
             if (inFlightFence.isSignaled()) {
+
+                // Rendering is completed.
                 this.setStatus(NuvkCommandBufferStatus.idle);
-                this.onBeginNewPass();
+                inFlightFence.reset();
             }
         }
     }
 
     bool beginPass() {
+
         if (this.getStatus() == NuvkCommandBufferStatus.idle) {
+
+            // Buffer was ready, begin new pass.
             this.setStatus(NuvkCommandBufferStatus.recording);
-            inFlightFence.reset();
+            this.onBeginNewPass();
         }
 
         return this.getStatus() == NuvkCommandBufferStatus.recording;
@@ -394,6 +426,8 @@ public:
         this.status = NuvkCommandBufferStatus.idle;
 
         this.inFlightFence = device.createFence();
+        this.inFlightFence.reset();
+
         this.submissionFinished = device.createSemaphore();
     }
 
@@ -453,10 +487,22 @@ public:
 
     /**
         Resets the command buffer.
-
-        This allows reusing the command buffer between frames.
     */
-    abstract bool reset();
+    final
+    void reset() {
+        auto device = this.getOwner();
+        device.awaitAll();
+        
+        // Reset synchronization
+        nogc_delete(submissionFinished);
+        this.inFlightFence.reset();
+        this.submissionFinished = device.createSemaphore();
+
+        // Reset status.
+        this.setStatus(NuvkCommandBufferStatus.idle);
+        this.updateStatus();
+        this.beginPass();
+    }
 
     /**
         Presents the surface
@@ -475,8 +521,10 @@ public:
     */
     final
     void awaitCompletion(ulong timeout = ulong.max) {
-        inFlightFence.await(timeout);
-        inFlightFence.reset();
+        if (this.getStatus() == NuvkCommandBufferStatus.submitted) {
+            inFlightFence.await(timeout);
+            this.updateStatus();
+        }
     }
 
     /**

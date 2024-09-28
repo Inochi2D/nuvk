@@ -47,13 +47,12 @@ private:
     NuvkSwapchain swapchain;
     NuvkPresentMode presentMode;
     NuvkTextureFormat textureFormat;
-    vec2i surfaceSize;
+    vec2u lastSize;
 
-    void updateSwapchainState(bool parentChanged = false) {
-        if (!swapchain)
+    void updateSwapchainState(bool stateChanged = false) {
+        if (!swapchain) 
             swapchain = this.onCreateSwapchain();
-
-        if (parentChanged || swapchain.isSwapchainOutdated())
+        else if (stateChanged)
             swapchain.update();
     }
 
@@ -134,11 +133,28 @@ public:
     }
 
     /**
+        Gets the size of the surface
+    */
+    abstract vec2u getSize();
+
+    /**
+        Notify the surface that it has been changed.
+        This should be called when the window is resized,
+        or restored from a minimized state.
+
+        This will invalidate the swapchain!
+    */
+    final
+    void notifyChanged() {
+        this.updateSwapchainState(true);
+    }
+
+    /**
         Gets the swapchain for the surface
     */
     final
     NuvkSwapchain getSwapchain() {
-        this.updateSwapchainState(true);
+        this.updateSwapchainState();
         return swapchain;
     }
 }
@@ -151,7 +167,7 @@ class NuvkSwapchain : NuvkDeviceObject {
 @nogc:
 private:
     NuvkSurface surface;
-    NuvkSemaphore frameAvailable;
+    NuvkFence frameAvailableFence;
 
 protected:
     
@@ -159,12 +175,20 @@ protected:
         Updates the swapchain with new information from the
         surface.
     */
-    abstract void update();
+    abstract void update(bool forceRecreate=false);
+
+    /**
+        Resets the synchronization objects.
+    */
+    final
+    void resetSyncObjects() {
+        frameAvailableFence.reset();
+    }
 
 public:
 
     ~this() {
-        nogc_delete(frameAvailable);
+        nogc_delete(frameAvailableFence);
     }
 
     /**
@@ -173,13 +197,10 @@ public:
     this(NuvkDevice device, NuvkSurface surface) {
         super(device);
         this.surface = surface;
-        this.frameAvailable = device.createSemaphore();
-    }
 
-    /**
-        Whether the swapchain is outdated.
-    */
-    abstract bool isSwapchainOutdated();
+        this.frameAvailableFence = device.createFence();
+        frameAvailableFence.reset();
+    }
 
     /**
         Gets the surface this swapchain is attached to.
@@ -193,8 +214,8 @@ public:
         Gets the frame-available semaphore bound to this swapchain.
     */
     final
-    NuvkSemaphore getFrameAvailableSemaphore() {
-        return frameAvailable;
+    NuvkFence getFrameAvailableFence() {
+        return frameAvailableFence;
     }
 
     /**

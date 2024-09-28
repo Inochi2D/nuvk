@@ -171,6 +171,14 @@ public:
     }
 
     /**
+        Waits for all queues to be idle.
+    */
+    override
+    void awaitAll() {
+        vkDeviceWaitIdle(device);
+    }
+
+    /**
         Creates a new command queue
     */
     override
