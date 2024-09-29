@@ -1,26 +1,26 @@
 DLSL:
 
 # Module Scope
-Module              < (Comment / DeclGlobal)+ eoi
+Module              < (Comment / %DeclGlobal)+ eoi
 
 # Attributes
-AttribList          < (AttribUDA / AttribBuiltin)*
+AttribList          < %(AttribUDA / AttribBuiltin)*
 AttribUDA           <- :'@' identifier ;ParamList(Expr)?
-AttribBuiltin       <- ('in' / 'out' / 'const') :blank
+AttribBuiltin       <- ('in' / 'out' / 'const' / 'mediump' / 'highp' / 'lowp') :blank
 
 # Declarations
-DeclGlobal          <- DeclImport / (AttribList? (DeclStruct / DeclVar / DeclFunc))
-DeclFuncLocal       <- DeclImport / (AttribList? (DeclVar))
-DeclStruct          < :'struct' Identifier Block(AttribList? DeclVar)
+DeclGlobal          < DeclImport / (AttribList? (DeclStruct / %DeclVar / DeclFunc))
+DeclFuncLocal       < DeclImport / (AttribList? (%DeclVar))
+DeclStruct          < :'struct' Identifier Block(AttribList? %DeclVar)
 DeclVar             < (DeclVarArray / DeclVarSingle) eos
-DeclVarSingle       < TypeBasic Identifier ('=' Expr)?
+DeclVarSingle       < %Type Identifier ('=' Expr)?
 DeclVarArray        < TypeArray Identifier (('=' ExprArrayAssign) / ';')
-DeclImport          <- :'import' List(Identifier, '.') eos
+DeclImport          < :'import' %List(identifier, '.') eos
 
 # Functions
-DeclFunc            < Type Identifier ParamList(FuncParam) Block(FuncBody)
-FuncParam           < (AttribList? Type Identifier)
-FuncBody            < Stmt*
+DeclFunc            < %Type Identifier ParamList(FuncParam) Block(%FuncBody)
+FuncParam           < (AttribList? %Type Identifier)
+FuncBody            < (%Stmt)*
 
 # Base Items
 eos                 <: ';'
@@ -30,9 +30,30 @@ CommentMultiLine    <- :'/*' ~(!"*/" .)* :'*/'
 CommentDoc          <- :'/**' ~(!"*/" .)* :'*/'
 
 # Types
-TypeArray           <- ;TypeBasic :'[' ;Integer? :']'
-TypeBasic           <- identifier :spacing+
-Type                <~ TypeArray / TypeBasic
+Type                < (TypeBasic / TypeVector / TypeMatrix / TypeBasic / TypeOpaque / TypeUserDefined)
+TypeArray           <- %Type :'[' ;Integer? :']'
+TypeVector          <- (
+    'bvec2' / 'bvec3' / 'bvec4' / 
+    'ivec2' / 'ivec3' / 'ivec4' / 
+    'uvec2' / 'uvec3' / 'uvec4' / 
+    'dvec2' / 'dvec3' / 'dvec4' / 
+    'vec2'  / 'vec3'  /  'vec4'
+)
+
+TypeMatrix          <- (
+    'dmat4x4' / 'dmat3x4' / 'dmat2x4' /
+    'dmat4x3' / 'dmat3x3' / 'dmat2x3' /
+    'dmat4x2' / 'dmat3x2' / 'dmat2x2' /
+     'mat4x4' /  'mat3x4' /  'mat2x4' /
+     'mat4x3' /  'mat3x3' /  'mat2x3' /
+     'mat4x2' /  'mat3x2' /  'mat2x2' /
+      'dmat4' /   'dmat3' /   'dmat2' /
+       'mat4' /    'mat3' /    'mat2'
+)
+TypeBasic           <- 'float' / 'double' / 'uint' / 'int' / 'bool' 
+TypeOpaque          <- 'texture' /  'sampler2DShadow' / 'sampler1D' / 'sampler2D' / 'sampler3D' / 'samplerCube' 
+TypeUserDefined     <- identifier :spacing+
+
 
 # Identifiers
 Identifier          <~ (identifier :spacing+)
@@ -45,15 +66,15 @@ True                <~ "true"
 False               <~ "false"
 
 # Blocks and parameters
-Block(ChildT)       < :'{' (Comment? ChildT Comment?)* :'}'
-ParamList(ListT)    < :'(' OptList(ListT, ',') :')'
-ForeachPList        < :'(' (Type Identifier / Identifier) :';' ForeachRange :')'
+Block(ChildT)       < :'{' (Comment? %ChildT Comment?)* :'}'
+ParamList(ListT)    < :'(' %OptList(ListT, ',') :')'
+ForeachPList        < :'(' (%Type Identifier / Identifier) :';' ForeachRange :')'
 ForeachRange        < (Expr :'..' Expr) / Expr
 ForPList            < :'(' StmtDecl :';' Expr :'..' StmtAssign :')'
 
 # Statements
-Stmt                <  (StmtIf / StmtForeach / StmtFor / StmtReturn / StmtDiscard / StmtDecl / StmtAssign / StmtExpr)
-StmtDecl            <  DeclFuncLocal
+Stmt                <  %(StmtIf / StmtForeach / StmtFor / StmtReturn / StmtDiscard / StmtDecl / StmtAssign / StmtExpr)
+StmtDecl            <  %DeclFuncLocal
 StmtAssign          <  IdentifierList :'=' Expr eos
 StmtExpr            <  Expr eos
 StmtReturn          <^ :'return' Expr? eos
@@ -88,5 +109,9 @@ ExprCall            < IdentifierList ParamList(Expr)
 ExprArrayAssign     < :'[' List(Expr, ',') :']'
 
 # Utilities
-OptList(Elem, Sep)  <- Elem? ((:Sep Elem) / :Sep)*  # List that allows 0 or more elements
-List(Elem, Sep)     <- Elem ((:Sep Elem) / :Sep)*   # List that allows 1 or more elements
+
+# List that allows 0 or more elements
+OptList(Elem, Sep)  <- Elem? ((:Sep Elem) / :Sep)*
+
+# List that allows 1 or more elements
+List(Elem, Sep)     <- Elem ((:Sep Elem) / :Sep)*

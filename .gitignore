@@ -19,3 +19,6 @@ vktest-test-*
 out/
 
 *.spv
+
+# Ignore for now
+dlsl-gen
