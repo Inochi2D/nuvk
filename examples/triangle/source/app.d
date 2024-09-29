@@ -178,8 +178,8 @@ void main(string[] args) @nogc {
     );
 
     NuvkGraphicsPipelineDescriptor graphicsShaderDesc;
-    graphicsShaderDesc.shaders ~= vertexShader;
-    graphicsShaderDesc.shaders ~= fragmentShader;
+    graphicsShaderDesc.vertexShader = vertexShader;
+    graphicsShaderDesc.fragmentShader = fragmentShader;
     graphicsShaderDesc.attributes ~= NuvkVertexAttribute(
         0,
         0,

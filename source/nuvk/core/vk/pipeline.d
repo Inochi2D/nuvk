@@ -86,28 +86,41 @@ private:
         weak_vector!VkVertexInputAttributeDescription attributeDescriptions;
         
         // Shader state
-        foreach(shader; graphicsInfo.shaders) {
+        {
+            if (auto vertex = cast(NuvkVkShader)graphicsInfo.vertexShader) {
+                enforce(
+                    vertex.getStage() == NuvkShaderStage.vertex,
+                    nstring("Shader is not a vertex shader!")
+                );
 
-            if (auto vkshader = cast(NuvkVkShader)shader) {
                 VkPipelineShaderStageCreateInfo shaderStageInfo;
-                shaderStageInfo.stage = shader.getStage().toVkShaderStage();
-                shaderStageInfo.module_ = cast(VkShaderModule)vkshader.getHandle();
-                shaderStageInfo.pName = vkshader.getEntrypoint().ptr;
+                shaderStageInfo.stage = vertex.getStage().toVkShaderStage();
+                shaderStageInfo.module_ = cast(VkShaderModule)vertex.getHandle();
+                shaderStageInfo.pName = vertex.getEntrypoint().ptr;
 
                 shaderStates ~= shaderStageInfo;
+                descriptorSetLayouts ~= vertex.getDescriptorSetLayout();
+            }
+
+            if (auto fragment = cast(NuvkVkShader)graphicsInfo.fragmentShader) {
+                enforce(
+                    fragment.getStage() == NuvkShaderStage.fragment,
+                    nstring("Shader is not a fragment shader!")
+                );
+
+                VkPipelineShaderStageCreateInfo shaderStageInfo;
+                shaderStageInfo.stage = fragment.getStage().toVkShaderStage();
+                shaderStageInfo.module_ = cast(VkShaderModule)fragment.getHandle();
+                shaderStageInfo.pName = fragment.getEntrypoint().ptr;
+
+                shaderStates ~= shaderStageInfo;
+                descriptorSetLayouts ~= fragment.getDescriptorSetLayout();
             }
         }
 
         // Pipeline Layout
         {
             VkPipelineLayoutCreateInfo pipelineLayoutInfo;
-
-            // Get descriptor set layouts
-            foreach(shader; graphicsInfo.shaders) {
-                if (auto vkshader = cast(NuvkVkShader)shader) {
-                    descriptorSetLayouts ~= vkshader.getDescriptorSetLayout();
-                }
-            }
 
             pipelineLayoutInfo.setLayoutCount = cast(uint)descriptorSetLayouts.size();
             pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();

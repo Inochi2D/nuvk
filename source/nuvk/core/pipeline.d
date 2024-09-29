@@ -91,9 +91,14 @@ struct NuvkVertexBinding {
 struct NuvkGraphicsPipelineDescriptor {
 @nogc:
     /**
-        The shader stages
+        Vertex shader
     */
-    weak_vector!NuvkShader shaders;
+    NuvkShader vertexShader;
+
+    /**
+        Fragment shader
+    */
+    NuvkShader fragmentShader;
 
     /**
         Vertex bindings
@@ -113,16 +118,10 @@ struct NuvkGraphicsPipelineDescriptor {
         Copy constructor
     */
     this(ref NuvkGraphicsPipelineDescriptor createInfo) nothrow {
-        this.shaders = weak_vector!NuvkShader(createInfo.shaders[]);
+        this.vertexShader = createInfo.vertexShader;
+        this.fragmentShader = createInfo.fragmentShader;
         this.bindings = vector!NuvkVertexBinding(createInfo.bindings[]);
         this.attributes = vector!NuvkVertexAttribute(createInfo.attributes[]);
-    }
-
-    /**
-        Destructor
-    */
-    ~this() nothrow {
-        nogc_delete(this.shaders);
     }
 }
 
