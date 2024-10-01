@@ -6,19 +6,30 @@ from typing import *
 class SpirvSpecScanner:
     
     """Constructor"""
-    def __init__(self, fileName: str) -> None:
+    def __init__(self, grammarFile: str, opcodeFile: str) -> None:
         
         # Load JSON
-        with open(file=fileName, mode="r") as file:
-            self.json = json.load(file)
+        with open(file=grammarFile, mode="r") as file:
+            self.grammarJson = json.load(file)
+
+        with open(file=opcodeFile, mode="r") as file:
+            self.opcodeJson = json.load(file)
         
         # Scan instruction list
-        self.instructions = self.json["instructions"]
+        self.instructions = self.grammarJson["instructions"]
+        self.opcodeList = self.findOpcodes(self.opcodeJson)
         self.opcodes = dict()
         self.opnames = list[str]()
+        self.seenOps = set[int]()
         for instr in self.instructions:
             self.opnames.append(instr["opname"])
             self.opcodes[instr["opname"]] = instr
+
+    def findOpcodes(self, input: dict) -> dict:
+        for item in input["spv"]["enum"]:
+            if item["Name"] == "Op":
+                return item["Values"]
+        return None
 
     """Gets whether the opcode has a result type"""
     def getHasResultType(self, opcode: str) -> bool:
@@ -47,6 +58,14 @@ class SpirvSpecScanner:
     """Gets a list of the opcode names."""
     def getOpNames(self) -> list[str]:
         return self.opnames
+    
+    """Gets whether an opcode has already been seen."""
+    def isOpSeen(self, opcode: str) -> bool:
+        opcodeId = self.opcodeList[opcode]
+        if opcodeId in self.seenOps:
+            return True
+        self.seenOps.add(opcodeId)
+        return False
 
 class DCodeWriter:
     def __init__(self) -> None:
@@ -105,11 +124,11 @@ class DCodeWriter:
     def getContent(self) -> str:
         return self.code
 
-if (len(sys.argv) != 3):
-    print("gen-spv-reflection.py [source json] [destination D file]")
+if (len(sys.argv) != 2):
+    print("gen-spv-reflection.py [destination D file]")
     exit(-1)
 
-scanner = SpirvSpecScanner(sys.argv[1])
+scanner = SpirvSpecScanner("spirv.core.grammar.json", "spirv.json")
 writer = DCodeWriter()
 
 print("Processing, please wait...")
@@ -133,6 +152,8 @@ toWrite["hasResult"] = list[str]()
 toWrite["hasResultType"] = list[str]()
 
 for opcode in scanner.getOpNames():
+    if scanner.isOpSeen(opcode):
+        continue
     hasResult = scanner.getHasResult(opcode)
     hasResultType = scanner.getHasResultType(opcode)
     isTypeDecl = scanner.getOpClass(opcode) == "Type-Declaration"
@@ -150,7 +171,7 @@ for opcode in scanner.getOpNames():
 for key, opcodes in toWrite.items():
     writer.writeSwitchFunc(key, docComments[key], opcodes)
 
-with open(file=sys.argv[2], mode="w") as file:
+with open(file=sys.argv[1], mode="w") as file:
     file.write(writer.getContent())
 
 print("Done!")
