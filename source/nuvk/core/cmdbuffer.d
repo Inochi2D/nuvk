@@ -687,6 +687,16 @@ public:
     abstract void setIndexBuffer(NuvkBuffer buffer, uint offset, NuvkBufferIndexType indexType);
 
     /**
+        Sets a texture for the fragment shader
+    */
+    abstract void setFragmentTexture(NuvkTexture texture, int index);
+
+    /**
+        Sets a sampler for the fragment shader
+    */
+    abstract void setFragmentSampler(NuvkSampler sampler, int index);
+
+    /**
         Encodes a command which makes the command buffer draw
         the currently bound render state.
     */
@@ -702,8 +712,13 @@ public:
     /**
         Encodes a rendering barrier that enforces 
         a specific order for read/write operations.
+
+        Parameters:
+            `scope_` The resource scope to wait for..
+            `after` the stage which this barrier will be **after**
+            `before` the **subsequent** stage after this barrier. 
     */
-    abstract void waitBarrier(NuvkResource resource, NuvkRenderStage before, NuvkRenderStage after);
+    abstract void waitFor(NuvkBarrierScope scope_, NuvkRenderStage after, NuvkRenderStage before);
 }
 
 /**
@@ -745,8 +760,13 @@ public:
     /**
         Encodes a rendering barrier that enforces 
         a specific order for read/write operations.
+
+        Parameters:
+            `resource` a Nuvk resource, such as a texture or buffer.
+            `after` the stage which this barrier will be **after**
+            `before` the **subsequent** stage after this barrier. 
     */
-    abstract void waitBarrier(NuvkResource resource, NuvkRenderStage before, NuvkRenderStage after);
+    abstract void waitBarrier(NuvkResource resource, NuvkRenderStage after, NuvkRenderStage before);
 }
 
 /**

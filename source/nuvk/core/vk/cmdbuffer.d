@@ -556,7 +556,7 @@ public:
     }
 
     /**
-        Sets the vertex buffer in use.
+        Sets the vertex buffer to use.
     */
     override
     void setVertexBuffer(NuvkBuffer buffer, uint offset, int index) {
@@ -566,11 +566,26 @@ public:
     }
 
     /**
-        Sets the vertex buffer in use.
+        Sets the index buffer to use.
     */
     override
     void setIndexBuffer(NuvkBuffer buffer, uint offset, NuvkBufferIndexType indexType) {
         vkCmdBindIndexBuffer(writeBuffer, cast(VkBuffer)buffer.getHandle(), offset, indexType.toVkIndexType());
+    }
+    /**
+        Sets a texture for the fragment shader
+    */
+    override
+    void setFragmentTexture(NuvkTexture texture, int index) {
+        
+    }
+
+    /**
+        Sets a sampler for the fragment shader
+    */
+    override
+    void setFragmentSampler(NuvkSampler sampler, int index) {
+
     }
 
     /**
@@ -589,7 +604,7 @@ public:
     */
     override
     void drawIndexed(NuvkPrimitive primitive, uint offset, uint count) {
-        
+        vkCmdDrawIndexed(writeBuffer, count, 1, 0, offset, 0);
     }
 
     /**
@@ -597,8 +612,23 @@ public:
         a specific order for read/write operations.
     */
     override
-    void waitBarrier(NuvkResource resource, NuvkRenderStage before, NuvkRenderStage after) {
+    void waitFor(NuvkBarrierScope scope_, NuvkRenderStage after, NuvkRenderStage before) {
+        VkMemoryBarrier barrier;
+        barrier.srcAccessMask = VK_ACCESS_MEMORY_WRITE_BIT;
+        barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
 
+        vkCmdPipelineBarrier(
+            writeBuffer,
+            after.toVkPipelineStage(scope_),
+            before.toVkPipelineStage(scope_),
+            0,
+            1,
+            &barrier,
+            0,
+            null,
+            0,
+            null
+        );
     }
 }
 
