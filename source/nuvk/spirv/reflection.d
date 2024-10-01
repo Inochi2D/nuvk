@@ -38,7 +38,6 @@ bool isTypeDeclaration(Op code) @nogc {
         case Op.OpTypeRayQueryKHR:
         case Op.OpTypeHitObjectNV:
         case Op.OpTypeAccelerationStructureKHR:
-        case Op.OpTypeAccelerationStructureNV:
         case Op.OpTypeCooperativeMatrixNV:
         case Op.OpTypeBufferSurfaceINTEL:
         case Op.OpTypeStructContinuedINTEL:
@@ -365,17 +364,11 @@ bool hasResult(Op code) @nogc {
         case Op.OpExtInstWithForwardRefsKHR:
         case Op.OpConvertUToAccelerationStructureKHR:
         case Op.OpSDot:
-        case Op.OpSDotKHR:
         case Op.OpUDot:
-        case Op.OpUDotKHR:
         case Op.OpSUDot:
-        case Op.OpSUDotKHR:
         case Op.OpSDotAccSat:
-        case Op.OpSDotAccSatKHR:
         case Op.OpUDotAccSat:
-        case Op.OpUDotAccSatKHR:
         case Op.OpSUDotAccSat:
-        case Op.OpSUDotAccSatKHR:
         case Op.OpTypeCooperativeMatrixKHR:
         case Op.OpCooperativeMatrixLoadKHR:
         case Op.OpCooperativeMatrixMulAddKHR:
@@ -433,10 +426,8 @@ bool hasResult(Op code) @nogc {
         case Op.OpFetchMicroTriangleVertexPositionNV:
         case Op.OpFetchMicroTriangleVertexBarycentricNV:
         case Op.OpReportIntersectionKHR:
-        case Op.OpReportIntersectionNV:
         case Op.OpRayQueryGetIntersectionTriangleVertexPositionsKHR:
         case Op.OpTypeAccelerationStructureKHR:
-        case Op.OpTypeAccelerationStructureNV:
         case Op.OpTypeCooperativeMatrixNV:
         case Op.OpCooperativeMatrixLoadNV:
         case Op.OpCooperativeMatrixMulAddNV:
@@ -985,17 +976,11 @@ bool hasResultType(Op code) @nogc {
         case Op.OpExtInstWithForwardRefsKHR:
         case Op.OpConvertUToAccelerationStructureKHR:
         case Op.OpSDot:
-        case Op.OpSDotKHR:
         case Op.OpUDot:
-        case Op.OpUDotKHR:
         case Op.OpSUDot:
-        case Op.OpSUDotKHR:
         case Op.OpSDotAccSat:
-        case Op.OpSDotAccSatKHR:
         case Op.OpUDotAccSat:
-        case Op.OpUDotAccSatKHR:
         case Op.OpSUDotAccSat:
-        case Op.OpSUDotAccSatKHR:
         case Op.OpCooperativeMatrixLoadKHR:
         case Op.OpCooperativeMatrixMulAddKHR:
         case Op.OpCooperativeMatrixLengthKHR:
@@ -1050,7 +1035,6 @@ bool hasResultType(Op code) @nogc {
         case Op.OpFetchMicroTriangleVertexPositionNV:
         case Op.OpFetchMicroTriangleVertexBarycentricNV:
         case Op.OpReportIntersectionKHR:
-        case Op.OpReportIntersectionNV:
         case Op.OpRayQueryGetIntersectionTriangleVertexPositionsKHR:
         case Op.OpCooperativeMatrixLoadNV:
         case Op.OpCooperativeMatrixMulAddNV:
