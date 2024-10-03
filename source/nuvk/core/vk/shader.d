@@ -32,6 +32,43 @@ VkShaderStageFlagBits toVkShaderStage(NuvkShaderStage stage) @nogc {
     return cast(VkShaderStageFlagBits)outStage;
 }
 
+bool shouldBeInDescriptor(SpvcResourceType type) @nogc {
+    switch(type) {
+        case SpvcResourceType.separateSamplers:
+        case SpvcResourceType.sampledImages:
+        case SpvcResourceType.separateImages:
+        case SpvcResourceType.storageImages:
+        case SpvcResourceType.uniformBuffers:
+        case SpvcResourceType.storageBuffers:
+        case SpvcResourceType.accelerationStructure:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+VkDescriptorType toVkDescriptorType(SpvcResourceType type) @nogc {
+    switch(type) {
+        case SpvcResourceType.separateSamplers:
+            return VK_DESCRIPTOR_TYPE_SAMPLER;
+        case SpvcResourceType.sampledImages:
+            return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        case SpvcResourceType.separateImages:
+            return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+        case SpvcResourceType.storageImages:
+            return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+        case SpvcResourceType.uniformBuffers:
+            return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        case SpvcResourceType.storageBuffers:
+            return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        case SpvcResourceType.accelerationStructure:
+            return VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
+
+        default:
+            return VK_DESCRIPTOR_TYPE_MAX_ENUM;
+    }
+}
 
 /**
     An individual shader
@@ -41,6 +78,8 @@ class NuvkVkShader : NuvkShader {
 private:
     VkShaderModule shaderModule;
     VkDescriptorSetLayout descriptorSetLayout;
+
+    vector!VkDescriptorSetLayoutBinding layoutBindings;
     nstring entrypoint;
 
     void initializeShader() {
@@ -58,25 +97,46 @@ private:
         this.setHandle(shaderModule);
     }
 
-    void initializeDiscriptors() {
-        auto device = cast(VkDevice)this.getOwner().getHandle();
-        VkDescriptorSetLayoutCreateInfo descriptorLayoutCreateInfo;
-        descriptorLayoutCreateInfo.bindingCount = 0;
-
-        enforce(
-            vkCreateDescriptorSetLayout(device, &descriptorLayoutCreateInfo, null, &descriptorSetLayout) == VK_SUCCESS,
-            nstring("Vulkan descriptor set layout creation failed!")
-        );
-
-    }
-
     void parseInfo(NuvkSpirvModule module_, NuvkShaderStage stage) {
         module_.parse();
-        auto entrypoint_ = module_.getEntrypoint();
-        if (entrypoint_.length > 0)
-            this.entrypoint = nstring(entrypoint_);
-        else
-            this.entrypoint = nstring(stage.getEntrypointFromStage()[]);
+        
+        // Entrypoint
+        {
+            auto entrypoint_ = module_.getEntrypoint();
+            if (entrypoint_.length > 0)
+                this.entrypoint = nstring(entrypoint_);
+            else
+                this.entrypoint = nstring(stage.getEntrypointFromStage()[]);
+        }
+
+        // Descriptor
+        {
+            auto device = cast(VkDevice)this.getOwner().getHandle();
+
+            foreach(uint set; module_.getSetIter()) {
+                NuvkSpirvDescriptor[] descriptors = module_.getDescriptors(set);
+                
+                foreach(ref NuvkSpirvDescriptor descriptor; descriptors) {
+                    if (descriptor.type.shouldBeInDescriptor()) {
+                        VkDescriptorSetLayoutBinding binding;
+                        binding.binding = descriptor.binding;
+                        binding.descriptorCount = 1;
+                        binding.stageFlags = stage.toVkShaderStage();
+                        binding.descriptorType = descriptor.type.toVkDescriptorType();
+                        layoutBindings ~= binding;
+                    }
+                }
+            }
+
+            VkDescriptorSetLayoutCreateInfo descriptorLayoutCreateInfo;
+            descriptorLayoutCreateInfo.bindingCount = cast(uint)layoutBindings.size();
+            descriptorLayoutCreateInfo.pBindings = layoutBindings.data();
+
+            enforce(
+                vkCreateDescriptorSetLayout(device, &descriptorLayoutCreateInfo, null, &descriptorSetLayout) == VK_SUCCESS,
+                nstring("Vulkan descriptor set layout creation failed!")
+            );
+        }
     }
 
 public:
@@ -97,7 +157,6 @@ public:
         super(device, module_, stage);
         this.parseInfo(module_, stage);
         this.initializeShader();
-        this.initializeDiscriptors();
     }
 
     /**

@@ -6,6 +6,7 @@
 */
 
 module nuvk.core.vk.cmdbuffer;
+import nuvk.core.vk.internal.descpoolmgr;
 import nuvk.core.vk;
 import nuvk.core;
 import numem.all;
@@ -74,6 +75,7 @@ VkAccessFlagBits getAccessFlag(bool read) {
 class NuvkVkCommandBuffer : NuvkCommandBuffer {
 @nogc:
 private:
+    NuvkDescriptorPoolManager pools;
 
     // Normal use command buffers
     weak_vector!VkCommandBuffer commandBuffers;
@@ -119,6 +121,7 @@ protected:
     override
     void onBeginNewPass() {
         this.freeCommandBuffers();
+        pools.reset();
     }
 
     /**
@@ -149,6 +152,7 @@ public:
 
     ~this() {
         this.freeCommandBuffers();
+        nogc_delete(this.pools);
     }
 
     /**
@@ -156,6 +160,7 @@ public:
     */
     this(NuvkDevice device, NuvkCommandQueue queue) {
         super(device, queue);
+        this.pools = nogc_new!NuvkDescriptorPoolManager(cast(NuvkVkDevice)this.getOwner());
     }
 
     /**
@@ -264,8 +269,14 @@ VkResolveModeFlagBits toVkResolveMode(NuvkStoreOp storeOp) @nogc {
 class NuvkVkRenderEncoder : NuvkRenderEncoder {
 @nogc:
 private:
+    NuvkVkPipeline currentPipeline;
+    VkDescriptorSet currentSet;
+
+    VkDescriptorSet boundSet;
+
     NuvkVkCommandBuffer parent;
     VkCommandBuffer writeBuffer;
+    VkDevice device;
 
     void beginRendering() {
         NuvkRenderPassDescriptor descriptor = this.getDescriptor();
@@ -436,6 +447,22 @@ private:
         nogc_delete(this);
     }
 
+    void bindCurrentSet() {
+        if (boundSet !is currentSet) {
+            vkCmdBindDescriptorSets(
+                writeBuffer,
+                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                currentPipeline.getPipelineLayout(),
+                0,
+                1,
+                &currentSet,
+                0,
+                null
+            );
+            boundSet = currentSet;
+        }
+    }
+
 public:
 
     /**
@@ -443,6 +470,7 @@ public:
     */
     this(NuvkVkCommandBuffer parent, ref NuvkRenderPassDescriptor descriptor, VkCommandBuffer rDestination) {
         super(parent, descriptor);
+        this.device = cast(VkDevice)parent.getOwner().getHandle();
         this.parent = parent;
         this.writeBuffer = rDestination;
         this.beginRendering();
@@ -494,8 +522,10 @@ public:
     */
     override
     void setPipeline(NuvkPipeline pipeline) {
-        vkCmdBindPipeline(writeBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, cast(VkPipeline)pipeline.getHandle());
-        
+
+        currentPipeline = cast(NuvkVkPipeline)pipeline;
+        currentSet = parent.pools.getNext(currentPipeline.getLayouts());
+        vkCmdBindPipeline(writeBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, cast(VkPipeline)currentPipeline.getHandle());
     }
 
     /**
@@ -556,28 +586,89 @@ public:
     }
 
     /**
-        Sets the vertex buffer to use.
+        Sets a buffer for the vertex shader.
     */
     override
     void setVertexBuffer(NuvkBuffer buffer, uint offset, int index) {
-        VkBuffer pBuffer = cast(VkBuffer)buffer.getHandle();
-        VkDeviceSize pOffset = offset;
-        vkCmdBindVertexBuffers(writeBuffer, index, 1, &pBuffer, &pOffset);
-    }
+        switch(buffer.getBufferType()) {
+            default:
+                break;
+            case NuvkBufferUsage.index:
+                vkCmdBindIndexBuffer(writeBuffer, cast(VkBuffer)buffer.getHandle(), offset, VK_INDEX_TYPE_UINT16);
+                break;
 
+            case NuvkBufferUsage.uniform:
+                VkDescriptorBufferInfo bufferInfo;
+                bufferInfo.buffer = cast(VkBuffer)buffer.getHandle();
+                bufferInfo.offset = offset;
+                bufferInfo.range = buffer.getSize();
+
+                VkWriteDescriptorSet writeInfo;
+                writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                writeInfo.descriptorCount = 1;
+                writeInfo.dstBinding = index;
+                writeInfo.dstArrayElement = 0;
+                writeInfo.pBufferInfo = &bufferInfo;
+                writeInfo.dstSet = currentSet;
+
+                vkUpdateDescriptorSets(device, 1, &writeInfo, 0, null);
+                break;
+
+            case NuvkBufferUsage.vertex:
+                VkBuffer pBuffer = cast(VkBuffer)buffer.getHandle();
+                VkDeviceSize pOffset = offset;
+                vkCmdBindVertexBuffers(writeBuffer, index, 1, &pBuffer, &pOffset);
+                break;
+        }
+    }
+    
     /**
-        Sets the index buffer to use.
+        Sets a buffer for the fragment shader.
     */
     override
-    void setIndexBuffer(NuvkBuffer buffer, uint offset, NuvkBufferIndexType indexType) {
-        vkCmdBindIndexBuffer(writeBuffer, cast(VkBuffer)buffer.getHandle(), offset, indexType.toVkIndexType());
+    void setFragmentBuffer(NuvkBuffer buffer, uint offset, int index) {
+        switch(buffer.getBufferType()) {
+            default:
+                break;
+            case NuvkBufferUsage.uniform:
+                VkDescriptorBufferInfo bufferInfo;
+                bufferInfo.buffer = cast(VkBuffer)buffer.getHandle();
+                bufferInfo.offset = offset;
+                bufferInfo.range = buffer.getSize();
+
+                VkWriteDescriptorSet writeInfo;
+                writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                writeInfo.descriptorCount = 1;
+                writeInfo.dstBinding = index;
+                writeInfo.dstArrayElement = 0;
+                writeInfo.pBufferInfo = &bufferInfo;
+                writeInfo.dstSet = currentSet;
+
+                vkUpdateDescriptorSets(device, 1, &writeInfo, 0, null);
+                break;
+        }
     }
+
+
     /**
         Sets a texture for the fragment shader
     */
     override
-    void setFragmentTexture(NuvkTexture texture, int index) {
-        
+    void setFragmentTexture(NuvkTextureView texture, int index) {
+        VkDescriptorImageInfo imageInfo;
+        imageInfo.imageLayout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL;
+        imageInfo.imageView = cast(VkImageView)texture.getHandle();
+
+        VkWriteDescriptorSet writeInfo;
+        writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+        writeInfo.descriptorCount = 1;
+        writeInfo.dstBinding = index;
+        writeInfo.dstArrayElement = 0;
+        writeInfo.pBufferInfo = null;
+        writeInfo.pImageInfo = &imageInfo;
+        writeInfo.dstSet = currentSet;
+
+        vkUpdateDescriptorSets(device, 1, &writeInfo, 0, null);
     }
 
     /**
@@ -585,7 +676,19 @@ public:
     */
     override
     void setFragmentSampler(NuvkSampler sampler, int index) {
+        VkDescriptorImageInfo imageInfo;
+        imageInfo.sampler = cast(VkSampler)sampler.getHandle();
 
+        VkWriteDescriptorSet writeInfo;
+        writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+        writeInfo.descriptorCount = 1;
+        writeInfo.dstBinding = index;
+        writeInfo.dstArrayElement = 0;
+        writeInfo.pBufferInfo = null;
+        writeInfo.pImageInfo = &imageInfo;
+        writeInfo.dstSet = currentSet;
+
+        vkUpdateDescriptorSets(device, 1, &writeInfo, 0, null);
     }
 
     /**
@@ -594,6 +697,7 @@ public:
     */
     override
     void draw(NuvkPrimitive primitive, uint offset, uint count) {
+        this.bindCurrentSet();
         vkCmdDraw(writeBuffer, count, 1, offset, 0);
     }
 
@@ -604,6 +708,7 @@ public:
     */
     override
     void drawIndexed(NuvkPrimitive primitive, uint offset, uint count) {
+        this.bindCurrentSet();
         vkCmdDrawIndexed(writeBuffer, count, 1, 0, offset, 0);
     }
 

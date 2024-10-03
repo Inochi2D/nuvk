@@ -1,0 +1,29 @@
+name "cube"
+description "Nuvk cube example"
+authors "Luna"
+copyright "Copyright © 2024, Luna"
+license "BSD 2-clause"
+targetPath "../../out/cube"
+workingDirectory "../../out/cube"
+
+stringImportPaths "../common/"
+
+copyFiles "../common/libs/SDL2.dll"
+dependency "bindbc-sdl" version="~>1.4.8"
+dependency "numem" version="*"
+dependency "inmath" version="*"
+dependency "nuvk" path="../../"
+
+versions "SDL_2_28"
+
+configuration "default" {
+	targetType "executable"
+}
+
+configuration "shaders" {
+	targetType "none"
+
+	preGenerateCommands \
+		"glslc ../common/shaders/cube.vert -o ../common/shaders/cube_vert.spv" \
+		"glslc ../common/shaders/cube.frag -o ../common/shaders/cube_frag.spv"
+}

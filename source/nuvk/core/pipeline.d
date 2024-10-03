@@ -113,16 +113,6 @@ struct NuvkGraphicsPipelineDescriptor {
         May be empty if no vertex shader is specified.
     */
     vector!NuvkVertexAttribute attributes;
-
-    /**
-        Copy constructor
-    */
-    this(ref NuvkGraphicsPipelineDescriptor createInfo) nothrow {
-        this.vertexShader = createInfo.vertexShader;
-        this.fragmentShader = createInfo.fragmentShader;
-        this.bindings = vector!NuvkVertexBinding(createInfo.bindings[]);
-        this.attributes = vector!NuvkVertexAttribute(createInfo.attributes[]);
-    }
 }
 
 /**

@@ -72,6 +72,7 @@ VkVertexInputRate toVkInputRate(NuvkInputRate rate) @nogc {
 class NuvkVkPipeline : NuvkPipeline {
 @nogc:
 private:
+    weak_vector!VkDescriptorSetLayout descriptorSetLayouts;
     VkPipelineLayout pipelineLayout;
     VkPipeline pipeline;
 
@@ -80,7 +81,6 @@ private:
 
         VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo;
         weak_vector!VkPipelineShaderStageCreateInfo shaderStates;
-        weak_vector!VkDescriptorSetLayout descriptorSetLayouts;
 
         weak_vector!VkVertexInputBindingDescription   bindingDescriptions;
         weak_vector!VkVertexInputAttributeDescription attributeDescriptions;
@@ -250,6 +250,20 @@ public:
     this(NuvkDevice owner, ref NuvkComputePipelineDescriptor computeInfo) {
         super(owner, computeInfo);
         this.createComputePipeline(computeInfo);
+    }
+
+    /**
+        Gets the descriptor set layouts
+    */
+    VkDescriptorSetLayout[] getLayouts() {
+        return descriptorSetLayouts[];
+    }
+
+    /**
+        Gets the descriptor set layouts
+    */
+    VkPipelineLayout getPipelineLayout() {
+        return pipelineLayout;
     }
 
 }

@@ -6,27 +6,38 @@
 */
 
 module nuvk.spirv;
-import nuvk.spirv.reflection;
-import nuvk.spirv.spv;
+import nuvk.spirv.cross;
+import nuvk.core.texture;
 import numem.all;
 
-import core.stdc.stdio : printf;
+public import nuvk.spirv.cross.types;
+
+import core.stdc.stdio;
 
 /**
-    A SPIR-V instruction
+    A single descriptor within a shader
 */
-struct NuvkSpirvInstruction {
+struct NuvkSpirvDescriptor {
 @nogc:
-public:
-    /**
-        The opcode
-    */
-    Op opcode;
 
-    /**
-        The operands
-    */
-    weak_vector!uint operands;
+    this(nstring name, SpvcResourceType type, uint set, uint binding) {
+        this.name = name;
+        this.type = type;
+        this.set = set;
+        this.binding = binding;
+    }
+
+    /// Name of the element
+    nstring name;
+
+    /// Type of the item
+    SpvcResourceType type;
+
+    /// The set it belongs to
+    uint set;
+
+    /// The binding it belongs to
+    uint binding;
 }
 
 /**
@@ -36,18 +47,18 @@ class NuvkSpirvModule {
 @nogc:
 private:
     // Module info
-    Capability capability;
-    SourceLanguage sourceLanguage;
     ExecutionModel executionModel;
-    AddressingModel addressingModel;
-    MemoryModel memoryModel;
-    ExecutionMode executionMode;
-
     nstring entrypoint;
-    weak_vector!nstring extensions;
-    weak_map!(uint, nstring) extendedInstructions;
 
+    // Spirv-Cross items
+    SpvcContext context;
+    SpvcParsedIr parsedIr;
+    SpvcCompiler compiler;
+    SpvcResources resources;
+
+    // Parsing Information
     bool hasBeenParsed;
+    map!(uint, vector!NuvkSpirvDescriptor) descriptors;
 
     // Bytecode
     weak_vector!uint bytecode;
@@ -72,94 +83,24 @@ private:
         this.bytecode = weak_vector!uint((cast(uint*)data.ptr)[0..data.length/4]);
     }
 
+    void parseDescriptors() {
+        foreach(resourceType; SpvcResourceType.uniformBuffers..SpvcResourceType.max) {
 
-    // Instructions
-    weak_vector!NuvkSpirvInstruction instructions;
+            auto resourceBindings = this.getResourceListForType(resourceType);
+            foreach(const(SpvcReflectedResource) binding; resourceBindings) {
+                uint set = spvcCompilerGetDecoration(compiler, binding.id, Decoration.DescriptorSet);
+                uint bindingId = spvcCompilerGetDecoration(compiler, binding.id, Decoration.Binding);
 
-    const(char)* getOffsetCString(uint offset, ref weak_vector!uint opcodes) {
-        return (cast(const(char)*)opcodes.data)+(offset*4);
-    }
+                if (set !in descriptors) {
+                    descriptors[set] = vector!(NuvkSpirvDescriptor)();
+                }
 
-    void preParseInstructions() {
-        union tmp {
-            uint alignedOp;
-            struct {
-                ushort enumerant;
-                ushort wordCount;
-            }
-        }
-
-        tmp tmp_;
-        size_t bytecodeSize = bytecode.size();
-        size_t idx = 5;
-        while(idx < bytecodeSize) {
-            instructions.resize(instructions.size()+1);
-
-            // Load opcode info
-            tmp_.alignedOp = bytecode[idx++];
-            auto actualWordCount = tmp_.wordCount-1;
-
-            // Set opcode of instruction
-            instructions[$-1].opcode = cast(Op)tmp_.enumerant;
-
-            // Reading data
-            instructions[$-1].operands = 
-                weak_vector!uint(bytecode[idx..idx+actualWordCount]);
-
-            idx += actualWordCount;
-        }
-    }
-
-    void parseInstructions() {
-        foreach(ref NuvkSpirvInstruction instruction; instructions) {
-            switch(instruction.opcode) {
-
-                case Op.OpCapability:
-                    this.capability = cast(Capability)instruction.operands[0];
-                    break;
-                
-                case Op.OpExtension:
-                    this.extensions ~= 
-                        nstring(this.getOffsetCString(0, instruction.operands));
-                    break;
-                
-                case Op.OpExtInstImport:
-                    this.extendedInstructions[instruction.operands[0]] = 
-                        nstring(this.getOffsetCString(1, instruction.operands));
-                    break;
-                
-                case Op.OpMemoryModel:
-                    this.addressingModel = cast(AddressingModel)instruction.operands[0];
-                    this.memoryModel = cast(MemoryModel)instruction.operands[1];
-                    break;
-                
-                case Op.OpEntryPoint:
-                    this.executionModel = cast(ExecutionModel)instruction.operands[0];
-                    this.entrypoint = 
-                        nstring(this.getOffsetCString(2, instruction.operands));
-                    break;
-
-                case Op.OpExecutionMode:
-                    this.executionMode = cast(ExecutionMode)instruction.operands[1];
-                    break;
-
-
-                default:
-                    break;
-            }
-        }
-    }
-
-    // Mappings
-    weak_map!(uint, NuvkSpirvInstruction*) mappings;
-    void parseSSAMappings() {
-        foreach(ref NuvkSpirvInstruction instruction; instructions) {
-            bool iHasResult = instruction.opcode.hasResult();
-            bool iHasResultType = instruction.opcode.hasResultType();
-
-            if (iHasResult) {
-                size_t idx = iHasResultType ? 1 : 0;
-                mappings[instruction.operands[idx]] = &instruction;
+                descriptors[set] ~= NuvkSpirvDescriptor(
+                    nstring(binding.name),
+                    resourceType,
+                    set,
+                    bindingId
+                );
             }
         }
     }
@@ -167,6 +108,9 @@ private:
 public:
     ~this() {
         nogc_delete(bytecode);
+
+        if (context) 
+            spvcContextDestroy(context);
     }
     
     /**
@@ -210,11 +154,32 @@ public:
         This allows for introspection.
     */
     void parse() {
+        if (!isSpirvCrossLoaded()) {
+            enforce(
+                loadSpirvCross() == SpirvCrossSupport.yes,
+                nstring("Failed to initialize SPIRV-Cross")
+            );
+        }
+
         if (!hasBeenParsed) {
             this.hasBeenParsed = true;
-            this.preParseInstructions();
-            this.parseSSAMappings();
-            this.parseInstructions();
+
+            spvcContextCreate(&context);
+            spvcContextParseSpirv(context, bytecode.data(), bytecode.size(), &parsedIr);
+            spvcContextCreateCompiler(context, SpvcBackend.none, parsedIr, SpvcCaptureMode.captureModeCopy, &compiler);
+            this.executionModel = spvcCompilerGetExecutionModel(compiler);
+
+            const(SpvcEntryPoint)* entrypoints;
+            size_t entrypointCount;
+            spvcCompilerGetEntryPoints(compiler, &entrypoints, &entrypointCount);
+            foreach(ep; entrypoints[0..entrypointCount]) {
+                if (ep.executionModel == this.executionModel) {
+                    this.entrypoint = nstring(ep.name);
+                }
+            }
+
+            spvcCompilerCreateShaderResources(compiler, &resources);
+            this.parseDescriptors();
         }
     }
 
@@ -228,34 +193,56 @@ public:
     }
 
     /**
+        Gets a list of resources for the type.
+    */
+    const(SpvcReflectedResource)[] getResourceListForType(SpvcResourceType type) {
+
+        // Not parsed.
+        if (!hasBeenParsed)
+            return null;
+        
+        const(SpvcReflectedResource)* resourceList;
+        size_t resourceListLength;
+        spvcResourcesGetResourceListForType(resources, type, &resourceList, &resourceListLength);
+        return resourceList[0..resourceListLength];
+    }
+
+    /**
+        Gets a list of builtin resources for the type.
+    */
+    const(SpvcReflectedBuiltinResource)[] getBuiltinResourceListForType(SpvcBuiltinResourceType type) {
+
+        // Not parsed.
+        if (!hasBeenParsed)
+            return null;
+        
+        const(SpvcReflectedBuiltinResource)* resourceList;
+        size_t resourceListLength;
+        spvcResourcesGetBuiltinResourceListForType(resources, type, &resourceList, &resourceListLength);
+        return resourceList[0..resourceListLength];
+    }
+
+    /**
         Gets the size of the bytecode in bytes.
     */
     uint getBytecodeSizeBytes() {
         return cast(uint)bytecode.size()*4;
     }
 
-    /**
-        Gets a slice of the parsed instructions
-
-        Memory is owned by the SpirvModule, do not delete.
-    */
-    NuvkSpirvInstruction[] getInstructions() {
-        return instructions[];
-    }
-
     
     /**
         Gets the capability flag
     */
-    Capability getCapability() {
-        return capability;
-    }
+    const(Capability)[] getCapabilities() {
 
-    /**
-        Gets the source language of the module
-    */
-    SourceLanguage getSourceLanguage() {
-        return sourceLanguage;
+        // Not parsed.
+        if (!hasBeenParsed)
+            return null;
+
+        const(Capability)* capabilities;
+        size_t capabilityCount;
+        spvcCompilerGetDeclaredCapabilities(compiler, &capabilities, &capabilityCount);
+        return capabilities[0..capabilityCount];
     }
 
     /**
@@ -266,50 +253,32 @@ public:
     }
 
     /**
-        Gets the adressing model of the module
-    */
-    AddressingModel getAddressingModel() {
-        return addressingModel;
-    }
-
-    /**
-        Gets the memory model of the module
-    */
-    MemoryModel getMemoryModel() {
-        return memoryModel;
-    }
-
-    /**
         Gets the execution mode of the module
     */
-    ExecutionMode getExecutionMode() {
-        return executionMode;
+    const(ExecutionMode)[] getExecutionModes() {
+
+        // Not parsed.
+        if (!hasBeenParsed)
+            return null;
+
+        const(ExecutionMode)* executionModes;
+        size_t executionModeCount;
+        spvcCompilerGetExecutionModes(compiler, &executionModes, &executionModeCount);
+        return executionModes[0..executionModeCount];
     }
 
     /**
-        Gets how many SSA mappings exist in the module.
+        Gets a list of descriptors for the specified set.
     */
-    uint getMappingCount() {
-        return cast(uint)mappings.length();
+    NuvkSpirvDescriptor[] getDescriptors(uint set) {
+        return descriptors[set][0..$];
     }
 
     /**
-        Gets an iterator over the SSA mappings
+        Gets iterator over descriptor set.
     */
-    auto getMappingKeys() {
-        return mappings.byKey();
-    }
-
-    /**
-        Gets a slice of the parsed instructions
-
-        Memory is owned by the SpirvModule, do not delete.
-    */
-    NuvkSpirvInstruction* getInstructionById(uint ssaId) {
-        if (ssaId in mappings) {
-            return mappings[ssaId];
-        }
-        return null;
+    auto getSetIter() {
+        return descriptors.byKey();
     }
 
     /**
@@ -317,46 +286,5 @@ public:
     */
     string getEntrypoint() {
         return cast(string)entrypoint[];
-    }
-
-    /**
-        Gets the amount of extensions loaded
-    */
-    uint getExtensionCount() {
-        return cast(uint)extensions.size();
-    }
-
-    /**
-        Gets the name of a loaded extension
-    */
-    string getExtensionName(uint index) {
-        if (index <= extensions.size()) {
-            return cast(string)extensions[index][];
-        }
-        return null;
-    }
-
-    /**
-        Gets an iterator over the extended instructions
-    */
-    auto getExtendedInstructionKeys() {
-        return extendedInstructions.byKey();
-    }
-
-    /**
-        Gets the amount of extended instructions
-    */
-    auto getExtendedInstructionCount() {
-        return extendedInstructions.length();
-    }
-
-    /**
-        Gets an extended instruction
-    */
-    string getExtendedInstructionImport(uint ssaId) {
-        if (ssaId in extendedInstructions) {
-            return cast(string)extendedInstructions[ssaId][];
-        }
-        return null;
     }
 }

@@ -29,26 +29,28 @@ void main(string[] args) {
 }
 
 void writeShaderInfo(string name, NuvkSpirvModule module_) {
-	size_t i = 0;
 	module_.parse();
+
+	auto caps = module_.getCapabilities();
+	auto execModes = module_.getExecutionModes();
+
 	writefln("%s:", name);
-	writefln("Entrypoiny: %s".indent(1), module_.getEntrypoint());
-	writefln("Capability: %s".indent(1), module_.getCapability());
-	writefln("Source Language: %s".indent(1), module_.getSourceLanguage());
+	writefln("Capabilities (%d):".indent(1), caps.length);
+	foreach(i, cap; caps) writefln("%d - %s".indent(2), i, cap);
+	writefln("Execution Modes (%d):".indent(1), execModes.length);
+	foreach(i, mode; execModes) writefln("%d - %s".indent(2), i, mode);
 	writefln("Execution Model: %s".indent(1), module_.getExecutionModel());
-	writefln("Addressing Model: %s".indent(1), module_.getAddressingModel());
-	writefln("Memory Model: %s".indent(1), module_.getMemoryModel());
-	writefln("Execution Mode: %s".indent(1), module_.getExecutionMode());
-	
-	// List extended instructions
-	writefln("Extended Instructions (%s):".indent(1), module_.getExtendedInstructionCount());
-	foreach(key; module_.getExtendedInstructionKeys())
-		writefln("%d - %s".indent(2), ++i, module_.getExtendedInstructionImport(key));
-	
-	// List extensions
-	writefln("Extensions (%s):".indent(1), module_.getExtensionCount());
-	foreach(extId; 0..module_.getExtensionCount())
-		writefln("%d - %s".indent(2), extId+1, module_.getExtensionName(extId));
+	writefln("Entrypoint: %s".indent(1), module_.getEntrypoint());
+	writeln("Descriptor sets:".indent(1));
+
+	foreach(set; module_.getSetIter()) {
+		writefln("Set (%d):".indent(1), set);
+		auto descriptorList = module_.getDescriptors(set);
+		foreach(i, ref descriptor; descriptorList) {
+			writefln("%d - %s".indent(2), i, descriptor.name);
+		}
+	}
+
 
 	writefln("");
 }

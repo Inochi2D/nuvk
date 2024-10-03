@@ -50,7 +50,7 @@
  + amount (1 << x) for each corresponding enumerant.
  +/
 
-module nuvk.spirv.spv;
+module nuvk.spirv.cross.spv;
 
 enum uint MagicNumber = 0x07230203;
 enum uint Version = 0x00010600;

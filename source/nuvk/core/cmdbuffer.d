@@ -321,15 +321,6 @@ struct NuvkRenderPassDescriptor {
     ~this() {
         nogc_delete(colorAttachments);
     }
-
-    /**
-        Copy constructor
-    */
-    this(ref NuvkRenderPassDescriptor other) {
-        this.renderArea = other.renderArea;
-        this.colorAttachments = weak_vector!NuvkRenderPassAttachment(other.colorAttachments);
-        this.depthStencilAttachment = other.depthStencilAttachment;
-    }
 }
 
 /**
@@ -677,22 +668,22 @@ public:
     abstract void setFillMode(NuvkFillMode fillMode);
 
     /**
-        Sets the vertex buffer in use.
+        Sets a buffer for the vertex shader.
     */
     abstract void setVertexBuffer(NuvkBuffer buffer, uint offset, int index);
 
     /**
-        Sets the vertex buffer in use.
+        Sets a buffer for the fragment shader.
     */
-    abstract void setIndexBuffer(NuvkBuffer buffer, uint offset, NuvkBufferIndexType indexType);
+    abstract void setFragmentBuffer(NuvkBuffer buffer, uint offset, int index);
 
     /**
-        Sets a texture for the fragment shader
+        Sets a texture for the fragment shader.
     */
-    abstract void setFragmentTexture(NuvkTexture texture, int index);
+    abstract void setFragmentTexture(NuvkTextureView texture, int index);
 
     /**
-        Sets a sampler for the fragment shader
+        Sets a sampler for the fragment shader.
     */
     abstract void setFragmentSampler(NuvkSampler sampler, int index);
 

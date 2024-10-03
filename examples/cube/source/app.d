@@ -17,9 +17,10 @@ import sdl.video;
 import sdl.vulkan;
 import core.stdc.stdio : printf;
 import inmath;
+import std.stdio : writeln;
 
-ubyte[] vertexShaderSrc = cast(ubyte[])import("shaders/triangle_vert.spv");
-ubyte[] fragmentShaderSrc = cast(ubyte[])import("shaders/triangle_frag.spv");
+ubyte[] vertexShaderSrc = cast(ubyte[])import("shaders/cube_vert.spv");
+ubyte[] fragmentShaderSrc = cast(ubyte[])import("shaders/cube_frag.spv");
 
 /**
     A window
@@ -139,10 +140,14 @@ public:
     }
 }
 
+struct Uniform0 {
+    mat4 mvp;
+}
+
 /**
     Main function.
 */
-void main(string[] args) @nogc {
+void main(string[] args) {
     loadSDL();
     SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -157,7 +162,7 @@ void main(string[] args) @nogc {
         }
     }
 
-    Window myWindow = nogc_new!Window(nstring("Hello Triangle"), 640, 480, presentationMode);
+    Window myWindow = nogc_new!Window(nstring("3d uwu!!"), 640, 480, presentationMode);
 
     NuvkDevice device = myWindow.getDevice();
     NuvkSwapchain swapchain = myWindow.getSurface().getSwapchain();
@@ -165,18 +170,24 @@ void main(string[] args) @nogc {
     NuvkShader vertexShader = device.createShader(nogc_new!NuvkSpirvModule(vertexShaderSrc), NuvkShaderStage.vertex);
     NuvkShader fragmentShader = device.createShader(nogc_new!NuvkSpirvModule(fragmentShaderSrc), NuvkShaderStage.fragment);
 
-    vec2[3] vertices = [
-        vec2(0.0, -0.5),
-        vec2(0.5, 0.5),
-        vec2(-0.5, 0.5)
+    // Vertex buffer
+    vec3[6] vertices = [
+        vec3(0,   0, 64),
+        vec3(0,  64, 64),
+        vec3(64,  0, 64),
+
+        vec3(64,  0, 64),
+        vec3( 0, 64, 64),
+        vec3(64, 64, 64),
     ];
 
-    NuvkBuffer vertexBuffer = device.createBuffer(NuvkBufferUsage.vertex | NuvkBufferUsage.transferSrc, NuvkDeviceSharing.deviceShared, vec2.sizeof*3);
+    NuvkBuffer vertexBuffer = device.createBuffer(NuvkBufferUsage.vertex | NuvkBufferUsage.transferSrc, NuvkDeviceSharing.deviceShared, vec3.sizeof*vertices.length);
     enforce(
-        vertexBuffer.upload!vec2(vertices),
+        vertexBuffer.upload!vec3(vertices),
         nstring("Failed to upload data!")
     );
 
+    // Shader stuff
     NuvkGraphicsPipelineDescriptor graphicsShaderDesc;
     graphicsShaderDesc.vertexShader = vertexShader;
     graphicsShaderDesc.fragmentShader = fragmentShader;
@@ -184,12 +195,12 @@ void main(string[] args) @nogc {
         0,
         0,
         0,
-        NuvkVertexFormat.vec2
+        NuvkVertexFormat.vec3
     );
 
     graphicsShaderDesc.bindings ~= NuvkVertexBinding(
         0,
-        vec2.sizeof,
+        vec3.sizeof,
         NuvkInputRate.vertex
     );
     NuvkPipeline shader = device.createGraphicsPipeline(graphicsShaderDesc);
@@ -199,13 +210,27 @@ void main(string[] args) @nogc {
 
     double ticks = cast(double)SDL_GetTicks64();
 
+    /// Uniform buffer
+    Uniform0* uniform0;
+    NuvkBuffer uniformBuffer = device.createBuffer(
+        NuvkBufferUsage.uniform | NuvkBufferUsage.hostVisible, 
+        NuvkDeviceSharing.deviceShared, 
+        Uniform0.sizeof
+    );
+    uniformBuffer.map!Uniform0(uniform0, 1, 0);
 
     while(!myWindow.isCloseRequested()) {
         myWindow.updateEvents();
         ticks = cast(double)SDL_GetTicks64();
 
         if (NuvkTextureView nextImage = swapchain.getNext()) {
-            (*uniform0).mvp = mat4.orthographic(0, 640, 480, 0, 0, 100);
+
+            vec2i fbSize = myWindow.getFramebufferSize();
+
+            uniform0.mvp = (
+                mat4.perspective01(fbSize.x, fbSize.y, 90.0, 0.1, 1000) *
+                mat4.lookAt(vec3(0, 64, 0), vec3(32, 32, 64), vec3(0, 1, 0))
+            ).transposed();
 
             NuvkRenderPassAttachment colorAttachment;
             colorAttachment.texture = nextImage;
@@ -219,7 +244,8 @@ void main(string[] args) @nogc {
             if (NuvkRenderEncoder renderPass = cmdbuffer.beginRenderPass(renderPassDescriptor)) {
                 renderPass.setPipeline(shader);
                 renderPass.setVertexBuffer(vertexBuffer, 0, 0);
-                renderPass.draw(NuvkPrimitive.triangles, 0, 3);
+                renderPass.setVertexBuffer(uniformBuffer, 0, 0);
+                renderPass.draw(NuvkPrimitive.triangles, 0, 6);
                 renderPass.endEncoding();
             }
 

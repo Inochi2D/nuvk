@@ -18,25 +18,27 @@ import inmath;
 VkBufferUsageFlags toVkBufferUsageFlags(NuvkBufferUsage usage) @nogc {
     uint flags = 0;
 
-    if (usage & NuvkBufferUsage.staging)
-        flags |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-
     if (usage & NuvkBufferUsage.transferSrc)
         flags |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
     if (usage & NuvkBufferUsage.transferDst)
         flags |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
-    if (usage & NuvkBufferUsage.uniform)
+    uint type = usage & 0x0F;
+
+    if (type == NuvkBufferUsage.uniform)
         flags |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 
-    if (usage & NuvkBufferUsage.vertex)
+    if (type == NuvkBufferUsage.vertex)
         flags |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 
-    if (usage & NuvkBufferUsage.index)
+    if (type == NuvkBufferUsage.index)
         flags |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 
-    if (usage & NuvkBufferUsage.indirect)
+    if (type == NuvkBufferUsage.storage)
+        flags |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+
+    if (type == NuvkBufferUsage.indirect)
         flags |= VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
 
     return cast(VkBufferUsageFlags)flags;
@@ -74,12 +76,10 @@ private:
         int memoryIndex;
         VkFlags flags;
 
-        if (deviceSharing == NuvkDeviceSharing.deviceShared) {
+        // Staging buffers should be host coherent
+        if ((usage & NuvkBufferUsage.hostVisible) || deviceSharing == NuvkDeviceSharing.deviceShared) {
             flags |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-
-            // Staging buffers should be host coherent
-            if (usage == NuvkBufferUsage.staging) 
-                flags |= VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+            flags |= VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
         }
 
         // Create buffer
@@ -245,7 +245,7 @@ public:
 
             // Non-staging buffers need to tell the GPU to invalidate buffer.
             // It doesn't matter if this succeeds or not.
-            if (this.getBufferUsage() != NuvkBufferUsage.staging) {
+            if (!(this.getBufferUsage() & NuvkBufferUsage.hostVisible)) {
                 vkInvalidateMappedMemoryRanges(device, 1, &memoryRange);
             }
             
@@ -276,7 +276,7 @@ public:
 
             // Non-staging buffers need to tell the GPU to flush buffer.
             // It doesn't matter if this succeeds or not.
-            if (this.getBufferUsage() != NuvkBufferUsage.staging) {
+            if (!(this.getBufferUsage() & NuvkBufferUsage.hostVisible)) {
                 vkFlushMappedMemoryRanges(device, 1, &memoryRange);
             }
             

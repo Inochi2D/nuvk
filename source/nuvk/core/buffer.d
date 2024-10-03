@@ -12,41 +12,46 @@ import nuvk.core.device;
     The usage of the buffer
 */
 enum NuvkBufferUsage {
-
-    /**
-        Buffer allows transfers to the CPU
-    */
-    transferSrc = 0x01,
-
-    /**
-        Buffer allows transfers from the CPU
-    */
-    transferDst = 0x02,
-    
-    /**
-        Buffer will be used as a uniform buffer
-    */
-    uniform     = 0x04,
     
     /**
         Buffer will be used as a vertex buffer
     */
-    vertex      = 0x08,
+    vertex      = 1,
     
     /**
         Buffer will be used as a index buffer
     */
-    index       = 0x10,
+    index       = 2,
+    
+    /**
+        Buffer will be used as a uniform buffer
+    */
+    uniform     = 3,
+    
+    /**
+        Buffer will be used as a storage buffer
+    */
+    storage     = 4,
+
+    /**
+        Buffer allows transfers to the CPU
+    */
+    transferSrc = 0x10,
+
+    /**
+        Buffer allows transfers from the CPU
+    */
+    transferDst = 0x20,
     
     /**
         Buffer will be used as a indirect buffer
     */
-    indirect    = 0x20,
+    indirect    = 0x40,
 
     /**
-        Buffer is a staging buffer
+        Buffer is host-visible
     */
-    staging     = 0x80,
+    hostVisible     = 0x80,
 }
 
 /**
@@ -134,6 +139,15 @@ public:
     final
     NuvkBufferUsage getBufferUsage() {
         return usage;
+    }
+
+    /**
+        Gets the type of the buffer.
+        (Usage without extra flags.)
+    */
+    final
+    NuvkBufferUsage getBufferType() {
+        return cast(NuvkBufferUsage)(usage & 0x0F);
     }
 
     /**
