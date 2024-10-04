@@ -630,6 +630,7 @@ public:
         switch(buffer.getBufferType()) {
             default:
                 break;
+
             case NuvkBufferUsage.uniform:
                 VkDescriptorBufferInfo bufferInfo;
                 bufferInfo.buffer = cast(VkBuffer)buffer.getHandle();

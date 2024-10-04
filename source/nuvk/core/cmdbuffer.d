@@ -314,13 +314,6 @@ struct NuvkRenderPassDescriptor {
         Depth-stencil attachment for the render pass
     */
     NuvkRenderPassAttachment depthStencilAttachment;
-
-    /**
-        Destructor
-    */
-    ~this() {
-        nogc_delete(colorAttachments);
-    }
 }
 
 /**
