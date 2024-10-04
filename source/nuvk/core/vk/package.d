@@ -15,7 +15,10 @@ import erupted.vulkan_lib_loader;
 public import erupted.types;
 public import erupted.functions;
 
-mixin Platform_Extensions!USE_PLATFORM_WIN32_KHR;
+version(Windows)
+    mixin Platform_Extensions!USE_PLATFORM_WIN32_KHR;
+else
+    mixin Platform_Extensions!();
 
 import nuvk.core;
 import numem.all;
@@ -86,7 +89,7 @@ ulong nuvkVkGetSharedHandle(VkDevice device, VkDeviceMemory memory) @nogc {
         VkMemoryGetFdInfoKHR getInfo;
         getInfo.memory = memory;
         getInfo.handleType = NuvkVkMemorySharingFlagBit;
-        vkGetMemoryFdKHR(device, &getInfo, cast(uint*)&shareId);
+        vkGetMemoryFdKHR(device, &getInfo, cast(int*)&shareId);
     }
     return shareId;
 }
@@ -105,7 +108,7 @@ ulong nuvkVkGetSharedHandle(VkDevice device, VkSemaphore semaphore) @nogc {
         VkSemaphoreGetFdInfoKHR getInfo;
         getInfo.semaphore = semaphore;
         getInfo.handleType = NuvkVkSemaphoreSharingFlagBit;
-        vkGetSemaphoreFdKHR(device, &getInfo, cast(uint*)&shareId);
+        vkGetSemaphoreFdKHR(device, &getInfo, cast(int*)&shareId);
     }
     return shareId;
 }

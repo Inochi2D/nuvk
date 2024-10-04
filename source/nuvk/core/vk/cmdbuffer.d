@@ -300,7 +300,7 @@ private:
                 descriptor.renderArea.clip(recti(0, 0, nuvkTexture.getWidth(), nuvkTexture.getHeight()));
 
                 colorAttachments[i].imageView                   = cast(VkImageView)nuvkTextureView.getHandle();
-                colorAttachments[i].imageLayout                 = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+                colorAttachments[i].imageLayout                 = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR;
                 colorAttachments[i].loadOp                      = descriptor.colorAttachments[i].loadOp.toVkLoadOp();
                 colorAttachments[i].storeOp                     = descriptor.colorAttachments[i].storeOp.toVkStoreOp();
                 colorAttachments[i].resolveMode                 = descriptor.colorAttachments[i].storeOp.toVkResolveMode();
@@ -312,12 +312,13 @@ private:
                 if (descriptor.colorAttachments[i].resolveTexture) {
                     colorAttachments[i].resolveImageView = 
                         cast(VkImageView)descriptor.colorAttachments[i].resolveTexture.getHandle();
-                    colorAttachments[i].resolveImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+                    colorAttachments[i].resolveImageLayout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR;
                 }
 
                 VkImageMemoryBarrier memoryBarrier;
+                memoryBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
                 memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-                memoryBarrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+                memoryBarrier.newLayout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR;
                 memoryBarrier.image = cast(VkImage)nuvkTextureView.getTexture().getHandle();
                 memoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
                 memoryBarrier.subresourceRange.baseMipLevel = 0;
@@ -368,8 +369,8 @@ private:
         // Swap image type
         vkCmdPipelineBarrier(
             writeBuffer,
-            VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-            VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
             0,
             0,
             null,
@@ -414,6 +415,7 @@ private:
             NuvkVkTextureView nuvkTextureView = cast(NuvkVkTextureView)descriptor.colorAttachments[i].texture;
 
             VkImageMemoryBarrier memoryBarrier;
+            memoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
             memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
             memoryBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
             memoryBarrier.image = cast(VkImage)nuvkTextureView.getTexture().getHandle();
@@ -431,8 +433,8 @@ private:
         // Swap image type
         vkCmdPipelineBarrier(
             writeBuffer,
-            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
             0,
             0,
             null,
@@ -444,7 +446,10 @@ private:
 
         vkEndCommandBuffer(writeBuffer);
         parent.commandBuffers ~= writeBuffer;
-        nogc_delete(this);
+
+        // Workaround for ref not working for this
+        NuvkVkRenderEncoder self = this;
+        nogc_delete(self);
     }
 
     void bindCurrentSet() {

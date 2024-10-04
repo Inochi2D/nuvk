@@ -47,7 +47,7 @@ private:
     NuvkSwapchain swapchain;
     NuvkPresentMode presentMode;
     NuvkTextureFormat textureFormat;
-    vec2u lastSize;
+    vec2u surfaceSize;
 
     void updateSwapchainState(bool stateChanged = false) {
         if (!swapchain) 
@@ -105,7 +105,7 @@ public:
         );
 
         this.presentMode = presentMode;
-        this.updateSwapchainState(true);
+        this.notifyChanged();
     }
 
     /**
@@ -129,13 +129,27 @@ public:
         );
 
         this.textureFormat = textureFormat;
-        this.updateSwapchainState(true);
+        this.notifyChanged();
+    }
+
+    /**
+        Sets the size of the surface.
+
+        This will invalidate the swapchain!
+    */
+    final
+    void resize(vec2u size) {
+        this.surfaceSize = size;
+        this.notifyChanged();
     }
 
     /**
         Gets the size of the surface
     */
-    abstract vec2u getSize();
+    final
+    vec2u getSize() {
+        return surfaceSize;
+    }
 
     /**
         Notify the surface that it has been changed.

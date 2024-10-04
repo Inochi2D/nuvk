@@ -135,12 +135,6 @@ public:
         this.enumerateCapabilities();
     }
 
-    override
-    vec2u getSize() {
-        this.enumerateCapabilities();
-        return vec2u(capability.surfaceCaps.maxImageExtent.width, capability.surfaceCaps.maxImageExtent.height);
-    }
-
     /**
         Gets the capabilities of the surface.
     */

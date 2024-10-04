@@ -11,6 +11,8 @@ dependency "bindbc-loader" version=">=1.1.5"
 
 targetPath "out/"
 
+dflags "-Wl,-rpath=.:/usr/local/lib64:/usr/local/lib" platform="linux"
+
 workingDirectory "out/"
 excludedSourceFiles "source/nuvk/dlsl/compiler/*"
 

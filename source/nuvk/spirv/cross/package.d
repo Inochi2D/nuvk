@@ -34,13 +34,13 @@ SpirvCrossSupport loadSpirvCross() {
                 "libspirv-cross-c-shared.dylib"
             ];
     } else version (Posix) {
-        const(char)[][3] libNames =
+        const(char)[][2] libNames =
             [
                 "libspirv-cross-c-shared.so",
                 "libspirv-cross-c-shared.so.0",
             ];
     } else
-        static assert(0, "Harfbuzz is not yet supported on this platform.");
+        static assert(0, "SPIRV-Cross is not yet supported on this platform.");
 
     SpirvCrossSupport ret;
     foreach (name; libNames) {

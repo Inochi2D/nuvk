@@ -18,6 +18,8 @@ import sdl.vulkan;
 import core.stdc.stdio : printf;
 import inmath;
 
+import std.stdio;
+
 ubyte[] vertexShaderSrc = cast(ubyte[])import("shaders/triangle_vert.spv");
 ubyte[] fragmentShaderSrc = cast(ubyte[])import("shaders/triangle_frag.spv");
 
@@ -70,6 +72,7 @@ private:
                 nstring("Failed to create Vulkan surface")
             );
             surface = device.createSurfaceFromHandle(surfaceAddr, presentationMode, NuvkTextureFormat.bgra8UnormSRGB);
+            surface.resize(this.getFramebufferSize());
         }
     }
 
@@ -104,7 +107,7 @@ public:
                             break;
                         case SDL_WINDOWEVENT_RESIZED:
                         case SDL_WINDOWEVENT_RESTORED:
-                            surface.notifyChanged();
+                            surface.resize(this.getFramebufferSize());
                             break;
                     }
                     break;
@@ -142,7 +145,7 @@ public:
 /**
     Main function.
 */
-void main(string[] args) @nogc {
+void main(string[] args) {
     loadSDL();
     SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -205,7 +208,6 @@ void main(string[] args) @nogc {
         ticks = cast(double)SDL_GetTicks64();
 
         if (NuvkTextureView nextImage = swapchain.getNext()) {
-            (*uniform0).mvp = mat4.orthographic(0, 640, 480, 0, 0, 100);
 
             NuvkRenderPassAttachment colorAttachment;
             colorAttachment.texture = nextImage;
@@ -225,7 +227,7 @@ void main(string[] args) @nogc {
 
             cmdbuffer.commit();
             cmdbuffer.present(myWindow.getSurface());
-            cmdbuffer.awaitCompletion();
         }
+        cmdbuffer.awaitCompletion();
     }
 }

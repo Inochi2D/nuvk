@@ -16,9 +16,6 @@ dependency "nuvk" path="../../"
 
 versions "SDL_2_28"
 
-buildOptions "debugInfoC"
-dflags "-fsanitize=address" "-g" "-frame-pointer=all" "--link-internally"
-
 configuration "default" {
 	targetType "executable"
 }
