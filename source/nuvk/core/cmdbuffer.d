@@ -262,9 +262,98 @@ enum NuvkStoreOp {
 }
 
 /**
+    Blending operation
+*/
+enum NuvkBlendOp {
+    add,
+    subtract,
+    reverseSubtract,
+    min,
+    max
+}
+
+/**
+    Blending factor
+*/
+enum NuvkBlendFactor {
+    zero,
+    one,
+    srcColor,
+    oneMinusSrcColor,
+    oneMinusSrcAlpha,
+    destColor,
+    oneMinusDestColor,
+    oneMinusDestAlpha,
+    srcAlphaSaturated,
+}
+
+/**
+    Color attachment info
+*/
+struct NuvkColorAttachment {
+
+    /**
+        Attached texture
+    */
+    NuvkTextureView texture;
+    
+    /**
+        Texture load operation
+    */
+    NuvkLoadOp loadOp;
+    
+    /**
+        Texture store operation
+    */
+    NuvkStoreOp storeOp;
+    
+    /**
+        Attached resolve texture.
+
+        This may be null if `storeOp` is NOT `multisampleResolve`.
+    */
+    NuvkTextureView resolveTexture;
+
+    /**
+        The value to clear with if `loadOp` is `clear`.
+    */
+    NuvkClearValue clearValue;
+
+    /**
+        Whether blending is enabled
+    */
+    bool isBlendingEnabled = true;
+    
+    /**
+        The blending operation to use
+    */
+    NuvkBlendOp blendOp = NuvkBlendOp.add;
+    
+    /**
+        The source color blending factor
+    */
+    NuvkBlendFactor sourceColorFactor = NuvkBlendFactor.one;
+
+    /**
+        The source alpha blending factor
+    */
+    NuvkBlendFactor sourceAlphaFactor = NuvkBlendFactor.one;
+    
+    /**
+        The destination color blending factor
+    */
+    NuvkBlendFactor destinationColorFactor = NuvkBlendFactor.oneMinusSrcAlpha;
+    
+    /**
+        The destination alpha blending factor
+    */
+    NuvkBlendFactor destinationAlphaFactor = NuvkBlendFactor.oneMinusSrcAlpha;
+}
+
+/**
     A render pass attachment
 */
-struct NuvkRenderPassAttachment {
+struct NuvkDepthStencilAttachment {
 @nogc:
 
     /**
@@ -308,12 +397,12 @@ struct NuvkRenderPassDescriptor {
     /**
         Color attachment for the render pass
     */
-    weak_vector!NuvkRenderPassAttachment colorAttachments;
+    weak_vector!NuvkColorAttachment colorAttachments;
 
     /**
         Depth-stencil attachment for the render pass
     */
-    NuvkRenderPassAttachment depthStencilAttachment;
+    NuvkDepthStencilAttachment depthStencilAttachment;
 }
 
 /**

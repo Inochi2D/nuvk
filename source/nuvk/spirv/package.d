@@ -41,6 +41,42 @@ struct NuvkSpirvDescriptor {
 }
 
 /**
+    A color output attachment (of a fragment shader)
+*/
+struct NuvkSpirvAttachment {
+@nogc:
+
+    /// Name of the attachment
+    nstring name;
+
+    /// Location of the attachment
+    uint location;
+
+    /// Format of the attachment
+    NuvkTextureFormat format;
+}
+
+/**
+    Turns SPIRV vector and gets a nuvk texture format from it.
+*/
+NuvkTextureFormat vecToFormat(uint vecsize) @nogc {
+    switch(vecsize) {
+        default:
+            return NuvkTextureFormat.undefined;
+        
+        case 1:
+            return NuvkTextureFormat.a8UnormSRGB;
+        
+        case 2:
+            return NuvkTextureFormat.rg8UnormSRGB;
+        
+        case 3:
+        case 4:
+            return NuvkTextureFormat.bgra8UnormSRGB;
+    }
+}
+
+/**
     A SPIR-V module
 */
 class NuvkSpirvModule {
@@ -59,6 +95,7 @@ private:
     // Parsing Information
     bool hasBeenParsed;
     map!(uint, vector!NuvkSpirvDescriptor) descriptors;
+    vector!NuvkSpirvAttachment attachments;
 
     // Bytecode
     weak_vector!uint bytecode;
@@ -88,6 +125,27 @@ private:
 
             auto resourceBindings = this.getResourceListForType(resourceType);
             foreach(const(SpvcReflectedResource) binding; resourceBindings) {
+
+                if (executionModel == ExecutionModel.Fragment && resourceType == SpvcResourceType.stageOutputs) {
+                    uint location = spvcCompilerGetDecoration(compiler, binding.id, Decoration.Location);
+                    NuvkSpirvAttachment attachment;
+                    attachment.location = location;
+                    attachment.name = nstring(binding.name);
+
+                    auto typeHandle = spvcCompilerGetTypeHandle(compiler, binding.typeId);
+
+                    uint columns = spvcTypeGetColumns(typeHandle);
+                    uint vectorSize = spvcTypeGetVectorSize(typeHandle);
+                    
+                    // Unrelated output.
+                    if (columns != 1) 
+                        continue;
+
+                    attachment.format = vectorSize.vecToFormat();
+                    attachments ~= attachment;
+                    continue;
+                }
+
                 uint set = spvcCompilerGetDecoration(compiler, binding.id, Decoration.DescriptorSet);
                 uint bindingId = spvcCompilerGetDecoration(compiler, binding.id, Decoration.Binding);
 
@@ -272,6 +330,13 @@ public:
     */
     NuvkSpirvDescriptor[] getDescriptors(uint set) {
         return descriptors[set][0..$];
+    }
+
+    /**
+        Gets the (output) attachments for this module.
+    */
+    NuvkSpirvAttachment[] getAttachments() {
+        return attachments[];
     }
 
     /**

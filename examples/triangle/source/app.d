@@ -209,7 +209,7 @@ void main(string[] args) {
 
         if (NuvkTextureView nextImage = swapchain.getNext()) {
 
-            NuvkRenderPassAttachment colorAttachment;
+            NuvkColorAttachment colorAttachment;
             colorAttachment.texture = nextImage;
             colorAttachment.loadOp = NuvkLoadOp.clear;
             colorAttachment.storeOp = NuvkStoreOp.store;
@@ -220,6 +220,7 @@ void main(string[] args) {
             
             if (NuvkRenderEncoder renderPass = cmdbuffer.beginRenderPass(renderPassDescriptor)) {
                 renderPass.setPipeline(shader);
+                renderPass.setCulling(NuvkCulling.none);
                 renderPass.setVertexBuffer(vertexBuffer, 0, 0);
                 renderPass.draw(NuvkPrimitive.triangles, 0, 3);
                 renderPass.endEncoding();

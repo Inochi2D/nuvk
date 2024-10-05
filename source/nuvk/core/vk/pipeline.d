@@ -15,7 +15,6 @@ import core.stdc.stdio : printf;
 
 private {
     const VkDynamicState[] nuvkVkDynamicState = [
-        VK_DYNAMIC_STATE_BLEND_CONSTANTS,
         VK_DYNAMIC_STATE_VIEWPORT,
         VK_DYNAMIC_STATE_SCISSOR,
         VK_DYNAMIC_STATE_CULL_MODE,
@@ -23,7 +22,10 @@ private {
         VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE,
         VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY,
         VK_DYNAMIC_STATE_DEPTH_BIAS,
-        VK_DYNAMIC_STATE_LINE_WIDTH
+        VK_DYNAMIC_STATE_LINE_WIDTH,
+        VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT,
+        VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT,
+        VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT
     ];
 }
 
@@ -84,6 +86,8 @@ private:
 
         weak_vector!VkVertexInputBindingDescription   bindingDescriptions;
         weak_vector!VkVertexInputAttributeDescription attributeDescriptions;
+
+        weak_vector!VkFormat colorAttachmentFormats;
         
         // Shader state
         {
@@ -115,6 +119,22 @@ private:
 
                 shaderStates ~= shaderStageInfo;
                 descriptorSetLayouts ~= fragment.getDescriptorSetLayout();
+
+                NuvkSpirvModule module_ = fragment.getSpirvModule();
+                if (graphicsInfo.fragmentOutputs.size() > 0) {
+                    enforce(
+                        graphicsInfo.fragmentOutputs.size() == module_.getAttachments().length,
+                        nstring("Mismatched size for fragment outputs!")
+                    );
+
+                    foreach(colorOutput; graphicsInfo.fragmentOutputs) {
+                        colorAttachmentFormats ~= colorOutput.toVkImageFormat();
+                    }
+                } else {
+                    foreach(attachment; module_.getAttachments()) {
+                        colorAttachmentFormats ~= attachment.format.toVkImageFormat();
+                    }
+                }
             }
         }
 
@@ -215,6 +235,8 @@ private:
             // Render create info
             VkPipelineRenderingCreateInfo renderCreateInfo;
             renderCreateInfo.viewMask = 0;
+            renderCreateInfo.colorAttachmentCount = cast(uint)colorAttachmentFormats.size();
+            renderCreateInfo.pColorAttachmentFormats = colorAttachmentFormats.data();
             graphicsPipelineCreateInfo.pNext = &renderCreateInfo;
 
             // Final stuff

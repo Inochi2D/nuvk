@@ -101,6 +101,14 @@ struct NuvkGraphicsPipelineDescriptor {
     NuvkShader fragmentShader;
 
     /**
+        List of formats for the fragment output.
+
+        If this list is empty nuvk will attempt to guess
+        the texture formats of outputs from the fragment shader.
+    */
+    vector!NuvkTextureFormat fragmentOutputs;
+
+    /**
         Vertex bindings
 
         May be empty if no vertex shader is specified.

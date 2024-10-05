@@ -279,7 +279,7 @@ SpvcResult function(SpvcCompiler compiler, const(char)* name, ExecutionModel mod
 SpvcResult function(SpvcCompiler compiler, const(char)* old_name, const(char)* new_name, ExecutionModel model) spvcCompilerRenameEntryPoint;
 
 @BindAs("spvc_compiler_get_cleansed_entry_point_name")
-const(char)* function(    SpvcCompiler compiler, const(char)* name, ExecutionModel model) spvcCompilerGetCleansedEntryPointName;
+const(char)* function(SpvcCompiler compiler, const(char)* name, ExecutionModel model) spvcCompilerGetCleansedEntryPointName;
 
 @BindAs("spvc_compiler_set_execution_mode")
 void function(SpvcCompiler compiler, ExecutionMode mode) spvcCompilerSetExecutionMode;
@@ -313,7 +313,7 @@ bool function(SpvcCompiler compiler, BuiltIn builtin, StorageClass storage) spvc
  * Maps to C++ API, except it's read-only.
  */
 @BindAs("spvc_compiler_get_type_handle")
-SpvcType function(SpvcCompiler compiler, SpvcTypeId id) spvcCompilerGetypeHandle;
+SpvcType function(SpvcCompiler compiler, SpvcTypeId id) spvcCompilerGetTypeHandle;
 
 /** Pulls out SPIRType::self. This effectively gives the type ID without array or pointer qualifiers.
  * This is necessary when reflecting decoration/name information on members of a struct,

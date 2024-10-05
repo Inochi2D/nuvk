@@ -69,6 +69,44 @@ VkAccessFlagBits getAccessFlag(bool read) {
     return read ? VK_ACCESS_MEMORY_READ_BIT : VK_ACCESS_MEMORY_WRITE_BIT;
 }
 
+VkBlendFactor toVkBlendFactor(NuvkBlendFactor factor) @nogc {
+    final switch(factor) {
+        case NuvkBlendFactor.zero:
+            return VK_BLEND_FACTOR_ZERO;
+        case NuvkBlendFactor.one:
+            return VK_BLEND_FACTOR_ONE;
+        case NuvkBlendFactor.srcColor:
+            return VK_BLEND_FACTOR_SRC_COLOR;
+        case NuvkBlendFactor.oneMinusSrcColor:
+            return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
+        case NuvkBlendFactor.oneMinusSrcAlpha:
+            return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+        case NuvkBlendFactor.destColor:
+            return VK_BLEND_FACTOR_DST_COLOR;
+        case NuvkBlendFactor.oneMinusDestColor:
+            return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
+        case NuvkBlendFactor.oneMinusDestAlpha:
+            return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
+        case NuvkBlendFactor.srcAlphaSaturated:
+            return VK_BLEND_FACTOR_SRC_ALPHA_SATURATE;
+    }
+}
+
+VkBlendOp toVkBlendOp(NuvkBlendOp op) @nogc {
+    final switch(op) {
+        case NuvkBlendOp.add:
+            return VK_BLEND_OP_ADD;
+        case NuvkBlendOp.subtract:
+            return VK_BLEND_OP_SUBTRACT;
+        case NuvkBlendOp.reverseSubtract:
+            return VK_BLEND_OP_REVERSE_SUBTRACT;
+        case NuvkBlendOp.min:
+            return VK_BLEND_OP_MIN;
+        case NuvkBlendOp.max:
+            return VK_BLEND_OP_MAX;
+    }
+}
+
 /**
     Command buffer
 */
@@ -406,14 +444,40 @@ private:
         viewport.width = descriptor.renderArea.width;
         viewport.height = descriptor.renderArea.height;
 
+        if (colorAttachments.size() > 0) {
+            foreach(i, colorAttachment; descriptor.colorAttachments) {
+                uint attachmentIndex = cast(uint)i;
+
+                VkBool32 enabled = colorAttachment.isBlendingEnabled;
+                vkCmdSetColorBlendEnableEXT(writeBuffer, attachmentIndex, 1, &enabled);
+                if (colorAttachment.isBlendingEnabled) {
+                    VkColorBlendEquationEXT equation;
+                    equation.colorBlendOp = colorAttachment.blendOp.toVkBlendOp();
+                    equation.alphaBlendOp = colorAttachment.blendOp.toVkBlendOp();
+                    equation.srcColorBlendFactor = colorAttachment.sourceColorFactor.toVkBlendFactor();
+                    equation.srcAlphaBlendFactor = colorAttachment.sourceAlphaFactor.toVkBlendFactor();
+                    equation.dstColorBlendFactor = colorAttachment.destinationColorFactor.toVkBlendFactor();
+                    equation.dstAlphaBlendFactor = colorAttachment.destinationAlphaFactor.toVkBlendFactor();
+
+                    vkCmdSetColorBlendEquationEXT(writeBuffer, attachmentIndex, 1, &equation);
+                }
+
+                uint writeMask = VK_COLOR_COMPONENT_R_BIT | 
+                                 VK_COLOR_COMPONENT_G_BIT | 
+                                 VK_COLOR_COMPONENT_B_BIT | 
+                                 VK_COLOR_COMPONENT_A_BIT;
+                vkCmdSetColorWriteMaskEXT(writeBuffer, 0, 1, &writeMask);
+            }
+        }
+
         vkCmdSetScissor(writeBuffer, 0, 1, &scissorRect);
         vkCmdSetViewport(writeBuffer, 0, 1, &viewport);
         vkCmdSetPrimitiveRestartEnable(writeBuffer, VK_TRUE);
         vkCmdSetPrimitiveTopology(writeBuffer, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
-        vkCmdSetBlendConstants(writeBuffer, [0, 0, 0, 0]);
         vkCmdSetLineWidth(writeBuffer, 1);
         vkCmdSetDepthBias(writeBuffer, 0, 0, 0);
-        vkCmdSetCullMode(writeBuffer, VK_CULL_MODE_NONE);
+        vkCmdSetCullMode(writeBuffer, VK_CULL_MODE_BACK_BIT);
+        vkCmdSetFrontFace(writeBuffer, VK_FRONT_FACE_CLOCKWISE);
     }
 
     void endRendering() {

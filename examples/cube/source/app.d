@@ -71,6 +71,7 @@ private:
                 nstring("Failed to create Vulkan surface")
             );
             surface = device.createSurfaceFromHandle(surfaceAddr, presentationMode, NuvkTextureFormat.bgra8UnormSRGB);
+            surface.resize(this.getFramebufferSize());
         }
     }
 
@@ -105,7 +106,7 @@ public:
                             break;
                         case SDL_WINDOWEVENT_RESIZED:
                         case SDL_WINDOWEVENT_RESTORED:
-                            surface.notifyChanged();
+                            surface.resize(this.getFramebufferSize());
                             break;
                     }
                     break;
@@ -232,7 +233,7 @@ void main(string[] args) {
                 mat4.lookAt(vec3(0, 64, 0), vec3(32, 32, 64), vec3(0, 1, 0))
             ).transposed();
 
-            NuvkRenderPassAttachment colorAttachment;
+            NuvkColorAttachment colorAttachment;
             colorAttachment.texture = nextImage;
             colorAttachment.loadOp = NuvkLoadOp.clear;
             colorAttachment.storeOp = NuvkStoreOp.store;
