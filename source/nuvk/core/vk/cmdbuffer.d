@@ -290,6 +290,8 @@ private:
             = weak_vector!VkRenderingAttachmentInfo(descriptor.colorAttachments.size());
         VkRenderingAttachmentInfo depthStencilAttachment;
 
+        uint attachmentCount = 0;
+
         // Color attachments
         {
             foreach(i; 0..descriptor.colorAttachments.size()) {
@@ -297,7 +299,8 @@ private:
                 NuvkTexture nuvkTexture = nuvkTextureView.getTexture();
                 
                 // Ensure that the clip area is always within valid bounds.
-                descriptor.renderArea.clip(recti(0, 0, nuvkTexture.getWidth(), nuvkTexture.getHeight()));
+                descriptor.renderArea = 
+                    descriptor.renderArea.clipped(recti(0, 0, nuvkTexture.getWidth(), nuvkTexture.getHeight()));
 
                 colorAttachments[i].imageView                   = cast(VkImageView)nuvkTextureView.getHandle();
                 colorAttachments[i].imageLayout                 = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR;
@@ -327,6 +330,7 @@ private:
                 memoryBarrier.subresourceRange.layerCount = 1;
 
                 memoryBarriers ~= memoryBarrier;
+                attachmentCount++;
             }
 
             renderInfo.colorAttachmentCount = cast(uint)colorAttachments.size();
@@ -358,6 +362,7 @@ private:
 
                 renderInfo.pDepthAttachment = &depthStencilAttachment;
                 renderInfo.pStencilAttachment = &depthStencilAttachment;
+                attachmentCount++;
             }
         }
 
@@ -365,6 +370,11 @@ private:
         renderInfo.renderArea.offset.y = descriptor.renderArea.y;
         renderInfo.renderArea.extent.width = descriptor.renderArea.width;
         renderInfo.renderArea.extent.height = descriptor.renderArea.height;
+
+        enforce(
+            attachmentCount > 0,
+            nstring("Attempting to render without attachments!")
+        );
 
         // Swap image type
         vkCmdPipelineBarrier(

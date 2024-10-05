@@ -218,6 +218,12 @@ private:
         VkPresentModeKHR presentMode = surface.getVkPresentMode();
         VkSurfaceCapabilitiesKHR surfaceCaps = surface.getCapabilities();
 
+        // Clamp surface size.
+        surfaceSize = vec2u(  
+            clamp(surfaceSize.x, surfaceCaps.minImageExtent.width, surfaceCaps.maxImageExtent.width),
+            clamp(surfaceSize.y, surfaceCaps.minImageExtent.height, surfaceCaps.maxImageExtent.height),
+        );
+
 
         // Swapchain creation
         {
@@ -233,10 +239,7 @@ private:
             swapchainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
             swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
             swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-            swapchainCreateInfo.imageExtent = VkExtent2D(
-                clamp(surfaceSize.x, surfaceCaps.minImageExtent.width, surfaceCaps.maxImageExtent.width),
-                clamp(surfaceSize.y, surfaceCaps.minImageExtent.height, surfaceCaps.maxImageExtent.height),
-            );
+            swapchainCreateInfo.imageExtent = VkExtent2D(surfaceSize.x, surfaceSize.y);
             swapchainCreateInfo.imageArrayLayers = 1;
             swapchainCreateInfo.preTransform = surfaceCaps.currentTransform;
             swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
