@@ -96,9 +96,9 @@ private:
                 bufferInfo.pNext = &bufferExternalInfo;
             }
             
-            enforce(
+            nuvkEnforce(
                 vkCreateBuffer(device, &bufferInfo, null, &buffer) == VK_SUCCESS,
-                nstring("Failed creating buffer")
+                "Failed creating buffer"
             );
         }
 
@@ -107,9 +107,9 @@ private:
             vkGetBufferMemoryRequirements(device, buffer, &memoryRequirements);
 
             memoryIndex = deviceInfo.getMatchingMemoryIndex(memoryRequirements.memoryTypeBits, flags);
-            enforce(
+            nuvkEnforce(
                 memoryIndex >= 0, 
-                nstring("Failed finding suitable memory for the requested buffer")
+                "Failed finding suitable memory for the requested buffer"
             );
 
             allocatedSize = memoryRequirements.size;
@@ -128,9 +128,9 @@ private:
                 allocInfo.memoryTypeIndex = memoryIndex;
                 allocInfo.pNext = &exportInfo;
 
-                enforce(
+                nuvkEnforce(
                     vkAllocateMemory(device, &allocInfo, null, &deviceMemory) == VK_SUCCESS,
-                    nstring("Failed allocating memory for buffer!")
+                    "Failed allocating memory for buffer!"
                 );
 
                 vkBindBufferMemory(device, buffer, deviceMemory, 0);
@@ -141,9 +141,9 @@ private:
                 allocInfo.allocationSize = memoryRequirements.size;
                 allocInfo.memoryTypeIndex = memoryIndex;
 
-                enforce(
+                nuvkEnforce(
                     vkAllocateMemory(device, &allocInfo, null, &deviceMemory) == VK_SUCCESS,
-                    nstring("Failed allocating memory for buffer!")
+                    "Failed allocating memory for buffer!"
                 );
 
                 vkBindBufferMemory(device, buffer, deviceMemory, 0);

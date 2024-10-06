@@ -185,9 +185,9 @@ public:
 
         auto device = cast(VkDevice)nuvkDevice.getHandle();
         ptrdiff_t queueFamilyIndex = findQueueFamilyFor(specialization);
-        enforce(
+        nuvkEnforce(
             queueFamilyIndex >= 0,
-            nstring("Could not find any free queues supporting the specialization")
+            "Could not find any free queues supporting the specialization"
         );
 
         // Prior check should ensure this is a valid value.

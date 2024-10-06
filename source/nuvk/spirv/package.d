@@ -7,6 +7,7 @@
 
 module nuvk.spirv;
 import nuvk.spirv.cross;
+import nuvk.core.logging;
 import nuvk.core.texture;
 import numem.all;
 
@@ -101,14 +102,8 @@ private:
     weak_vector!uint bytecode;
 
     void verifyBytecodeLength(ptrdiff_t length) {
-        enforce(
-            length >= 0,
-            nstring("Could not verify size of input stream!")
-        );
-        enforce(
-            (length % 4) == 0,
-            nstring("SPIR-V bytecode not aligned!")
-        );
+        nuvkEnforce(length >= 0, "Could not verify size of input stream!");
+        nuvkEnforce((length % 4) == 0, "SPIR-V bytecode not aligned!");
     }
     
     void setData(ref uint[] data) {
@@ -213,9 +208,9 @@ public:
     */
     void parse() {
         if (!isSpirvCrossLoaded()) {
-            enforce(
+            nuvkEnforce(
                 loadSpirvCross() == SpirvCrossSupport.yes,
-                nstring("Failed to initialize SPIRV-Cross")
+                "Failed to initialize SPIRV-Cross"
             );
         }
 

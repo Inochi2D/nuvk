@@ -41,9 +41,9 @@ private:
         createInfo.maxSets = MAX_POOL_ALLOCS;
         createInfo.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
 
-        enforce(
+        nuvkEnforce(
             vkCreateDescriptorPool(vkdevice, &createInfo, null, &allocation.pool) == VK_SUCCESS,
-            nstring("Failed to allocate descriptor pool!")
+            "Failed to allocate descriptor pool!"
         );
 
         allocation.allocSucceeded = true;

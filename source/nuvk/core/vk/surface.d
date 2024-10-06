@@ -71,9 +71,9 @@ private:
         VkPhysicalDevice physicalDevice = cast(VkPhysicalDevice)this.getOwner().getDeviceInfo().getHandle();
 
         // Capabilities
-        enforce(
+        nuvkEnforce(
             vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &capability.surfaceCaps) == VK_SUCCESS,
-            nstring("Failed getting surface capabilties")
+            "Failed getting surface capabilties"
         );
     }
 
@@ -247,9 +247,9 @@ private:
             swapchainCreateInfo.clipped = VK_FALSE;
             swapchainCreateInfo.surface = cast(VkSurfaceKHR)surface.getHandle();
 
-            enforce(
+            nuvkEnforce(
                 vkCreateSwapchainKHR(device, &swapchainCreateInfo, null, &swapchain) == VK_SUCCESS,
-                nstring("Failed to create swapchain")
+                "Failed to create swapchain"
             );
 
             this.setHandle(swapchain);
@@ -262,9 +262,9 @@ private:
             vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount, null);
 
             swapchainImages = weak_vector!VkImage(swapchainImageCount);
-            enforce(
+            nuvkEnforce(
                 vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount, swapchainImages.data()) == VK_SUCCESS,
-                nstring("Failed to create swapchain images.")
+                "Failed to create swapchain images."
             );
 
             this.textures.resize(swapchainImageCount);

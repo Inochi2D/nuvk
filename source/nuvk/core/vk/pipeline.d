@@ -92,9 +92,9 @@ private:
         // Shader state
         {
             if (auto vertex = cast(NuvkVkShader)graphicsInfo.vertexShader) {
-                enforce(
+                nuvkEnforce(
                     vertex.getStage() == NuvkShaderStage.vertex,
-                    nstring("Shader is not a vertex shader!")
+                    "Shader is not a vertex shader!"
                 );
 
                 VkPipelineShaderStageCreateInfo shaderStageInfo;
@@ -107,9 +107,9 @@ private:
             }
 
             if (auto fragment = cast(NuvkVkShader)graphicsInfo.fragmentShader) {
-                enforce(
+                nuvkEnforce(
                     fragment.getStage() == NuvkShaderStage.fragment,
-                    nstring("Shader is not a fragment shader!")
+                    "Shader is not a fragment shader!"
                 );
 
                 VkPipelineShaderStageCreateInfo shaderStageInfo;
@@ -122,9 +122,9 @@ private:
 
                 NuvkSpirvModule module_ = fragment.getSpirvModule();
                 if (graphicsInfo.fragmentOutputs.size() > 0) {
-                    enforce(
+                    nuvkEnforce(
                         graphicsInfo.fragmentOutputs.size() == module_.getAttachments().length,
-                        nstring("Mismatched size for fragment outputs!")
+                        "Mismatched size for fragment outputs!"
                     );
 
                     foreach(colorOutput; graphicsInfo.fragmentOutputs) {
@@ -145,9 +145,9 @@ private:
             pipelineLayoutInfo.setLayoutCount = cast(uint)descriptorSetLayouts.size();
             pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
 
-            enforce(
+            nuvkEnforce(
                 vkCreatePipelineLayout(device, &pipelineLayoutInfo, null, &pipelineLayout) == VK_SUCCESS,
-                nstring("Failed to create Vulkan graphics pipeline layout!")
+                "Failed to create Vulkan graphics pipeline layout!"
             );
         }
 
@@ -243,9 +243,9 @@ private:
             graphicsPipelineCreateInfo.layout = pipelineLayout;
             graphicsPipelineCreateInfo.renderPass = VK_NULL_HANDLE;
 
-            enforce(
+            nuvkEnforce(
                 vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, null, &pipeline) == VK_SUCCESS,
-                nstring("Failed to create graphics pipeline!")
+                "Failed to create graphics pipeline!"
             );
         }
         

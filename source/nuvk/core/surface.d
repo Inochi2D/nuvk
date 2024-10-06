@@ -99,9 +99,9 @@ public:
     */
     final
     void setPresentationMode(NuvkPresentMode presentMode) {
-        enforce(
+        nuvkEnforce(
             isPresentModeValid(presentMode),
-            nstring("Specified presentation mode not supported!")
+            "Specified presentation mode not supported!"
         );
 
         this.presentMode = presentMode;
@@ -123,9 +123,9 @@ public:
     */
     final
     void setFormat(NuvkTextureFormat textureFormat) {
-        enforce(
+        nuvkEnforce(
             isFormatValid(textureFormat),
-            nstring("Specified format not supported!")
+            "Specified format not supported!"
         );
 
         this.textureFormat = textureFormat;

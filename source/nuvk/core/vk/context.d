@@ -102,9 +102,9 @@ private:
         instanceCreateInfo.enabledLayerCount = cast(uint)layers.length;
         instanceCreateInfo.ppEnabledLayerNames = layers.ptr;
 
-        enforce(
+        nuvkEnforce(
             vkCreateInstance(&instanceCreateInfo, null, &instance) == VK_SUCCESS,
-            nstring("Failed creating Vulkan Instance!")
+            "Failed creating Vulkan Instance!"
         );
 
         this.setHandle(instance);
@@ -163,7 +163,7 @@ protected:
                 VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
                 VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
             debugCallbackInfo.pfnUserCallback = &nuvkVkDbgCallback;
-            enforce(
+            nuvkEnforce(
                 vkCreateDebugUtilsMessengerEXT(instance, &debugCallbackInfo, null, &debugCallback) == VK_SUCCESS,
                 nstring("Could not create debug messenger!")
             );

@@ -517,9 +517,9 @@ public:
     */
     final
     NuvkRenderEncoder beginRenderPass(ref NuvkRenderPassDescriptor renderPassDescriptor) {
-        enforce(
+        nuvkEnforce(
             (queue.getSpecialization() & NuvkQueueSpecialization.graphics),
-            nstring("Queue does not support encoding render commands!")
+            "Queue does not support encoding render commands!"
         );
 
         this.updateStatus();
@@ -535,9 +535,9 @@ public:
     */
     final
     NuvkComputeEncoder beginComputePass() {
-        enforce(
+        nuvkEnforce(
             (queue.getSpecialization() & NuvkQueueSpecialization.compute),
-            nstring("Queue does not support encoding compute commands!")
+            "Queue does not support encoding compute commands!"
         );
 
         this.updateStatus();
@@ -553,9 +553,9 @@ public:
     */
     final
     NuvkTransferEncoder beginTransferPass() {
-        enforce(
+        nuvkEnforce(
             (queue.getSpecialization() & NuvkQueueSpecialization.transfer),
-            nstring("Queue does not support encoding transfer commands!")
+            "Queue does not support encoding transfer commands!"
         );
 
         this.updateStatus();

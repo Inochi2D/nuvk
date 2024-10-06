@@ -60,8 +60,8 @@ private {
 
 void nuvkVkInitVulkan() @nogc {
     if (!nuvkVkIsInitialized) {
-        enforce(loadGlobalLevelFunctions(), nstring("Failed to load Vulkan"));
-        enforce(nuvkVkGetVersion() >= VK_VERSION_1_3, nstring("Vulkan 1.3 required."));
+        nuvkEnforce(loadGlobalLevelFunctions(), "Failed to load Vulkan");
+        nuvkEnforce(nuvkVkGetVersion() >= VK_API_VERSION_1_3, "Vulkan 1.3 required.");
         nuvkVkIsInitialized = true;
     }
 }

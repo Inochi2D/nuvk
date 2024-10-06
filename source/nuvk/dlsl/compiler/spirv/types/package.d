@@ -93,7 +93,7 @@ public:
     */
     final
     void addDecoration(SpirvDecoration decoration) {
-        enforce(canDecorateWith(decoration), "Decoration could not be applied to this type!");
+        nuvkEnforce(canDecorateWith(decoration), "Decoration could not be applied to this type!");
         decorations ~= decoration;
     }
 
@@ -276,8 +276,8 @@ public:
     Gets the a vector type from the specified base type
 */
 SpirvVectorType nuvkSpirvGetVector(SpirvBaseType baseType, uint components) {
-    enforce(components >= 2 && components <= 4);
-    enforce(
+    nuvkEnforce(components >= 2 && components <= 4);
+    nuvkEnforce(
         baseType.getTypeId() == SpirvTypeId.typeFloat || 
         baseType.getTypeId() == SpirvTypeId.typeInt   || 
         baseType.getTypeId() == SpirvTypeId.typeBool,
@@ -343,7 +343,7 @@ public:
     Gets the a matrix type from the specified base type
 */
 SpirvVectorType nuvkSpirvGetMatrix(SpirvVectorType baseType, uint columns) {
-    enforce(columns >= 2 && columns <= 4);
+    nuvkEnforce(columns >= 2 && columns <= 4);
 
     SpirvTCType tct;
     tct.baseType = baseType;

@@ -89,9 +89,9 @@ private:
         shaderCreateInfo.codeSize = this.getBytecodeSize();
         shaderCreateInfo.pCode = this.getBytecode().ptr;
 
-        enforce(
+        nuvkEnforce(
             vkCreateShaderModule(device, &shaderCreateInfo, null, &shaderModule) == VK_SUCCESS,
-            nstring("Shader module creation failed!")
+            "Shader module creation failed!"
         );
 
         this.setHandle(shaderModule);
@@ -132,9 +132,9 @@ private:
             descriptorLayoutCreateInfo.bindingCount = cast(uint)layoutBindings.size();
             descriptorLayoutCreateInfo.pBindings = layoutBindings.data();
 
-            enforce(
+            nuvkEnforce(
                 vkCreateDescriptorSetLayout(device, &descriptorLayoutCreateInfo, null, &descriptorSetLayout) == VK_SUCCESS,
-                nstring("Vulkan descriptor set layout creation failed!")
+                "Vulkan descriptor set layout creation failed!"
             );
         }
     }

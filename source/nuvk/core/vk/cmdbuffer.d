@@ -129,15 +129,15 @@ private:
         commandBufferInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         commandBufferInfo.commandBufferCount = 1;
 
-        enforce(
+        nuvkEnforce(
             vkAllocateCommandBuffers(device, &commandBufferInfo, &bufferHandle) == VK_SUCCESS,
-            nstring("Failed to allocate command buffer")
+            "Failed to allocate command buffer"
         );
 
         VkCommandBufferBeginInfo beginInfo;
-        enforce(
+        nuvkEnforce(
             vkBeginCommandBuffer(bufferHandle, &beginInfo) == VK_SUCCESS,
-            nstring("Failed to begin command buffer")
+            "Failed to begin command buffer"
         );
 
         return bufferHandle;
@@ -217,9 +217,9 @@ public:
     */
     override
     void present(NuvkSurface surface) {
-        enforce(
+        nuvkEnforce(
             this.getStatus() == NuvkCommandBufferStatus.submitted,
-            nstring("Nothing to present.")
+            "Nothing to present."
         );
 
         auto nuvkswapchain = (cast(NuvkVkSwapchain)surface.getSwapchain());

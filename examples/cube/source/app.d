@@ -66,9 +66,9 @@ private:
         // Create surface
         {
             void* surfaceAddr;
-            enforce(
+            nuvkEnforce(
                 SDL_Vulkan_CreateSurface(window, context.getHandle(), &surfaceAddr) == SDL_TRUE,
-                nstring("Failed to create Vulkan surface")
+                "Failed to create Vulkan surface"
             );
             surface = device.createSurfaceFromHandle(surfaceAddr, presentationMode, NuvkTextureFormat.bgra8UnormSRGB);
             surface.resize(this.getFramebufferSize());
@@ -183,9 +183,9 @@ void main(string[] args) {
     ];
 
     NuvkBuffer vertexBuffer = device.createBuffer(NuvkBufferUsage.vertex | NuvkBufferUsage.transferSrc, NuvkDeviceSharing.deviceShared, vec3.sizeof*vertices.length);
-    enforce(
+    nuvkEnforce(
         vertexBuffer.upload!vec3(vertices),
-        nstring("Failed to upload data!")
+        "Failed to upload data!"
     );
 
     // Shader stuff

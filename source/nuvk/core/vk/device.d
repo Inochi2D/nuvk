@@ -89,9 +89,9 @@ private:
             }
         }
 
-	    enforce(
+	    nuvkEnforce(
             vkCreateDevice(physicalDevice, &deviceCreateInfo, null, &device) == VK_SUCCESS, 
-            nstring("Device creation failed!")
+            "Device creation failed!"
         );
 
         this.setHandle(device);
@@ -215,9 +215,9 @@ public:
     */
     override
     void destroyQueue(NuvkQueue queue) {
-        enforce(
+        nuvkEnforce(
             queue !is transferQueue,
-            nstring("Attempted to delete queue owned by device.")
+            "Attempted to delete queue owned by device."
         );
         queueManager.removeQueue(cast(NuvkVkQueue)queue);
     }

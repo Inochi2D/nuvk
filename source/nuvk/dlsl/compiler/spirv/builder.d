@@ -42,7 +42,7 @@ public:
         Targets the specified block for writing.
     */
     void targetBlock(nstring name) {
-        enforce(!function_.getBasicBlock(name).isFinalized(), "Can't append to finalized basic block!");
+        nuvkEnforce(!function_.getBasicBlock(name).isFinalized(), "Can't append to finalized basic block!");
 
         target = function_.getBasicBlock(name);
         targetBuffer = &target.getInstructions();
@@ -99,7 +99,7 @@ public:
     void buildBranch(SpirvBasicBlock block) {
         if (!target) return;
 
-        enforce(block.getFunction() == target.getFunction(), 
+        nuvkEnforce(block.getFunction() == target.getFunction(), 
             nstring("Can't jump to basic block in other function!")
         );
 
@@ -115,11 +115,11 @@ public:
     void buildBranch(SpirvOperand condition, SpirvBasicBlock onTrue, SpirvBasicBlock onFalse) {
         if (!target) return;
 
-        enforce(onTrue.getFunction() == target.getFunction(), 
+        nuvkEnforce(onTrue.getFunction() == target.getFunction(), 
             nstring("Can't jump to basic block in other function!")
         );
 
-        enforce(onFalse.getFunction() == target.getFunction(), 
+        nuvkEnforce(onFalse.getFunction() == target.getFunction(), 
             nstring("Can't jump to basic block in other function!")
         );
 

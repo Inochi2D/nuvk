@@ -26,9 +26,9 @@ private:
         VkFenceCreateInfo fenceInfo;
         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
         
-        enforce(
+        nuvkEnforce(
             vkCreateFence(device, &fenceInfo, null, &fence) == VK_SUCCESS,
-            nstring("Failed creating a fence")
+            "Failed creating a fence"
         );
 
         this.setHandle(fence);
@@ -88,9 +88,9 @@ private:
             VkSemaphoreCreateInfo semaphoreInfo;
             semaphoreInfo.pNext = &exportInfo;
 
-            enforce(
+            nuvkEnforce(
                 vkCreateSemaphore(device, &semaphoreInfo, null, &semaphore) == VK_SUCCESS,
-                nstring("Failed creating a semaphore")
+                "Failed creating a semaphore"
             );
 
             this.setHandle(semaphore);
@@ -99,9 +99,9 @@ private:
             // Semaphore info
             VkSemaphoreCreateInfo semaphoreInfo;
             
-            enforce(
+            nuvkEnforce(
                 vkCreateSemaphore(device, &semaphoreInfo, null, &semaphore) == VK_SUCCESS,
-                nstring("Failed creating a semaphore")
+                "Failed creating a semaphore"
             );
 
             this.setHandle(semaphore);

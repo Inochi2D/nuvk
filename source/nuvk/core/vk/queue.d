@@ -44,9 +44,9 @@ private:
         commandPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
         commandPoolInfo.queueFamilyIndex = queueFamilyIndex;
 
-        enforce(
+        nuvkEnforce(
             vkCreateCommandPool(device, &commandPoolInfo, null, &commandPool) == VK_SUCCESS,
-            nstring("Failed creating command pool!")
+            "Failed creating command pool!"
         );
     }
 
