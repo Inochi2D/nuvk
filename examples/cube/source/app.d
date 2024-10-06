@@ -206,7 +206,7 @@ void main(string[] args) {
     );
     NuvkPipeline shader = device.createGraphicsPipeline(graphicsShaderDesc);
 
-    NuvkCommandQueue queue = device.createQueue();
+    NuvkQueue queue = device.createQueue();
     NuvkCommandBuffer cmdbuffer = queue.createCommandBuffer();
 
     double ticks = cast(double)SDL_GetTicks64();

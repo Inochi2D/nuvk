@@ -18,72 +18,47 @@ import numem.all;
 class NuvkVkStagingBuffer {
 @nogc:
 private:
-    NuvkVkDevice device;
-    VkBuffer buffer;
-    VkDeviceMemory bufferMemory;
+    // Buffer
+    NuvkDevice device;
+    NuvkBuffer buffer;
 
-    VkMemoryRequirements memoryRequirements;
+    // Queues
+    vector!uint queues;
 
-    weak_vector!uint queues;
-    StagingRequest stagingRequest;
-
-    /**
-        A staging request
-    */
-    struct StagingRequest {
-        VkBuffer destination;
-        uint start;
-        uint end;
-    }
+    // Command Buffer
+    NuvkQueue transferQueue;
 
     void createStagingBuffer() {
-        this.fillQueueIds();
-        auto deviceInfo = cast(NuvkVkDeviceInfo)device.getDeviceInfo();
-        auto vkdevice = cast(VkDevice)device.getHandle();
-        
-        VkBufferCreateInfo bufferCreateInfo;
-        bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-
-        // Buffer is 32 megabytes in size
-        bufferCreateInfo.size = 33_554_432;
-        bufferCreateInfo.sharingMode = VK_SHARING_MODE_CONCURRENT;
-        bufferCreateInfo.queueFamilyIndexCount = cast(uint)queues.size();
-        bufferCreateInfo.pQueueFamilyIndices = queues.data();
-
-        enforce(
-            vkCreateBuffer(vkdevice, &bufferCreateInfo, null, &buffer) == VK_SUCCESS,
-            nstring("Failed creating staging buffer")
+        buffer = device.createBuffer(
+            NuvkBufferUsage.hostVisible | 
+            NuvkBufferUsage.transferSrc |
+            NuvkBufferUsage.transferDst |
+            NuvkBufferUsage.hostShared,
+            33_554_432u,
         );
-
-        vkGetBufferMemoryRequirements(vkdevice, buffer, &memoryRequirements);
-
-        VkMemoryAllocateInfo allocInfo;
-        allocInfo.allocationSize = memoryRequirements.size;
-        allocInfo.memoryTypeIndex = deviceInfo.getMatchingMemoryIndex(memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-        
-        enforce(
-            vkAllocateMemory(vkdevice, &allocInfo, null, &bufferMemory) == VK_SUCCESS,
-            nstring("Failed to allocate memory for staging buffer")
-        );
-
-        vkBindBufferMemory(vkdevice, buffer, bufferMemory, 0);
-    }
-
-    void fillQueueIds() {
-        auto deviceInfo = cast(NuvkVkDeviceInfo)device.getDeviceInfo();
-        auto queueProps = deviceInfo.getQueueFamilyProperties();
-        foreach(i; 0..queueProps.length) {
-            queues ~= cast(uint)i;
-        }
     }
 
 public:
 
-    this(NuvkVkDevice device) {
-        this.device = device;
+    /**
+        Destructor
+    */
+    ~this() {
+        // Make sure recursive destruction doesn't attempt
+        // To destroy the queue twice.
+        transferQueue = null;
+        nogc_delete(buffer);
     }
 
-    void copyDataTo(VkBuffer destination, void[] data) {
-        
+    /**
+        Constructor
+    */
+    this(NuvkDevice device, NuvkQueue transferQueue) {
+        this.device = device;
+        this.transferQueue = transferQueue;
+    }
+
+    void transfer(void[] data, NuvkBuffer to) {
+
     }
 }

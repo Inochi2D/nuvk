@@ -122,7 +122,7 @@ private:
         VkCommandBuffer bufferHandle = VK_NULL_HANDLE;
 
         auto device = cast(VkDevice)this.getOwner().getHandle();
-        auto pool = (cast(NuvkVkCommandQueue)this.getQueue()).getCommandPool();
+        auto pool = (cast(NuvkVkQueue)this.getQueue()).getCommandPool();
 
         VkCommandBufferAllocateInfo commandBufferInfo;
         commandBufferInfo.commandPool = pool;
@@ -146,7 +146,7 @@ private:
     void freeCommandBuffers() {
 
         auto device = cast(VkDevice)this.getOwner().getHandle();
-        auto pool = (cast(NuvkVkCommandQueue)this.getQueue()).getCommandPool();
+        auto pool = (cast(NuvkVkQueue)this.getQueue()).getCommandPool();
 
         if (commandBuffers.size() > 0) {
             vkFreeCommandBuffers(device, pool, cast(uint)commandBuffers.size(), commandBuffers.data());
@@ -156,6 +156,9 @@ private:
 
 protected:
 
+    /**
+        Implements the logic to begin a new pass of command encoding.
+    */
     override
     void onBeginNewPass() {
         this.freeCommandBuffers();
@@ -183,7 +186,15 @@ protected:
     */
     override
     NuvkTransferEncoder onBeginTransferPass() {
-        return null;
+        return nogc_new!NuvkVkTransferEncoder(this, this.createCommandBuffer());
+    }
+
+    /**
+        Implements the logic to finish encoding.
+    */
+    override
+    void onEncoderFinished(void* handle) {
+        this.commandBuffers ~= cast(VkCommandBuffer)handle;
     }
 
 public:
@@ -196,7 +207,7 @@ public:
     /**
         Creates a command buffer
     */
-    this(NuvkDevice device, NuvkCommandQueue queue) {
+    this(NuvkDevice device, NuvkQueue queue) {
         super(device, queue);
         this.pools = nogc_new!NuvkDescriptorPoolManager(cast(NuvkVkDevice)this.getOwner());
     }
@@ -307,16 +318,41 @@ VkResolveModeFlagBits toVkResolveMode(NuvkStoreOp storeOp) @nogc {
 class NuvkVkRenderEncoder : NuvkRenderEncoder {
 @nogc:
 private:
-    NuvkVkPipeline currentPipeline;
-    VkDescriptorSet currentSet;
 
-    VkDescriptorSet boundSet;
-
+    // Parent command buffer
     NuvkVkCommandBuffer parent;
     VkCommandBuffer writeBuffer;
     VkDevice device;
 
-    void beginRendering() {
+    // Pipeline state
+    NuvkVkPipeline currentPipeline;
+    VkDescriptorSet currentSet;
+    VkDescriptorSet boundSet;
+
+    void bindCurrentSet() {
+        if (boundSet !is currentSet) {
+            vkCmdBindDescriptorSets(
+                writeBuffer,
+                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                currentPipeline.getPipelineLayout(),
+                0,
+                1,
+                &currentSet,
+                0,
+                null
+            );
+            boundSet = currentSet;
+        }
+    }
+
+protected:
+
+
+    /**
+        Called by the implementation when the encoding begins
+    */
+    override
+    void onBegin(ref NuvkCommandBuffer buffer) {
         NuvkRenderPassDescriptor descriptor = this.getDescriptor();
 
         VkRenderingInfo renderInfo;
@@ -337,8 +373,7 @@ private:
                 NuvkTexture nuvkTexture = nuvkTextureView.getTexture();
                 
                 // Ensure that the clip area is always within valid bounds.
-                descriptor.renderArea = 
-                    descriptor.renderArea.clipped(recti(0, 0, nuvkTexture.getWidth(), nuvkTexture.getHeight()));
+                descriptor.renderArea.clip(recti(0, 0, nuvkTexture.getWidth(), nuvkTexture.getHeight()));
 
                 colorAttachments[i].imageView                   = cast(VkImageView)nuvkTextureView.getHandle();
                 colorAttachments[i].imageLayout                 = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR;
@@ -409,9 +444,9 @@ private:
         renderInfo.renderArea.extent.width = descriptor.renderArea.width;
         renderInfo.renderArea.extent.height = descriptor.renderArea.height;
 
-        enforce(
+        nuvkEnforce(
             attachmentCount > 0,
-            nstring("Attempting to render without attachments!")
+            "Attempting to render without attachments!"
         );
 
         // Swap image type
@@ -480,7 +515,11 @@ private:
         vkCmdSetFrontFace(writeBuffer, VK_FRONT_FACE_CLOCKWISE);
     }
 
-    void endRendering() {
+    /**
+        Called by the implementation when the encoding ends
+    */
+    override
+    void* onEnd(ref NuvkCommandBuffer buffer) {
         NuvkRenderPassDescriptor descriptor = this.getDescriptor();
 
         weak_vector!VkImageMemoryBarrier memoryBarriers;
@@ -519,27 +558,7 @@ private:
         );
 
         vkEndCommandBuffer(writeBuffer);
-        parent.commandBuffers ~= writeBuffer;
-
-        // Workaround for ref not working for this
-        NuvkVkRenderEncoder self = this;
-        nogc_delete(self);
-    }
-
-    void bindCurrentSet() {
-        if (boundSet !is currentSet) {
-            vkCmdBindDescriptorSets(
-                writeBuffer,
-                VK_PIPELINE_BIND_POINT_GRAPHICS,
-                currentPipeline.getPipelineLayout(),
-                0,
-                1,
-                &currentSet,
-                0,
-                null
-            );
-            boundSet = currentSet;
-        }
+        return writeBuffer;
     }
 
 public:
@@ -548,11 +567,11 @@ public:
         Constructor
     */
     this(NuvkVkCommandBuffer parent, ref NuvkRenderPassDescriptor descriptor, VkCommandBuffer rDestination) {
-        super(parent, descriptor);
         this.device = cast(VkDevice)parent.getOwner().getHandle();
         this.parent = parent;
         this.writeBuffer = rDestination;
-        this.beginRendering();
+
+        super(parent, descriptor);
     }
 
     /**
@@ -587,14 +606,6 @@ public:
     // void signal(NuvkSemaphore fence, NuvkRenderStage after) {
         
     // }
-
-    /**
-        Ends encoding the commands to the buffer.
-    */
-    override
-    void endEncoding() {
-        this.endRendering();
-    }
 
     /**
         Sets the active pipeline
@@ -817,3 +828,128 @@ public:
     }
 }
 
+
+
+/**
+    A lightweight object for submitting transfer commands
+    to a command buffer.
+*/
+class NuvkVkTransferEncoder : NuvkTransferEncoder {
+@nogc:
+private:
+
+    // Parent command buffer
+    NuvkVkCommandBuffer parent;
+    VkCommandBuffer writeBuffer;
+    VkDevice device;
+
+protected:
+
+    /**
+        Called by the implementation when the encoding begins
+    */
+    override
+    void onBegin(ref NuvkCommandBuffer buffer) {
+        VkCommandBufferBeginInfo beginInfo;
+        vkBeginCommandBuffer(writeBuffer, &beginInfo);
+    }
+
+    /**
+        Called by the implementation when the encoding ends
+    */
+    override
+    void* onEnd(ref NuvkCommandBuffer buffer) {
+        vkEndCommandBuffer(writeBuffer);
+        return writeBuffer;
+    }
+
+
+public:
+
+    /**
+        Constructor
+    */
+    this(NuvkVkCommandBuffer parent, VkCommandBuffer rDestination) {
+        this.device = cast(VkDevice)parent.getOwner().getHandle();
+        this.parent = parent;
+        this.writeBuffer = rDestination;
+
+        super(parent);
+    }
+
+    /**
+        Pushes a debug group onto the command buffer's stack
+        This is useful for render debugging.
+    */
+    override
+    void pushDebugGroup(nstring name) {
+        
+    }
+
+    /**
+        Pops a debug group from the command buffer's stack
+        This is useful for render debugging.
+    */
+    override
+    void popDebugGroup() {
+        
+    }
+
+    /**
+        Submits a command which generates mipmaps for the
+        specified texture
+    */
+    override
+    void generateMipmaps(NuvkTexture texture) {
+        
+    }
+
+    /**
+        Copies data between 2 buffers
+    */
+    override
+    void copy(NuvkBuffer from, uint sourceOffset, NuvkBuffer to, uint destOffset, uint size) {
+
+    }
+
+    /**
+        Copies data between a buffer and texture
+
+        Parameters:
+            `from` - The buffer to copy from
+            `sourceOffset` - Offset, in bytes, into the buffer to copy from
+            `sourcePxStride` - How many bytes there are in a single pixel
+            `copyRange` - The width and height to copy, and the destination coordinates in the texture to put them.
+            `to` - The texture to copy to
+            `arraySlice` - The texture array slice to copy into.
+            `mipLevel` - The texture mip level to copy into.
+    */
+    override
+    void copy(NuvkBuffer from, uint sourceOffset, uint sourcePxStride, recti copyRange, NuvkTexture to, uint arraySlice = 0, uint mipLevel = 0) {
+        
+    }
+
+    /**
+        Copies data between 2 textures
+    */
+    override
+    void copy(NuvkTexture from, NuvkTexture to) {
+        
+    }
+
+    /**
+        Encodes a command which optimizes the texture for the specified usage.
+    */
+    override
+    void optimizeTextureFor(NuvkTexture texture, NuvkOptimizationMode mode, uint arraySlice = 0, uint mipLevel = 0) {
+        
+    }
+
+    /**
+        Encodes a command which synchronizes the resource between CPU and GPU.
+    */
+    override
+    void synchronize(NuvkResource resource) {
+        
+    }
+}

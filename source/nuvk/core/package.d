@@ -19,6 +19,8 @@ public import nuvk.core.sync;
 public import nuvk.core.queue;
 public import nuvk.core.cmdbuffer;
 public import nuvk.core.surface;
+public import nuvk.core.devinfo;
+public import nuvk.core.logging;
 
 /**
     Base type of Nuvk objects.

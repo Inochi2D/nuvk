@@ -337,7 +337,6 @@ class NuvkTexture : NuvkResource {
 @nogc:
 private:
     NuvkTextureDescriptor descriptor;
-    NuvkDeviceSharing deviceSharing;
 
 protected:
 
@@ -356,7 +355,6 @@ public:
     */
     this(NuvkDevice device, NuvkTextureDescriptor descriptor, NuvkProcessSharing processSharing) {
         super(device, processSharing);
-        this.deviceSharing = deviceSharing;
         this.descriptor = descriptor;
     }
 
@@ -365,7 +363,6 @@ public:
     */
     this(NuvkDevice device, NuvkTextureFormat format, NuvkProcessSharing processSharing) {
         super(device, processSharing);
-        this.deviceSharing = deviceSharing;
         this.descriptor.format = format;
         this.descriptor.samples = 1;
         this.descriptor.type = NuvkTextureType.texture2d;
@@ -406,14 +403,6 @@ public:
         Creates a texture view
     */
     abstract NuvkTextureView createTextureView(NuvkTextureViewDescriptor descriptor);
-
-    /**
-        Gets the sharing mode of the texture
-    */
-    final
-    NuvkDeviceSharing getDeviceSharing() {
-        return deviceSharing;
-    }
 
     /**
         Gets the format of the texture

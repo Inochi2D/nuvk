@@ -31,22 +31,6 @@ enum NuvkProcessSharing {
 }
 
 /**
-    Sharing mode for a buffer
-*/
-enum NuvkDeviceSharing {
-    
-    /**
-        Buffer is local to the GPU
-    */
-    deviceLocal,
-    
-    /**
-        Buffer is shared with the CPU
-    */
-    deviceShared
-}
-
-/**
     The device that owns the context.
 */
 abstract
@@ -82,7 +66,7 @@ public:
     /**
         Creates a buffer.
     */
-    abstract NuvkBuffer createBuffer(NuvkBufferUsage usage, NuvkDeviceSharing sharing, uint size, NuvkProcessSharing processSharing = NuvkProcessSharing.processLocal);
+    abstract NuvkBuffer createBuffer(NuvkBufferUsage usage, uint size, NuvkProcessSharing processSharing = NuvkProcessSharing.processLocal);
 
     /**
         Creates a texture
@@ -117,7 +101,13 @@ public:
     /**
         Creates a new command queue
     */
-    abstract NuvkCommandQueue createQueue(NuvkQueueSpecialization specialization = NuvkQueueSpecialization.none);
+    abstract NuvkQueue createQueue(NuvkQueueSpecialization specialization = NuvkQueueSpecialization.none);
+
+    /**
+        Creates a surface from a handle created by your windowing
+        library.
+    */
+    abstract NuvkSurface createSurfaceFromHandle(void* handle, NuvkPresentMode presentMode, NuvkTextureFormat textureFormat);
 
     /**
         Waits for all queues to be idle.
@@ -129,13 +119,22 @@ public:
 
         calling nogc_delete on a queue will automatically invoke this.
     */
-    abstract void destroyQueue(NuvkCommandQueue queue);
-
+    abstract void destroyQueue(NuvkQueue queue);
+    
     /**
-        Creates a surface from a handle created by your windowing
-        library.
+        Gets the queue family information
     */
-    abstract NuvkSurface createSurfaceFromHandle(void* handle, NuvkPresentMode presentMode, NuvkTextureFormat textureFormat);
+    final
+    NuvkQueueFamilyInfo[] getQueueFamilyInfos() {
+        return deviceInfo.getQueueFamilyInfos();
+    }
+    /**
+        Gets the queue family information
+    */
+    final
+    ptrdiff_t getQueueFamilyInfoFor(NuvkQueueSpecialization specialization) {
+        return deviceInfo.getQueueFamilyIdxFor(specialization);
+    }
 }
 
 /**

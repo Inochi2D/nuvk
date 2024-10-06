@@ -15,41 +15,64 @@ import nuvk.core.vk.context;
     The type of the context.
 */
 enum NuvkContextType {
+
+    /**
+        Choose the best context type based on platform.
+    */
+    best,
+
+    /**
+        Nuvk is backed by Vulkan.
+    */
     vulkan,
+    
+    /**
+        Nuvk is backed by Metal.
+    */
     metal
 }
 
 /**
-    The type of a device.
+    Information which can be passed to Vulkan
 */
-enum NuvkDeviceType {
-    integratedGPU,
-    dedicatedGPU
+struct NuvkVkContextDescriptor {
+@nogc:
+    weak_vector!(const(char)*) requiredExtensions;
 }
 
 /**
-    Information about a device
+    Information which can be passed to Metal
 */
-abstract
-class NuvkDeviceInfo : NuvkObject {
+struct NuvkMtlContextDescriptor {
 @nogc:
-public:
+    // Nothing here yet :)
+}
 
+/**
+    Information passed to a context on creation.
+
+    This is context type specific.
+*/
+struct NuvkContextDescriptor {
+@nogc:
+    
     /**
-        Gets the name of the device
+        The type of context to request.
     */
-    abstract string getDeviceName();
+    NuvkContextType type;
 
-    /**
-        Gets the type of the device
-    */
-    abstract NuvkDeviceType getDeviceType();
+    union {
 
-    /**
-        Gets whether the device supports staging buffers.
-    */
-    abstract bool supportsStaging();
+        /**
+            Information which can be passed to Vulkan
+        */
+        NuvkVkContextDescriptor vulkan;
 
+        /**
+            Information which can be passed to Metal
+        */
+        NuvkMtlContextDescriptor metal;
+    }
 }
 
 /**
@@ -58,22 +81,101 @@ public:
 abstract
 class NuvkContext : NuvkObject {
 @nogc:
+private:
+    NuvkContextType contextType;
+    vector!NuvkDeviceInfo deviceInfo;
+
+    void enumerateDevices() {
+        auto infos = this.onEnumerateDevices();
+        foreach(i; 0..infos.size()) {
+
+            // Handle invalid device.
+            // We free it
+            if (!infos[i].isDeviceSuitable()) {
+                nogc_delete(infos[i]);
+                continue;
+            }
+
+            // Remaining devices change ownership.
+            // They are now fully owned by the context.
+            deviceInfo ~= infos[i];
+        }
+    }
+
+protected:
+
+    /**
+        Implements the device enumeration algorithm.
+
+        This is automatically called.
+
+        Any NuvkDeviceInfo instance which return `false` from
+        `isDeviceSuitable` will be discarded.
+
+        The function should move the "best suited" device to element 0.
+    */
+    abstract weak_vector!NuvkDeviceInfo onEnumerateDevices();
+
+    /**
+        Implements the context initialisation
+    */
+    abstract void onInitContext(NuvkContextDescriptor descriptor);
+
+    /**
+        Implements the context cleanup
+    */
+    abstract void onCleanupContext();
+
 public:
 
     /**
-        Gets a list of devices which can be used for rendering.
+        Destructor
     */
-    abstract NuvkDeviceInfo[] getDevices();
+    ~this() {
+        this.onCleanupContext();
+        nogc_delete(deviceInfo);
+    }
 
     /**
-        Gets the default device for the system.
+        Constructor
     */
-    abstract NuvkDeviceInfo getDefaultDevice();
+    this(NuvkContextDescriptor descriptor) {
+        this.contextType = descriptor.type;
+        
+        this.onInitContext(descriptor);
+        this.enumerateDevices();
+    }
+
+    /**
+        Gets information about the nuvk-capable devices on the system.
+    */
+    final
+    NuvkDeviceInfo[] getDevices() {
+        return deviceInfo[];
+    }
+
+    /**
+        Gets information about the default device for the system.
+
+        If no devices are suitable for nuvk, this returns null.
+    */
+    final
+    NuvkDeviceInfo getDefaultDevice() {
+        return deviceInfo.size() > 0 ? deviceInfo[0] : null;
+    }
 
     /**
         Creates a device.
     */
     abstract NuvkDevice createDevice(NuvkDeviceInfo deviceChoice);
+
+    /**
+        Gets the type of the context created.
+    */
+    final
+    NuvkContextType getContextType() {
+        return contextType;
+    }
 }
 
 /**
@@ -81,10 +183,37 @@ public:
 
     Returns null if context creation failed.
 */
-NuvkContext nuvkCreateContext(NuvkContextType type, const(char)*[] requiredExtensions = null) @nogc {
-    if (type == NuvkContextType.vulkan) {
-        return nogc_new!NuvkVkContext(requiredExtensions);
-    }
+NuvkContext nuvkCreateContext(NuvkContextDescriptor descriptor) @nogc {
+    switch(descriptor.type) {
+        case NuvkContextType.best:
+            version(AppleOS) {
 
-    return null;
+                // First try metal
+                descriptor.type = NuvkContextType.metal;
+                descriptor.metal = NuvkMtlContextDescriptor.init;
+                auto ctx = nuvkCreateContext(descriptor);
+                if (ctx)
+                    return ctx;
+                
+            }
+
+            // Attempt vulkan
+            descriptor.type = NuvkContextType.vulkan;
+            descriptor.vulkan = NuvkVkContextDescriptor.init;
+            return nuvkCreateContext(descriptor);
+
+        case NuvkContextType.vulkan:
+            return nogc_new!NuvkVkContext(descriptor);
+
+        case NuvkContextType.metal:
+            
+            // Metal is only supported on apple devices.
+            version(AppleOS) 
+                return nogc_new!NuvkMtlContext(descriptor);
+            else
+                return null;
+
+        default:
+            return null;
+    }
 }

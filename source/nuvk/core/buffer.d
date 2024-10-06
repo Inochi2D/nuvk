@@ -7,6 +7,7 @@
 
 module nuvk.core.buffer;
 import nuvk.core.device;
+import numem.collections.vector;
 
 /**
     The usage of the buffer
@@ -52,6 +53,11 @@ enum NuvkBufferUsage {
         Buffer is host-visible
     */
     hostVisible     = 0x80,
+
+    /**
+        Buffer is shared across all queues on the host.
+    */
+    hostShared      = 0x100
 }
 
 /**
@@ -109,28 +115,21 @@ abstract
 class NuvkBuffer : NuvkResource {
 @nogc:
 private:
-    NuvkDeviceSharing deviceSharing;
     NuvkBufferUsage usage;
     ulong size;
+
+protected:
+
 
 public:
 
     /**
         Constructor
     */
-    this(NuvkDevice owner, NuvkBufferUsage usage, NuvkDeviceSharing deviceSharing, ulong size, NuvkProcessSharing processSharing) {
+    this(NuvkDevice owner, NuvkBufferUsage usage, ulong size, NuvkProcessSharing processSharing) {
         super(owner, processSharing);
-        this.deviceSharing = deviceSharing;
         this.usage = usage;
         this.size = size;
-    }
-
-    /**
-        Gets the sharing mode of the buffer
-    */
-    final
-    NuvkDeviceSharing getDeviceSharing() {
-        return deviceSharing;
     }
 
     /**
@@ -157,6 +156,11 @@ public:
     ulong getSize() {
         return size;
     }
+
+    /**
+        Gets the actually allocated amount of bytes for the buffer.
+    */
+    abstract ulong getAllocatedSize();
 
     /**
         Uploads data to GPU memory

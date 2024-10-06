@@ -7,6 +7,7 @@
 
 module nuvk.core.vk.device;
 import nuvk.core.vk.internal.queuemanager;
+import nuvk.core.vk.internal.stagingbuffer;
 import nuvk.core.vk;
 import nuvk.core;
 import nuvk.spirv;
@@ -33,8 +34,11 @@ private:
     VkDevice device;
 
     // Queues
-    NuvkCommandQueue transferQueue;
+    NuvkQueue transferQueue;
     NuvkVkDeviceQueueManager queueManager;
+
+    // Staging buffer
+    NuvkVkStagingBuffer stagingBuffer;
     
 
     void createDevice() {
@@ -93,10 +97,37 @@ private:
         this.setHandle(device);
     }
 
+    void createTransferQueue() {
+        transferQueue = queueManager.createQueue(NuvkQueueSpecialization.transfer);
+    }
+
 public:
+
+    /**
+        Destructor
+    */
+    ~this() {
+        if (transferQueue)
+            nogc_delete(transferQueue);
+        
+        if (queueManager)
+            nogc_delete(queueManager);
+        
+        if (stagingBuffer)
+            nogc_delete(stagingBuffer);
+
+        // Destroy device
+        if (device != VK_NULL_HANDLE)
+            vkDestroyDevice(device, null);
+    }
+
+    /**
+        Constructor
+    */
     this(NuvkContext owner, NuvkDeviceInfo info) {
         super(owner, info);
         this.createDevice();
+        this.createTransferQueue();
     }
 
     /**
@@ -111,8 +142,8 @@ public:
         Creates a buffer
     */
     override
-    NuvkBuffer createBuffer(NuvkBufferUsage usage, NuvkDeviceSharing sharing, uint size, NuvkProcessSharing processSharing) {
-        return nogc_new!NuvkVkBuffer(this, usage, sharing, size, processSharing);
+    NuvkBuffer createBuffer(NuvkBufferUsage usage, uint size, NuvkProcessSharing processSharing) {
+        return nogc_new!NuvkVkBuffer(this, usage, size, processSharing);
     }
 
     /**
@@ -167,7 +198,7 @@ public:
         Creates a new command queue
     */
     override
-    NuvkCommandQueue createQueue(NuvkQueueSpecialization specialiation) {
+    NuvkQueue createQueue(NuvkQueueSpecialization specialiation) {
         return queueManager.createQueue(specialiation);
     }
 
@@ -183,8 +214,12 @@ public:
         Creates a new command queue
     */
     override
-    void destroyQueue(NuvkCommandQueue queue) {
-        queueManager.removeQueue(cast(NuvkVkCommandQueue)queue);
+    void destroyQueue(NuvkQueue queue) {
+        enforce(
+            queue !is transferQueue,
+            nstring("Attempted to delete queue owned by device.")
+        );
+        queueManager.removeQueue(cast(NuvkVkQueue)queue);
     }
 
     /**
@@ -197,10 +232,20 @@ public:
     }
 
     /**
-        Gets queue family properties
+        Gets the queue used for transfers internally.
+
+        You generally don't want to touch this.
     */
-    VkQueueFamilyProperties[] getQueueFamilyProperties() {
-        auto deviceInfo = (cast(NuvkVkDeviceInfo)this.getDeviceInfo());
-        return deviceInfo.getQueueFamilyProperties();
+    final
+    NuvkQueue getInternalTransferQueue() {
+        return transferQueue;
+    }
+
+    /**
+        Gets the staging buffer for the device.
+    */
+    final
+    NuvkVkStagingBuffer getStagingBuffer() {
+        return stagingBuffer;
     }
 }

@@ -16,7 +16,7 @@ private {
             this.specialization = specialization;
 
             // Specializations
-            this.assignedQueues = weak_vector!NuvkCommandQueue(queueCount);
+            this.assignedQueues = weak_vector!NuvkQueue(queueCount);
             foreach(i; 0..assignedQueues.size()) {
                 assignedQueues[i] = null;
             }
@@ -40,7 +40,7 @@ private {
         NuvkQueueSpecialization specialization;
 
         // Queue assignments
-        weak_vector!NuvkCommandQueue assignedQueues;
+        weak_vector!NuvkQueue assignedQueues;
 
         /**
             Gets whether the queue family can instantiate more queues.
@@ -112,7 +112,7 @@ class NuvkVkDeviceQueueManager {
 @nogc:
 private:
     NuvkVkDevice nuvkDevice;
-    NuvkVkDeviceInfo nuvkDeviceInfo;
+    NuvkDeviceInfo nuvkDeviceInfo;
 
     vector!(NuvkVkQueueFamily*) queueFamilies;
     vector!VkDeviceQueueCreateInfo queueCreateInfos;
@@ -121,17 +121,17 @@ private:
         Generates the information needed to instantiate all of the queues.
     */
     void generateQueueInfo() {
-        auto qfamilies = nuvkDeviceInfo.getQueueFamilyProperties();
+        auto qfamilies = nuvkDevice.getDeviceInfo().getQueueFamilyInfos();
 
-        foreach(i, VkQueueFamilyProperties family; qfamilies) {
+        foreach(i, NuvkQueueFamilyInfo family; qfamilies) {
             queueFamilies ~= nogc_new!NuvkVkQueueFamily(
-                family.queueFlags.toNuvkSpecialization(),
-                family.queueCount
+                family.specialization,
+                family.maxQueueCount
             );
 
             VkDeviceQueueCreateInfo queueCreateInfo;
             queueCreateInfo.queueFamilyIndex = cast(uint)i;
-            queueCreateInfo.queueCount = family.queueCount;
+            queueCreateInfo.queueCount = family.maxQueueCount;
             queueCreateInfo.pQueuePriorities = queueFamilies[$-1].priorities;
 
             this.queueCreateInfos ~= queueCreateInfo;
@@ -173,7 +173,6 @@ public:
     */
     this(NuvkVkDevice device) {
         this.nuvkDevice = device;
-        this.nuvkDeviceInfo = cast(NuvkVkDeviceInfo)device.getDeviceInfo();
         this.generateQueueInfo();
     }
 
@@ -181,7 +180,7 @@ public:
         Creates a queue with the specified specializations
     */
     final
-    NuvkCommandQueue createQueue(NuvkQueueSpecialization specialization) {
+    NuvkQueue createQueue(NuvkQueueSpecialization specialization) {
         VkQueue queue;
 
         auto device = cast(VkDevice)nuvkDevice.getHandle();
@@ -195,7 +194,7 @@ public:
         ptrdiff_t queueIndex = queueFamilies[queueFamilyIndex].getNextQueueIndex();
         vkGetDeviceQueue(device, cast(uint)queueFamilyIndex, cast(uint)queueIndex, &queue);
         queueFamilies[queueFamilyIndex]
-            .assignedQueues[queueIndex] = nogc_new!NuvkVkCommandQueue(nuvkDevice, specialization, queue, cast(uint)queueFamilyIndex);
+            .assignedQueues[queueIndex] = nogc_new!NuvkVkQueue(nuvkDevice, specialization, queue, cast(uint)queueFamilyIndex);
         
         return queueFamilies[queueFamilyIndex].assignedQueues[queueIndex];
     }
@@ -204,7 +203,7 @@ public:
         Removes a command queue
     */
     final
-    bool removeQueue(NuvkVkCommandQueue queue) {
+    bool removeQueue(NuvkVkQueue queue) {
         foreach(i; 0..queueFamilies.size()) {
             foreach(k; 0..queueFamilies[i].assignedQueues.size()) {
                 if (queueFamilies[i].assignedQueues[k] is queue) {

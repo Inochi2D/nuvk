@@ -12,10 +12,25 @@ import numem.all;
 
 import core.stdc.stdio : printf;
 
+NuvkQueueSpecialization toNuvkSpecialization(VkQueueFlags flags) @nogc {
+    uint oFlags = 0;
+
+    if (flags & VK_QUEUE_COMPUTE_BIT)
+        oFlags |= NuvkQueueSpecialization.compute;
+
+    if (flags & VK_QUEUE_GRAPHICS_BIT)
+        oFlags |= NuvkQueueSpecialization.graphics;
+
+    if (flags & VK_QUEUE_TRANSFER_BIT)
+        oFlags |= NuvkQueueSpecialization.transfer;
+
+    return cast(NuvkQueueSpecialization)oFlags;
+}
+
 /**
     A vulkan command queue
 */
-class NuvkVkCommandQueue : NuvkCommandQueue {
+class NuvkVkQueue : NuvkQueue {
 @nogc:
 private:
     VkQueue queue;

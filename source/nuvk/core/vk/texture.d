@@ -297,9 +297,9 @@ private:
         
         // Get maximums
         {
-            enforce(
+            nuvkEnforce(
                 vkGetPhysicalDeviceImageFormatProperties(physicalDevice, imageCreateInfo.format, imageCreateInfo.imageType, imageCreateInfo.tiling, imageCreateInfo.usage, imageCreateInfo.flags, &imageProperties) == VK_SUCCESS,
-                nstring("Texture format not supported!")
+                "Texture format not supported!"
             );
         }
 
@@ -313,9 +313,9 @@ private:
                 imageCreateInfo.pNext = &imageExternalInfo;
             }
 
-            enforce(
+            nuvkEnforce(
                 vkCreateImage(device, &imageCreateInfo, null, &image) == VK_SUCCESS,
-                nstring("Failed creating Vulkan texture!")
+                "Failed creating Vulkan texture!"
             );
         }
 
@@ -324,9 +324,9 @@ private:
             vkGetImageMemoryRequirements(device, image, &memoryRequirements);
 
             memoryIndex = deviceInfo.getMatchingMemoryIndex(memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-            enforce(
+            nuvkEnforce(
                 memoryIndex >= 0, 
-                nstring("Failed finding suitable memory for the requested buffer")
+                "Failed finding suitable memory for the requested buffer"
             );
         }
 
@@ -342,9 +342,9 @@ private:
                 allocInfo.memoryTypeIndex = memoryIndex;
                 allocInfo.pNext = &exportInfo;
 
-                enforce(
+                nuvkEnforce(
                     vkAllocateMemory(device, &allocInfo, null, &deviceMemory) == VK_SUCCESS,
-                    nstring("Failed allocating memory for buffer!")
+                    "Failed allocating memory for buffer!"
                 );
 
                 vkBindImageMemory(device, image, deviceMemory, 0);
@@ -356,9 +356,9 @@ private:
                 allocInfo.allocationSize = memoryRequirements.size;
                 allocInfo.memoryTypeIndex = memoryIndex;
 
-                enforce(
+                nuvkEnforce(
                     vkAllocateMemory(device, &allocInfo, null, &deviceMemory) == VK_SUCCESS,
-                    nstring("Failed allocating memory for buffer!")
+                    "Failed allocating memory for buffer!"
                 );
 
                 vkBindImageMemory(device, image, deviceMemory, 0);
@@ -513,9 +513,9 @@ private:
         imageViewCreateInfo.subresourceRange.layerCount = 
             descriptor.arraySlices.getLength();
 
-        enforce(
+        nuvkEnforce(
             vkCreateImageView(device, &imageViewCreateInfo, null, &imageView) == VK_SUCCESS,
-            nstring("Failed to create Vulkan image view!")
+            "Failed to create Vulkan image view!"
         );
 
         this.setHandle(imageView);
@@ -584,9 +584,9 @@ private:
         samplerCreateInfo.compareEnable = VK_TRUE;
         samplerCreateInfo.compareOp = samplerDescriptor.compareOp.toVkCompareOp();
         
-        enforce(
+        nuvkEnforce(
             vkCreateSampler(device, &samplerCreateInfo, null, &sampler),
-            nstring("Failed creating sampler")
+            "Failed creating sampler"
         );
     }
 

@@ -72,12 +72,11 @@ private:
         auto device = cast(VkDevice)this.getOwner().getHandle();
         auto deviceInfo = cast(NuvkVkDeviceInfo)this.getOwner().getDeviceInfo();
         auto usage = this.getBufferUsage();
-        auto deviceSharing = this.getDeviceSharing();
         int memoryIndex;
         VkFlags flags;
 
         // Staging buffers should be host coherent
-        if ((usage & NuvkBufferUsage.hostVisible) || deviceSharing == NuvkDeviceSharing.deviceShared) {
+        if (usage & NuvkBufferUsage.hostVisible) {
             flags |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
             flags |= VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
         }
@@ -185,8 +184,8 @@ public:
     /**
         Constructor
     */
-    this(NuvkDevice device, NuvkBufferUsage usage, NuvkDeviceSharing sharing, ulong size, NuvkProcessSharing processSharing) {
-        super(device, usage, sharing, size, processSharing);
+    this(NuvkDevice device, NuvkBufferUsage usage, ulong size, NuvkProcessSharing processSharing) {
+        super(device, usage, size, processSharing);
         this.createBuffer(processSharing);
     }
 
@@ -201,7 +200,7 @@ public:
     */
     override
     bool upload(void* data, ulong size, ulong offset = 0) {
-        if (this.getDeviceSharing() != NuvkDeviceSharing.deviceShared)
+        if (!(this.getBufferUsage() & NuvkBufferUsage.hostVisible))
             return false;
 
         import core.stdc.string : memcpy;
@@ -230,7 +229,7 @@ public:
     */
     override
     bool map(ref void* mapTo, ulong size, ulong offset = 0) {
-        if (this.getDeviceSharing() != NuvkDeviceSharing.deviceShared)
+        if (!(this.getBufferUsage() & NuvkBufferUsage.hostVisible))
             return false;
 
         auto device = cast(VkDevice)this.getOwner().getHandle();
@@ -261,7 +260,7 @@ public:
     */
     override
     bool unmap() {
-        if (this.getDeviceSharing() != NuvkDeviceSharing.deviceShared)
+        if (!(this.getBufferUsage() & NuvkBufferUsage.hostVisible))
             return false;
         
         auto device = cast(VkDevice)this.getOwner().getHandle();
@@ -284,4 +283,12 @@ public:
         }
         return false;
     }
+
+    /**
+        Gets the actually allocated amount of bytes for the buffer.
+    */
+    override
+    ulong getAllocatedSize() {
+        return allocatedSize;
+    }   
 }

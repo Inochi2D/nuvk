@@ -50,12 +50,15 @@ private:
         
         // Create context
         {
+            NuvkContextDescriptor descriptor;
+            descriptor.type = NuvkContextType.vulkan;
+
             uint extensionCount;
             SDL_Vulkan_GetInstanceExtensions(window, &extensionCount, null);
-            auto sdlRequiredExtensions = weak_vector!(const(char)*)(extensionCount);
+            descriptor.vulkan.requiredExtensions = weak_vector!(const(char)*)(extensionCount);
+            SDL_Vulkan_GetInstanceExtensions(window, &extensionCount, descriptor.vulkan.requiredExtensions.data());
 
-            SDL_Vulkan_GetInstanceExtensions(window, &extensionCount, sdlRequiredExtensions.data());
-            context = nuvkCreateContext(NuvkContextType.vulkan, sdlRequiredExtensions[]);
+            context = nuvkCreateContext(descriptor);
         }
 
         // Create device
@@ -174,7 +177,7 @@ void main(string[] args) {
         vec2(-0.5, 0.5)
     ];
 
-    NuvkBuffer vertexBuffer = device.createBuffer(NuvkBufferUsage.vertex | NuvkBufferUsage.transferSrc, NuvkDeviceSharing.deviceShared, vec2.sizeof*3);
+    NuvkBuffer vertexBuffer = device.createBuffer(NuvkBufferUsage.vertex | NuvkBufferUsage.transferSrc | NuvkBufferUsage.hostVisible, vec2.sizeof*3);
     enforce(
         vertexBuffer.upload!vec2(vertices),
         nstring("Failed to upload data!")
@@ -195,9 +198,10 @@ void main(string[] args) {
         vec2.sizeof,
         NuvkInputRate.vertex
     );
+    
     NuvkPipeline shader = device.createGraphicsPipeline(graphicsShaderDesc);
 
-    NuvkCommandQueue queue = device.createQueue();
+    NuvkQueue queue = device.createQueue();
     NuvkCommandBuffer cmdbuffer = queue.createCommandBuffer();
 
     double ticks = cast(double)SDL_GetTicks64();

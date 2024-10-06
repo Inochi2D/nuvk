@@ -417,7 +417,7 @@ private:
     NuvkSemaphore submissionFinished;
     NuvkFence inFlightFence;
 
-    NuvkCommandQueue queue;
+    NuvkQueue queue;
     NuvkCommandBufferStatus status;
 
     void updateStatus() {
@@ -490,12 +490,17 @@ protected:
     */
     abstract NuvkTransferEncoder onBeginTransferPass();
 
+    /**
+        Implements the logic to finish encoding.
+    */
+    abstract void onEncoderFinished(void* handle);
+
 public:
 
     /**
         Creates a command buffer
     */
-    this(NuvkDevice device, NuvkCommandQueue queue) {
+    this(NuvkDevice device, NuvkQueue queue) {
         super(device);
         this.queue = queue;
         this.status = NuvkCommandBufferStatus.idle;
@@ -606,7 +611,7 @@ public:
         Gets the queue associated with this command buffer.
     */
     final
-    NuvkCommandQueue getQueue() {
+    NuvkQueue getQueue() {
         return queue;
     }
 
@@ -625,16 +630,37 @@ class NuvkEncoder {
 private:
     NuvkCommandBuffer commandBuffer;
 
+protected:
+
+    /**
+        Called by the implementation when the encoding begins
+    */
+    abstract void onBegin(ref NuvkCommandBuffer buffer);
+
+    /**
+        Called by the implementation when the encoding ends.
+
+        Should return a handle to the finished command list if applicable.
+    */
+    abstract void* onEnd(ref NuvkCommandBuffer buffer);
+
 public:
 
-    // We don't own any memory.
-    ~this() { }
+    /**
+        Destructor
+    */
+    ~this() {
+        auto handle = this.onEnd(commandBuffer);
+        commandBuffer.onEncoderFinished(handle);
+        commandBuffer = null;
+    }
 
     /**
         Constructor
     */
     this(NuvkCommandBuffer buffer) {
         this.commandBuffer = buffer;
+        this.onBegin(buffer);
     }
 
     /**
@@ -649,23 +675,19 @@ public:
     */
     abstract void popDebugGroup();
 
-    // /**
-    //     Encodes a command that makes the GPU wait for a semaphore.
-    // */
-    // abstract void waitFor(NuvkSemaphore semaphore, NuvkRenderStage before);
-
-    // /**
-    //     Encodes a command that makes the GPU signal a semaphore.
-    // */
-    // abstract void signal(NuvkSemaphore semaphore, NuvkRenderStage after);
-
     /**
         Ends encoding the commands to the buffer.
 
         This renders this encoder instance invalid.
         Do not try to use a encoder after ending it.
     */
-    abstract void endEncoding();
+    final
+    void endEncoding() {
+
+        // Work around for the fact that "this" is not a rvalue
+        auto self = this;
+        nogc_delete(self);
+    }
 
     /**
         Gets the device which this encoder belongs to.
@@ -710,8 +732,8 @@ public:
         Constructor
     */
     this(NuvkCommandBuffer buffer, ref NuvkRenderPassDescriptor descriptor) {
-        super(buffer);
         this.descriptor = descriptor;
+        super(buffer);
     }
 
     /**

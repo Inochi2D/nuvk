@@ -16,6 +16,13 @@ import numem.all;
 enum NuvkQueueSpecialization {
 
     /**
+        Invalid queue specialisation.
+
+        If you get this, there's a bug in nuvk.
+    */
+    invalid     = 0x00,
+
+    /**
         Graphics specialization, supports graphics/render commands.
     */
     graphics    = 0x01,
@@ -37,10 +44,38 @@ enum NuvkQueueSpecialization {
 }
 
 /**
+    Information about a command queue
+*/
+struct NuvkQueueFamilyInfo {
+
+    /**
+        Index of the queue family
+    */
+    uint index;
+
+    /**
+        How many command queues that can be
+        instantiated of this index.
+    */
+    uint maxQueueCount;
+
+    /**
+        The specializations for the queue.
+    */
+    NuvkQueueSpecialization specialization;
+    
+    /**
+        Maximum number of concurrent command buffers that
+        the queue can have.
+    */
+    uint maxCommandBuffers;
+}
+
+/**
     A command queue for command buffers.
 */
 abstract
-class NuvkCommandQueue : NuvkDeviceObject {
+class NuvkQueue : NuvkDeviceObject {
 @nogc:
 private:
     NuvkQueueSpecialization specialization;
