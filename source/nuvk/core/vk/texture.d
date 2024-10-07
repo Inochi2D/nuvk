@@ -265,6 +265,8 @@ private:
     bool isUserOwned;
     VkImage image;
     VkDeviceMemory deviceMemory;
+    ulong allocatedSize;
+    ulong alignment;
 
     void createTexture(NuvkProcessSharing processSharing) {
         auto device = cast(VkDevice)this.getOwner().getHandle();
@@ -328,6 +330,9 @@ private:
                 memoryIndex >= 0, 
                 "Failed finding suitable memory for the requested buffer"
             );
+
+            allocatedSize = memoryRequirements.size;
+            alignment = memoryRequirements.alignment;
         }
 
         // Allocate memory
@@ -445,7 +450,7 @@ public:
             `size` - The amount of bytes in the data.
     */
     override
-    void upload(recti region, uint mipmapLevel, uint arrayLayer, void* source, uint rowStride, uint size) {
+    void upload(recti region, uint mipmapLevel, uint arrayLayer, void[] source, uint rowStride, uint size) {
         
     }
 
@@ -465,7 +470,7 @@ public:
             `arrayLayer` - The array layer to replace.
     */
     override
-    void download(ref void* destination, uint rowStride, recti from, uint mipmapLevel, uint arrayLayer) {
+    void download(ref void[] destination, uint rowStride, recti from, uint mipmapLevel, uint arrayLayer) {
 
     }
 
@@ -475,6 +480,22 @@ public:
     override
     NuvkTextureView createTextureView(NuvkTextureViewDescriptor descriptor) {
         return nogc_new!NuvkVkTextureView(this.getOwner(), this, descriptor);
+    }
+
+    /**
+        Gets the allocated size on the GPU, in bytes.
+    */
+    override
+    ulong getAllocatedSize() {
+        return allocatedSize;
+    }
+
+    /**
+        Gets the allocated size on the GPU, in bytes.
+    */
+    override
+    ulong getAlignment() {
+        return alignment;
     }
 }
 

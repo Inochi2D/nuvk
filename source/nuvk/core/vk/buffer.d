@@ -190,39 +190,6 @@ public:
     }
 
     /**
-        Uploads data to GPU memory
-
-        `data` is a pointer to the data to copy
-        `size` is how many bytes to copy
-        `offset` is the offset into the **destination** to copy into.
-
-        Returns whether uploaded succeeded.
-    */
-    override
-    bool upload(void* data, ulong size, ulong offset = 0) {
-        if (!(this.getBufferUsage() & NuvkBufferUsage.hostVisible))
-            return false;
-
-        import core.stdc.string : memcpy;
-        auto device = cast(VkDevice)this.getOwner().getHandle();
-        void* dataBuffer;
-
-        VkMappedMemoryRange memoryRange;
-        memoryRange.memory = deviceMemory;
-        memoryRange.offset = offset;
-        memoryRange.size = this.alignToAllowedSize(size, offset);
-
-        if (vkMapMemory(device, memoryRange.memory, memoryRange.offset, memoryRange.size, 0, &dataBuffer) == VK_SUCCESS) {
-            memcpy(dataBuffer, data+offset, size);
-            vkFlushMappedMemoryRanges(device, 1, &memoryRange);
-            vkUnmapMemory(device, deviceMemory);
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
         Maps the buffer's memory for reading/writing.
 
         Returns whether mapping succeeded.
@@ -280,6 +247,7 @@ public:
             }
             
             vkUnmapMemory(device, deviceMemory);
+            return true;
         }
         return false;
     }
@@ -290,5 +258,13 @@ public:
     override
     ulong getAllocatedSize() {
         return allocatedSize;
-    }   
+    }
+
+    /**
+        Gets the allocated size on the GPU, in bytes.
+    */
+    override
+    ulong getAlignment() {
+        return requiredAlignment;
+    } 
 }

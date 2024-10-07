@@ -849,10 +849,7 @@ protected:
         Called by the implementation when the encoding begins
     */
     override
-    void onBegin(ref NuvkCommandBuffer buffer) {
-        VkCommandBufferBeginInfo beginInfo;
-        vkBeginCommandBuffer(writeBuffer, &beginInfo);
-    }
+    void onBegin(ref NuvkCommandBuffer buffer) { }
 
     /**
         Called by the implementation when the encoding ends
@@ -909,7 +906,28 @@ public:
     */
     override
     void copy(NuvkBuffer from, uint sourceOffset, NuvkBuffer to, uint destOffset, uint size) {
+        nuvkEnforce(
+            from.getBufferUsage() & NuvkBufferUsage.transferSrc,
+            "Source buffer is not marked as a transfer source!"
+        );
 
+        nuvkEnforce(
+            to.getBufferUsage() & NuvkBufferUsage.transferDst,
+            "Destination buffer is not marked as a transfer destination!"
+        );
+
+        VkBufferCopy copy;
+        copy.srcOffset = sourceOffset;
+        copy.dstOffset = destOffset;
+        copy.size = size;
+        
+        vkCmdCopyBuffer(
+            writeBuffer,
+            cast(VkBuffer)from.getHandle(),
+            cast(VkBuffer)to.getHandle(),
+            1,
+            &copy
+        );
     }
 
     /**

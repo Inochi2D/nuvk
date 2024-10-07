@@ -6,7 +6,8 @@
 */
 
 module nuvk.core.buffer;
-import nuvk.core.device;
+import nuvk.core;
+
 import numem.collections.vector;
 
 /**
@@ -118,9 +119,6 @@ private:
     NuvkBufferUsage usage;
     ulong size;
 
-protected:
-
-
 public:
 
     /**
@@ -158,41 +156,119 @@ public:
     }
 
     /**
-        Gets the actually allocated amount of bytes for the buffer.
+        Uploads data to GPU memory.
+
+        `data` is a pointer to the data to copy
+        `size` is how many bytes to copy
+        `offset` is the offset into the **destination** to copy into.
+
+        If the buffer is host visible it will be mapped,
+        otherwise a staging buffer will be used.
     */
-    abstract ulong getAllocatedSize();
+    final
+    void upload(void* data, ulong size, ulong offset = 0) {
+
+        // Is host mappable.
+        if (this.getBufferUsage() & NuvkBufferUsage.hostVisible) {
+
+            // Map
+            void* mapped;
+            nuvkEnforce(this.map(mapped, size, offset), "Failed to map buffer!");
+            
+            // Set
+            mapped[0..size] = data[0..size];
+
+            // Unmap.
+            nuvkEnforce(this.unmap(), "Failed to unmap buffer!");
+            return;
+        }
+
+        // Requires staging.
+        auto staging = this.getOwner().getStagingBuffer();
+        staging.transfer(data[0..size], this, offset);
+        return;
+    }
 
     /**
-        Uploads data to GPU memory
-        NOTE: Only shared buffers may be mapped.
+        Downloads data from GPU memory
 
-        Returns whether mapping succeeded.
+        `data` is the slice to copy the data to.
+        `offset` is the offset into the **source** to copy from.
+
+        If the buffer is host visible it will be mapped,
+        otherwise a staging buffer will be used.
     */
-    abstract bool upload(void* data, ulong size, ulong offset = 0);
+    final
+    void download(ref void[] data, ulong offset = 0) {
+
+        // Is host mappable.
+        if (this.getBufferUsage() & NuvkBufferUsage.hostVisible) {
+
+            // Map
+            void* mapped;
+            nuvkEnforce(this.map(mapped, data.length, offset), "Failed to map buffer!");
+            
+            // Set
+            data[0..data.length] = mapped[0..data.length];
+
+            // Unmap.
+            nuvkEnforce(this.unmap(), "Failed to unmap buffer!");
+            return;
+        }
+
+        // Requires staging.
+        auto staging = this.getOwner().getStagingBuffer();
+        staging.transfer(this, data[0..$], offset, data.length);
+        return;
+    }
 
     /**
-        Uploads data to GPU memory
-        NOTE: Only shared buffers may be mapped.
+        Uploads data to GPU memory.
 
-        Returns whether mapping succeeded.
+        `data` is a pointer to the data to copy
+        `offset` is the offset into the **destination** to copy into.
+
+        If the buffer is host visible it will be mapped,
+        otherwise a staging buffer will be used.
     */
-    bool upload(T)(T[] data, ulong offset = 0) {
-        return this.upload(data.ptr, T.sizeof*data.length, offset);
+    void upload(T)(T[] data, ulong offset = 0) {
+        this.upload(data.ptr, T.sizeof*data.length, offset);
+    }
+
+    /**
+        Downloads data from GPU memory
+
+        `data` is the slice to copy the data to.
+        `offset` is the offset into the **source** to copy from.
+
+        If the buffer is host visible it will be mapped,
+        otherwise a staging buffer will be used.
+    */
+    void download(T)(ref T[] data, ulong offset = 0) {
+        this.download(data.ptr, T.sizeof*data.length, offset);
     }
 
     /**
         Maps the buffer's memory for reading/writing.
-        NOTE: Only shared buffers may be mapped.
-
         Returns whether mapping succeeded.
+
+        `mapTo` is the pointer to update with the mapped reference.
+        `size` is the amount of bytes to map from the buffer.
+        `offset` is the byte offset into the buffer to start mapping from.
+
+        NOTE: Only shared buffers may be mapped.
     */
     abstract bool map(ref void* mapTo, ulong size, ulong offset = 0);
 
     /**
         Maps the buffer's memory for reading/writing.
-        NOTE: Only shared buffers may be mapped.
-
         Returns whether mapping succeeded.
+
+        `mapTo` is the pointer to update with the mapped reference.
+        `size` is the amount of elements to map from the buffer.
+        `offset` is the offset into the buffer to start mapping from.
+
+        NOTE: Only shared buffers may be mapped.
     */
     bool map(T)(ref T* mapTo, ulong count, ulong offset = 0) {
 
@@ -211,9 +287,9 @@ public:
     
     /**
         Unmaps the buffer's memory.
-        NOTE: Only shared buffers may be mapped.
-
         Returns whether unmapping succeeded.
+
+        NOTE: Only shared buffers may be mapped.
     */
     abstract bool unmap();
 }

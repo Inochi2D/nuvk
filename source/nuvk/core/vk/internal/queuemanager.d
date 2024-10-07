@@ -10,13 +10,13 @@ private {
     const float nuvkVkDeviceQueuePriority = 1.0f;
     
     // A queue family
-    struct NuvkVkQueueFamily {
+    class NuvkVkQueueFamily {
     @nogc:
-        this(NuvkQueueSpecialization specialization, uint queueCount) {
-            this.specialization = specialization;
+        this(NuvkQueueFamilyInfo familyInfo) {
+            this.familyInfo = familyInfo;
 
             // Specializations
-            this.assignedQueues = weak_vector!NuvkQueue(queueCount);
+            this.assignedQueues = weak_vector!NuvkQueue(familyInfo.maxQueueCount);
             foreach(i; 0..assignedQueues.size()) {
                 assignedQueues[i] = null;
             }
@@ -37,7 +37,7 @@ private {
         float* priorities;
 
         // Sepcialization for the family
-        NuvkQueueSpecialization specialization;
+        NuvkQueueFamilyInfo familyInfo;
 
         // Queue assignments
         weak_vector!NuvkQueue assignedQueues;
@@ -52,10 +52,10 @@ private {
         /**
             Gets the next free queue index
         */
-        ptrdiff_t getNextQueueIndex() {
+        int getNextQueueIndex() {
             foreach(i, queue; assignedQueues) {
                 if (queue is null) 
-                    return i;
+                    return cast(int)i;
             }
 
             return -1;
@@ -114,7 +114,7 @@ private:
     NuvkVkDevice nuvkDevice;
     NuvkDeviceInfo nuvkDeviceInfo;
 
-    vector!(NuvkVkQueueFamily*) queueFamilies;
+    vector!NuvkVkQueueFamily queueFamilies;
     vector!VkDeviceQueueCreateInfo queueCreateInfos;
 
     /**
@@ -124,10 +124,7 @@ private:
         auto qfamilies = nuvkDevice.getDeviceInfo().getQueueFamilyInfos();
 
         foreach(i, NuvkQueueFamilyInfo family; qfamilies) {
-            queueFamilies ~= nogc_new!NuvkVkQueueFamily(
-                family.specialization,
-                family.maxQueueCount
-            );
+            queueFamilies ~= nogc_new!NuvkVkQueueFamily(family);
 
             VkDeviceQueueCreateInfo queueCreateInfo;
             queueCreateInfo.queueFamilyIndex = cast(uint)i;
@@ -146,7 +143,7 @@ private:
 
         // Try to find queue that matches exact specs
         foreach(i, family; queueFamilies) {
-            if (family.specialization == specialization && family.canInstantiateMore()) {
+            if (family.familyInfo.specialization == specialization && family.canInstantiateMore()) {
                 return i;
             }
         }
@@ -157,7 +154,7 @@ private:
             // NOTE: This uses a bitwise AND to filter out any specialiations
             // That the family might have *extra*
             // in this case we just care if the queue supports the specialization.
-            uint spec = (family.specialization & specialization);
+            uint spec = (family.familyInfo.specialization & specialization);
             if (spec == specialization && family.canInstantiateMore()) {
                 return i;
             }
@@ -167,6 +164,14 @@ private:
     }
 
 public:
+
+    /**
+        Destructor
+    */
+    ~this() {
+        nogc_delete(queueCreateInfos);
+        nogc_delete(queueFamilies);
+    }
 
     /**
         Constructor
@@ -183,20 +188,25 @@ public:
     NuvkQueue createQueue(NuvkQueueSpecialization specialization) {
         VkQueue queue;
 
+        // Get queue information
         auto device = cast(VkDevice)nuvkDevice.getHandle();
-        ptrdiff_t queueFamilyIndex = findQueueFamilyFor(specialization);
+        ptrdiff_t familyIndex = findQueueFamilyFor(specialization);
         nuvkEnforce(
-            queueFamilyIndex >= 0,
+            familyIndex >= 0,
             "Could not find any free queues supporting the specialization"
         );
 
+        NuvkVkQueueFamily queueFamily = this.queueFamilies[familyIndex];
+        NuvkQueueFamilyInfo familyInfo = queueFamily.familyInfo;
+
         // Prior check should ensure this is a valid value.
-        ptrdiff_t queueIndex = queueFamilies[queueFamilyIndex].getNextQueueIndex();
-        vkGetDeviceQueue(device, cast(uint)queueFamilyIndex, cast(uint)queueIndex, &queue);
-        queueFamilies[queueFamilyIndex]
-            .assignedQueues[queueIndex] = nogc_new!NuvkVkQueue(nuvkDevice, specialization, queue, cast(uint)queueFamilyIndex);
+        int queueIndex = queueFamily.getNextQueueIndex();
+        nuvkEnforce(queueIndex >= 0, "Failed to find free queue!");
+
+        vkGetDeviceQueue(device, familyInfo.index, queueIndex, &queue);
+        queueFamily.assignedQueues[queueIndex] = nogc_new!NuvkVkQueue(nuvkDevice, queue, familyInfo, queueIndex);
         
-        return queueFamilies[queueFamilyIndex].assignedQueues[queueIndex];
+        return queueFamily.assignedQueues[queueIndex];
     }
 
     /**

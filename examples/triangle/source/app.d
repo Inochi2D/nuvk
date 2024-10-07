@@ -177,11 +177,8 @@ void main(string[] args) {
         vec2(-0.5, 0.5)
     ];
 
-    NuvkBuffer vertexBuffer = device.createBuffer(NuvkBufferUsage.vertex | NuvkBufferUsage.transferSrc | NuvkBufferUsage.hostVisible, vec2.sizeof*3);
-    nuvkEnforce(
-        vertexBuffer.upload!vec2(vertices),
-        "Failed to upload data!"
-    );
+    NuvkBuffer vertexBuffer = device.createBuffer(NuvkBufferUsage.vertex | NuvkBufferUsage.transferDst, vec2.sizeof*3);
+    vertexBuffer.upload!vec2(vertices);
 
     NuvkGraphicsPipelineDescriptor graphicsShaderDesc;
     graphicsShaderDesc.vertexShader = vertexShader;

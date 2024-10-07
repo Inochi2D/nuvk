@@ -78,7 +78,18 @@ abstract
 class NuvkQueue : NuvkDeviceObject {
 @nogc:
 private:
-    NuvkQueueSpecialization specialization;
+    NuvkQueueFamilyInfo familyInfo;
+    uint index;
+
+protected:
+
+    /**
+        Gets the index into the queue manager
+    */
+    final
+    uint getIndex() {
+        return index;
+    }
 
 public:
 
@@ -94,9 +105,10 @@ public:
     /**
         Constructor
     */
-    this(NuvkDevice device, NuvkQueueSpecialization specialization) {
+    this(NuvkDevice device, NuvkQueueFamilyInfo familyInfo, uint index) {
         super(device);
-        this.specialization = specialization;
+        this.familyInfo = familyInfo;
+        this.index = index;
     }
 
     /**
@@ -115,6 +127,14 @@ public:
     */
     final
     NuvkQueueSpecialization getSpecialization() {
-        return specialization;
+        return familyInfo.specialization;
+    }
+
+    /**
+        Gets information about queue
+    */
+    final
+    NuvkQueueFamilyInfo getFamilyInfo() {
+        return familyInfo;
     }
 }

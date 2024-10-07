@@ -21,6 +21,7 @@ public import nuvk.core.cmdbuffer;
 public import nuvk.core.surface;
 public import nuvk.core.devinfo;
 public import nuvk.core.logging;
+public import nuvk.core.staging;
 
 /**
     Base type of Nuvk objects.

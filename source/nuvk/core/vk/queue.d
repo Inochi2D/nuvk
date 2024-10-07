@@ -41,8 +41,7 @@ private:
         auto device = cast(VkDevice)this.getOwner().getHandle();
 
         VkCommandPoolCreateInfo commandPoolInfo;
-        commandPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        commandPoolInfo.queueFamilyIndex = queueFamilyIndex;
+        commandPoolInfo.queueFamilyIndex = this.getFamilyInfo().index;
 
         nuvkEnforce(
             vkCreateCommandPool(device, &commandPoolInfo, null, &commandPool) == VK_SUCCESS,
@@ -64,8 +63,8 @@ public:
     /**
         Constructor
     */
-    this(NuvkDevice device, NuvkQueueSpecialization specialization, VkQueue queue, uint queueFamilyIndex) {
-        super(device, specialization);
+    this(NuvkDevice device, VkQueue queue, NuvkQueueFamilyInfo queueInfo, uint index) {
+        super(device, queueInfo, index);
         this.queue = queue;
         this.setHandle(queue);
         this.createCommandPool();

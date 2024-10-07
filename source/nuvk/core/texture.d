@@ -380,7 +380,7 @@ public:
             `rowStride` - The byte stride of a single row of pixels.
             `size` - The amount of bytes in the data.
     */
-    abstract void upload(recti region, uint mipmapLevel, uint arrayLayer, void* source, uint rowStride, uint size);
+    abstract void upload(recti region, uint mipmapLevel, uint arrayLayer, void[] source, uint rowStride, uint size);
 
     
     /**
@@ -397,7 +397,7 @@ public:
             `mipmapLevel` - The mipmap level to replace.
             `arrayLayer` - The array layer to replace.
     */
-    abstract void download(ref void* destination, uint rowStride, recti from, uint mipmapLevel, uint arrayLayer);
+    abstract void download(ref void[] destination, uint rowStride, recti from, uint mipmapLevel, uint arrayLayer);
 
     /**
         Creates a texture view

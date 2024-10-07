@@ -39,8 +39,19 @@ class NuvkDevice : NuvkObject {
 private:
     NuvkContext owner;
     NuvkDeviceInfo deviceInfo;
+    NuvkStagingBuffer staging;
 
 public:
+
+    /**
+        Destructor
+    */
+    ~this() {
+
+        // Staging buffer belongs to the device.
+        if (staging)
+            nogc_delete(staging);
+    }
 
     /**
         Constructor
@@ -128,12 +139,27 @@ public:
     NuvkQueueFamilyInfo[] getQueueFamilyInfos() {
         return deviceInfo.getQueueFamilyInfos();
     }
+
     /**
         Gets the queue family information
     */
     final
     ptrdiff_t getQueueFamilyInfoFor(NuvkQueueSpecialization specialization) {
         return deviceInfo.getQueueFamilyIdxFor(specialization);
+    }
+
+    /**
+        Gets the staging buffer for this device.
+
+        If no staging buffer exists yet, one will be created.
+        The staging buffer is owned by the device. 
+    */
+    final
+    NuvkStagingBuffer getStagingBuffer() {
+        if (!staging)
+            staging = nogc_new!NuvkStagingBuffer(this, this.createQueue(NuvkQueueSpecialization.transfer));
+
+        return staging;
     }
 }
 
@@ -242,4 +268,14 @@ public:
     ulong getSharedHandle() {
         return shareHandle;
     }
+
+    /**
+        Gets the allocated size on the GPU, in bytes.
+    */
+    abstract ulong getAllocatedSize();
+
+    /**
+        Gets the allocated alignment on the GPU, in bytes.
+    */
+    abstract ulong getAlignment();
 }

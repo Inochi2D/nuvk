@@ -7,7 +7,6 @@
 
 module nuvk.core.vk.device;
 import nuvk.core.vk.internal.queuemanager;
-import nuvk.core.vk.internal.stagingbuffer;
 import nuvk.core.vk;
 import nuvk.core;
 import nuvk.spirv;
@@ -34,12 +33,7 @@ private:
     VkDevice device;
 
     // Queues
-    NuvkQueue transferQueue;
     NuvkVkDeviceQueueManager queueManager;
-
-    // Staging buffer
-    NuvkVkStagingBuffer stagingBuffer;
-    
 
     void createDevice() {
 
@@ -97,24 +91,14 @@ private:
         this.setHandle(device);
     }
 
-    void createTransferQueue() {
-        transferQueue = queueManager.createQueue(NuvkQueueSpecialization.transfer);
-    }
-
 public:
 
     /**
         Destructor
     */
     ~this() {
-        if (transferQueue)
-            nogc_delete(transferQueue);
-        
         if (queueManager)
             nogc_delete(queueManager);
-        
-        if (stagingBuffer)
-            nogc_delete(stagingBuffer);
 
         // Destroy device
         if (device != VK_NULL_HANDLE)
@@ -127,7 +111,6 @@ public:
     this(NuvkContext owner, NuvkDeviceInfo info) {
         super(owner, info);
         this.createDevice();
-        this.createTransferQueue();
     }
 
     /**
@@ -215,10 +198,6 @@ public:
     */
     override
     void destroyQueue(NuvkQueue queue) {
-        nuvkEnforce(
-            queue !is transferQueue,
-            "Attempted to delete queue owned by device."
-        );
         queueManager.removeQueue(cast(NuvkVkQueue)queue);
     }
 
@@ -229,23 +208,5 @@ public:
     override
     NuvkSurface createSurfaceFromHandle(void* handle, NuvkPresentMode presentMode, NuvkTextureFormat textureFormat) {
         return nogc_new!NuvkVkSurface(this, presentMode, textureFormat, cast(VkSurfaceKHR)handle);
-    }
-
-    /**
-        Gets the queue used for transfers internally.
-
-        You generally don't want to touch this.
-    */
-    final
-    NuvkQueue getInternalTransferQueue() {
-        return transferQueue;
-    }
-
-    /**
-        Gets the staging buffer for the device.
-    */
-    final
-    NuvkVkStagingBuffer getStagingBuffer() {
-        return stagingBuffer;
     }
 }
