@@ -73,6 +73,14 @@ public:
         Creates a shader program.
     */
     abstract NuvkShader createShader(NuvkSpirvModule module_, NuvkShaderStage stage);
+
+    /**
+        Creates a shader program.
+    */
+    final
+    NuvkShader createShaderFromSpirv(ubyte[] bytecode, NuvkShaderStage stage) {
+        return this.createShader(nogc_new!NuvkSpirvModule(bytecode), stage);
+    }
     
     /**
         Creates a buffer.

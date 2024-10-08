@@ -81,6 +81,13 @@ private:
             features2.pNext = &vk13Features;
             vkGetPhysicalDeviceFeatures2(physicalDevice, &features2);
 
+            // Force disable some features.
+            {
+                // These are bad, mesh shaders should be used instead.
+                features2.features.geometryShader = VK_FALSE;
+                features2.features.tessellationShader = VK_FALSE;
+            }
+
             // Required features.
             {
                 // Vulkan 1.3
@@ -321,5 +328,13 @@ public:
     final
     VkExtensionProperties[] getExtenstionProperties() {
         return extensionProperties[];
+    }
+
+    /**
+        Gets the vulkan specific features chain.
+    */
+    final
+    NuvkVkStructChain getFeatureChain() {
+        return featureChain;
     }
 }

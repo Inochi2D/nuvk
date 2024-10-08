@@ -40,49 +40,21 @@ private:
         // Sets up the queue manager first
         queueManager = nogc_new!NuvkVkDeviceQueueManager(this);
 
-        VkPhysicalDeviceFeatures2 features2;
-        VkPhysicalDeviceVulkan11Features vk11Features;
-        VkPhysicalDeviceVulkan12Features vk12Features;
-        VkPhysicalDeviceVulkan13Features vk13Features;
-        VkPhysicalDeviceCustomBorderColorFeaturesEXT customBorderColorFeature;
-        VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT topologyRestartFeature;
-        VkPhysicalDeviceExtendedDynamicState3FeaturesEXT dynamicState3Feature;
-
-        auto physicalDevice = cast(VkPhysicalDevice)this.getDeviceInfo().getHandle();
-        auto queueCreateInfos = queueManager.getVkQueueCreateInfos();
-
-
-        // Device features
-        {
-            topologyRestartFeature.pNext = &dynamicState3Feature;
-            customBorderColorFeature.pNext = &topologyRestartFeature;
-            vk11Features.pNext = &customBorderColorFeature;
-            vk12Features.pNext = &vk11Features;
-            vk13Features.pNext = &vk12Features;
-            features2.pNext = &vk13Features;
-
-            vkGetPhysicalDeviceFeatures2(physicalDevice, &features2);
-
-        }
+        NuvkVkDeviceInfo deviceInfo = cast(NuvkVkDeviceInfo)this.getDeviceInfo();
+        auto physicalDevice         = cast(VkPhysicalDevice)deviceInfo.getHandle();
+        auto queueCreateInfos       = queueManager.getVkQueueCreateInfos();
 
         VkDeviceCreateInfo deviceCreateInfo;
-        deviceCreateInfo.queueCreateInfoCount = cast(uint)queueCreateInfos.length;
-        deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.ptr;
 
-        deviceCreateInfo.enabledExtensionCount = cast(uint)nuvkVkDeviceRequiredExtensions.length;
-        deviceCreateInfo.ppEnabledExtensionNames = cast(const(char*)*)nuvkVkDeviceRequiredExtensions.ptr;
+        deviceCreateInfo.queueCreateInfoCount       = cast(uint)queueCreateInfos.length;
+        deviceCreateInfo.pQueueCreateInfos          = queueCreateInfos.ptr;
+        deviceCreateInfo.enabledExtensionCount      = cast(uint)nuvkVkDeviceRequiredExtensions.length;
+        deviceCreateInfo.ppEnabledExtensionNames    = cast(const(char*)*)nuvkVkDeviceRequiredExtensions.ptr;
+        deviceCreateInfo.pNext                      = deviceInfo.getFeatureChain().getFirst();
 
-        deviceCreateInfo.pNext = &features2;
-
-        // Debug info
-        debug {
-            import core.stdc.stdio : printf;
-
-            foreach(i, extension; deviceCreateInfo.ppEnabledExtensionNames[0..deviceCreateInfo.enabledExtensionCount]) {
-                printf("[Nuvk::Vulkan] device extension[%d] = %s\n", cast(uint)i, extension);
-            }
-        }
-
+        foreach(i, extension; deviceCreateInfo.ppEnabledExtensionNames[0..deviceCreateInfo.enabledExtensionCount])
+            nuvkLogDebug("device extensions[%d] = %s", cast(uint)i, extension);
+        
 	    nuvkEnforce(
             vkCreateDevice(physicalDevice, &deviceCreateInfo, null, &device) == VK_SUCCESS, 
             "Device creation failed!"

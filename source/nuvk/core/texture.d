@@ -380,7 +380,11 @@ public:
             `rowStride` - The byte stride of a single row of pixels.
             `size` - The amount of bytes in the data.
     */
-    abstract void upload(recti region, uint mipmapLevel, uint arrayLayer, void[] source, uint rowStride, uint size);
+    final
+    void upload(void[] source, uint rowStride, recti region, uint arraySlice = 0, uint mipmapLevel = 0) {
+        auto staging = this.getOwner().getStagingBuffer();
+        staging.transfer(source, rowStride, this, region, arraySlice, mipmapLevel);
+    }
 
     
     /**
@@ -397,7 +401,10 @@ public:
             `mipmapLevel` - The mipmap level to replace.
             `arrayLayer` - The array layer to replace.
     */
-    abstract void download(ref void[] destination, uint rowStride, recti from, uint mipmapLevel, uint arrayLayer);
+    final
+    void download(ref void[] destination, uint rowStride, recti from, uint mipmapLevel, uint arrayLayer) {
+
+    }
 
     /**
         Creates a texture view

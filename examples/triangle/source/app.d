@@ -145,6 +145,36 @@ public:
     }
 }
 
+NuvkPipeline createShaders(NuvkDevice device, ubyte[] vertex, ubyte[] fragment) @nogc {
+    NuvkShader vertexShader = device.createShaderFromSpirv(vertex, NuvkShaderStage.vertex);
+    NuvkShader fragmentShader = device.createShaderFromSpirv(fragment, NuvkShaderStage.fragment);
+
+    NuvkGraphicsPipelineDescriptor graphicsShaderDesc;
+    graphicsShaderDesc.vertexShader = vertexShader;
+    graphicsShaderDesc.fragmentShader = fragmentShader;
+
+    graphicsShaderDesc.attributes ~= NuvkVertexAttribute(location: 0, format: NuvkVertexFormat.vec2);
+    graphicsShaderDesc.bindings ~= NuvkVertexBinding(stride: vec2.sizeof, inputRate: NuvkInputRate.vertex);
+
+    NuvkPipeline pipeline = device.createGraphicsPipeline(graphicsShaderDesc);
+    
+    nogc_delete(fragmentShader);
+    nogc_delete(vertexShader);
+    return pipeline;
+}
+
+NuvkBuffer createVertexBuffer(NuvkDevice device) @nogc {
+    vec2[3] vertices = [
+        vec2(0.0, -0.5),
+        vec2(0.5, 0.5),
+        vec2(-0.5, 0.5)
+    ];
+
+    NuvkBuffer vertexBuffer = device.createBuffer(NuvkBufferUsage.vertex | NuvkBufferUsage.transferDst, vec2.sizeof*3);
+    vertexBuffer.upload!vec2(vertices);
+    return vertexBuffer;
+}
+
 /**
     Main function.
 */
@@ -164,60 +194,35 @@ void main(string[] args) {
     }
 
     Window myWindow = nogc_new!Window(nstring("Hello Triangle"), 640, 480, presentationMode);
-
     NuvkDevice device = myWindow.getDevice();
     NuvkSwapchain swapchain = myWindow.getSurface().getSwapchain();
 
-    NuvkShader vertexShader = device.createShader(nogc_new!NuvkSpirvModule(vertexShaderSrc), NuvkShaderStage.vertex);
-    NuvkShader fragmentShader = device.createShader(nogc_new!NuvkSpirvModule(fragmentShaderSrc), NuvkShaderStage.fragment);
-
-    vec2[3] vertices = [
-        vec2(0.0, -0.5),
-        vec2(0.5, 0.5),
-        vec2(-0.5, 0.5)
-    ];
-
-    NuvkBuffer vertexBuffer = device.createBuffer(NuvkBufferUsage.vertex | NuvkBufferUsage.transferDst, vec2.sizeof*3);
-    vertexBuffer.upload!vec2(vertices);
-
-    NuvkGraphicsPipelineDescriptor graphicsShaderDesc;
-    graphicsShaderDesc.vertexShader = vertexShader;
-    graphicsShaderDesc.fragmentShader = fragmentShader;
-    graphicsShaderDesc.attributes ~= NuvkVertexAttribute(
-        0,
-        0,
-        0,
-        NuvkVertexFormat.vec2
-    );
-
-    graphicsShaderDesc.bindings ~= NuvkVertexBinding(
-        0,
-        vec2.sizeof,
-        NuvkInputRate.vertex
-    );
-    
-    NuvkPipeline shader = device.createGraphicsPipeline(graphicsShaderDesc);
+    NuvkBuffer vertexBuffer = device.createVertexBuffer();
+    NuvkPipeline shader = device.createShaders(vertexShaderSrc, fragmentShaderSrc);
 
     NuvkQueue queue = device.createQueue();
     NuvkCommandBuffer cmdbuffer = queue.createCommandBuffer();
 
-    double ticks = cast(double)SDL_GetTicks64();
+    // Render pass
+    NuvkRenderPassDescriptor renderPassDescriptor = NuvkRenderPassDescriptor(
+        colorAttachments: weak_vector!NuvkColorAttachment(1)
+    );
 
+    // Set color attachment
+    renderPassDescriptor.colorAttachments[0] = NuvkColorAttachment(
+        loadOp: NuvkLoadOp.clear,
+        storeOp: NuvkStoreOp.store,
+        clearValue: NuvkClearValue(0, 0, 0, 1)
+    );
 
     while(!myWindow.isCloseRequested()) {
         myWindow.updateEvents();
-        ticks = cast(double)SDL_GetTicks64();
+        double ticks = cast(double)SDL_GetTicks64();
 
         if (NuvkTextureView nextImage = swapchain.getNext()) {
 
-            NuvkColorAttachment colorAttachment;
-            colorAttachment.texture = nextImage;
-            colorAttachment.loadOp = NuvkLoadOp.clear;
-            colorAttachment.storeOp = NuvkStoreOp.store;
-            colorAttachment.clearValue = NuvkClearValue(0, 0, 0, 1);
-
-            NuvkRenderPassDescriptor renderPassDescriptor;
-            renderPassDescriptor.colorAttachments ~= colorAttachment;
+            // Update render pass color attachment.
+            renderPassDescriptor.colorAttachments[0].texture = nextImage;
             
             if (NuvkRenderEncoder renderPass = cmdbuffer.beginRenderPass(renderPassDescriptor)) {
                 renderPass.setPipeline(shader);

@@ -943,15 +943,39 @@ public:
             `mipLevel` - The texture mip level to copy into.
     */
     override
-    void copy(NuvkBuffer from, uint sourceOffset, uint sourcePxStride, recti copyRange, NuvkTexture to, uint arraySlice = 0, uint mipLevel = 0) {
+    void copy(NuvkBuffer from, uint offset, uint rowStride, NuvkTexture to, recti toArea, uint arraySlice = 0, uint mipLevel = 0) {
+        VkBufferImageCopy imageCopy;
+        imageCopy.bufferImageHeight = toArea.height;
+        imageCopy.bufferOffset = offset;
+        imageCopy.bufferRowLength = rowStride;
+
+        imageCopy.imageOffset.x = toArea.x;
+        imageCopy.imageOffset.y = toArea.y;
+        imageCopy.imageOffset.z = 0;
+
+        imageCopy.imageExtent.depth = 1;
+        imageCopy.imageExtent.width = toArea.width;
+        imageCopy.imageExtent.height = toArea.height;
+
+        imageCopy.imageSubresource.baseArrayLayer = arraySlice;
+        imageCopy.imageSubresource.layerCount = 1;
+        imageCopy.imageSubresource.mipLevel = mipLevel;
         
+        vkCmdCopyBufferToImage(
+            writeBuffer,
+            cast(VkBuffer)from.getHandle(),
+            cast(VkImage)to.getHandle(),
+            VK_IMAGE_LAYOUT_GENERAL,
+            1,
+            &imageCopy  
+        );
     }
 
     /**
         Copies data between 2 textures
     */
     override
-    void copy(NuvkTexture from, NuvkTexture to) {
+    void copy(NuvkTexture from, recti fromArea, NuvkTexture to, recti toArea) {
         
     }
 

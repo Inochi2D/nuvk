@@ -105,8 +105,7 @@ enum NuvkVertexFormat {
     /**
         4D Vector of single precision floats.
     */
-    vec4
-    
+    vec4,
 }
 
 /**

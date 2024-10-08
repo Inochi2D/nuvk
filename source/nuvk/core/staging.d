@@ -2,6 +2,7 @@ module nuvk.core.staging;
 import nuvk.core;
 
 import numem.all;
+import inmath;
 
 /**
     An underlying staging buffer to use for staging requests.
@@ -129,5 +130,34 @@ public:
             offset += remaining;
             remaining = clampTx(offset, size);
         } while(remaining > 0);
+    }
+
+    /**
+        Transfers data from the CPU to the GPU
+    */
+    void transfer(void[] from, uint rowStride, NuvkTexture to, recti region, uint arraySlice = 0, uint mipmapLevel = 0) {
+        nuvkEnforce(
+            from.length <= to.getAllocatedSize(), 
+            "Tried to transfer data larger than destination texture! (%d->%d)",
+            from.length,
+            to.getAllocatedSize()
+        );
+
+        // TODO: implement an algorithm which uploads based on tiles.
+        if (from.length > buffer.getSize()) {
+            nuvkLogError("Source size is larger than staging buffer, support for this is not implemented yet!");
+            return;
+        }
+
+        buffer.upload(from.ptr, from.length, 0);
+        if (auto encoder = commands.beginTransferPass()) {
+            encoder.copy(buffer, 0, rowStride, to, region, arraySlice, mipmapLevel);
+            encoder.endEncoding();
+        } else {
+            throw nogc_new!NuException(nstring("Failed to begin transfer pass!"));
+        }
+
+        commands.commit();
+        queue.await();
     }
 }

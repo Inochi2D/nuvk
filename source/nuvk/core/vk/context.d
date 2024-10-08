@@ -15,8 +15,7 @@ import numem.all;
 private {
     extern(System)
     VkBool32 nuvkVkDbgCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) nothrow @nogc {
-        import core.stdc.stdio : printf;
-        printf("[Validation Layer] %s\n",pCallbackData.pMessage);
+        nuvkLogDebug("%s", pCallbackData.pMessage);
         return VK_FALSE;
     }
 

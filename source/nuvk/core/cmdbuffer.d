@@ -912,19 +912,19 @@ public:
 
         Parameters:
             `from` - The buffer to copy from
-            `sourceOffset` - Offset, in bytes, into the buffer to copy from
-            `sourcePxStride` - How many bytes there are in a single pixel
-            `copyRange` - The width and height to copy, and the destination coordinates in the texture to put them.
+            `offset` - Offset, in bytes, into the buffer to copy from
+            `rowStrde` - How many bytes there are in a row of pixels in the buffer
             `to` - The texture to copy to
+            `toArea` - The width and height to copy, and the destination coordinates in the texture to put them.
             `arraySlice` - The texture array slice to copy into.
             `mipLevel` - The texture mip level to copy into.
     */
-    abstract void copy(NuvkBuffer from, uint sourceOffset, uint sourcePxStride, recti copyRange, NuvkTexture to, uint arraySlice = 0, uint mipLevel = 0);
+    abstract void copy(NuvkBuffer from, uint offset, uint rowStride, NuvkTexture to, recti toArea, uint arraySlice = 0, uint mipLevel = 0);
 
     /**
         Copies data between 2 textures
     */
-    abstract void copy(NuvkTexture from, NuvkTexture to);
+    abstract void copy(NuvkTexture from, recti fromArea, NuvkTexture to, recti toArea);
 
     /**
         Encodes a command which optimizes the texture for the specified usage.
