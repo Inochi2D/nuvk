@@ -29,21 +29,23 @@ Examples can be found in the `examples/` directory.
 ## System Requirements
 
 ### Vulkan
-Vulkan 1.3 is required to run NuVk.
+Vulkan 1.3 is required to run nuvk on Windows and Linux.
 
 #### Required Validation Layers (debug mode):
  * `VK_LAYER_KHRONOS_validation`
 
 #### Required Instance Extensions
  * `VK_KHR_surface`
- * `VK_KHR_debug_utils`
 
 #### Required Device Extensions
  * `VK_EXT_primitive_topology_list_restart`
- * `VK_KHR_create_renderpass2`
- * `VK_KHR_depth_stencil_resolve`
  * `VK_EXT_custom_border_color`
  * `VK_KHR_swapchain`
+ * `VK_EXT_extended_dynamic_state3`
+ * `VK_EXT_shader_object`
+
+#### Optional Extensions
+ * `VK_EXT_shader_tile_image`
  * `VK_KHR_external_memory`
  * `VK_KHR_external_memory_win32` (Windows)
  * `VK_KHR_external_memory_fd` (POSIX)

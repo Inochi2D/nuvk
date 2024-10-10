@@ -19,6 +19,7 @@ private {
         VK_EXT_SHADER_TILE_IMAGE_EXTENSION_NAME,
         VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME,
         NuvkVkMemorySharingExtName,
+        VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
         NuvkSemaphoreVkSharingExtName,
     ];
 }
