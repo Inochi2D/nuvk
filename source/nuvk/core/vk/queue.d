@@ -30,7 +30,7 @@ NuvkQueueSpecialization toNuvkSpecialization(VkQueueFlags flags) @nogc {
 /**
     A vulkan command queue
 */
-class NuvkVkQueue : NuvkQueue {
+class NuvkQueueVk : NuvkQueue {
 @nogc:
 private:
     VkQueue queue;
@@ -75,7 +75,7 @@ public:
     */
     override
     NuvkCommandBuffer createCommandBuffer() {
-        return nogc_new!NuvkVkCommandBuffer(this.getOwner(), this);   
+        return nogc_new!NuvkCommandBufferVk(this.getOwner(), this);   
     }
 
     /**

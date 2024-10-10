@@ -7,7 +7,6 @@
 
 module nuvk.core.cmdbuffer;
 import nuvk.core;
-import nuvk.spirv;
 import numem.all;
 import inmath.linalg;
 
@@ -384,8 +383,16 @@ struct NuvkDepthStencilAttachment {
     NuvkClearValue clearValue;
 }
 
+/**
+    Describes a rendering pass
+*/
 struct NuvkRenderPassDescriptor {
 @nogc nothrow:
+
+    /**
+        Shader program to use for the pass
+    */
+    NuvkShaderProgram shader;
 
     /**
         The rendering area
@@ -406,6 +413,37 @@ struct NuvkRenderPassDescriptor {
 }
 
 /**
+    Dispatch type for compute shaders.
+*/
+enum NuvkDispatchType {
+    /**
+        Compute commands are executed in series.
+    */
+    serial,
+
+    /**
+        Compute commands may be executed in parallel.
+    */
+    parallel
+}
+
+/**
+    Describes a compute pass
+*/
+struct NuvkComputePassDescriptor {
+
+    /**
+        Shader program to use for the pass
+    */
+    NuvkShaderProgram shader;
+
+    /**
+        How the pass should dispatch compute operations.
+    */
+    NuvkDispatchType dispatchType;
+}
+
+/**
     A command buffer
 
     Command buffers store commands to send to the GPU.
@@ -414,6 +452,11 @@ abstract
 class NuvkCommandBuffer : NuvkDeviceObject {
 @nogc:
 private:
+
+    // Submissions which are waiting.
+    size_t waiting;
+    size_t commits;
+
     NuvkSemaphore submissionFinished;
     NuvkFence inFlightFence;
 
@@ -439,9 +482,14 @@ private:
             // Buffer was ready, begin new pass.
             this.setStatus(NuvkCommandBufferStatus.recording);
             this.onBeginNewPass();
+            commits = 0;
         }
 
         return this.getStatus() == NuvkCommandBufferStatus.recording;
+    }
+
+    void finishEncoding(void* handle) {
+        this.onEncoderFinished(handle);
     }
 
 protected:
@@ -483,7 +531,7 @@ protected:
     /**
         Implements the logic to create a NuvkComputeEncoder.
     */
-    abstract NuvkComputeEncoder onBeginComputePass();
+    abstract NuvkComputeEncoder onBeginComputePass(ref NuvkComputePassDescriptor descriptor);
 
     /**
         Implements the logic to create a NuvkTransferEncoder.
@@ -494,6 +542,17 @@ protected:
         Implements the logic to finish encoding.
     */
     abstract void onEncoderFinished(void* handle);
+
+    /**
+        Commits the commands stored in the command buffer
+        to the command queue
+    */
+    abstract void onCommit(bool shouldWait);
+
+    /**
+        Presents the surface
+    */
+    abstract void onPresent(NuvkSurface surface);
 
 public:
 
@@ -534,7 +593,7 @@ public:
         NuvkComputeEncoder.
     */
     final
-    NuvkComputeEncoder beginComputePass() {
+    NuvkComputeEncoder beginComputePass(ref NuvkComputePassDescriptor computePassDescriptor) {
         nuvkEnforce(
             (queue.getSpecialization() & NuvkQueueSpecialization.compute),
             "Queue does not support encoding compute commands!"
@@ -542,7 +601,7 @@ public:
 
         this.updateStatus();
         if (this.beginPass())
-            return this.onBeginComputePass();
+            return this.onBeginComputePass(computePassDescriptor);
         else 
             return null;
     }
@@ -587,13 +646,23 @@ public:
     /**
         Presents the surface
     */
-    abstract void present(NuvkSurface surface);
+    final
+    void present(NuvkSurface surface) {
+        this.onPresent(surface);
+        waiting++;
+    }
 
     /**
         Commits the commands stored in the command buffer
         to the command queue
     */
-    abstract void commit();
+    final
+    void commit() {
+        this.onCommit(commits != 0 && waiting > 0);
+        
+        waiting = 0;
+        commits++;
+    }
 
     /**
         Blocks the current thread until the command queue
@@ -651,7 +720,7 @@ public:
     */
     ~this() {
         auto handle = this.onEnd(commandBuffer);
-        commandBuffer.onEncoderFinished(handle);
+        commandBuffer.finishEncoding(handle);
         commandBuffer = null;
     }
 
@@ -737,11 +806,6 @@ public:
     }
 
     /**
-        Sets the active pipeline
-    */
-    abstract void setPipeline(NuvkPipeline pipeline);
-
-    /**
         Configures the active rendering pipeline with 
         the specified viewport.
     */
@@ -805,8 +869,22 @@ public:
     abstract void drawIndexed(NuvkPrimitive primitive, uint offset, uint count);
 
     /**
-        Encodes a rendering barrier that enforces 
-        a specific order for read/write operations.
+        Encodes a rendering barrier that enforces a specific order for 
+        read/write operations.
+
+        This will additionally transition the layout of the texture to the specified layout.
+
+        Parameters:
+            `resource` the texture to create a barrier for and transition.
+            `after` the stage which this barrier will be **after**
+            `before` the **subsequent** stage after this barrier. 
+            `toLayout` the layout the texture will be after the transition.
+    */
+    abstract void waitFor(NuvkTexture resource, NuvkRenderStage after, NuvkRenderStage before, NuvkTextureLayout toLayout);
+
+    /**
+        Encodes a rendering barrier that enforces a specific order for 
+        read/write operations.
 
         Parameters:
             `scope_` The resource scope to wait for..
@@ -814,6 +892,17 @@ public:
             `before` the **subsequent** stage after this barrier. 
     */
     abstract void waitFor(NuvkBarrierScope scope_, NuvkRenderStage after, NuvkRenderStage before);
+
+    /**
+        Encodes a rendering barrier that enforces a specific order for 
+        read/write operations.
+
+        Parameters:
+            `resource` a Nuvk resource, such as a texture or buffer.
+            `after` the stage which this barrier will be **after**
+            `before` the **subsequent** stage after this barrier. 
+    */
+    abstract void waitFor(NuvkResource resource, NuvkRenderStage after, NuvkRenderStage before);
 }
 
 /**
@@ -823,12 +912,26 @@ public:
 abstract
 class NuvkComputeEncoder : NuvkEncoder {
 @nogc:
+private:
+    NuvkComputePassDescriptor descriptor;
+
+protected:
+
+    /**
+        Gets the descriptor for the compute pass.
+    */
+    final
+    ref NuvkComputePassDescriptor getDescriptor() {
+        return descriptor;
+    }
+
 public:
 
     /**
         Constructor
     */
-    this(NuvkCommandBuffer buffer) {
+    this(NuvkCommandBuffer buffer, ref NuvkComputePassDescriptor computePassDescriptor) {
+        this.descriptor = computePassDescriptor;
         super(buffer);
     }
 
@@ -853,31 +956,40 @@ public:
     abstract void dispatch(vec3i groupCounts);
 
     /**
-        Encodes a rendering barrier that enforces 
-        a specific order for read/write operations.
+        Encodes a rendering barrier that enforces a specific order for 
+        read/write operations.
+
+        This will additionally transition the layout of the texture to the specified layout.
+
+        Parameters:
+            `resource` the texture to create a barrier for and transition.
+            `after` the stage which this barrier will be **after**
+            `before` the **subsequent** stage after this barrier. 
+            `toLayout` the layout the texture will be after the transition.
+    */
+    abstract void waitFor(NuvkTexture resource, NuvkTextureLayout toLayout);
+
+    /**
+        Encodes a rendering barrier that enforces a specific order for 
+        read/write operations.
+
+        Parameters:
+            `scope_` The resource scope to wait for..
+            `after` the stage which this barrier will be **after**
+            `before` the **subsequent** stage after this barrier. 
+    */
+    abstract void waitFor(NuvkBarrierScope scope_);
+
+    /**
+        Encodes a rendering barrier that enforces a specific order for 
+        read/write operations.
 
         Parameters:
             `resource` a Nuvk resource, such as a texture or buffer.
             `after` the stage which this barrier will be **after**
             `before` the **subsequent** stage after this barrier. 
     */
-    abstract void waitBarrier(NuvkResource resource, NuvkRenderStage after, NuvkRenderStage before);
-}
-
-/**
-    Optimization mode to use for texture optimization state changes
-*/
-enum NuvkOptimizationMode {
-
-    /**
-        Optimize for CPU access
-    */
-    optimizeForCPU,
-    
-    /**
-        Optimize for GPU access
-    */
-    optimizeForGPU
+    abstract void waitFor(NuvkResource resource);
 }
 
 /**
@@ -908,7 +1020,12 @@ public:
     abstract void copy(NuvkBuffer from, uint sourceOffset, NuvkBuffer to, uint destOffset, uint size);
 
     /**
-        Copies data between a buffer and texture
+        Copies data between 2 textures
+    */
+    abstract void copy(NuvkTexture from, recti fromArea, NuvkTexture to, vec2i toPosition, uint arraySlice = 0, uint mipLevel = 0);
+
+    /**
+        Copies data between a buffer and a texture
 
         Parameters:
             `from` - The buffer to copy from
@@ -922,14 +1039,23 @@ public:
     abstract void copy(NuvkBuffer from, uint offset, uint rowStride, NuvkTexture to, recti toArea, uint arraySlice = 0, uint mipLevel = 0);
 
     /**
-        Copies data between 2 textures
+        Copies data between a texture and a buffer
+
+        Parameters:
+            `from` - The texture to copy from
+            `fromArea` - The area to copy.
+            `to` - The texture to copy to
+            `offset` - Offset, in bytes, into the buffer to copy to
+            `rowStrde` - How many bytes there are in a row of pixels in the buffer
+            `arraySlice` - The texture array slice to copy from.
+            `mipLevel` - The texture mip level to copy from.
     */
-    abstract void copy(NuvkTexture from, recti fromArea, NuvkTexture to, recti toArea);
+    abstract void copy(NuvkTexture from, recti fromArea, NuvkBuffer to, uint offset, uint rowStride, uint arraySlice = 0, uint mipLevel = 0);
 
     /**
         Encodes a command which optimizes the texture for the specified usage.
     */
-    abstract void optimizeTextureFor(NuvkTexture texture, NuvkOptimizationMode mode, uint arraySlice = 0, uint mipLevel = 0);
+    abstract void optimizeTextureFor(NuvkTexture texture, NuvkTextureLayout layout);
 
     /**
         Encodes a command which synchronizes the resource between CPU and GPU.

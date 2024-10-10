@@ -1,0 +1,26 @@
+name "textures"
+description "Nuvk texturing example"
+authors "Luna"
+copyright "Copyright © 2024, Luna"
+license "BSD 2-clause"
+
+targetPath "../../out/textures"
+workingDirectory "../../out/textures"
+stringImportPaths "../common/"
+
+dependency "nuvk" path="../../"
+dependency "common" path="../common/"
+
+versions "SDL_2_28"
+
+configuration "default" {
+	targetType "executable"
+}
+
+configuration "shaders" {
+	targetType "none"
+
+	preGenerateCommands \
+		"glslc ../common/shaders/textures.vert -o ../common/shaders/textures_vert.spv" \
+		"glslc ../common/shaders/textures.frag -o ../common/shaders/textures_frag.spv"
+}

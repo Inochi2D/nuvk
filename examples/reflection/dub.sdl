@@ -10,8 +10,7 @@ workingDirectory "../../out/reflection"
 stringImportPaths "../common/"
 
 // NOTE: dub doesn't allow us to wildcard copy the spv files.
-copyFiles "$PACKAGE_DIR/../common/libs/SDL2.dll" \
-		  "$PACKAGE_DIR/../common/shaders/triangle_vert.spv" \
+copyFiles "$PACKAGE_DIR/../common/shaders/triangle_vert.spv" \
 		  "$PACKAGE_DIR/../common/shaders/triangle_frag.spv"
 
 dependency "numem" version="*"

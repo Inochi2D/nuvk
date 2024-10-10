@@ -7,7 +7,6 @@
 
 module nuvk.core.queue;
 import nuvk.core;
-import nuvk.spirv;
 import numem.all;
 
 /**

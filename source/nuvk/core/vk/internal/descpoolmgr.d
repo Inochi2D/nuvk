@@ -24,7 +24,7 @@ private:
         weak_vector!VkDescriptorSet sets;
     }
     
-    NuvkVkDevice device;
+    NuvkDeviceVk device;
     weak_vector!VkPoolAllocation pools;
 
     void allocPool() {
@@ -89,7 +89,7 @@ public:
         }
     }
 
-    this(NuvkVkDevice device) {
+    this(NuvkDeviceVk device) {
         this.device = device;
     }
 

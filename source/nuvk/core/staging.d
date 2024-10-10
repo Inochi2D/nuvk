@@ -41,6 +41,51 @@ private:
         return remaining;
     }
 
+    /**
+        Creates a temporary texture staging buffer
+    */
+    NuvkBuffer createTextureStagingBuffer(NuvkTexture texture, bool isSource) {
+        NuvkBufferUsage usage = 
+            NuvkBufferUsage.hostVisible | NuvkBufferUsage.hostShared;
+
+        usage |= isSource ? NuvkBufferUsage.transferSrc : NuvkBufferUsage.transferDst;
+
+        return device.createBuffer(
+            usage,
+            cast(uint)texture.getAllocatedSize(),
+        );
+    }
+
+    NuvkTransferEncoder begin() {
+        return commands.beginTransferPass();
+    }
+
+    void end(NuvkTransferEncoder encoder) {
+        if (encoder) {
+        
+            // Note: encoder is basically deleted after this.
+            encoder.endEncoding();
+            encoder = null;
+
+            commands.commit();
+            queue.await();
+        }
+    }
+
+    void copyOut(void* destination, size_t size, NuvkBuffer rbuffer = null) {
+
+        // Workaround for being unable to pass buffer in.
+        if (rbuffer is null)
+            rbuffer = buffer;
+
+        // Copy data over.
+        void* buf;
+        if (rbuffer.map(buf, size, 0)) {
+            destination[0..size] = buf[0..size];
+            rbuffer.unmap();
+        }
+    }
+
 public:
 
     /**
@@ -69,7 +114,7 @@ public:
     void transfer(void[] from, NuvkBuffer to, size_t offset = 0) {
         nuvkEnforce(
             from.length <= to.getSize(), 
-            "Tried to transfer data larger than destination buffer! (%d->%d)",
+            "Tried to transfer data larger than destination! (%d->%d)",
             from.length,
             to.getSize()
         );
@@ -79,18 +124,16 @@ public:
 
             buffer.upload(from.ptr+offset, remaining, 0);
 
-            if (auto encoder = commands.beginTransferPass()) {
+            if (auto encoder = this.begin()) {
                 encoder.copy(buffer, 0, to, 0, cast(uint)remaining);
-                encoder.endEncoding();
+                
+                this.end(encoder);
+                offset += remaining;
+                remaining = clampTx(offset, from.length);
             } else {
-                throw nogc_new!NuException(nstring("Failed to begin transfer pass!!"));
+                nuvkLogError("Failed to upload {0} bytes...", cast(uint)remaining);
+                return;
             }
-
-            commands.commit();
-            queue.await();
-
-            offset += remaining;
-            remaining = clampTx(offset, from.length);
         } while(remaining > 0);
     }
 
@@ -102,33 +145,28 @@ public:
             offset+size <= from.getSize(),
             "Attempted to copy data out of range for buffer!"
         );
+
         nuvkEnforce(
             size <= to.length, 
-            "Tried to transfer data larger than destination buffer! (%d->%d)",
+            "Tried to transfer data larger than destination! (%d->%d)",
             size,
             to.length
         );
 
         size_t remaining = clampTx(offset, size);
         do {
-
-            if (auto encoder = commands.beginTransferPass()) {
+            if (auto encoder = this.begin()) {
                 encoder.copy(from, cast(uint)offset, buffer, 0, cast(uint)remaining);
-                encoder.endEncoding();
+
+                this.end(encoder);
+                this.copyOut(to.ptr+offset, remaining);
+
+                offset += remaining;
+                remaining = clampTx(offset, size);
             } else {
-                throw nogc_new!NuException(nstring("Failed to begin transfer pass!!"));
+                nuvkLogError("Failed to download {0} bytes...", cast(uint)remaining);
+                return;
             }
-
-            commands.commit();
-            queue.await();
-
-            // Copy data over.
-            void* buf;
-            buffer.map(buf, remaining, 0);
-            to[offset..offset+remaining] = buf[0..remaining];
-
-            offset += remaining;
-            remaining = clampTx(offset, size);
         } while(remaining > 0);
     }
 
@@ -138,26 +176,44 @@ public:
     void transfer(void[] from, uint rowStride, NuvkTexture to, recti region, uint arraySlice = 0, uint mipmapLevel = 0) {
         nuvkEnforce(
             from.length <= to.getAllocatedSize(), 
-            "Tried to transfer data larger than destination texture! (%d->%d)",
+            "Tried to transfer data larger than destination! (%d->%d)",
             from.length,
             to.getAllocatedSize()
         );
 
-        // TODO: implement an algorithm which uploads based on tiles.
-        if (from.length > buffer.getSize()) {
-            nuvkLogError("Source size is larger than staging buffer, support for this is not implemented yet!");
-            return;
-        }
+        // Create temporary buffer and delete it after use.
+        NuvkBuffer imgBuffer = this.createTextureStagingBuffer(to, true);
+        scope(exit) nogc_delete(imgBuffer);
+        
+        imgBuffer.upload(from.ptr, from.length, 0);
 
-        buffer.upload(from.ptr, from.length, 0);
-        if (auto encoder = commands.beginTransferPass()) {
-            encoder.copy(buffer, 0, rowStride, to, region, arraySlice, mipmapLevel);
-            encoder.endEncoding();
-        } else {
-            throw nogc_new!NuException(nstring("Failed to begin transfer pass!"));
-        }
+        if (auto encoder = this.begin()) {
+            encoder.copy(imgBuffer, 0, rowStride, to, region, arraySlice, mipmapLevel);
 
-        commands.commit();
-        queue.await();
+            this.end(encoder);
+        }
+    }
+
+    /**
+        Transfers data from the GPU to the CPU
+    */
+    void transfer(NuvkTexture from, void[] to, recti region) {
+        nuvkEnforce(
+            from.getAllocatedSize() <= to.length, 
+            "Tried to transfer data larger than destination! (%d->%d)",
+            from.getAllocatedSize(),
+            to.length,
+        );
+
+        // Create temporary buffer and delete it after use.
+        NuvkBuffer imgBuffer = this.createTextureStagingBuffer(from, false);
+        scope(exit) nogc_delete(imgBuffer);
+
+        if (auto encoder = this.begin()) {
+            // encoder.copy(imgBuffer, 0, rowStride, to, region, arraySlice, mipmapLevel);
+
+            this.end(encoder);
+            this.copyOut(to.ptr, imgBuffer.getSize(), imgBuffer);
+        }
     }
 }

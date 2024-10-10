@@ -53,7 +53,7 @@ VkIndexType toVkIndexType(NuvkBufferIndexType indexType) @nogc {
     }
 }
 
-class NuvkVkBuffer : NuvkBuffer {
+class NuvkBufferVk : NuvkBuffer {
 @nogc:
 private:
     VkMemoryRequirements memoryRequirements; 
@@ -70,7 +70,7 @@ private:
 
     void createBuffer(NuvkProcessSharing processSharing) {
         auto device = cast(VkDevice)this.getOwner().getHandle();
-        auto deviceInfo = cast(NuvkVkDeviceInfo)this.getOwner().getDeviceInfo();
+        auto deviceInfo = cast(NuvkDeviceVkInfo)this.getOwner().getDeviceInfo();
         auto usage = this.getBufferUsage();
         int memoryIndex;
         VkFlags flags;
@@ -134,7 +134,7 @@ private:
                 );
 
                 vkBindBufferMemory(device, buffer, deviceMemory, 0);
-                this.setSharedHandle(nuvkVkGetSharedHandle(device, deviceMemory));
+                this.setSharedHandle(nuvkGetSharedHandleVk(device, deviceMemory));
 
             } else {
                 VkMemoryAllocateInfo allocInfo;
@@ -161,7 +161,7 @@ protected:
     */
     override
     void onShareHandleClose(ulong handle) {
-        nuvkVkCloseSharedHandle(handle);
+        nuvkCloseSharedHandleVk(handle);
     }
 
 public:

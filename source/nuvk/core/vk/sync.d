@@ -13,7 +13,7 @@ import numem.all;
 /**
     A fence
 */
-class NuvkVkFence : NuvkFence {
+class NuvkFenceVk : NuvkFence {
 @nogc:
 private:
     VkFence fence;
@@ -69,7 +69,7 @@ public:
 /**
     A semaphore
 */
-class NuvkVkSemaphore : NuvkSemaphore {
+class NuvkSemaphoreVk : NuvkSemaphore {
 @nogc:
 private:
     VkSemaphore semaphore;
@@ -82,7 +82,7 @@ private:
 
             // Export info
             VkExportSemaphoreCreateInfo exportInfo;
-            exportInfo.handleTypes = NuvkVkSemaphoreSharingFlagBit;
+            exportInfo.handleTypes = NuvkSemaphoreVkSharingFlagBit;
 
             // Semaphore info
             VkSemaphoreCreateInfo semaphoreInfo;
@@ -94,7 +94,7 @@ private:
             );
 
             this.setHandle(semaphore);
-            shareHandle = nuvkVkGetSharedHandle(device, semaphore);
+            shareHandle = nuvkGetSharedHandleVk(device, semaphore);
         } else {
             // Semaphore info
             VkSemaphoreCreateInfo semaphoreInfo;
@@ -113,7 +113,7 @@ public:
         auto device = cast(VkDevice)this.getOwner().getHandle();
 
         if (shareHandle != 0) 
-            nuvkVkCloseSharedHandle(shareHandle);
+            nuvkCloseSharedHandleVk(shareHandle);
 
         if (semaphore != VK_NULL_HANDLE)
             vkDestroySemaphore(device, semaphore, null);

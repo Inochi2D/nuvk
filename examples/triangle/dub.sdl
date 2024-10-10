@@ -3,18 +3,15 @@ description "Nuvk triangle example"
 authors "Luna"
 copyright "Copyright © 2024, Luna"
 license "BSD 2-clause"
+
 targetPath "../../out/triangle"
 workingDirectory "../../out/triangle"
-
 stringImportPaths "../common/"
 
-copyFiles "../common/libs/SDL2.dll"
-dependency "bindbc-sdl" version="~>1.4.8"
 dependency "numem" version="*"
 dependency "inmath" version="*"
 dependency "nuvk" path="../../"
-
-versions "SDL_2_28"
+dependency "common" path="../common/"
 
 configuration "default" {
 	targetType "executable"

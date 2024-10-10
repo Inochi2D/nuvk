@@ -35,7 +35,7 @@ enum NuvkContextType {
 /**
     Information which can be passed to Vulkan
 */
-struct NuvkVkContextDescriptor {
+struct NuvkContextVkDescriptor {
 @nogc:
     weak_vector!(const(char)*) requiredExtensions;
 }
@@ -66,7 +66,7 @@ struct NuvkContextDescriptor {
         /**
             Information which can be passed to Vulkan
         */
-        NuvkVkContextDescriptor vulkan;
+        NuvkContextVkDescriptor vulkan;
 
         /**
             Information which can be passed to Metal
@@ -199,11 +199,11 @@ NuvkContext nuvkCreateContext(NuvkContextDescriptor descriptor) @nogc {
 
             // Attempt vulkan
             descriptor.type = NuvkContextType.vulkan;
-            descriptor.vulkan = NuvkVkContextDescriptor.init;
+            descriptor.vulkan = NuvkContextVkDescriptor.init;
             return nuvkCreateContext(descriptor);
 
         case NuvkContextType.vulkan:
-            return nogc_new!NuvkVkContext(descriptor);
+            return nogc_new!NuvkContextVk(descriptor);
 
         case NuvkContextType.metal:
             

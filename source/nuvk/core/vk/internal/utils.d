@@ -123,7 +123,7 @@ public:
             requestedStore ~= nstring(toAdd);
             requestedOut ~= requestedStore[$-1].toCString();
 
-            nuvkLogDebug("%s[%d] = %s", name.toCString(), cast(uint)i, requestedStore[$-1].toCString());
+            nuvkLogDebug("{0}[{1}] = {2}", name.toCString(), cast(uint)i, requestedStore[$-1].toCString());
             return true;
         }
         return false;

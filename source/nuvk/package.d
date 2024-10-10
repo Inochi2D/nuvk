@@ -11,4 +11,3 @@
 module nuvk;
 
 public import nuvk.core;
-public import nuvk.spirv;

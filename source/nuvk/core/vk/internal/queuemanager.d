@@ -10,7 +10,7 @@ private {
     const float nuvkVkDeviceQueuePriority = 1.0f;
     
     // A queue family
-    class NuvkVkQueueFamily {
+    class NuvkQueueVkFamily {
     @nogc:
         this(NuvkQueueFamilyInfo familyInfo) {
             this.familyInfo = familyInfo;
@@ -108,13 +108,13 @@ NuvkQueueSpecialization toNuvkSpecialization(VkQueueFlags queueFlags) @nogc {
     Manager for device queues, helping delegate queues for specific
     specializations.
 */
-class NuvkVkDeviceQueueManager {
+class NuvkDeviceVkQueueManager {
 @nogc:
 private:
-    NuvkVkDevice nuvkDevice;
+    NuvkDeviceVk nuvkDevice;
     NuvkDeviceInfo nuvkDeviceInfo;
 
-    vector!NuvkVkQueueFamily queueFamilies;
+    vector!NuvkQueueVkFamily queueFamilies;
     vector!VkDeviceQueueCreateInfo queueCreateInfos;
 
     /**
@@ -124,7 +124,7 @@ private:
         auto qfamilies = nuvkDevice.getDeviceInfo().getQueueFamilyInfos();
 
         foreach(i, NuvkQueueFamilyInfo family; qfamilies) {
-            queueFamilies ~= nogc_new!NuvkVkQueueFamily(family);
+            queueFamilies ~= nogc_new!NuvkQueueVkFamily(family);
 
             VkDeviceQueueCreateInfo queueCreateInfo;
             queueCreateInfo.queueFamilyIndex = cast(uint)i;
@@ -176,7 +176,7 @@ public:
     /**
         Constructor
     */
-    this(NuvkVkDevice device) {
+    this(NuvkDeviceVk device) {
         this.nuvkDevice = device;
         this.generateQueueInfo();
     }
@@ -196,7 +196,7 @@ public:
             "Could not find any free queues supporting the specialization"
         );
 
-        NuvkVkQueueFamily queueFamily = this.queueFamilies[familyIndex];
+        NuvkQueueVkFamily queueFamily = this.queueFamilies[familyIndex];
         NuvkQueueFamilyInfo familyInfo = queueFamily.familyInfo;
 
         // Prior check should ensure this is a valid value.
@@ -204,7 +204,7 @@ public:
         nuvkEnforce(queueIndex >= 0, "Failed to find free queue!");
 
         vkGetDeviceQueue(device, familyInfo.index, queueIndex, &queue);
-        queueFamily.assignedQueues[queueIndex] = nogc_new!NuvkVkQueue(nuvkDevice, queue, familyInfo, queueIndex);
+        queueFamily.assignedQueues[queueIndex] = nogc_new!NuvkQueueVk(nuvkDevice, queue, familyInfo, queueIndex);
         
         return queueFamily.assignedQueues[queueIndex];
     }
@@ -213,7 +213,7 @@ public:
         Removes a command queue
     */
     final
-    bool removeQueue(NuvkVkQueue queue) {
+    bool removeQueue(NuvkQueueVk queue) {
         foreach(i; 0..queueFamilies.size()) {
             foreach(k; 0..queueFamilies[i].assignedQueues.size()) {
                 if (queueFamilies[i].assignedQueues[k] is queue) {

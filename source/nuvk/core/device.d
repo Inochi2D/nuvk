@@ -7,7 +7,6 @@
 
 module nuvk.core.device;
 import nuvk.core;
-import nuvk.spirv;
 import numem.all;
 
 import inmath;
@@ -72,20 +71,33 @@ public:
     /**
         Creates a shader program.
     */
-    abstract NuvkShader createShader(NuvkSpirvModule module_, NuvkShaderStage stage);
+    abstract NuvkShaderProgram createShader();
 
     /**
-        Creates a shader program.
+        Creates a shader program from a library
     */
-    final
-    NuvkShader createShaderFromSpirv(ubyte[] bytecode, NuvkShaderStage stage) {
-        return this.createShader(nogc_new!NuvkSpirvModule(bytecode), stage);
-    }
+    abstract NuvkShaderProgram createShader(NuvkShaderLibrary library);
     
     /**
         Creates a buffer.
     */
     abstract NuvkBuffer createBuffer(NuvkBufferUsage usage, uint size, NuvkProcessSharing processSharing = NuvkProcessSharing.processLocal);
+
+    /**
+        Creates a buffer.
+
+        Data is automatically uploaded to the buffer.
+    */
+    NuvkBuffer createBuffer(T)(NuvkBufferUsage usage, T[] elements, NuvkProcessSharing processSharing = NuvkProcessSharing.processLocal) {
+        
+        // If buffer is not host visible, make sure we can use the staging buffer.
+        if (!(usage & NuvkBufferUsage.hostVisible))
+            usage |= NuvkBufferUsage.transferDst;
+        
+        NuvkBuffer buffer = this.createBuffer(usage, cast(uint)(T.sizeof*elements.length), processSharing);
+        buffer.upload(elements, 0);
+        return buffer;
+    }
 
     /**
         Creates a texture
@@ -106,16 +118,6 @@ public:
         Creates a semaphore.
     */
     abstract NuvkSemaphore createSemaphore(NuvkProcessSharing processSharing = NuvkProcessSharing.processLocal);
-
-    /**
-        Creates a graphics pipeline.
-    */
-    abstract NuvkPipeline createGraphicsPipeline(ref NuvkGraphicsPipelineDescriptor pipelineCreationInfo);
-
-    /**
-        Creates a compute pipeline.
-    */
-    abstract NuvkPipeline createComputePipeline(ref NuvkComputePipelineDescriptor pipelineCreationInfo);
 
     /**
         Creates a new command queue

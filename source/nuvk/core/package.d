@@ -14,7 +14,6 @@ public import nuvk.core.device;
 public import nuvk.core.shader;
 public import nuvk.core.texture;
 public import nuvk.core.buffer;
-public import nuvk.core.pipeline;
 public import nuvk.core.sync;
 public import nuvk.core.queue;
 public import nuvk.core.cmdbuffer;
@@ -22,6 +21,8 @@ public import nuvk.core.surface;
 public import nuvk.core.devinfo;
 public import nuvk.core.logging;
 public import nuvk.core.staging;
+
+import numem.string;
 
 /**
     Base type of Nuvk objects.
@@ -31,6 +32,7 @@ class NuvkObject {
 @nogc:
 private:
     void* handle;
+    nstring name;
 
 protected:
 
@@ -42,7 +44,40 @@ protected:
         this.handle = handle;
     }
 
+    /**
+        Called by the implementation when the name is changed.
+
+        By default this does nothing, but backends should setup
+        debug names using this function for debuggers like RenderDoc.
+    */
+    void onNameChanged() { }
+
 public:
+
+    /**
+        constructor
+    */
+    this(nstring name = nstring.init) {
+        this.name = name;
+    }
+
+    /**
+        Gets the user specified name of the object
+    */
+    final
+    nstring getName() {
+        return name;
+    }
+
+    /**
+        Sets the name of the object
+    */
+    final 
+    ref auto setName(nstring name) {
+        this.name = name;
+        this.onNameChanged();
+        return this;
+    }
 
     /**
         Gets the internal handle
@@ -53,6 +88,13 @@ public:
     final
     ref void* getHandle() {
         return handle;
+    }
+
+    /**
+        Gets the handle cast to the specified type.
+    */
+    ref auto getHandle(T)() {
+        return cast(T)handle;
     }
 }
 

@@ -6,36 +6,35 @@
 */
 
 /**
-    Triangle example app
+    Textures example app
 */
 module app;
 
-import nuvk;
-import numem.all;
-import bindbc.sdl;
-import sdl.video;
-import sdl.vulkan;
-import core.stdc.stdio : printf;
-import inmath;
-import std.stdio : writeln;
 import common;
+import std.stdio : writeln;
 
-ubyte[] vertexShaderSrc = cast(ubyte[])import("shaders/cube_vert.spv");
-ubyte[] fragmentShaderSrc = cast(ubyte[])import("shaders/cube_frag.spv");
+ubyte[] vertexShaderSrc = cast(ubyte[])import("shaders/textures_vert.spv");
+ubyte[] fragmentShaderSrc = cast(ubyte[])import("shaders/textures_frag.spv");
+ubyte[] ada = cast(ubyte[])import("textures/ada.png");
 
 struct Uniform0 {
     mat4 mvp;
 }
 
-// Vertex buffer
-vec3[6] vertices = [
-    vec3(0,   0, 64),
-    vec3(0,  64, 64),
-    vec3(64,  0, 64),
+struct VertexAttrib {
+    vec3 position;
+    vec2 uv;
+}
 
-    vec3(64,  0, 64),
-    vec3( 0, 64, 64),
-    vec3(64, 64, 64),
+// Vertex buffer
+VertexAttrib[6] vertices = [
+    VertexAttrib(position: vec3(0,   0, 64), uv: vec2(0, 0)),
+    VertexAttrib(position: vec3(0,  64, 64), uv: vec2(0, 1)),
+    VertexAttrib(position: vec3(64,  0, 64), uv: vec2(1, 0)),
+
+    VertexAttrib(position: vec3(64,  0, 64), uv: vec2(1, 0)),
+    VertexAttrib(position: vec3( 0, 64, 64), uv: vec2(0, 1)),
+    VertexAttrib(position: vec3(64, 64, 64), uv: vec2(1, 1)),
 ];
 
 /**
@@ -50,12 +49,29 @@ void main(string[] args) {
     NuvkQueue queue = device.createQueue();
     NuvkCommandBuffer cmdbuffer = queue.createCommandBuffer();
 
+    // Texture & Sampler
+    NuvkTexture texture = device.createFromPNG(ada);
+    NuvkTextureView view = texture.createTextureView(NuvkTextureViewDescriptor(
+        format: NuvkTextureFormat.rgba8UnormSRGB,
+        type: NuvkTextureType.texture2d,
+    ));
+    NuvkSampler sampler = device.createSampler(NuvkSamplerDescriptor(
+        minFilter: NuvkSamplerTextureFilter.linear,
+        magFilter: NuvkSamplerTextureFilter.linear,
+        mipFilter: NuvkSamplerMipmapFilter.notMipmapped,
+    ));
+
     // Rendering pipeline
     NuvkPipeline pipeline = device.createRenderPipeline(
         vertex: vertexShaderSrc, 
         fragment: fragmentShaderSrc,
-        attributes: [NuvkVertexAttribute(location: 0, format: NuvkVertexFormat.vec3)],
-        bindings: [NuvkVertexBinding(stride: vec3.sizeof, inputRate: NuvkInputRate.vertex)]
+        attributes: [
+            NuvkVertexAttribute(location: 0, format: NuvkVertexFormat.vec3),
+            NuvkVertexAttribute(location: 1, format: NuvkVertexFormat.vec2),
+        ],
+        bindings: [
+            NuvkVertexBinding(stride: VertexAttrib.sizeof, inputRate: NuvkInputRate.vertex)
+        ]
     );
 
     // Vertex buffer
@@ -82,8 +98,7 @@ void main(string[] args) {
             // Update matrix
             vec2i fbSize = myWindow.getFramebufferSize();
             uniform0.mvp = (
-                mat4.perspective01(fbSize.x, fbSize.y, 90.0, 0.1, 1000) *
-                mat4.lookAt(vec3(0, 64, 0), vec3(32, 32, 64), vec3(0, 1, 0))
+                mat4.orthographic01(0, fbSize.x, fbSize.y, 0, 0.1, 1000)
             ).transposed();
 
             // Set color attachment
@@ -97,6 +112,8 @@ void main(string[] args) {
             // Render
             if (NuvkRenderEncoder renderPass = cmdbuffer.beginRenderPass(renderPassDescriptor)) {
                 renderPass.setPipeline(pipeline);
+                renderPass.setFragmentTexture(view, 1);
+                renderPass.setFragmentSampler(sampler, 2);
                 renderPass.setVertexBuffer(vertexBuffer, 0, 0);
                 renderPass.setVertexBuffer(uniformBuffer, 0, 0);
                 renderPass.draw(NuvkPrimitive.triangles, 0, 6);

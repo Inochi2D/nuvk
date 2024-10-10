@@ -244,6 +244,42 @@ enum NuvkSamplerCompareOp {
 }
 
 /**
+    Texture layout
+*/
+enum NuvkTextureLayout {
+
+    /**
+        Texture layout is undefined, data can be anything.
+    */
+    undefined,
+
+    /**
+        Texture layout is general-use
+    */
+    general,
+
+    /**
+        Texture layout is meant to be a shader attachment
+    */
+    attachment,
+
+    /**
+        Texture layout is meant to be used for presentation
+    */
+    presentation,
+
+    /**
+        Texture can be used as a transfer source
+    */
+    transferSrc,
+
+    /**
+        Texture can be used as a transfer destination
+    */
+    transferDst,
+}
+
+/**
     Descriptor used to create a texture
 */
 struct NuvkTextureDescriptor {
@@ -263,8 +299,8 @@ struct NuvkTextureDescriptor {
 struct NuvkTextureViewDescriptor {
     NuvkTextureFormat format;
     NuvkTextureType type;
-    NuvkRange!int mipLevels;
-    NuvkRange!int arraySlices;
+    NuvkRange!int mipLevels = NuvkRange!int(0, 1);
+    NuvkRange!int arraySlices = NuvkRange!int(0, 1);
 }
 
 /**
@@ -309,7 +345,7 @@ struct NuvkSamplerDescriptor {
     /**
         Comparison function
     */
-    NuvkSamplerCompareOp compareOp;
+    NuvkSamplerCompareOp compareOp = NuvkSamplerCompareOp.always;
 
     /**
         Range that mipmap LODs should be clamped to.
@@ -319,12 +355,12 @@ struct NuvkSamplerDescriptor {
     /**
         Maximum level of anisotropy.
     */
-    int maxAnisotropy;
+    int maxAnisotropy = 1;
 
     /**
         Whether texture coordinates should be normalized.
     */
-    bool normalizeCoordinates;
+    bool normalizeCoordinates = true;
 }
 
 /**
@@ -337,6 +373,7 @@ class NuvkTexture : NuvkResource {
 @nogc:
 private:
     NuvkTextureDescriptor descriptor;
+    NuvkTextureLayout layout;
 
 protected:
 
@@ -348,6 +385,14 @@ protected:
         return descriptor;
     }
 
+    /**
+        Sets the texture mode.
+    */
+    final
+    void setTextureLayout(NuvkTextureLayout layout) {
+        this.layout = layout;
+    }
+
 public:
 
     /**
@@ -356,6 +401,7 @@ public:
     this(NuvkDevice device, NuvkTextureDescriptor descriptor, NuvkProcessSharing processSharing) {
         super(device, processSharing);
         this.descriptor = descriptor;
+        this.layout = NuvkTextureLayout.undefined;
     }
 
     /**
@@ -366,6 +412,7 @@ public:
         this.descriptor.format = format;
         this.descriptor.samples = 1;
         this.descriptor.type = NuvkTextureType.texture2d;
+        this.layout = NuvkTextureLayout.undefined;
     }
 
     /**
@@ -465,6 +512,14 @@ public:
     final
     uint getDepth() {
         return descriptor.extents.depth;
+    }
+
+    /**
+        Gets the layout of the texture.
+    */
+    final
+    NuvkTextureLayout getLayout() {
+        return layout;
     }
 }
 

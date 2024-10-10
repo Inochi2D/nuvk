@@ -78,34 +78,148 @@ enum NuvkBufferIndexType {
 }
 
 /**
-    Vertex format
+    Different formats that can be passed to a vertex buffer
 */
 enum NuvkVertexFormat {
 
     /**
-        Format is invalid
+        Undefined format.
     */
-    invalid,
+    undefined   = 0,
 
     /**
-        32-bit floating point value
+        Base type
     */
-    float32,
+    base        = 1,
 
     /**
-        2D Vector of single precision floats.
+        Some 2D vector
     */
-    vec2,
-    
+    vector2     = 2,
+
     /**
-        3D Vector of single precision floats.
+        Some 3D vector
     */
-    vec3,
-    
+    vector3     = 3,
+
     /**
-        4D Vector of single precision floats.
+        Some 3D vector
     */
-    vec4,
+    vector4     = 4,
+
+    /**
+        Undefined 8 bit format.
+    */
+    undefined8  = 10,
+
+    /**
+        8 bit integer.
+    */
+    uint8       = 11,
+
+    /**
+        8 bit 2D vector
+    */
+    uvec2b      = 12,
+
+    /**
+        8 bit 3D vector
+    */
+    uvec3b      = 13,
+
+    /**
+        8 bit 4D vector
+    */
+    uvec4b      = 14,
+
+    /**
+        Undefined 16 bit format.
+    */
+    undefined16 = 20,
+
+    /**
+        16 bit float
+    */
+    fp16        = 21,
+
+    /**
+        16 bit 2D vector
+    */
+    vec2h       = 22,
+
+    /**
+        16 bit 3D vector
+    */
+    vec3h       = 23,
+
+    /**
+        16 bit 4D vector
+    */
+    vec4h       = 24,
+
+    /**
+        Undefined 32 bit format.
+    */
+    undefined32 = 40,
+
+    /**
+        32 bit float
+    */
+    fp32        = 41,
+
+    /**
+        32 bit 2D vector
+    */
+    vec2        = 42,
+
+    /**
+        32 bit 3D vector
+    */
+    vec3        = 43,
+
+    /**
+        32 bit 4D vector
+    */
+    vec4        = 44,
+
+    /**
+        Undefined 64 bit format.
+    */
+    undefined64 = 80,
+
+    /**
+        64 bit float
+    */
+    fp64        = 81,
+
+    /**
+        64 bit 2D vector
+    */
+    vec2d       = 82,
+
+    /**
+        64 bit 3D vector
+    */
+    vec3d       = 83,
+
+    /**
+        64 bit 4D vector
+    */
+    vec4d       = 84
+}
+
+/**
+    Creates a vertex format from a vector size and bitwidth.
+
+    Example:
+    ----
+    createVertexFormat(1, 32); // NuvkVertexFormat.fp32
+    createVertexFormat(2, 32); // NuvkVertexFormat.vec2
+    createVertexFormat(4, 64); // NuvkVertexFormat.vec4d
+    ----
+*/
+NuvkVertexFormat createVertexFormat(uint vecsize, uint bitwidth) @nogc {
+    return cast(NuvkVertexFormat)(vecsize + ((bitwidth/8)*10));
 }
 
 /**

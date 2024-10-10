@@ -15,7 +15,7 @@ import numem.all;
 private {
     extern(System)
     VkBool32 nuvkVkDbgCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) nothrow @nogc {
-        nuvkLogDebug("%s", pCallbackData.pMessage);
+        nuvkLogDebug("{0}", pCallbackData.pMessage);
         return VK_FALSE;
     }
 
@@ -33,7 +33,7 @@ private {
 /**
     Vulkan implementation
 */
-class NuvkVkContext : NuvkContext {
+class NuvkContextVk : NuvkContext {
 @nogc:
 private:
     weak_vector!NuvkDeviceInfo devices;
@@ -132,7 +132,7 @@ protected:
         vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
         foreach(device; devices) {
-            deviceInfos ~= nogc_new!(NuvkVkDeviceInfo)(device);
+            deviceInfos ~= nogc_new!(NuvkDeviceVkInfo)(device);
         }
 
         return deviceInfos;
@@ -143,7 +143,7 @@ protected:
     */
     override
     void onInitContext(NuvkContextDescriptor descriptor) {
-        nuvkVkInitVulkan();
+        nuvkInitVulkan();
 
         this.enumerateExtensions();
         this.enumerateLayers();
@@ -198,6 +198,6 @@ public:
         if (deviceChoice is null)
             return null;
 
-        return nogc_new!NuvkVkDevice(this, deviceChoice);
+        return nogc_new!NuvkDeviceVk(this, deviceChoice);
     }
 }

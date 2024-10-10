@@ -28,10 +28,10 @@ VkPresentModeKHR toVkPresentMode(NuvkPresentMode presentMode) @nogc {
 /**
     A surface that can be rendered to
 */
-class NuvkVkSurface : NuvkSurface {
+class NuvkSurfaceVk : NuvkSurface {
 @nogc:
 private:
-    struct NuvkVkSurfaceCapability {
+    struct NuvkSurfaceVkCapability {
     @nogc:
         VkSurfaceCapabilitiesKHR surfaceCaps;
         vector!VkSurfaceFormatKHR surfaceFormats;
@@ -39,7 +39,7 @@ private:
     }
 
     VkSurfaceKHR surface;
-    NuvkVkSurfaceCapability capability;
+    NuvkSurfaceVkCapability capability;
 
     void enumerateCapabilities() {
         VkPhysicalDevice physicalDevice = cast(VkPhysicalDevice)this.getOwner().getDeviceInfo().getHandle();
@@ -193,7 +193,7 @@ private:
     vector!NuvkTextureView views;
 
 
-    void createSwapchain(NuvkVkSurface surface, bool forceRecreate=false) {
+    void createSwapchain(NuvkSurfaceVk surface, bool forceRecreate=false) {
         auto device = cast(VkDevice)this.getOwner().getHandle();
 
         // Destroy swapchain if it already exists
@@ -277,7 +277,7 @@ private:
                 viewDescriptor.arraySlices = NuvkRange!int(0, 1);
                 viewDescriptor.mipLevels = NuvkRange!int(0, 1);
 
-                this.textures[i] = nogc_new!NuvkVkTexture(this.getOwner(), swapchainImages[i], surfaceFormat.format, surfaceSize);
+                this.textures[i] = nogc_new!NuvkTextureVk(this.getOwner(), swapchainImages[i], surfaceFormat.format, surfaceSize);
                 this.views[i] = this.textures[i].createTextureView(viewDescriptor);
             }
         }
@@ -287,7 +287,7 @@ protected:
 
     override
     void update(bool forceRecreate=false) {
-        NuvkVkSurface surface = cast(NuvkVkSurface)this.getSurface();
+        NuvkSurfaceVk surface = cast(NuvkSurfaceVk)this.getSurface();
         surface.enumerateCapabilities();
         this.createSwapchain(surface);
     }
@@ -297,7 +297,7 @@ public:
     /**
         Constructor
     */
-    this(NuvkDevice device, NuvkVkSurface surface) {
+    this(NuvkDevice device, NuvkSurfaceVk surface) {
         super(device, surface);
         this.createSwapchain(surface);
     }

@@ -26,12 +26,10 @@ import numem.all;
 public import nuvk.core.vk.buffer;
 public import nuvk.core.vk.context;
 public import nuvk.core.vk.device;
-public import nuvk.core.vk.pipeline;
 public import nuvk.core.vk.shader;
 public import nuvk.core.vk.sync;
 public import nuvk.core.vk.queue;
 public import nuvk.core.vk.cmdbuffer;
-public import nuvk.core.vk.pipeline;
 public import nuvk.core.vk.texture;
 public import nuvk.core.vk.surface;
 public import nuvk.core.vk.devinfo;
@@ -41,27 +39,27 @@ version(Windows) {
     import core.sys.windows.windef;
     import core.sys.windows.winbase : CloseHandle;
     enum NuvkVkMemorySharingFlagBit = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT;
-    enum NuvkVkSemaphoreSharingFlagBit = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT;
+    enum NuvkSemaphoreVkSharingFlagBit = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT;
 
     enum NuvkVkMemorySharingExtName = "VK_KHR_external_memory_win32";
-    enum NuvkVkSemaphoreSharingExtName = "VK_KHR_external_semaphore_win32";
+    enum NuvkSemaphoreVkSharingExtName = "VK_KHR_external_semaphore_win32";
 } else {
     import core.sys.posix.unistd : close;
     enum NuvkVkMemorySharingFlagBit = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
-    enum NuvkVkSemaphoreSharingFlagBit = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT;
+    enum NuvkSemaphoreVkSharingFlagBit = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT;
 
     enum NuvkVkMemorySharingExtName = "VK_KHR_external_memory_fd";
-    enum NuvkVkSemaphoreSharingExtName = "VK_KHR_external_semaphore_fd";
+    enum NuvkSemaphoreVkSharingExtName = "VK_KHR_external_semaphore_fd";
 }
 
 private {
     bool nuvkVkIsInitialized = false;
 }
 
-void nuvkVkInitVulkan() @nogc {
+void nuvkInitVulkan() @nogc {
     if (!nuvkVkIsInitialized) {
         nuvkEnforce(loadGlobalLevelFunctions(), "Failed to load Vulkan");
-        nuvkEnforce(nuvkVkGetVersion() >= VK_API_VERSION_1_3, "Vulkan 1.3 required.");
+        nuvkEnforce(nuvkGetVulkanVersion() >= VK_API_VERSION_1_3, "Vulkan 1.3 required.");
         nuvkVkIsInitialized = true;
     }
 }
@@ -69,7 +67,7 @@ void nuvkVkInitVulkan() @nogc {
 /**
     Gets the supported instance vulkan version
 */
-uint nuvkVkGetVersion() @nogc {
+uint nuvkGetVulkanVersion() @nogc {
     uint ver;
     vkEnumerateInstanceVersion(&ver);
     return ver;
@@ -79,7 +77,7 @@ uint nuvkVkGetVersion() @nogc {
 /**
     Gets the share handle for the specified memory
 */
-ulong nuvkVkGetSharedHandle(VkDevice device, VkDeviceMemory memory) @nogc {
+ulong nuvkGetSharedHandleVk(VkDevice device, VkDeviceMemory memory) @nogc {
     ulong shareId;
     version(Windows) {
         VkMemoryGetWin32HandleInfoKHR getInfo;
@@ -98,17 +96,17 @@ ulong nuvkVkGetSharedHandle(VkDevice device, VkDeviceMemory memory) @nogc {
 /**
     Gets the share handle for the specified semaphore
 */
-ulong nuvkVkGetSharedHandle(VkDevice device, VkSemaphore semaphore) @nogc {
+ulong nuvkGetSharedHandleVk(VkDevice device, VkSemaphore semaphore) @nogc {
     ulong shareId;
     version(Windows) {
         VkSemaphoreGetWin32HandleInfoKHR getInfo;
         getInfo.semaphore = semaphore;
-        getInfo.handleType = NuvkVkSemaphoreSharingFlagBit;
+        getInfo.handleType = NuvkSemaphoreVkSharingFlagBit;
         vkGetSemaphoreWin32HandleKHR(device, &getInfo, cast(HANDLE*)&shareId);
     } else {
         VkSemaphoreGetFdInfoKHR getInfo;
         getInfo.semaphore = semaphore;
-        getInfo.handleType = NuvkVkSemaphoreSharingFlagBit;
+        getInfo.handleType = NuvkSemaphoreVkSharingFlagBit;
         vkGetSemaphoreFdKHR(device, &getInfo, cast(int*)&shareId);
     }
     return shareId;
@@ -117,7 +115,7 @@ ulong nuvkVkGetSharedHandle(VkDevice device, VkSemaphore semaphore) @nogc {
 /**
     Closes a shared handle.
 */
-bool nuvkVkCloseSharedHandle(ulong handle) @nogc {
+bool nuvkCloseSharedHandleVk(ulong handle) @nogc {
 
     // Handle 0 is invalid.
     if (handle == 0)

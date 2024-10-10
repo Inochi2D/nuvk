@@ -39,34 +39,20 @@ VkCullModeFlagBits toVkCulling(NuvkCulling culling) @nogc {
 }
 
 VkPipelineStageFlags toVkPipelineStage(NuvkRenderStage renderStage, NuvkBarrierScope scope_) @nogc {
-    VkPipelineStageFlags stage;
-    if (scope_ == NuvkBarrierScope.renderTargets) {
-        stage |= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    }
-
-    if (scope_ == NuvkBarrierScope.buffers) {
-        stage |= VK_PIPELINE_STAGE_VERTEX_INPUT_BIT;
-    }
-    
     final switch(renderStage) {
 
         case NuvkRenderStage.mesh:
-            stage |= VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT;
-            break;
+            return VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT;
 
         case NuvkRenderStage.vertex:
-            stage |= VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
-            break;
+            return VK_PIPELINE_STAGE_VERTEX_INPUT_BIT;
 
         case NuvkRenderStage.fragment:
-            stage |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-            break;
+            if (scope_ & NuvkBarrierScope.renderTargets) 
+                return VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+            else
+                return VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
     }
-    return stage;
-}
-
-VkAccessFlagBits getAccessFlag(bool read) {
-    return read ? VK_ACCESS_MEMORY_READ_BIT : VK_ACCESS_MEMORY_WRITE_BIT;
 }
 
 VkBlendFactor toVkBlendFactor(NuvkBlendFactor factor) @nogc {
@@ -110,7 +96,7 @@ VkBlendOp toVkBlendOp(NuvkBlendOp op) @nogc {
 /**
     Command buffer
 */
-class NuvkVkCommandBuffer : NuvkCommandBuffer {
+class NuvkCommandBufferVk : NuvkCommandBuffer {
 @nogc:
 private:
     NuvkDescriptorPoolManager pools;
@@ -122,7 +108,7 @@ private:
         VkCommandBuffer bufferHandle = VK_NULL_HANDLE;
 
         auto device = cast(VkDevice)this.getOwner().getHandle();
-        auto pool = (cast(NuvkVkQueue)this.getQueue()).getCommandPool();
+        auto pool = (cast(NuvkQueueVk)this.getQueue()).getCommandPool();
 
         VkCommandBufferAllocateInfo commandBufferInfo;
         commandBufferInfo.commandPool = pool;
@@ -146,7 +132,7 @@ private:
     void freeCommandBuffers() {
 
         auto device = cast(VkDevice)this.getOwner().getHandle();
-        auto pool = (cast(NuvkVkQueue)this.getQueue()).getCommandPool();
+        auto pool = (cast(NuvkQueueVk)this.getQueue()).getCommandPool();
 
         if (commandBuffers.size() > 0) {
             vkFreeCommandBuffers(device, pool, cast(uint)commandBuffers.size(), commandBuffers.data());
@@ -170,14 +156,14 @@ protected:
     */
     override
     NuvkRenderEncoder onBeginRenderPass(ref NuvkRenderPassDescriptor descriptor) {
-        return nogc_new!NuvkVkRenderEncoder(this, descriptor, this.createCommandBuffer());
+        return nogc_new!NuvkRenderEncoderVk(this, descriptor, this.createCommandBuffer());
     }
 
     /**
         Implements the logic to create a NuvkComputeEncoder.
     */
     override
-    NuvkComputeEncoder onBeginComputePass() {
+    NuvkComputeEncoder onBeginComputePass(ref NuvkComputePassDescriptor descriptor) {
         return null;
     }
 
@@ -186,7 +172,7 @@ protected:
     */
     override
     NuvkTransferEncoder onBeginTransferPass() {
-        return nogc_new!NuvkVkTransferEncoder(this, this.createCommandBuffer());
+        return nogc_new!NuvkTransferEncoderVk(this, this.createCommandBuffer());
     }
 
     /**
@@ -197,26 +183,39 @@ protected:
         this.commandBuffers ~= cast(VkCommandBuffer)handle;
     }
 
-public:
-
-    ~this() {
-        this.freeCommandBuffers();
-        nogc_delete(this.pools);
-    }
-
     /**
-        Creates a command buffer
+        Commits the commands stored in the command buffer
+        to the command queue
     */
-    this(NuvkDevice device, NuvkQueue queue) {
-        super(device, queue);
-        this.pools = nogc_new!NuvkDescriptorPoolManager(cast(NuvkVkDevice)this.getOwner());
+    override
+    void onCommit(bool wait) {
+        auto queue = cast(VkQueue)this.getQueue().getHandle();
+        auto submitFinishSemaphore = cast(VkSemaphore)this.getSubmissionFinished().getHandle();
+
+        VkSubmitInfo submitInfo;
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = &submitFinishSemaphore;
+        submitInfo.commandBufferCount = cast(uint)commandBuffers.size();
+        submitInfo.pCommandBuffers = commandBuffers.data();
+
+        // In case we need to wait for the prior submission
+        if (wait) {
+
+            VkPipelineStageFlags flag = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+            submitInfo.waitSemaphoreCount = 1;
+            submitInfo.pWaitDstStageMask = &flag;
+            submitInfo.pWaitSemaphores = &submitFinishSemaphore;
+        }
+
+        this.setStatus(NuvkCommandBufferStatus.submitted);
+        vkQueueSubmit(queue, 1, &submitInfo, cast(VkFence)this.getInFlightFence().getHandle());
     }
 
     /**
         Presents the surface
     */
     override
-    void present(NuvkSurface surface) {
+    void onPresent(NuvkSurface surface) {
         nuvkEnforce(
             this.getStatus() == NuvkCommandBufferStatus.submitted,
             "Nothing to present."
@@ -245,24 +244,19 @@ public:
         }
     }
 
-    /**
-        Commits the commands stored in the command buffer
-        to the command queue
-    */
-    override
-    void commit() {
-        auto queue = cast(VkQueue)this.getQueue().getHandle();
-        auto submitFinishSemaphore = cast(VkSemaphore)this.getSubmissionFinished().getHandle();
-    
-        VkSubmitInfo submitInfo;
-        submitInfo.waitSemaphoreCount = 0;
-        submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = &submitFinishSemaphore;
-        submitInfo.commandBufferCount = cast(uint)commandBuffers.size();
-        submitInfo.pCommandBuffers = commandBuffers.data();
+public:
 
-        this.setStatus(NuvkCommandBufferStatus.submitted);
-        vkQueueSubmit(queue, 1, &submitInfo, cast(VkFence)this.getInFlightFence().getHandle());
+    ~this() {
+        this.freeCommandBuffers();
+        nogc_delete(this.pools);
+    }
+
+    /**
+        Creates a command buffer
+    */
+    this(NuvkDevice device, NuvkQueue queue) {
+        super(device, queue);
+        this.pools = nogc_new!NuvkDescriptorPoolManager(cast(NuvkDeviceVk)this.getOwner());
     }
 }
 
@@ -315,35 +309,18 @@ VkResolveModeFlagBits toVkResolveMode(NuvkStoreOp storeOp) @nogc {
     A lightweight object for submitting rendering commands
     to a command buffer.
 */
-class NuvkVkRenderEncoder : NuvkRenderEncoder {
+class NuvkRenderEncoderVk : NuvkRenderEncoder {
 @nogc:
 private:
 
     // Parent command buffer
-    NuvkVkCommandBuffer parent;
+    NuvkCommandBufferVk parent;
     VkCommandBuffer writeBuffer;
     VkDevice device;
 
     // Pipeline state
-    NuvkVkPipeline currentPipeline;
     VkDescriptorSet currentSet;
     VkDescriptorSet boundSet;
-
-    void bindCurrentSet() {
-        if (boundSet !is currentSet) {
-            vkCmdBindDescriptorSets(
-                writeBuffer,
-                VK_PIPELINE_BIND_POINT_GRAPHICS,
-                currentPipeline.getPipelineLayout(),
-                0,
-                1,
-                &currentSet,
-                0,
-                null
-            );
-            boundSet = currentSet;
-        }
-    }
 
 protected:
 
@@ -369,7 +346,7 @@ protected:
         // Color attachments
         {
             foreach(i; 0..descriptor.colorAttachments.size()) {
-                NuvkVkTextureView nuvkTextureView = cast(NuvkVkTextureView)descriptor.colorAttachments[i].texture;
+                NuvkTextureVkView nuvkTextureView = cast(NuvkTextureVkView)descriptor.colorAttachments[i].texture;
                 NuvkTexture nuvkTexture = nuvkTextureView.getTexture();
                 
                 // Ensure that the clip area is always within valid bounds.
@@ -413,7 +390,7 @@ protected:
         // Depth-stencil attachments.
         {
             if (descriptor.depthStencilAttachment.texture) {
-                NuvkVkTextureView nuvkTextureView = cast(NuvkVkTextureView)descriptor.depthStencilAttachment.texture;
+                NuvkTextureVkView nuvkTextureView = cast(NuvkTextureVkView)descriptor.depthStencilAttachment.texture;
                 NuvkTexture nuvkTexture = nuvkTextureView.getTexture();
                 
                 // Ensure that the clip area is always within valid bounds.
@@ -505,14 +482,40 @@ protected:
             }
         }
 
-        vkCmdSetScissor(writeBuffer, 0, 1, &scissorRect);
-        vkCmdSetViewport(writeBuffer, 0, 1, &viewport);
-        vkCmdSetPrimitiveRestartEnable(writeBuffer, VK_TRUE);
+
+        auto linkedCount = descriptor.shader.getLinkedCount();
+        auto objects = (cast(NuvkShaderProgramVk)descriptor.shader).getObjects();
+        auto stages = (cast(NuvkShaderProgramVk)descriptor.shader).getVkStages();
+        auto bindings = (cast(NuvkShaderProgramVk)descriptor.shader).getInputBindings();
+        auto attributes = (cast(NuvkShaderProgramVk)descriptor.shader).getInputAttributes();
+
+
+        VkSampleMask mask = 0xFFFFFFFF;
+
+        // Set all the dynamic state
+        vkCmdBindShadersEXT(writeBuffer, cast(uint)linkedCount, stages.ptr, objects.ptr);
+        vkCmdSetVertexInputEXT(writeBuffer, cast(uint)bindings.length, bindings.ptr, cast(uint)attributes.length, attributes.ptr);
+
+        vkCmdSetRasterizerDiscardEnable(writeBuffer, VK_FALSE);
+        vkCmdSetDepthClampEnableEXT(writeBuffer, VK_FALSE);
+        vkCmdSetAlphaToOneEnableEXT(writeBuffer, VK_FALSE);
+        vkCmdSetAlphaToCoverageEnableEXT(writeBuffer, VK_FALSE);
+        vkCmdSetLogicOpEnableEXT(writeBuffer, VK_FALSE);
+        vkCmdSetDepthBoundsTestEnable(writeBuffer, VK_FALSE);
         vkCmdSetPrimitiveTopology(writeBuffer, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
-        vkCmdSetLineWidth(writeBuffer, 1);
-        vkCmdSetDepthBias(writeBuffer, 0, 0, 0);
+        vkCmdSetStencilTestEnable(writeBuffer, VK_FALSE);
+        vkCmdSetDepthBiasEnable(writeBuffer, VK_FALSE);
+        vkCmdSetDepthWriteEnable(writeBuffer, VK_FALSE);
+        vkCmdSetDepthTestEnable(writeBuffer, VK_FALSE);
+        vkCmdSetPolygonModeEXT(writeBuffer, VK_POLYGON_MODE_FILL);
+        vkCmdSetRasterizationSamplesEXT(writeBuffer, VK_SAMPLE_COUNT_1_BIT);
+        vkCmdSetSampleMaskEXT(writeBuffer, VK_SAMPLE_COUNT_1_BIT, &mask);
+        vkCmdSetPrimitiveRestartEnable(writeBuffer, VK_TRUE);
         vkCmdSetCullMode(writeBuffer, VK_CULL_MODE_BACK_BIT);
         vkCmdSetFrontFace(writeBuffer, VK_FRONT_FACE_CLOCKWISE);
+
+        vkCmdSetViewportWithCount(writeBuffer, 1, &viewport);
+        vkCmdSetScissorWithCount(writeBuffer, 1, &scissorRect);
     }
 
     /**
@@ -525,7 +528,7 @@ protected:
         weak_vector!VkImageMemoryBarrier memoryBarriers;
 
         foreach(i; 0..descriptor.colorAttachments.size()) {
-            NuvkVkTextureView nuvkTextureView = cast(NuvkVkTextureView)descriptor.colorAttachments[i].texture;
+            NuvkTextureVkView nuvkTextureView = cast(NuvkTextureVkView)descriptor.colorAttachments[i].texture;
 
             VkImageMemoryBarrier memoryBarrier;
             memoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
@@ -566,7 +569,7 @@ public:
     /**
         Constructor
     */
-    this(NuvkVkCommandBuffer parent, ref NuvkRenderPassDescriptor descriptor, VkCommandBuffer rDestination) {
+    this(NuvkCommandBufferVk parent, ref NuvkRenderPassDescriptor descriptor, VkCommandBuffer rDestination) {
         this.device = cast(VkDevice)parent.getOwner().getHandle();
         this.parent = parent;
         this.writeBuffer = rDestination;
@@ -590,32 +593,6 @@ public:
     override
     void popDebugGroup() {
         
-    }
-
-    // /**
-    //     Encodes a command that makes the GPU wait for a fence.
-    // */
-    // override
-    // void waitFor(NuvkSemaphore fence, NuvkRenderStage before) {
-    // }
-
-    // /**
-    //     Encodes a command that makes the GPU signal a fence.
-    // */
-    // override
-    // void signal(NuvkSemaphore fence, NuvkRenderStage after) {
-        
-    // }
-
-    /**
-        Sets the active pipeline
-    */
-    override
-    void setPipeline(NuvkPipeline pipeline) {
-
-        currentPipeline = cast(NuvkVkPipeline)pipeline;
-        currentSet = parent.pools.getNext(currentPipeline.getLayouts());
-        vkCmdBindPipeline(writeBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, cast(VkPipeline)currentPipeline.getHandle());
     }
 
     /**
@@ -788,7 +765,6 @@ public:
     */
     override
     void draw(NuvkPrimitive primitive, uint offset, uint count) {
-        this.bindCurrentSet();
         vkCmdDraw(writeBuffer, count, 1, offset, 0);
     }
 
@@ -799,13 +775,64 @@ public:
     */
     override
     void drawIndexed(NuvkPrimitive primitive, uint offset, uint count) {
-        this.bindCurrentSet();
         vkCmdDrawIndexed(writeBuffer, count, 1, 0, offset, 0);
     }
 
+
     /**
-        Encodes a rendering barrier that enforces 
-        a specific order for read/write operations.
+        Encodes a rendering barrier that enforces a specific order for 
+        read/write operations.
+
+        This will additionally transition the layout of the texture to the specified layout.
+
+        Parameters:
+            `resource` the texture to create a barrier for and transition.
+            `after` the stage which this barrier will be **after**
+            `before` the **subsequent** stage after this barrier. 
+            `toLayout` the layout the texture will be after the transition.
+    */
+    override
+    void waitFor(NuvkTexture resource, NuvkRenderStage after, NuvkRenderStage before, NuvkTextureLayout toLayout) {
+
+        VkImageMemoryBarrier memoryBarrier;
+        memoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        memoryBarrier.oldLayout = resource.getLayout().toVkImageLayout();
+        memoryBarrier.newLayout = toLayout.toVkImageLayout();
+        memoryBarrier.image = cast(VkImage)resource.getHandle();
+        memoryBarrier.subresourceRange.aspectMask = resource.getFormat().toVkAspectFlags();
+
+        // TODO: Do this for all levels.
+        memoryBarrier.subresourceRange.baseMipLevel = 0;
+        memoryBarrier.subresourceRange.levelCount = 1;
+        memoryBarrier.subresourceRange.baseArrayLayer = 0;
+        memoryBarrier.subresourceRange.layerCount = 1;
+
+
+        // Swap image type
+        vkCmdPipelineBarrier(
+            writeBuffer,
+            after.toVkPipelineStage(NuvkBarrierScope.textures),
+            before.toVkPipelineStage(NuvkBarrierScope.textures),
+            0,
+            0,
+            null,
+            0,
+            null,
+            1,
+            &memoryBarrier
+        );
+
+        (cast(NuvkTextureVk)resource).setLayoutFromVk(memoryBarrier.newLayout);
+    }
+
+    /**
+        Encodes a rendering barrier that enforces a specific order for 
+        read/write operations.
+
+        Parameters:
+            `scope_` The resource scope to wait for..
+            `after` the stage which this barrier will be **after**
+            `before` the **subsequent** stage after this barrier. 
     */
     override
     void waitFor(NuvkBarrierScope scope_, NuvkRenderStage after, NuvkRenderStage before) {
@@ -826,6 +853,67 @@ public:
             null
         );
     }
+
+    /**
+        Encodes a rendering barrier that enforces a specific order for 
+        read/write operations.
+
+        Parameters:
+            `resource` a Nuvk resource, such as a texture or buffer.
+            `after` the stage which this barrier will be **after**
+            `before` the **subsequent** stage after this barrier. 
+    */
+    override
+    void waitFor(NuvkResource resource, NuvkRenderStage after, NuvkRenderStage before) {
+        if (auto texture = cast(NuvkTexture)resource) {
+            VkImageMemoryBarrier barrier;
+            barrier.srcAccessMask = VK_ACCESS_MEMORY_WRITE_BIT;
+            barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+            barrier.oldLayout = texture.getLayout().toVkImageLayout();
+            barrier.newLayout = texture.getLayout().toVkImageLayout();
+            barrier.image = cast(VkImage)texture.getHandle();
+            barrier.subresourceRange.aspectMask = texture.getFormat().toVkAspectFlags();
+
+            // TODO: Do this for all levels.
+            barrier.subresourceRange.baseMipLevel = 0;
+            barrier.subresourceRange.levelCount = 1;
+            barrier.subresourceRange.baseArrayLayer = 0;
+            barrier.subresourceRange.layerCount = 1;
+
+            vkCmdPipelineBarrier(
+                writeBuffer,
+                after.toVkPipelineStage(NuvkBarrierScope.textures),
+                before.toVkPipelineStage(NuvkBarrierScope.textures),
+                0,
+                0,
+                null,
+                0,
+                null,
+                1,
+                &barrier,
+            );
+        } else {
+            VkBufferMemoryBarrier barrier;
+            barrier.srcAccessMask = VK_ACCESS_MEMORY_WRITE_BIT;
+            barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+            barrier.buffer = cast(VkBuffer)resource.getHandle();
+            barrier.size = VK_WHOLE_SIZE;
+            barrier.offset = 0;
+
+            vkCmdPipelineBarrier(
+                writeBuffer,
+                after.toVkPipelineStage(NuvkBarrierScope.buffers),
+                before.toVkPipelineStage(NuvkBarrierScope.buffers),
+                0,
+                0,
+                null,
+                1,
+                &barrier,
+                0,
+                null
+            );
+        }
+    }
 }
 
 
@@ -834,12 +922,12 @@ public:
     A lightweight object for submitting transfer commands
     to a command buffer.
 */
-class NuvkVkTransferEncoder : NuvkTransferEncoder {
+class NuvkTransferEncoderVk : NuvkTransferEncoder {
 @nogc:
 private:
 
     // Parent command buffer
-    NuvkVkCommandBuffer parent;
+    NuvkCommandBufferVk parent;
     VkCommandBuffer writeBuffer;
     VkDevice device;
 
@@ -860,13 +948,17 @@ protected:
         return writeBuffer;
     }
 
+    void transitionImageToGeneral(ref NuvkTexture texture) {
+
+    }
+
 
 public:
 
     /**
         Constructor
     */
-    this(NuvkVkCommandBuffer parent, VkCommandBuffer rDestination) {
+    this(NuvkCommandBufferVk parent, VkCommandBuffer rDestination) {
         this.device = cast(VkDevice)parent.getOwner().getHandle();
         this.parent = parent;
         this.writeBuffer = rDestination;
@@ -929,6 +1021,45 @@ public:
             &copy
         );
     }
+    
+    override
+    void copy(NuvkTexture from, recti fromArea, NuvkTexture to, vec2i toPosition, uint arraySlice = 0, uint mipLevel = 0) {
+        nuvkEnforce(
+            from.getLayout() & to.getLayout(),
+            "Image layouts do not match!"
+        );
+
+        VkImageCopy copy;
+
+        // Source
+        copy.srcOffset.x = fromArea.x;
+        copy.srcOffset.y = fromArea.y;
+        copy.extent.width = fromArea.width;
+        copy.extent.height = fromArea.height;
+        copy.extent.depth = 1;
+        copy.srcSubresource.aspectMask = from.getFormat().toVkAspectFlags();
+        copy.srcSubresource.baseArrayLayer = arraySlice;
+        copy.srcSubresource.layerCount = 1;
+        copy.srcSubresource.mipLevel = mipLevel;
+
+        // Destination
+        copy.dstOffset.x = toPosition.x;
+        copy.dstOffset.y = toPosition.y;
+        copy.dstSubresource.aspectMask = from.getFormat().toVkAspectFlags();
+        copy.dstSubresource.baseArrayLayer = arraySlice;
+        copy.dstSubresource.layerCount = 1;
+        copy.dstSubresource.mipLevel = mipLevel;
+
+        vkCmdCopyImage(
+            writeBuffer,
+            cast(VkImage)from.getHandle(),
+            VK_IMAGE_LAYOUT_GENERAL,
+            cast(VkImage)to.getHandle(),
+            VK_IMAGE_LAYOUT_GENERAL,
+            1,
+            &copy
+        );
+    }
 
     /**
         Copies data between a buffer and texture
@@ -944,19 +1075,22 @@ public:
     */
     override
     void copy(NuvkBuffer from, uint offset, uint rowStride, NuvkTexture to, recti toArea, uint arraySlice = 0, uint mipLevel = 0) {
+        this.optimizeTextureFor(to, NuvkTextureLayout.transferDst);
+        
         VkBufferImageCopy imageCopy;
-        imageCopy.bufferImageHeight = toArea.height;
         imageCopy.bufferOffset = offset;
-        imageCopy.bufferRowLength = rowStride;
+        imageCopy.bufferImageHeight = 0;
+        imageCopy.bufferRowLength = 0;
 
         imageCopy.imageOffset.x = toArea.x;
         imageCopy.imageOffset.y = toArea.y;
         imageCopy.imageOffset.z = 0;
 
-        imageCopy.imageExtent.depth = 1;
         imageCopy.imageExtent.width = toArea.width;
         imageCopy.imageExtent.height = toArea.height;
+        imageCopy.imageExtent.depth = 1;
 
+        imageCopy.imageSubresource.aspectMask = to.getFormat().toVkAspectFlags();
         imageCopy.imageSubresource.baseArrayLayer = arraySlice;
         imageCopy.imageSubresource.layerCount = 1;
         imageCopy.imageSubresource.mipLevel = mipLevel;
@@ -965,26 +1099,92 @@ public:
             writeBuffer,
             cast(VkBuffer)from.getHandle(),
             cast(VkImage)to.getHandle(),
-            VK_IMAGE_LAYOUT_GENERAL,
+            to.getLayout().toVkImageLayout(),
             1,
             &imageCopy  
         );
+
+        this.optimizeTextureFor(to, NuvkTextureLayout.general);
     }
 
     /**
-        Copies data between 2 textures
+        Copies data between a texture and a buffer
+
+        Parameters:
+            `from` - The texture to copy from
+            `fromArea` - The area to copy.
+            `to` - The texture to copy to
+            `offset` - Offset, in bytes, into the buffer to copy to
+            `rowStrde` - How many bytes there are in a row of pixels in the buffer
+            `arraySlice` - The texture array slice to copy from.
+            `mipLevel` - The texture mip level to copy from.
     */
     override
-    void copy(NuvkTexture from, recti fromArea, NuvkTexture to, recti toArea) {
+    void copy(NuvkTexture from, recti fromArea, NuvkBuffer to, uint offset, uint rowStride, uint arraySlice = 0, uint mipLevel = 0) {
+        this.optimizeTextureFor(from, NuvkTextureLayout.transferSrc);
         
+        VkBufferImageCopy imageCopy;
+        imageCopy.bufferImageHeight = fromArea.height;
+        imageCopy.bufferOffset = 0;
+        imageCopy.bufferRowLength = rowStride;
+
+        imageCopy.imageOffset.x = fromArea.x;
+        imageCopy.imageOffset.y = fromArea.y;
+        imageCopy.imageOffset.z = 0;
+
+        imageCopy.imageExtent.depth = 1;
+        imageCopy.imageExtent.width = fromArea.width;
+        imageCopy.imageExtent.height = fromArea.height;
+
+        imageCopy.imageSubresource.aspectMask = from.getFormat().toVkAspectFlags();
+        imageCopy.imageSubresource.layerCount = 1;
+        imageCopy.imageSubresource.baseArrayLayer = arraySlice;
+        imageCopy.imageSubresource.mipLevel = mipLevel;
+
+        vkCmdCopyImageToBuffer(
+            writeBuffer,
+            cast(VkImage)from.getHandle(),
+            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            cast(VkBuffer)to.getHandle(),
+            1,
+            &imageCopy
+        );
     }
 
     /**
         Encodes a command which optimizes the texture for the specified usage.
     */
     override
-    void optimizeTextureFor(NuvkTexture texture, NuvkOptimizationMode mode, uint arraySlice = 0, uint mipLevel = 0) {
-        
+    void optimizeTextureFor(NuvkTexture texture, NuvkTextureLayout layout) {
+        VkImageMemoryBarrier memoryBarrier;
+        memoryBarrier.srcAccessMask = VK_ACCESS_MEMORY_WRITE_BIT;
+        memoryBarrier.oldLayout = texture.getLayout().toVkImageLayout();
+        memoryBarrier.newLayout = layout.toVkImageLayout();
+        memoryBarrier.image = cast(VkImage)texture.getHandle();
+        memoryBarrier.subresourceRange.aspectMask = texture.getFormat().toVkAspectFlags();
+
+        // TODO: Do this for all levels.
+        memoryBarrier.subresourceRange.baseMipLevel = 0;
+        memoryBarrier.subresourceRange.levelCount = 1;
+        memoryBarrier.subresourceRange.baseArrayLayer = 0;
+        memoryBarrier.subresourceRange.layerCount = 1;
+
+
+        // Swap image type
+        vkCmdPipelineBarrier(
+            writeBuffer,
+            VK_PIPELINE_STAGE_TRANSFER_BIT,
+            VK_PIPELINE_STAGE_TRANSFER_BIT,
+            0,
+            0,
+            null,
+            0,
+            null,
+            1,
+            &memoryBarrier
+        );
+
+        (cast(NuvkTextureVk)texture).setLayoutFromVk(memoryBarrier.newLayout);
     }
 
     /**

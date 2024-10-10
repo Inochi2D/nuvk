@@ -257,9 +257,34 @@ VkCompareOp toVkCompareOp(NuvkSamplerCompareOp compOp) @nogc {
 }
 
 /**
+    Converts a Nuvk texture layout to a vulkan one.
+*/
+VkImageLayout toVkImageLayout(NuvkTextureLayout layout) @nogc {
+    final switch(layout) {
+        case NuvkTextureLayout.undefined:
+            return VK_IMAGE_LAYOUT_UNDEFINED;
+
+        case NuvkTextureLayout.general:
+            return VK_IMAGE_LAYOUT_GENERAL;
+
+        case NuvkTextureLayout.attachment:
+            return VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL;
+
+        case NuvkTextureLayout.presentation:
+            return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+        case NuvkTextureLayout.transferSrc:
+            return VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+
+        case NuvkTextureLayout.transferDst:
+            return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    }
+}
+
+/**
     A texture
 */
-class NuvkVkTexture : NuvkTexture {
+class NuvkTextureVk : NuvkTexture {
 @nogc:
 private:
     bool isUserOwned;
@@ -270,7 +295,7 @@ private:
 
     void createTexture(NuvkProcessSharing processSharing) {
         auto device = cast(VkDevice)this.getOwner().getHandle();
-        auto deviceInfo = cast(NuvkVkDeviceInfo)this.getOwner().getDeviceInfo();
+        auto deviceInfo = cast(NuvkDeviceVkInfo)this.getOwner().getDeviceInfo();
         auto physicalDevice = cast(VkPhysicalDevice)this.getOwner().getDeviceInfo().getHandle();
         NuvkTextureDescriptor descriptor = this.getDescriptor();
         VkMemoryRequirements memoryRequirements;
@@ -353,7 +378,7 @@ private:
                 );
 
                 vkBindImageMemory(device, image, deviceMemory, 0);
-                this.setSharedHandle(nuvkVkGetSharedHandle(device, deviceMemory));
+                this.setSharedHandle(nuvkGetSharedHandleVk(device, deviceMemory));
             
             } else {
 
@@ -382,7 +407,7 @@ protected:
     */
     override
     void onShareHandleClose(ulong handle) {
-        nuvkVkCloseSharedHandle(handle);
+        nuvkCloseSharedHandleVk(handle);
     }
 
 public:
@@ -442,7 +467,7 @@ public:
     */
     override
     NuvkTextureView createTextureView(NuvkTextureViewDescriptor descriptor) {
-        return nogc_new!NuvkVkTextureView(this.getOwner(), this, descriptor);
+        return nogc_new!NuvkTextureVkView(this.getOwner(), this, descriptor);
     }
 
     /**
@@ -460,6 +485,42 @@ public:
     ulong getAlignment() {
         return alignment;
     }
+
+    /**
+        Sets the reported layout of the texture based on vulkan layout.
+
+        This should not be called by the end user, as this does NOT
+        do layout transitions by itself.
+    */
+    final
+    void setLayoutFromVk(VkImageLayout layout) {
+        switch(layout) {
+            default:
+                this.setTextureLayout(NuvkTextureLayout.undefined);
+                return;
+
+            case VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL:
+            case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+                this.setTextureLayout(NuvkTextureLayout.attachment);
+                return;
+                
+            case VK_IMAGE_LAYOUT_GENERAL:
+                this.setTextureLayout(NuvkTextureLayout.general);
+                return;
+
+            case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+                this.setTextureLayout(NuvkTextureLayout.transferSrc);
+                return;
+
+            case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+                this.setTextureLayout(NuvkTextureLayout.transferDst);
+                return;
+
+            case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+                this.setTextureLayout(NuvkTextureLayout.presentation);
+                return;
+        }
+    }
 }
 
 /**
@@ -467,7 +528,7 @@ public:
 
     Texture views are used to reinterpret the data stored in a NuvkTexture
 */
-class NuvkVkTextureView : NuvkTextureView {
+class NuvkTextureVkView : NuvkTextureView {
 @nogc:
 private:
     VkImageView imageView;
@@ -569,7 +630,7 @@ private:
         samplerCreateInfo.compareOp = samplerDescriptor.compareOp.toVkCompareOp();
         
         nuvkEnforce(
-            vkCreateSampler(device, &samplerCreateInfo, null, &sampler),
+            vkCreateSampler(device, &samplerCreateInfo, null, &sampler) == VK_SUCCESS,
             "Failed creating sampler"
         );
     }

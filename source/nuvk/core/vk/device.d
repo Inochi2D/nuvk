@@ -9,38 +9,38 @@ module nuvk.core.vk.device;
 import nuvk.core.vk.internal.queuemanager;
 import nuvk.core.vk;
 import nuvk.core;
-import nuvk.spirv;
 import numem.all;
 
 private {
     const const(char)*[] nuvkVkDeviceRequiredExtensions = [
-        "VK_EXT_primitive_topology_list_restart",
-        "VK_EXT_custom_border_color",
-        "VK_KHR_swapchain",
-        "VK_EXT_extended_dynamic_state3",
+        VK_EXT_PRIMITIVE_TOPOLOGY_LIST_RESTART_EXTENSION_NAME,
+        VK_EXT_CUSTOM_BORDER_COLOR_EXTENSION_NAME,
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+        VK_EXT_EXTENDED_DYNAMIC_STATE_3_EXTENSION_NAME,
+        VK_EXT_SHADER_OBJECT_EXTENSION_NAME,
         NuvkVkMemorySharingExtName,
-        NuvkVkSemaphoreSharingExtName,
+        NuvkSemaphoreVkSharingExtName,
     ];
 }
 
 /**
     A vulkan device
 */
-class NuvkVkDevice : NuvkDevice {
+class NuvkDeviceVk : NuvkDevice {
 @nogc:
 private:
     // Vulkan
     VkDevice device;
 
     // Queues
-    NuvkVkDeviceQueueManager queueManager;
+    NuvkDeviceVkQueueManager queueManager;
 
     void createDevice() {
 
         // Sets up the queue manager first
-        queueManager = nogc_new!NuvkVkDeviceQueueManager(this);
+        queueManager = nogc_new!NuvkDeviceVkQueueManager(this);
 
-        NuvkVkDeviceInfo deviceInfo = cast(NuvkVkDeviceInfo)this.getDeviceInfo();
+        NuvkDeviceVkInfo deviceInfo = cast(NuvkDeviceVkInfo)this.getDeviceInfo();
         auto physicalDevice         = cast(VkPhysicalDevice)deviceInfo.getHandle();
         auto queueCreateInfos       = queueManager.getVkQueueCreateInfos();
 
@@ -53,7 +53,7 @@ private:
         deviceCreateInfo.pNext                      = deviceInfo.getFeatureChain().getFirst();
 
         foreach(i, extension; deviceCreateInfo.ppEnabledExtensionNames[0..deviceCreateInfo.enabledExtensionCount])
-            nuvkLogDebug("device extensions[%d] = %s", cast(uint)i, extension);
+            nuvkLogDebug("device extensions[{0}] = {1}", cast(uint)i, extension);
         
 	    nuvkEnforce(
             vkCreateDevice(physicalDevice, &deviceCreateInfo, null, &device) == VK_SUCCESS, 
@@ -89,8 +89,16 @@ public:
         Creates a shader program
     */
     override
-    NuvkShader createShader(NuvkSpirvModule module_, NuvkShaderStage stage) {
-        return nogc_new!NuvkVkShader(this, module_, stage);
+    NuvkShaderProgram createShader() {
+        return nogc_new!NuvkShaderProgramVk(this);
+    }
+
+    /**
+        Creates a shader program
+    */
+    override
+    NuvkShaderProgram createShader(NuvkShaderLibrary library) {
+        return nogc_new!NuvkShaderProgramVk(this, library);
     }
 
     /**
@@ -98,7 +106,7 @@ public:
     */
     override
     NuvkBuffer createBuffer(NuvkBufferUsage usage, uint size, NuvkProcessSharing processSharing) {
-        return nogc_new!NuvkVkBuffer(this, usage, size, processSharing);
+        return nogc_new!NuvkBufferVk(this, usage, size, processSharing);
     }
 
     /**
@@ -106,7 +114,7 @@ public:
     */
     override
     NuvkTexture createTexture(NuvkTextureDescriptor descriptor, NuvkProcessSharing processSharing = NuvkProcessSharing.processLocal) {
-        return nogc_new!NuvkVkTexture(this, descriptor, processSharing);
+        return nogc_new!NuvkTextureVk(this, descriptor, processSharing);
     }
     
     /**
@@ -122,7 +130,7 @@ public:
     */
     override
     NuvkFence createFence() {
-        return nogc_new!NuvkVkFence(this);
+        return nogc_new!NuvkFenceVk(this);
     }
 
     /**
@@ -130,23 +138,7 @@ public:
     */
     override
     NuvkSemaphore createSemaphore(NuvkProcessSharing processSharing) {
-        return nogc_new!NuvkVkSemaphore(this, processSharing);
-    }
-
-    /**
-        Creates a graphics pipeline.
-    */
-    override
-    NuvkPipeline createGraphicsPipeline(ref NuvkGraphicsPipelineDescriptor pipelineCreationInfo) {
-        return nogc_new!NuvkVkPipeline(this, pipelineCreationInfo);
-    }
-
-    /**
-        Creates a compute pipeline.
-    */
-    override
-    NuvkPipeline createComputePipeline(ref NuvkComputePipelineDescriptor pipelineCreationInfo) {
-        return null;
+        return nogc_new!NuvkSemaphoreVk(this, processSharing);
     }
 
     /**
@@ -170,7 +162,7 @@ public:
     */
     override
     void destroyQueue(NuvkQueue queue) {
-        queueManager.removeQueue(cast(NuvkVkQueue)queue);
+        queueManager.removeQueue(cast(NuvkQueueVk)queue);
     }
 
     /**
@@ -179,6 +171,6 @@ public:
     */
     override
     NuvkSurface createSurfaceFromHandle(void* handle, NuvkPresentMode presentMode, NuvkTextureFormat textureFormat) {
-        return nogc_new!NuvkVkSurface(this, presentMode, textureFormat, cast(VkSurfaceKHR)handle);
+        return nogc_new!NuvkSurfaceVk(this, presentMode, textureFormat, cast(VkSurfaceKHR)handle);
     }
 }

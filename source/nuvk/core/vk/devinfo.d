@@ -21,7 +21,7 @@ NuvkDeviceType toNuvkDeviceType(VkPhysicalDeviceType type) @nogc {
 /**
     Information about a device
 */
-class NuvkVkDeviceInfo : NuvkDeviceInfo {
+class NuvkDeviceVkInfo : NuvkDeviceInfo {
 @nogc:
 private:
 
@@ -70,15 +70,17 @@ private:
             VkPhysicalDeviceCustomBorderColorFeaturesEXT customBorderColorFeature;
             VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT topologyRestartFeature;
             VkPhysicalDeviceExtendedDynamicState3FeaturesEXT dynamicState3Feature;
+            VkPhysicalDeviceShaderObjectFeaturesEXT shaderObjectFeature;
             
             VkPhysicalDeviceFeatures baseFeatures = features2.features;
-            
-            topologyRestartFeature.pNext = &dynamicState3Feature;
-            customBorderColorFeature.pNext = &topologyRestartFeature;
-            vk11Features.pNext = &customBorderColorFeature;
-            vk12Features.pNext = &vk11Features;
-            vk13Features.pNext = &vk12Features;
             features2.pNext = &vk13Features;
+            vk13Features.pNext = &vk12Features;
+            vk12Features.pNext = &vk11Features;
+            vk11Features.pNext = &customBorderColorFeature;
+            customBorderColorFeature.pNext = &topologyRestartFeature;
+            topologyRestartFeature.pNext = &dynamicState3Feature;
+            dynamicState3Feature.pNext = &shaderObjectFeature;
+
             vkGetPhysicalDeviceFeatures2(physicalDevice, &features2);
 
             // Force disable some features.
@@ -113,12 +115,16 @@ private:
                 this.enforceFeature(dynamicState3Feature.extendedDynamicState3ColorWriteMask);
                 this.enforceFeature(dynamicState3Feature.extendedDynamicState3PolygonMode);
 
+                // Shader Objects
+                this.enforceFeature(shaderObjectFeature.shaderObject);
+
                 featureChain.add(features2);
                 featureChain.add(vk11Features);
                 featureChain.add(vk12Features);
                 featureChain.add(vk13Features);
                 featureChain.add(topologyRestartFeature);
                 featureChain.add(dynamicState3Feature);
+                featureChain.add(shaderObjectFeature);
             }
 
             // We failed.
