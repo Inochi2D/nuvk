@@ -161,6 +161,10 @@ public:
             this.add(shader);
         }
         this.link();
+
+        // Since we ended up being the owner of these objects,
+        // Destroy them, local ref is gone after linking.
+        nogc_delete(shaders);
     }
 
     /**

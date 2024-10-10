@@ -399,20 +399,22 @@ public:
         Constructor
     */
     this(NuvkDevice device, NuvkTextureDescriptor descriptor, NuvkProcessSharing processSharing) {
-        super(device, processSharing);
+        
         this.descriptor = descriptor;
         this.layout = NuvkTextureLayout.undefined;
+        super(device, processSharing);
     }
 
     /**
         Constructor
     */
     this(NuvkDevice device, NuvkTextureFormat format, NuvkProcessSharing processSharing) {
-        super(device, processSharing);
+        
         this.descriptor.format = format;
         this.descriptor.samples = 1;
         this.descriptor.type = NuvkTextureType.texture2d;
         this.layout = NuvkTextureLayout.undefined;
+        super(device, processSharing);
     }
 
     /**

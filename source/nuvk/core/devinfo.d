@@ -44,6 +44,11 @@ struct NuvkDeviceFeatures {
     bool meshShaders;
 
     /**
+        Whether tile shading is supported
+    */
+    bool tileShading;
+
+    /**
         Whether adjustable line width is supported.
     */
     bool wideLines;

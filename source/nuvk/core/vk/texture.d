@@ -293,15 +293,30 @@ private:
     ulong allocatedSize;
     ulong alignment;
 
-    void createTexture(NuvkProcessSharing processSharing) {
+protected:
+
+    /**
+        Override this function to close shared handles.
+
+        Do not call this yourself.
+    */
+    override
+    void onShareHandleClose(ulong handle) {
+        nuvkCloseSharedHandleVk(handle);
+    }
+
+    override
+    void onCreated(NuvkProcessSharing processSharing) {
+
+        // If not owned by the user don't overwrite the handle.
+        if (!isUserOwned) return;
+
         auto device = cast(VkDevice)this.getOwner().getHandle();
         auto deviceInfo = cast(NuvkDeviceVkInfo)this.getOwner().getDeviceInfo();
         auto physicalDevice = cast(VkPhysicalDevice)this.getOwner().getDeviceInfo().getHandle();
         NuvkTextureDescriptor descriptor = this.getDescriptor();
         VkMemoryRequirements memoryRequirements;
         int memoryIndex;
-        import core.stdc.stdio : printf;
-
 
         VkImageCreateInfo imageCreateInfo;
         VkImageFormatProperties imageProperties;
@@ -398,18 +413,6 @@ private:
         this.setHandle(image);
     }
 
-protected:
-
-    /**
-        Override this function to close shared handles.
-
-        Do not call this yourself.
-    */
-    override
-    void onShareHandleClose(ulong handle) {
-        nuvkCloseSharedHandleVk(handle);
-    }
-
 public:
     /**
         Destructor
@@ -430,18 +433,18 @@ public:
         Constructor
     */
     this(NuvkDevice device, NuvkTextureDescriptor descriptor, NuvkProcessSharing processSharing) {
-        super(device, descriptor, processSharing);
+        
         this.isUserOwned = true;
-        this.createTexture(processSharing);
+        super(device, descriptor, processSharing);
     }
 
     /**
         Constructor
     */
     this(NuvkDevice device, NuvkTextureFormat format, NuvkProcessSharing processSharing) {
-        super(device, format, processSharing);
+
         this.isUserOwned = true;
-        this.createTexture(processSharing);
+        super(device, format, processSharing);
     }
 
     /**
@@ -455,11 +458,10 @@ public:
         descriptor.extents.width = size.x;
         descriptor.extents.height = size.y;
 
-        super(device, descriptor, NuvkProcessSharing.processLocal);
-
         this.isUserOwned = false;
         this.image = image;
         this.setHandle(this.image);
+        super(device, descriptor, NuvkProcessSharing.processLocal);
     }
 
     /**

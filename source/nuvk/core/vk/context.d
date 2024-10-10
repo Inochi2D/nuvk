@@ -25,8 +25,6 @@ private {
 
     const string[] nuvkVkInstanceRequiredExtensions = [
         "VK_KHR_surface",
-        "VK_EXT_debug_utils",
-        "VK_EXT_layer_settings",
     ];
 }
 
@@ -65,9 +63,11 @@ private:
         }
 
         requestedExtensions = nogc_new!NuvkVkRequestList(supportedExtensionStrings, "instance extensions");
+        requestedExtensions.addRequired(nuvkVkInstanceRequiredExtensions);
     }
     
     void createInstance(const(char)*[] requiredExtensions) {
+        requestedExtensions.addRequired(requiredExtensions);
 
         VkApplicationInfo appInfo;
         appInfo.apiVersion = VK_API_VERSION_1_3;
@@ -92,6 +92,11 @@ private:
                 requestedLayers.add(debugLayer);
             }
         }
+
+        nuvkEnforce(
+            requestedExtensions.hasRequired(),
+            "Required extensions are not supported!"
+        );
 
         auto extensions = requestedExtensions.getRequests();
         auto layers = requestedLayers.getRequests();

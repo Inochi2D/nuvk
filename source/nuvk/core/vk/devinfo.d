@@ -4,6 +4,24 @@ import nuvk.core.vk;
 import nuvk.core;
 
 import numem.all;
+import std.path;
+
+private {
+    const const(char)*[] nuvkVkDeviceRequiredExtensions = [
+        VK_EXT_PRIMITIVE_TOPOLOGY_LIST_RESTART_EXTENSION_NAME,
+        VK_EXT_CUSTOM_BORDER_COLOR_EXTENSION_NAME,
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+        VK_EXT_EXTENDED_DYNAMIC_STATE_3_EXTENSION_NAME,
+        VK_EXT_SHADER_OBJECT_EXTENSION_NAME,
+    ];
+
+    const const(char)*[] nuvkVkDeviceOptionalExtensions = [
+        VK_EXT_SHADER_TILE_IMAGE_EXTENSION_NAME,
+        VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME,
+        NuvkVkMemorySharingExtName,
+        NuvkSemaphoreVkSharingExtName,
+    ];
+}
 
 /**
     Converts vulkan physical device type to a nuvk type.
@@ -36,15 +54,30 @@ private:
     bool supportsVk13;
     bool supportsRequiredFeatures;
     VkPhysicalDevice physicalDevice;
-    weak_vector!VkExtensionProperties extensionProperties;
     vector!VkMemoryType memoryTypes;
     vector!VkMemoryHeap memoryHeaps;
     NuvkVkStructChain featureChain;
+    NuvkVkRequestList extensions;
 
     // Enforces that a reported vulkan feature is actually supported.
     void enforceFeature(VkBool32 featureFlag) {
         if (featureFlag == VK_FALSE)
             this.supportsRequiredFeatures = false;
+    }
+
+    vector!nstring enumerateExtensions() {
+        vector!nstring supportedExtensionStrings;
+        vector!VkExtensionProperties supportedExtensions = nuvkVkDeviceGetAllExtensions(physicalDevice);
+
+        foreach(ref extension; supportedExtensions) {
+            supportedExtensionStrings ~= nstring(extension.extensionName.ptr);
+        }
+        return supportedExtensionStrings;
+    }
+
+    void addIfSupported(T)(T feature, const(char)* name) if (isVkStruct!T) {
+        if (extensions.isSupported(name))
+            featureChain.add(feature);
     }
 
     void enumerateFeatures() {
@@ -57,6 +90,25 @@ private:
         this.deviceType = deviceProperties.deviceType.toNuvkDeviceType();
         this.supportsVk13 = deviceProperties.apiVersion >= VK_API_VERSION_1_3;
         this.supportsRequiredFeatures = true;
+
+
+        // Extensions
+        {
+            extensions = nogc_new!NuvkVkRequestList(this.enumerateExtensions(), "device extensions");
+            extensions.addRequired(nuvkVkDeviceRequiredExtensions);
+
+            foreach(req; nuvkVkDeviceRequiredExtensions) {
+                extensions.add(cast(string)fromStringz(req));
+            }
+
+            foreach(req; nuvkVkDeviceOptionalExtensions) {
+                extensions.add(cast(string)fromStringz(req));
+            }
+
+            supportsRequiredFeatures = extensions.hasRequired();
+            if (!supportsRequiredFeatures)
+                return;
+        }
 
         // Features
         {
@@ -71,6 +123,7 @@ private:
             VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT topologyRestartFeature;
             VkPhysicalDeviceExtendedDynamicState3FeaturesEXT dynamicState3Feature;
             VkPhysicalDeviceShaderObjectFeaturesEXT shaderObjectFeature;
+            VkPhysicalDeviceShaderTileImageFeaturesEXT tileFeatures;
             
             VkPhysicalDeviceFeatures baseFeatures = features2.features;
             features2.pNext = &vk13Features;
@@ -80,6 +133,13 @@ private:
             customBorderColorFeature.pNext = &topologyRestartFeature;
             topologyRestartFeature.pNext = &dynamicState3Feature;
             dynamicState3Feature.pNext = &shaderObjectFeature;
+
+            // Tile shading
+            if (extensions.isSupported(VK_EXT_SHADER_TILE_IMAGE_EXTENSION_NAME)) {
+                dynamicState3Feature.pNext = &tileFeatures;
+                features.tileShading = true;
+            }
+
 
             vkGetPhysicalDeviceFeatures2(physicalDevice, &features2);
 
@@ -125,11 +185,17 @@ private:
                 featureChain.add(topologyRestartFeature);
                 featureChain.add(dynamicState3Feature);
                 featureChain.add(shaderObjectFeature);
+                
             }
 
             // We failed.
             if (!this.supportsRequiredFeatures)
                 return;
+
+            // Optional extensions
+            {
+                this.addIfSupported(tileFeatures, VK_EXT_SHADER_TILE_IMAGE_EXTENSION_NAME);
+            }
 
             // Custom border colors
             {
@@ -165,7 +231,7 @@ private:
                 features.hostMapCoherent        = this.hasMemoryWithFlags(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
                 // Should be supported out of the box
-                features.sharing                = true;
+                features.sharing                = extensions.isSupported(VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME);
 
                 // TODO: Add raytracing support.
                 features.raytracing             = false;
@@ -199,18 +265,13 @@ private:
             limits.memoryAlignmentMinimum       = deviceProperties.limits.nonCoherentAtomSize;
         }
 
-
         // Vulkan-specific information.
         {
             this.memoryTypes = vector!VkMemoryType(physicalDeviceMemoryProperties.memoryTypes[0..physicalDeviceMemoryProperties.memoryTypeCount]);
             this.memoryHeaps = vector!VkMemoryHeap(physicalDeviceMemoryProperties.memoryHeaps[0..physicalDeviceMemoryProperties.memoryHeapCount]);
-
-            uint deviceExtensionSupportCount;
-            vkEnumerateDeviceExtensionProperties(physicalDevice, null, &deviceExtensionSupportCount, null);
-
-            extensionProperties = weak_vector!VkExtensionProperties(deviceExtensionSupportCount);
-            vkEnumerateDeviceExtensionProperties(physicalDevice, null, &deviceExtensionSupportCount, extensionProperties.data());   
         }
+
+        supportsRequiredFeatures = extensions.hasRequired();
     }
 
     void enumerateQueues() {
@@ -329,11 +390,11 @@ public:
     }
 
     /**
-        Gets extension properties
+        Gets the vulkan extensions requested
     */
     final
-    VkExtensionProperties[] getExtenstionProperties() {
-        return extensionProperties[];
+    const(char)*[] getExtensionRequests() {
+        return extensions.getRequests();
     }
 
     /**

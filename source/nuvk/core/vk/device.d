@@ -11,18 +11,6 @@ import nuvk.core.vk;
 import nuvk.core;
 import numem.all;
 
-private {
-    const const(char)*[] nuvkVkDeviceRequiredExtensions = [
-        VK_EXT_PRIMITIVE_TOPOLOGY_LIST_RESTART_EXTENSION_NAME,
-        VK_EXT_CUSTOM_BORDER_COLOR_EXTENSION_NAME,
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-        VK_EXT_EXTENDED_DYNAMIC_STATE_3_EXTENSION_NAME,
-        VK_EXT_SHADER_OBJECT_EXTENSION_NAME,
-        NuvkVkMemorySharingExtName,
-        NuvkSemaphoreVkSharingExtName,
-    ];
-}
-
 /**
     A vulkan device
 */
@@ -48,13 +36,10 @@ private:
 
         deviceCreateInfo.queueCreateInfoCount       = cast(uint)queueCreateInfos.length;
         deviceCreateInfo.pQueueCreateInfos          = queueCreateInfos.ptr;
-        deviceCreateInfo.enabledExtensionCount      = cast(uint)nuvkVkDeviceRequiredExtensions.length;
-        deviceCreateInfo.ppEnabledExtensionNames    = cast(const(char*)*)nuvkVkDeviceRequiredExtensions.ptr;
+        deviceCreateInfo.enabledExtensionCount      = cast(uint)deviceInfo.getExtensionRequests().length;
+        deviceCreateInfo.ppEnabledExtensionNames    = cast(const(char*)*)deviceInfo.getExtensionRequests().ptr;
         deviceCreateInfo.pNext                      = deviceInfo.getFeatureChain().getFirst();
 
-        foreach(i, extension; deviceCreateInfo.ppEnabledExtensionNames[0..deviceCreateInfo.enabledExtensionCount])
-            nuvkLogDebug("device extensions[{0}] = {1}", cast(uint)i, extension);
-        
 	    nuvkEnforce(
             vkCreateDevice(physicalDevice, &deviceCreateInfo, null, &device) == VK_SUCCESS, 
             "Device creation failed!"

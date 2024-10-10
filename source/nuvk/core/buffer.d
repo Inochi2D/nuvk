@@ -238,9 +238,10 @@ public:
         Constructor
     */
     this(NuvkDevice owner, NuvkBufferUsage usage, ulong size, NuvkProcessSharing processSharing) {
-        super(owner, processSharing);
+        
         this.usage = usage;
         this.size = size;
+        super(owner, processSharing);
     }
 
     /**

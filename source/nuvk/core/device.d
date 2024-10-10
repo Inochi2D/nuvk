@@ -226,6 +226,10 @@ private:
         this.sharing = sharing.processLocal;
     }
 
+    bool canShare() {
+        return this.getOwner().getDeviceInfo().getDeviceFeatures().sharing;
+    }
+
 protected:
 
     /**
@@ -244,6 +248,11 @@ protected:
     */
     void onShareHandleClose(ulong handle) { }
 
+    /**
+        Called when the object is created.
+    */
+    abstract void onCreated(NuvkProcessSharing sharing);
+
 public:
 
     /**
@@ -260,7 +269,11 @@ public:
     */
     this(NuvkDevice owner, NuvkProcessSharing sharing) {
         super(owner);
-        this.sharing = sharing;
+        this.sharing = canShare() ? 
+            sharing : 
+            NuvkProcessSharing.processLocal;
+        
+        this.onCreated(this.sharing);
     }
 
     /**

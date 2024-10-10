@@ -4,7 +4,7 @@ import nuvk.core.vk;
 
 import core.stdc.stdio;
 import numem.all;
-import std.traits;
+import std.traits : hasMember;
 
 
 enum hasMemberEx(T, Y, string name, size_t offset) =
@@ -77,6 +77,7 @@ class NuvkVkRequestList {
 @nogc:
 private:
     vector!nstring supportedRequests;
+    vector!nstring required;
     vector!nstring requestedStore;
     vector!(const(char)*) requestedOut;
 
@@ -96,6 +97,15 @@ public:
     }
 
     /**
+        Sets which elements are required
+    */
+    void addRequired(T)(auto ref inout(T[]) requiredReq) if (isSomeString!T) {
+        foreach(req; requiredReq) {
+            this.required ~= nstring(req);
+        }
+    }
+
+    /**
         Gets whether string is in the supported list
     */
     bool isSupported(string slice) {
@@ -104,6 +114,13 @@ public:
                 return true;
         }
         return false;
+    }
+
+    /**
+        Gets whether string is in the supported list
+    */
+    bool isSupported(const(char)* slice) {
+        return isSupported(cast(string)fromStringz(slice));
     }
 
     /**
@@ -130,12 +147,45 @@ public:
     }
 
     /**
+        Gets whether required elements are there.
+    */
+    bool hasRequired() {
+        weak_set!nstring tmp;
+        foreach(req; required) {
+            tmp.insert(req);
+        }
+        
+        foreach(request; requestedStore) {
+            if (request in tmp) {
+                tmp.remove(request);
+            }
+        }
+
+        return tmp.empty();
+    }
+
+    /**
         Gets the list of requests for use.
     */
     const(char)*[] getRequests() {
         return requestedOut[];
     }
 }
+
+/**
+    Gets all of the extensions available
+*/
+vector!VkExtensionProperties nuvkVkDeviceGetAllExtensions(VkPhysicalDevice physicalDevice) @nogc {
+    vector!VkExtensionProperties extensionProps;
+    
+    uint extensionCount;
+    vkEnumerateDeviceExtensionProperties(physicalDevice, null, &extensionCount, null);
+
+    extensionProps = vector!VkExtensionProperties(extensionCount);
+    vkEnumerateDeviceExtensionProperties(physicalDevice, null, &extensionCount, extensionProps.data());
+    return extensionProps;
+}
+
 
 /**
     Gets all of the extensions available

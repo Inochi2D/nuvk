@@ -68,7 +68,20 @@ private:
         return min((in_ + (in_ % requiredAlignment)) - offset, allocatedSize);
     }
 
-    void createBuffer(NuvkProcessSharing processSharing) {
+protected:
+
+    /**
+        Override this function to close shared handles.
+
+        Do not call this yourself.
+    */
+    override
+    void onShareHandleClose(ulong handle) {
+        nuvkCloseSharedHandleVk(handle);
+    }
+
+    override
+    void onCreated(NuvkProcessSharing processSharing) {
         auto device = cast(VkDevice)this.getOwner().getHandle();
         auto deviceInfo = cast(NuvkDeviceVkInfo)this.getOwner().getDeviceInfo();
         auto usage = this.getBufferUsage();
@@ -152,17 +165,6 @@ private:
 
         this.setHandle(buffer);
     }
-protected:
-
-    /**
-        Override this function to close shared handles.
-
-        Do not call this yourself.
-    */
-    override
-    void onShareHandleClose(ulong handle) {
-        nuvkCloseSharedHandleVk(handle);
-    }
 
 public:
 
@@ -186,7 +188,6 @@ public:
     */
     this(NuvkDevice device, NuvkBufferUsage usage, ulong size, NuvkProcessSharing processSharing) {
         super(device, usage, size, processSharing);
-        this.createBuffer(processSharing);
     }
 
     /**
