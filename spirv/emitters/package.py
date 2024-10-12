@@ -7,12 +7,13 @@ scanner: SpirvGrammarScanner = scanner
 file: io.FileIO = file
 
 module = ModuleEmitter("reflection")
+module.add(BodyEmitter("import numem.all;"))
 
 # Helpers
 returnTrue = BodyEmitter("return true;")
 returnFalse = BodyEmitter("return false;")
 returnZero = BodyEmitter("return 0;")
-returnEmptyArr = BodyEmitter("return [];")
+returnEmptyArr = BodyEmitter("return vector!(uint).init;")
 
 # isTypeDeclaration
 isTypeDeclarationFunc = FuncEmitter("bool", "isTypeDeclaration", [FuncParameter("Op", "code")]).setComment("Gets whether [Op] is a type declaration.")
@@ -40,13 +41,13 @@ getMaxLengthFuncSwitch = SwitchEmitter("code", "Op").setDefault(returnZero)
 getMaxLengthFunc.add(getMaxLengthFuncSwitch)
 
 # getIDRefIndices
-getIDRefIndicesFunc = FuncEmitter("uint[]", "getIDRefIndicesFunc", [FuncParameter("Op", "code")]).setComment("Gets the indices for reference IDs for [Op]")
+getIDRefIndicesFunc = FuncEmitter("vector!uint", "getIDRefIndicesFunc", [FuncParameter("Op", "code")]).setComment("Gets the indices for reference IDs for [Op]")
 getIDRefIndicesFuncSwitch = SwitchEmitter("code", "Op").setDefault(returnEmptyArr)
 getIDRefIndicesFunc.add(getIDRefIndicesFuncSwitch)
 
 
 # getOptionalIDRefIndices
-getOptionalIDRefIndicesFunc = FuncEmitter("uint[]", "getOptionalIDRefIndices", [FuncParameter("Op", "code")]).setComment("Gets the indices for reference IDs for [Op]")
+getOptionalIDRefIndicesFunc = FuncEmitter("vector!uint", "getOptionalIDRefIndices", [FuncParameter("Op", "code")]).setComment("Gets the indices for reference IDs for [Op]")
 getOptionalIDRefIndicesFuncSwitch = SwitchEmitter("code", "Op").setDefault(returnEmptyArr)
 getOptionalIDRefIndicesFunc.add(getOptionalIDRefIndicesFuncSwitch)
 
@@ -73,10 +74,12 @@ for instruction in scanner.getInstructions():
                 opt_idrefs.append(i)
     if len(idrefs) > 0:
         refstr = ", ".join(map(str, idrefs))
-        getIDRefIndicesFuncSwitch.addCase(instruction.getOpName(), BodyEmitter(f"return [{refstr}];"))
+        code = f"uint[{len(idrefs)}] tmp = [{refstr}];\nreturn vector!uint(tmp);"
+        getIDRefIndicesFuncSwitch.addCase(instruction.getOpName(), BodyEmitter(code))
     if len(opt_idrefs) > 0:
         refstr = ", ".join(map(str, opt_idrefs))
-        getOptionalIDRefIndicesFuncSwitch.addCase(instruction.getOpName(), BodyEmitter(f"return [{refstr}];"))
+        code = f"uint[{len(opt_idrefs)}] tmp = [{refstr}];\nreturn vector!uint(tmp);"
+        getOptionalIDRefIndicesFuncSwitch.addCase(instruction.getOpName(), BodyEmitter(code))
 
 module.add(isTypeDeclarationFunc)
 module.add(hasResultFunc)
