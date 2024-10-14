@@ -177,8 +177,6 @@ private:
                 size_t size = type.getSize();
                 size_t bitwidth = type.getWidth();
 
-                nuvkLogInfo("{3} = {0} {1} {2}", type.getTypeKind(), size, bitwidth, var.getName());
-
                 size_t locations = max(1, size/16);
                 size_t subSize = size/locations;
                 size_t elementCount = type.getComponents();
