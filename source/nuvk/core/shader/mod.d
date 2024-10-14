@@ -6,15 +6,13 @@
 */
 
 module nuvk.core.shader.mod;
-import nuvk.spirv.cross;
+import spirv;
 import nuvk.core.logging;
 import nuvk.core.texture;
 import nuvk.core.shader;
 import nuvk.core.buffer;
 import numem.all;
 import inmath;
-
-public import nuvk.spirv.cross.types;
 
 import core.stdc.stdio;
 import std.concurrency;
@@ -25,18 +23,11 @@ import std.concurrency;
 struct NuvkSpirvDescriptor {
 @nogc:
 
-    this(nstring name, SpvcResourceType type, uint set, uint binding) {
-        this.name = name;
-        this.type = type;
-        this.set = set;
-        this.binding = binding;
-    }
-
     /// Name of the element
     nstring name;
 
-    /// Type of the item
-    SpvcResourceType type;
+    /// Variable kind of the descriptor.
+    SpirvVarKind kind;
 
     /// The set it belongs to
     uint set;
@@ -145,12 +136,7 @@ private:
     // Module info
     ExecutionModel executionModel;
     nstring entrypoint;
-
-    // Spirv-Cross items
-    SpvcContext context;
-    SpvcParsedIr parsedIr;
-    SpvcCompiler compiler;
-    SpvcResources resources;
+    SpirvModule module_;
 
     // Parsing Information
     bool hasBeenParsed;
@@ -158,8 +144,12 @@ private:
     vector!NuvkSpirvAttachment attachments;
     vector!NuvkSpirvVertexInput vertexInputs;
 
-    // Bytecode
-    weak_vector!uint bytecode;
+    void doParse(uint[] data) {
+        module_ = nogc_new!SpirvModule(data);
+        this.executionModel = module_.getExecutionModel();
+        this.entrypoint = module_.getEntryPoints()[0].getName();
+        this.parseDescriptors();
+    }
 
     void verifyBytecodeLength(ptrdiff_t length) {
         nuvkEnforce(length >= 0, "Could not verify size of input stream!");
@@ -167,34 +157,35 @@ private:
     }
     
     void setData(ref uint[] data) {
-        this.bytecode = weak_vector!uint(data);
+        this.doParse(data);
     }
     
     void setData(ref ubyte[] data) {
         this.verifyBytecodeLength(data.length);
-        this.bytecode = weak_vector!uint((cast(uint*)data.ptr)[0..data.length/4]);
+        this.doParse((cast(uint*)data.ptr)[0..data.length/4]);
     }
 
     void parseVtxInputs() {
         if (executionModel == ExecutionModel.Vertex) {
-            auto resourceBindings = this.getResourceListForType(SpvcResourceType.stageInputs);
+            auto variables = module_.getVariablesForKind(SpirvVarKind.stageInput);
+
             size_t offset;
             size_t location;
-            foreach(const(SpvcReflectedResource) binding; resourceBindings) {
+            foreach(ref SpirvVariable var; variables) {
 
-                auto typeHandle = spvcCompilerGetTypeHandle(compiler, binding.typeId);
-                size_t size = getTypeSize(typeHandle);
-                size_t bitwidth = spvcTypeGetBitWidth(typeHandle);
+                auto type = var.getType();
+                size_t size = type.getSize();
+                size_t bitwidth = type.getWidth();
 
-                
+                nuvkLogInfo("{3} = {0} {1} {2}", type.getTypeKind(), size, bitwidth, var.getName());
 
                 size_t locations = max(1, size/16);
                 size_t subSize = size/locations;
-                size_t elementCount = getElementCount(typeHandle);
-                location = spvcCompilerGetDecoration(compiler, binding.id, Decoration.Location);
+                size_t elementCount = type.getComponents();
+                location = module_.getDecorationArgFor(var.getId(), Decoration.Location);
                 foreach(i; 0..locations) {
                     NuvkSpirvVertexInput input;
-                    input.name = nstring(binding.name);
+                    input.name = var.getName();
                     input.location = cast(uint)(location+i);
                     input.offset = cast(uint)offset;
                     input.size = cast(uint)subSize;
@@ -211,120 +202,28 @@ private:
         }
     }
 
-    /**
-        Gets the amount of elements in a type.
-    */
-    size_t getElementCount(SpvcType type) {
-        uint columns = spvcTypeGetColumns(type);
-        uint vectorSize = spvcTypeGetVectorSize(type);
-        return columns * vectorSize;
-    }
-
-    size_t getBaseTypeSize(SpvcType type) {
-
-        // Other base types
-        switch(spvcTypeGetBaseType(type)) {
-            default:
-                return 4;
-
-            case SpvcBaseType.struct_:
-                auto members = spvcTypeGetNumMemberTypes(type);
-                size_t structSize;
-                foreach(i; 0..members) {
-                    auto handle = spvcCompilerGetTypeHandle(compiler, spvcTypeGetMemberType(type, i));
-                    structSize += getTypeSize(handle);
-                }
-
-                return structSize;
-            
-            case SpvcBaseType.boolean:
-            case SpvcBaseType.uint8:
-            case SpvcBaseType.int8:
-                return 1;
-            
-            case SpvcBaseType.uint16:
-            case SpvcBaseType.int16:
-            case SpvcBaseType.fp16:
-                return 2;
-            
-            case SpvcBaseType.uint32:
-            case SpvcBaseType.int32:
-            case SpvcBaseType.fp32:
-                return 4;
-            
-            case SpvcBaseType.uint64:
-            case SpvcBaseType.int64:
-            case SpvcBaseType.fp64:
-                return 8;
-        }
-    }
-
-    size_t getTypeSize(SpvcType type) {
-
-        // Vector and matrix handling
-        uint columns = spvcTypeGetColumns(type);
-        uint vectorSize = spvcTypeGetVectorSize(type);
-        uint arrayDims = spvcTypeGetNumArrayDimensions(type);
-        if (columns > 1) {
-            return getBaseTypeSize(type) * columns;
-        } else if (vectorSize > 1) {
-            return getBaseTypeSize(type) * vectorSize;
-        } else if (arrayDims > 0) {
-            foreach(dim; 0..arrayDims) {
-                auto size = getBaseTypeSize(type);
-                bool isLiteral = spvcTypeArrayDimensionIsLiteral(type, dim);
-                if (isLiteral) {
-                    return size * spvcTypeGetArrayDimension(type, dim);
-                } else {
-                    nuvkLogError("Unsized arrays are not supported.");
-                    return 0;
-                }
-            }
-        }
-
-        // Just a base type
-        return getBaseTypeSize(type);
-    }
-
     void parseDescriptors() {
-        foreach(resourceType; SpvcResourceType.uniformBuffers..SpvcResourceType.max) {
-
-            auto resourceBindings = this.getResourceListForType(resourceType);
-            foreach(const(SpvcReflectedResource) binding; resourceBindings) {
-
-                if (executionModel == ExecutionModel.Fragment && resourceType == SpvcResourceType.stageOutputs) {
-                    uint location = spvcCompilerGetDecoration(compiler, binding.id, Decoration.Location);
-                    NuvkSpirvAttachment attachment;
-                    attachment.location = location;
-                    attachment.name = nstring(binding.name);
-
-                    auto typeHandle = spvcCompilerGetTypeHandle(compiler, binding.typeId);
-
-                    uint columns = spvcTypeGetColumns(typeHandle);
-                    uint vectorSize = spvcTypeGetVectorSize(typeHandle);
+        
+        foreach(ref SpirvVariable variable; module_.getVariables()) {
+            switch(variable.getStorageClass()) {
+                case StorageClass.Uniform:
+                case StorageClass.StorageBuffer:
+                    uint set = module_.getDecorationArgFor(variable.getId(), Decoration.DescriptorSet);
+                    uint bindingId = module_.getDecorationArgFor(variable.getId(), Decoration.Binding);
                     
-                    // Unrelated output.
-                    if (columns != 1) 
-                        continue;
+                    if (set !in descriptors)
+                        descriptors[set] = vector!(NuvkSpirvDescriptor)();
+                    
+                    descriptors[set] ~= NuvkSpirvDescriptor(
+                        name: nstring(variable.getName()),
+                        kind: variable.getVarKind(),
+                        set: set,
+                        binding: bindingId,
+                    );
+                    break;
 
-                    attachment.format = vectorSize.vecToFormat();
-                    attachments ~= attachment;
-                    continue;
-                }
-
-                uint set = spvcCompilerGetDecoration(compiler, binding.id, Decoration.DescriptorSet);
-                uint bindingId = spvcCompilerGetDecoration(compiler, binding.id, Decoration.Binding);
-
-                if (set !in descriptors) {
-                    descriptors[set] = vector!(NuvkSpirvDescriptor)();
-                }
-
-                descriptors[set] ~= NuvkSpirvDescriptor(
-                    nstring(binding.name),
-                    resourceType,
-                    set,
-                    bindingId
-                );
+                default:
+                    break;
             }
         }
 
@@ -333,10 +232,7 @@ private:
 
 public:
     ~this() {
-        nogc_delete(bytecode);
-
-        if (context) 
-            spvcContextDestroy(context);
+        nogc_delete(module_);
     }
     
     /**
@@ -375,39 +271,9 @@ public:
         this.setData(streamDataView);
     }
 
-    /**
-        Reads every instruction in the bytecode and parses them.
-        This allows for introspection.
-    */
     final
-    void parse() {
-        if (!isSpirvCrossLoaded()) {
-            nuvkEnforce(
-                loadSpirvCross() == SpirvCrossSupport.yes,
-                "Failed to initialize SPIRV-Cross"
-            );
-        }
-
-        if (!hasBeenParsed) {
-            this.hasBeenParsed = true;
-
-            spvcContextCreate(&context);
-            spvcContextParseSpirv(context, bytecode.data(), bytecode.size(), &parsedIr);
-            spvcContextCreateCompiler(context, SpvcBackend.none, parsedIr, SpvcCaptureMode.captureModeCopy, &compiler);
-            this.executionModel = spvcCompilerGetExecutionModel(compiler);
-
-            const(SpvcEntryPoint)* entrypoints;
-            size_t entrypointCount;
-            spvcCompilerGetEntryPoints(compiler, &entrypoints, &entrypointCount);
-            foreach(ep; entrypoints[0..entrypointCount]) {
-                if (ep.executionModel == this.executionModel) {
-                    this.entrypoint = nstring(ep.name);
-                }
-            }
-
-            spvcCompilerCreateShaderResources(compiler, &resources);
-            this.parseDescriptors();
-        }
+    void emit() {
+        module_.emit();
     }
 
     /**
@@ -417,39 +283,7 @@ public:
     */
     final
     uint[] getBytecode() {
-        return bytecode[];
-    }
-
-    /**
-        Gets a list of resources for the type.
-    */
-    final
-    const(SpvcReflectedResource)[] getResourceListForType(SpvcResourceType type) {
-
-        // Not parsed.
-        if (!hasBeenParsed)
-            return null;
-        
-        const(SpvcReflectedResource)* resourceList;
-        size_t resourceListLength;
-        spvcResourcesGetResourceListForType(resources, type, &resourceList, &resourceListLength);
-        return resourceList[0..resourceListLength];
-    }
-
-    /**
-        Gets a list of builtin resources for the type.
-    */
-    final
-    const(SpvcReflectedBuiltinResource)[] getBuiltinResourceListForType(SpvcBuiltinResourceType type) {
-
-        // Not parsed.
-        if (!hasBeenParsed)
-            return null;
-        
-        const(SpvcReflectedBuiltinResource)* resourceList;
-        size_t resourceListLength;
-        spvcResourcesGetBuiltinResourceListForType(resources, type, &resourceList, &resourceListLength);
-        return resourceList[0..resourceListLength];
+        return module_.getBytecode();
     }
 
     /**
@@ -457,7 +291,7 @@ public:
     */
     final
     uint getBytecodeSizeBytes() {
-        return cast(uint)bytecode.size()*4;
+        return cast(uint)module_.getBytecode().length*4;
     }
 
     
@@ -466,15 +300,7 @@ public:
     */
     final
     const(Capability)[] getCapabilities() {
-
-        // Not parsed.
-        if (!hasBeenParsed)
-            return null;
-
-        const(Capability)* capabilities;
-        size_t capabilityCount;
-        spvcCompilerGetDeclaredCapabilities(compiler, &capabilities, &capabilityCount);
-        return capabilities[0..capabilityCount];
+        return module_.getCapabilities();
     }
 
     /**
@@ -490,15 +316,7 @@ public:
     */
     final
     const(ExecutionMode)[] getExecutionModes() {
-
-        // Not parsed.
-        if (!hasBeenParsed)
-            return null;
-
-        const(ExecutionMode)* executionModes;
-        size_t executionModeCount;
-        spvcCompilerGetExecutionModes(compiler, &executionModes, &executionModeCount);
-        return executionModes[0..executionModeCount];
+        return module_.getExecutionModes();
     }
 
     /**

@@ -9,17 +9,34 @@ file: io.FileIO = file
 module = ModuleEmitter("reflection")
 module.add(BodyEmitter("import numem.all;"))
 
+# Spirv OpClass
+spirvClasses = EnumEmitter("OpClass")
+for klass in scanner.getClasses():
+    spirvClasses.add(klass.getDName())
+spirvClasses.add("cUnknown")
+module.add(spirvClasses)
+
 # Helpers
 returnTrue = BodyEmitter("return true;")
 returnFalse = BodyEmitter("return false;")
-returnZero = BodyEmitter("return 0;")
+returnClassUnk = BodyEmitter("return OpClass.cUnknown;")
 returnEmptyArr = BodyEmitter("return vector!(uint).init;")
+returnZero = BodyEmitter("return 0;")
 
-# isTypeDeclaration
-isTypeDeclarationFunc = FuncEmitter("bool", "isTypeDeclaration", [FuncParameter("Op", "code")]).setComment("Gets whether [Op] is a type declaration.")
-isTypeDeclarationSwitch = SwitchEmitter("code", "Op").setDefault(returnFalse)
-isTypeDeclarationFunc.add(isTypeDeclarationSwitch)
+getClassFunc = FuncEmitter("OpClass", "getClass", [FuncParameter("Op", "code")]).setComment("Gets whether [Op] is of the specified opcode class.")
+getClassSwitch = SwitchEmitter("code", "Op").setDefault(returnClassUnk)
+getClassFunc.add(getClassSwitch)
+classBodies = dict[str, BodyEmitter]()
 
+for klass in scanner.getClasses():
+    classBodies[klass.getTag()] = BodyEmitter(f"return OpClass.{klass.getDName()};")
+    getClassSwitch.addCaseBody(classBodies[klass.getTag()])
+
+    # isTypeDeclaration
+    isXClassFunc = FuncEmitter("bool", f"is{klass.getTagPascalCase()}", [FuncParameter("Op", "code")]).setComment(f"Gets whether [Op] is of the {klass.getDescription()} class.")
+    isXClassFunc.add(BodyEmitter(f"return getClass(code) == OpClass.{klass.getDName()};"))
+    module.add(isXClassFunc)
+    
 # hasResult
 hasResultFunc = FuncEmitter("bool", "hasResult", [FuncParameter("Op", "code")]).setComment("Gets whether [Op] returns a result.")
 hasResultSwitch = SwitchEmitter("code", "Op").setDefault(returnFalse)
@@ -41,19 +58,25 @@ getMaxLengthFuncSwitch = SwitchEmitter("code", "Op").setDefault(returnZero)
 getMaxLengthFunc.add(getMaxLengthFuncSwitch)
 
 # getIDRefIndices
-getIDRefIndicesFunc = FuncEmitter("vector!uint", "getIDRefIndicesFunc", [FuncParameter("Op", "code")]).setComment("Gets the indices for reference IDs for [Op]")
+getIDRefIndicesFunc = FuncEmitter("vector!uint", "getIDRefIndices", [FuncParameter("Op", "code")]).setComment("Gets the indices for reference IDs for [Op]")
 getIDRefIndicesFuncSwitch = SwitchEmitter("code", "Op").setDefault(returnEmptyArr)
 getIDRefIndicesFunc.add(getIDRefIndicesFuncSwitch)
-
 
 # getOptionalIDRefIndices
 getOptionalIDRefIndicesFunc = FuncEmitter("vector!uint", "getOptionalIDRefIndices", [FuncParameter("Op", "code")]).setComment("Gets the indices for reference IDs for [Op]")
 getOptionalIDRefIndicesFuncSwitch = SwitchEmitter("code", "Op").setDefault(returnEmptyArr)
 getOptionalIDRefIndicesFunc.add(getOptionalIDRefIndicesFuncSwitch)
 
+# getHasArbitraryRefIndices
+getHasArbitraryRefIndicesFunc = FuncEmitter("bool", "getHasArbitraryRefIndices", [FuncParameter("Op", "code")]).setComment("Gets whether [Op] ends with a list of arbitrary id refs.")
+getHasArbitraryRefIndicesSwitch = SwitchEmitter("code", "Op").setDefault(returnFalse)
+getHasArbitraryRefIndicesFunc.add(getHasArbitraryRefIndicesSwitch)
+
+
 for instruction in scanner.getInstructions():
-    if (instruction.getClass() == "Type-Declaration"):
-        isTypeDeclarationSwitch.addCase(instruction.getOpName(), returnTrue)
+    opclass = instruction.getClass()
+    if opclass in classBodies:
+        getClassSwitch.addCase(instruction.getOpName(), classBodies[opclass])
     
     if instruction.hasResult():
         hasResultSwitch.addCase(instruction.getOpName(), returnTrue)
@@ -70,8 +93,10 @@ for instruction in scanner.getInstructions():
         if (operand.getKind() == "IdRef"):
             if (operand.getQuantifier() == None):
                 idrefs.append(i)
-            elif(operand.getQuantifier() == "?"):
+            elif (operand.getQuantifier() == "?"):
                 opt_idrefs.append(i)
+            elif (operand.getQuantifier() == "*"):
+                getHasArbitraryRefIndicesSwitch.addCase(instruction.getOpName(), returnTrue)
     if len(idrefs) > 0:
         refstr = ", ".join(map(str, idrefs))
         code = f"uint[{len(idrefs)}] tmp = [{refstr}];\nreturn vector!uint(tmp);"
@@ -81,12 +106,13 @@ for instruction in scanner.getInstructions():
         code = f"uint[{len(opt_idrefs)}] tmp = [{refstr}];\nreturn vector!uint(tmp);"
         getOptionalIDRefIndicesFuncSwitch.addCase(instruction.getOpName(), BodyEmitter(code))
 
-module.add(isTypeDeclarationFunc)
+module.add(getClassFunc)
 module.add(hasResultFunc)
 module.add(hasResultTypeFunc)
 module.add(getMinLengthFunc)
 module.add(getMaxLengthFunc)
 module.add(getIDRefIndicesFunc)
 module.add(getOptionalIDRefIndicesFunc)
+module.add(getHasArbitraryRefIndicesFunc)
 
 file.write(module.emit())

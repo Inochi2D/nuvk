@@ -36,7 +36,7 @@ public:
         Creates a function with set parameters
     */
     this(SpirvModule parent, nstring name) {
-        super(SpirvTypeId.typeFunction);
+        super(SpirvTypeKind.typeFunction);
         this.parent = parent;
         this.name = name;
 

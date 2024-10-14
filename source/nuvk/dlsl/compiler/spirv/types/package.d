@@ -14,32 +14,6 @@ public import nuvk.compiler.spirv.types.func;
 public import nuvk.compiler.spirv.types.instr;
 public import nuvk.compiler.spirv.types.compound;
 
-/**
-    Type ID
-*/
-enum SpirvTypeId {
-    typeVoid          = 19,
-    typeBool          = 20,
-    typeInt           = 21,
-    typeFloat         = 22,
-    typeVector        = 23,
-    typeMatrix        = 24,
-    typeImage         = 25,
-    typeSampler       = 26,
-    typeSampledImage  = 27,
-    typeArray         = 28,
-    typeRuntimeArray  = 29,
-    typeStruct        = 30,
-    typeOpaque        = 31,
-    typePointer       = 32,
-    typeFunction      = 33,
-    typeEvent         = 34,
-    typeDeviceEvent   = 35,
-    typeReserveId     = 36,
-    typeQueue         = 37,
-    typePipe          = 38,
-    typeFwdPointer    = 39,
-}
 
 /**
     A spirv type
@@ -49,7 +23,7 @@ class SpirvType {
 @nogc:
 private:
     weak_vector!SpirvDecoration decorations;
-    SpirvTypeId id;
+    SpirvTypeKind id;
     nstring name;
     bool managed;
 
@@ -65,7 +39,7 @@ protected:
     /**
         Constructs a Spirv type
     */
-    this(SpirvTypeId id, nstring name, bool managed) {
+    this(SpirvTypeKind id, nstring name, bool managed) {
         this.id = id;
         this.name = name;
         this.managed = managed;
@@ -74,7 +48,7 @@ protected:
     /**
         Constructs a Spirv type
     */
-    this(SpirvTypeId id) {
+    this(SpirvTypeKind id) {
         super(id, nstring(0), false);
     }
 
@@ -109,7 +83,7 @@ public:
         Gets the type's ID
     */
     final
-    SpirvTypeId getTypeId() {
+    SpirvTypeKind getTypeId() {
         return id;
     }
 
@@ -248,7 +222,7 @@ private:
     /**
         Constructs a base type
     */
-    this(SpirvTypeId type, uint size, bool signed, string name) {
+    this(SpirvTypeKind type, uint size, bool signed, string name) {
         super(type, nstring(name), true);
         this.size = size;
         this.signed = signed;
@@ -278,9 +252,9 @@ public:
 SpirvVectorType nuvkSpirvGetVector(SpirvBaseType baseType, uint components) {
     nuvkEnforce(components >= 2 && components <= 4);
     nuvkEnforce(
-        baseType.getTypeId() == SpirvTypeId.typeFloat || 
-        baseType.getTypeId() == SpirvTypeId.typeInt   || 
-        baseType.getTypeId() == SpirvTypeId.typeBool,
+        baseType.getTypeId() == SpirvTypeKind.typeFloat || 
+        baseType.getTypeId() == SpirvTypeKind.typeInt   || 
+        baseType.getTypeId() == SpirvTypeKind.typeBool,
         nstring("Can't make vectors out of non-numeric types!")
     );
 
@@ -424,19 +398,19 @@ public:
 package(nuvk) {
     void nuvkSpirvInitCompilerTypes() @nogc {
 
-        void_ = nogc_new!SpirvBaseType(SpirvTypeId.typeVoid, 0, false, "void");
+        void_ = nogc_new!SpirvBaseType(SpirvTypeKind.typeVoid, 0, false, "void");
 
-        bool_ = nogc_new!SpirvBaseType(SpirvTypeId.typeBool, 8, false, "bool");
+        bool_ = nogc_new!SpirvBaseType(SpirvTypeKind.typeBool, 8, false, "bool");
 
-        i32 = nogc_new!SpirvBaseType(SpirvTypeId.typeInt, 32, true, "i32");
-        i64 = nogc_new!SpirvBaseType(SpirvTypeId.typeInt, 64, true, "i64");
+        i32 = nogc_new!SpirvBaseType(SpirvTypeKind.typeInt, 32, true, "i32");
+        i64 = nogc_new!SpirvBaseType(SpirvTypeKind.typeInt, 64, true, "i64");
 
-        u32 = nogc_new!SpirvBaseType(SpirvTypeId.typeInt, 32, false, "u32");
-        u64 = nogc_new!SpirvBaseType(SpirvTypeId.typeInt, 64, false, "u64");
+        u32 = nogc_new!SpirvBaseType(SpirvTypeKind.typeInt, 32, false, "u32");
+        u64 = nogc_new!SpirvBaseType(SpirvTypeKind.typeInt, 64, false, "u64");
 
-        f16 = nogc_new!SpirvBaseType(SpirvTypeId.typeFloat, 16, false, "f16");
-        f32 = nogc_new!SpirvBaseType(SpirvTypeId.typeFloat, 32, false, "f32");
-        f64 = nogc_new!SpirvBaseType(SpirvTypeId.typeFloat, 64, false, "f64");
+        f16 = nogc_new!SpirvBaseType(SpirvTypeKind.typeFloat, 16, false, "f16");
+        f32 = nogc_new!SpirvBaseType(SpirvTypeKind.typeFloat, 32, false, "f32");
+        f64 = nogc_new!SpirvBaseType(SpirvTypeKind.typeFloat, 64, false, "f64");
     }
 
     void nuvkSpirvCleanupCompilerTypes() @nogc {

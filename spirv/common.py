@@ -24,7 +24,6 @@ class SpirvOperandInfo:
     def getName(self) -> str:
         return self.name
 
-
 # Information about a Spirv instruction
 class SpirvInstrInfo:
     def __parseOperand(self, operand: dict[str]):
@@ -88,7 +87,7 @@ class SpirvInstrInfo:
         counter = 0
 
         for operand in self.operands:
-            if operand.getQuantifier() != None:
+            if operand.getQuantifier() == None:
                 counter += 1
                 
         return counter
@@ -97,16 +96,38 @@ class SpirvInstrInfo:
         counter = 0
 
         for operand in self.operands:
-            if operand.getQuantifier() != None:
-                counter += 1
-            else:
+            if operand.getKind() == "LiteralString":
+                return 65535
+            elif operand.getKind() == "Decoration":
+                return 65535
+            elif operand.getQuantifier() != None:
                 if operand.getQuantifier() == "*":
                     return 65535
                 else:
                     counter += 1
+            else:
+                counter += 1
                 
         return counter
 
+class SpirvClassInfo:
+    def __init__(self, klass: dict):
+        self.tag = klass["tag"]
+        self.desc = klass["heading"]
+        self.dName = "c" + toPascalCase(self.tag)
+
+    def getTag(self) -> str:
+        return self.tag
+    
+    def getTagPascalCase(self) -> str:
+        return toPascalCase(self.tag)
+    
+    def getDName(self) -> str:
+        return self.dName
+    
+    def getDescription(self) -> str:
+        return self.desc
+    
 # Spirv grammar scanner
 class SpirvGrammarScanner:
     
@@ -119,6 +140,12 @@ class SpirvGrammarScanner:
         
         # Scan instruction list
         self.instructions = list[SpirvInstrInfo]()
+        self.classes = list[SpirvClassInfo]()
+
+        for klass in self.grammarJson["instruction_printing_class"]:
+            if klass["tag"] != "@exclude":
+                self.classes.append(SpirvClassInfo(klass))
+
 
         # Scan through all instructions and add them.
         # While omitting duplicates.
@@ -135,3 +162,12 @@ class SpirvGrammarScanner:
     
     def getInstructions(self) -> list[SpirvInstrInfo]:
         return self.instructions
+    
+    def getClasses(self) -> list[SpirvClassInfo]:
+        return self.classes    
+
+def toCamelCase(text: str) -> str:
+    return text[0].lower() + ''.join(c for c in text.title() if c.isalnum())[1:]
+
+def toPascalCase(text: str) -> str:
+    return text[0].upper() + ''.join(c for c in text if c.isalnum())[1:]

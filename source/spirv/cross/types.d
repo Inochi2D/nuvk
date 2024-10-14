@@ -1,5 +1,5 @@
-module nuvk.spirv.cross.types;
-import nuvk.spirv.cross.spv;
+module spirv.cross.types;
+import spirv.spv;
 import bindbc.loader;
 
 alias SpvcContext = void*;

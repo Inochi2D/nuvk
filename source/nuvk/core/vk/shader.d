@@ -10,6 +10,7 @@ import nuvk.core.shader.mod;
 import nuvk.core.vk;
 import nuvk.core;
 import numem.all;
+import spirv;
 
 
 /**
@@ -32,15 +33,14 @@ VkShaderStageFlagBits toVkShaderStage(NuvkShaderStage stage) @nogc {
     return cast(VkShaderStageFlagBits)outStage;
 }
 
-bool shouldBeInDescriptor(SpvcResourceType type) @nogc {
-    switch(type) {
-        case SpvcResourceType.separateSamplers:
-        case SpvcResourceType.sampledImages:
-        case SpvcResourceType.separateImages:
-        case SpvcResourceType.storageImages:
-        case SpvcResourceType.uniformBuffers:
-        case SpvcResourceType.storageBuffers:
-        case SpvcResourceType.accelerationStructure:
+bool shouldBeInDescriptor(SpirvVarKind kind) @nogc {
+    switch(kind) {
+        case SpirvVarKind.sampledImage:
+        case SpirvVarKind.sampler:
+        case SpirvVarKind.image:
+        case SpirvVarKind.uniformBuffer:
+        case SpirvVarKind.storageBuffer:
+        case SpirvVarKind.accelStruct:
             return true;
 
         default:
@@ -48,21 +48,19 @@ bool shouldBeInDescriptor(SpvcResourceType type) @nogc {
     }
 }
 
-VkDescriptorType toVkDescriptorType(SpvcResourceType type) @nogc {
-    switch(type) {
-        case SpvcResourceType.separateSamplers:
+VkDescriptorType toVkDescriptorType(SpirvVarKind kind) @nogc {
+    switch(kind) {
+        case SpirvVarKind.sampler:
             return VK_DESCRIPTOR_TYPE_SAMPLER;
-        case SpvcResourceType.sampledImages:
+        case SpirvVarKind.sampledImage:
             return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        case SpvcResourceType.separateImages:
+        case SpirvVarKind.image:
             return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-        case SpvcResourceType.storageImages:
-            return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-        case SpvcResourceType.uniformBuffers:
+        case SpirvVarKind.uniformBuffer:
             return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        case SpvcResourceType.storageBuffers:
+        case SpirvVarKind.storageBuffer:
             return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-        case SpvcResourceType.accelerationStructure:
+        case SpirvVarKind.accelStruct:
             return VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
 
         default:
@@ -162,12 +160,12 @@ private:
                 NuvkSpirvDescriptor[] descriptors = module_.getDescriptors(set);
                 
                 foreach(ref NuvkSpirvDescriptor descriptor; descriptors) {
-                    if (descriptor.type.shouldBeInDescriptor()) {
+                    if (descriptor.kind.shouldBeInDescriptor()) {
                         VkDescriptorSetLayoutBinding binding;
                         binding.binding = descriptor.binding;
                         binding.descriptorCount = 1;
                         binding.stageFlags = shader.getStage().toVkShaderStage();
-                        binding.descriptorType = descriptor.type.toVkDescriptorType();
+                        binding.descriptorType = descriptor.kind.toVkDescriptorType();
                         bindings ~= binding;
                     }
                 }
@@ -200,14 +198,13 @@ private:
         shaderCreateInfo.pushConstantRangeCount = 0;
 
         if (shader.getType() == NuvkShaderType.vertex) {
-            this.generateInputs(shader);
+            this.generateInputs(module_);
         }
 
         return shaderCreateInfo;
     }
 
-    void generateInputs(NuvkShader shader) {
-        NuvkSpirvModule module_ = shader.getSpirvModule();
+    void generateInputs(NuvkSpirvModule module_) {
         foreach(ref NuvkSpirvVertexInput input; module_.getVertexInputs()) {
             VkVertexInputBindingDescription2EXT binding;
             VkVertexInputAttributeDescription2EXT attribute;

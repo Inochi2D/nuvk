@@ -40,6 +40,7 @@ void main(string[] args) {
         vertex: vertexShaderSrc, 
         fragment: fragmentShaderSrc
     );
+    nuvkLogDebug("Program parsed!");
 
     // Vertex buffer
     NuvkBuffer vertexBuffer = device.createBuffer(

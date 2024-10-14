@@ -112,7 +112,6 @@ private:
 
     void loadAndParse(uint[] spirv) {
         this.module_ = nogc_new!NuvkSpirvModule(spirv);
-        this.module_.parse();
 
         this.type = module_.getType();
         this.setName("{0} ({1})".format(module_.getEntrypoint(), this.type.toString()));

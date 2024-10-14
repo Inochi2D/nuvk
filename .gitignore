@@ -20,5 +20,8 @@ out/
 
 *.spv
 
+# Python generated shenanigans.
+__*__
+
 # Ignore for now
 dlsl-gen

@@ -1,5 +1,6 @@
 import itertools
 import datetime
+import common
 
 class Emitter:
     def __indent(self, indentation: int = 0):
@@ -101,6 +102,7 @@ import spirv.spv;
         for emitter in self.emitters:
             for line in emitter.emit().splitlines(False):
                 self.emitter.addLine(line)
+            self.emitter.addLine()
         return self.emitter.finish()
 
 class FuncParameter(Emitable):
@@ -187,6 +189,10 @@ class SwitchEmitter(Emitable):
         self.cases: dict[Emitter, list[str]] = dict[Emitter, list[str]]()
         self.default: Emitter = None
 
+    def addCaseBody(self, to: 'Emitter') -> 'SwitchEmitter':
+        if to not in self.cases:
+            self.cases[to] = list[str]()
+
     def addCase(self, case: str, to: 'Emitter') -> 'SwitchEmitter':
         if to not in self.cases:
             self.cases[to] = list[str]()
@@ -241,3 +247,32 @@ class BodyEmitter(Emitable):
     
     def emit(self) -> str:
         return self.body
+
+
+class EnumEmitter(Emitable):
+
+    def __init__(self, name: str):
+        super().__init__()
+        self.name = common.toPascalCase(name);
+        self.elements = list[tuple[str, str]]()
+    
+    def add(self, name: str, convertCase: bool = False):
+        toInsert = (common.toCamelCase(name) if convertCase else name, None)
+        self.elements.append(toInsert)
+    
+    def addKV(self, name: str, value: any, convertCase: bool = False):
+        toInsert = (common.toCamelCase(name) if convertCase else name, str(value))
+        self.elements.append(toInsert)
+
+    def emit(self) -> str:
+        self.clear()
+        self.emitter.addLine(f"enum {self.name} {{")
+        self.emitter.beginScope()
+        for element in self.elements:
+            if element[1] != None:
+                self.emitter.addLine(f"{element[0]} = {element[1]},")
+            else:
+                self.emitter.addLine(f"{element[0]},")
+        self.emitter.endScope()
+        self.emitter.addLine("}")
+        return self.emitter.finish()

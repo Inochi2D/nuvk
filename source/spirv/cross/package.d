@@ -1,9 +1,9 @@
-module nuvk.spirv.cross;
+module spirv.cross;
 import bindbc.loader;
 
-public import nuvk.spirv.cross.types;
-public import nuvk.spirv.cross.funcs;
-public import nuvk.spirv.cross.spv;
+public import spirv.cross.types;
+public import spirv.cross.funcs;
+public import spirv.spv;
 
 enum SpirvCrossSupport {
     noLibrary,
@@ -65,11 +65,11 @@ SpirvCrossSupport loadSpirvCross(const(char)* libName) {
     import std.algorithm.searching : startsWith;
     import std.traits : getUDAs;
 
-    static foreach (m; __traits(allMembers, nuvk.spirv.cross.funcs)) {
-        static if (getUDAs!(__traits(getMember, nuvk.spirv.cross.funcs, m), BindAs).length > 0) {
+    static foreach (m; __traits(allMembers, spirv.cross.funcs)) {
+        static if (getUDAs!(__traits(getMember, spirv.cross.funcs, m), BindAs).length > 0) {
             lib.bindSymbol(
-                cast(void**)&__traits(getMember, nuvk.spirv.cross.funcs, m),
-                getUDAs!(__traits(getMember, nuvk.spirv.cross.funcs, m), BindAs)[0].as
+                cast(void**)&__traits(getMember, spirv.cross.funcs, m),
+                getUDAs!(__traits(getMember, spirv.cross.funcs, m), BindAs)[0].as
             );
             loaded++;
         }
