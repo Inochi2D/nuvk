@@ -2,7 +2,6 @@
 docs.json
 dub.selections.json
 __dummy.html
-docs/
 /vktest
 vktest.so
 vktest.dylib
@@ -22,6 +21,3 @@ out/
 
 # Python generated shenanigans.
 __*__
-
-# Ignore for now
-dlsl-gen
