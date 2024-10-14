@@ -28,7 +28,8 @@ There is additionally a `half` type for 16 bit floating point numbers.
 |            `matX*` | X by X Matrix                        |
 |              `T[]` | An array                             |
 |        `textureXD` | A X-dimensional texture              |
-|    `textureXDCube` | A X-dimensional texture              |
+|   `textureXDArray` | A X-dimensional array texture        |
+|      `textureCube` | A cube texture                       |
 |          `sampler` | A texture sampler                    |
 
 > ### Note
