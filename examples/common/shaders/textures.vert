@@ -12,4 +12,5 @@ uniform Camera {
 
 void main() {
     gl_Position = mvp * vec4(inVertex, 1.0);
+    outUV = inUV;
 }

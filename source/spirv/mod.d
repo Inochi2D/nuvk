@@ -8,12 +8,13 @@
 module spirv.mod;
 import spirv.spv;
 import spirv;
-import spirv.parser;
+import spirv.src;
 
 import nuvk.core.logging;
 
 import numem.all;
 import std.file;
+import std.traits : EnumMembers;
 
 class SpirvModule {
 @nogc:
@@ -30,7 +31,6 @@ public:
     */
     this(U)(auto ref U source) if (isCompatibleRange!(U, SpirvID)) {
         parsed = nogc_new!SpirvParsedModule(cast(SpirvID[])source[0..$], this);
-        parsed.parse();
     }
 
     /**
@@ -81,6 +81,27 @@ public:
     }
 
     /**
+        Sets the specified decoration for the type id.
+    */
+    SpirvDecoration setDecorationFor(SpirvID id, Decoration decoration) {
+        if (auto decor = this.getDecorationFor(id, decoration)) {
+            return decor;
+        }
+
+        // Create instruction before emitting it.
+        SpirvInstr instr = SpirvInstr(Op.OpDecorate);
+        instr.setOperand(0, id);             // Target ID
+        instr.setOperand(1, decoration);     // Decoration type
+        instr.push(0);                       // Decoration value 0
+
+
+        // Make sure we're applying it to a variable.
+        parsed.insertNear(Op.OpDecorate, instr);
+        parsed.parse();
+        return this.getDecorationFor(id, decoration);
+    }
+
+    /**
         Gets the first decoration argument for the specified ID
         and decoration type.
 
@@ -93,10 +114,36 @@ public:
     }
 
     /**
+        Sets the first decoration argument for the specified ID
+        and decoration type.
+
+        If decoration doesn't exist, creates it.
+        If this for some reason fails, returns SPIRV_NO_ID
+        Otherwise returns the value that was set.
+    */
+    SpirvID setDecorationArgFor(SpirvID id, Decoration decoration, SpirvID value, size_t offset = 0) {
+        if (auto decor = this.setDecorationFor(id, decoration)) {
+            decor.setArgument(offset, value);
+            return value;
+        }
+        return SPIRV_NO_ID;
+    }
+
+    /**
         Gets all the declared variables in the module.
     */
     SpirvVariable[] getVariables() {
         return cast(SpirvVariable[])parsed.variants[SpirvVariantKind.kVariable][];
+    }
+
+    /**
+        Finds a variable with the given ID.
+    */
+    SpirvVariable findVariable(SpirvID id) {
+        foreach(ref SpirvVariable var; this.getVariables())
+            if (var.getId() == id)
+                return var;
+        return null;
     }
 
     /**
@@ -109,7 +156,6 @@ public:
                 tmp ~= var;
         return tmp;
     }
-
 
     /**
         Gets all the declared variables in the module for the specified class.
@@ -180,6 +226,14 @@ public:
     }
 
     /**
+        Makes the module re-parse all of the instructions in the stream.
+    */
+    final
+    void reparse() {
+        parsed.parse();
+    }
+
+    /**
         Emits the SPIR-V that has been modified.
 
         Returns a slice of the newly emiited bytecode.
@@ -187,7 +241,8 @@ public:
     */
     final
     SpirvID[] emit() {
-        return parsed.emit()[];
+        parsed.emit();
+        return parsed.getBytecode();
     }
 
     /**
@@ -207,14 +262,14 @@ public:
     This parser is meant for reflection and basic
     instruction emitting.
 */
-class SpirvParsedModule : SpirvParserBase {
+class SpirvParsedModule : SpirvSource {
 @nogc:
 private:
     SpirvModule parent;
-    vector!(SpirvVariant)[SpirvVariantKind.kMaxCount] variants;
+    vector!(SpirvVariant)[SpirvVariantKindCount] variants;
     
     SpirvVariant findVariant(SpirvID id) {
-        foreach(kind; 0..cast(size_t)SpirvVariantKind.kMaxCount) {
+        foreach(kind; 0..cast(size_t)SpirvVariantKindCount) {
             if (auto found = this.findVariant(cast(SpirvVariantKind)kind, id)) {
                 return found;
             }
@@ -234,14 +289,14 @@ protected:
 
     override
     void onParseBegin() {
-        foreach(i; 0..variants.length) {
-            variants[i] = vector!SpirvVariant(0);
+        static foreach(kind; EnumMembers!SpirvVariantKind) {
+            variants[kind].clear();
         }
     }
 
     override
     void onParse(SpirvInstr* instr) {
-        auto opcode = instr.getOpcode();
+        auto opcode = instr.getOpCode();
         if (opcode == Op.OpEntryPoint) {
             variants[SpirvVariantKind.kEntryPoint] ~= nogc_new!SpirvEntryPoint(parent, instr);
             return;
@@ -277,7 +332,7 @@ protected:
     void onParseFinalize() {
 
         mainLoop: foreach(ref instr; this.getInstructions()) {
-            switch(instr.getOpcode()) {
+            switch(instr.getOpCode()) {
 
                 case Op.OpName:
                     if (instr.getOperands().length == 1)
@@ -303,7 +358,7 @@ protected:
 
     override
     void onRemapEnd() {
-        foreach(kind; 0..cast(size_t)SpirvVariantKind.kMaxCount) {
+        foreach(kind; 0..cast(size_t)SpirvVariantKindCount) {
             foreach(ref variant; variants[kind][]) {
                 variant.onRemap();
             }
@@ -312,7 +367,7 @@ protected:
 
 public:
     this(SpirvID[] source, SpirvModule parent) {
-        super(source);
         this.parent = parent;
+        super(source);
     }
 }

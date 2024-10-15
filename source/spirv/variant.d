@@ -10,6 +10,8 @@ import spirv;
 import numem.collections;
 import numem.string;
 
+import std.traits : EnumMembers;
+
 /**
     Variant kinds
 */
@@ -20,10 +22,12 @@ enum SpirvVariantKind {
     kDecoration = 3,
     kConstant   = 4,
     kEntryPoint = 5,
-
-    // Max count
-    kMaxCount   = 6,
 }
+
+/**
+    Gets the amount of variants in the SpirvVariantKind enum
+*/
+enum SpirvVariantKindCount = (EnumMembers!SpirvVariantKind).length;
 
 /**
     Variant containing specialised information about an instruction.
@@ -44,7 +48,7 @@ protected:
         this.mod = mod;
         this.instr = instr;
         this.kind = kind;
-        this.onIntrospect(this.instr.getOpcode());
+        this.onIntrospect(this.instr.getOpCode());
     }
 
     /**
@@ -71,7 +75,7 @@ public:
     */
     final
     void onRemap() {
-        this.onIntrospect(instr.getOpcode());
+        this.onIntrospect(instr.getOpCode());
     }
 
     /**
@@ -97,7 +101,7 @@ public:
     */
     final
     void setName(nstring str) {
-        this.name = nstring(str);
+        this.name = str;
     }
 
     /**
@@ -612,7 +616,7 @@ public:
                 return SpirvVarKind.image;
 
             case StorageClass.UniformConstant:
-                SpirvType type = this.getType();
+                SpirvType type = this.getBaseType();
                 switch(type.getTypeKind()) {
                     case SpirvTypeKind.sampledImage:
                         return SpirvVarKind.sampledImage;
@@ -796,12 +800,28 @@ public:
     }
 
     /**
-        Sets an argument for the decoration
+        Sets an argument for the decoration.
+
+        Resizes the argument list if need be.
     */
     final
     void setArgument(size_t offset, SpirvID value) {
-        if (canEdit)
+        if (canEdit) {
+            if (!instr.isOffsetInRange(argOffset+offset))
+                this.setArgumentCount(argOffset+offset+1);
+            
             instr.setOperand(argOffset+offset, value);
+        }
+    }
+
+    /**
+        Sets how many arguments are in the decoration.
+    */
+    final
+    void setArgumentCount(size_t count) {
+        if (canEdit) {
+            instr.resize(argOffset+count);
+        }
     }
 }
 
@@ -821,8 +841,7 @@ protected:
 
         this.executionModel = cast(ExecutionModel)instr.getOperand(0);
         this.funcId = instr.getOperand(1);
-        nstring str = instr.getOperandString(2);
-        this.setName(str);
+        this.setName(instr.getOperandString(2));
     }
 public:
 

@@ -6,7 +6,6 @@
 */
 
 module nuvk.core.vk.shader;
-import nuvk.core.shader.mod;
 import nuvk.core.vk;
 import nuvk.core;
 import numem.all;
@@ -141,101 +140,77 @@ class NuvkShaderProgramVk : NuvkShaderProgram {
 private:
     weak_vector!VkShaderEXT shaderObjects;
     VkDescriptorSetLayout shaderLayout;
+    VkPipelineLayout pipelineLayout;
     
     vector!VkVertexInputBindingDescription2EXT   inputBindings;
     vector!VkVertexInputAttributeDescription2EXT inputAttributes;
 
-    VkDescriptorSetLayout generateCombinedDescriptorSetFor(NuvkShader[] shaders) {
+
+    void generatePipelineLayoutVk() {
         auto device = this.getOwner().getHandle!VkDevice;
 
-        VkDescriptorSetLayout layout;
+        VkPipelineLayoutCreateInfo createInfo = VkPipelineLayoutCreateInfo(
+            setLayoutCount: 1,
+            pSetLayouts: &shaderLayout
+        );
+
+        nuvkEnforce(
+            vkCreatePipelineLayout(device, &createInfo, null, &pipelineLayout) == VK_SUCCESS,
+            "Vulkan pipeline layout creation failed!"
+        );
+    }
+
+    void generateDescriptorSetVk() {
+        auto device = this.getOwner().getHandle!VkDevice;
+
         VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo;
         vector!VkDescriptorSetLayoutBinding bindings;
 
-        foreach(shader; shaders) {
-
-            // Iterate over every shader and get their bindings
-            NuvkSpirvModule module_ = shader.getSpirvModule();
-            foreach(uint set; module_.getSetIter()) {
-                NuvkSpirvDescriptor[] descriptors = module_.getDescriptors(set);
-                
-                foreach(ref NuvkSpirvDescriptor descriptor; descriptors) {
-                    if (descriptor.kind.shouldBeInDescriptor()) {
-                        VkDescriptorSetLayoutBinding binding;
-                        binding.binding = descriptor.binding;
-                        binding.descriptorCount = 1;
-                        binding.stageFlags = shader.getStage().toVkShaderStage();
-                        binding.descriptorType = descriptor.kind.toVkDescriptorType();
-                        bindings ~= binding;
-                    }
-                }
-            }
+        // Iterate over every shader and get their bindings
+        foreach(ref NuvkSpirvDescriptor descriptor; this.getDescriptors()) {
+            VkDescriptorSetLayoutBinding binding;
+            binding.binding = descriptor.binding;
+            binding.descriptorCount = 1;
+            binding.stageFlags = descriptor.stage.toVkShaderStage();
+            binding.descriptorType = descriptor.kind.toVkDescriptorType();
+            bindings ~= binding;
         }
 
-        //
+        // Sets the bindings
         descriptorSetLayoutCreateInfo.bindingCount = cast(uint)bindings.length;
         descriptorSetLayoutCreateInfo.pBindings = bindings.ptr;
         nuvkEnforce(
-            vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, null, &layout) == VK_SUCCESS,
+            vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, null, &shaderLayout) == VK_SUCCESS,
             "Vulkan descriptor set layout creation failed!"
         );
-
-        return layout;
     }
 
-    VkShaderCreateInfoEXT generateInfoFor(NuvkShader shader) {
-        NuvkSpirvModule module_ = shader.getSpirvModule();
+    void generateInputsVk() {
+        VkVertexInputBindingDescription2EXT binding;
 
-        VkShaderCreateInfoEXT shaderCreateInfo;
-        shaderCreateInfo.codeType = VK_SHADER_CODE_TYPE_SPIRV_EXT;
-        shaderCreateInfo.codeSize = shader.getBytecodeSize();
-        shaderCreateInfo.pCode = shader.getBytecode().ptr;
-        shaderCreateInfo.stage = shader.getStage().toVkShaderStage();
-        shaderCreateInfo.pName = module_.getEntrypoint().ptr;
-
-        shaderCreateInfo.setLayoutCount = 1;
-        shaderCreateInfo.pSetLayouts = &shaderLayout;
-        shaderCreateInfo.pushConstantRangeCount = 0;
-
-        if (shader.getType() == NuvkShaderType.vertex) {
-            this.generateInputs(module_);
-        }
-
-        return shaderCreateInfo;
-    }
-
-    void generateInputs(NuvkSpirvModule module_) {
-        foreach(ref NuvkSpirvVertexInput input; module_.getVertexInputs()) {
-            VkVertexInputBindingDescription2EXT binding;
+        binding.binding = 0;
+        binding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+        binding.divisor = 1;
+        
+        
+        foreach(ref input; this.getVertexInputs()) {
             VkVertexInputAttributeDescription2EXT attribute;
-
-            binding.binding = 0;
-            binding.stride = input.stride;
-            binding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-            binding.divisor = 1;
             
             attribute.binding = 0;
             attribute.location = input.location;
             attribute.format = input.format.toVkFormat();
             attribute.offset = input.offset;
+            binding.stride = input.stride;
             
-            inputBindings ~= binding;
             inputAttributes ~= attribute;
         }
+        
+        inputBindings ~= binding;
     }
 
-    weak_vector!VkShaderStageFlagBits shaderStageFlags;
-
-protected:
-
-    override
-    bool onLink(NuvkShader[] shaders) {
+    bool generateShaderObjectsVk(NuvkShader[] shaders) {
         auto device = this.getOwner().getHandle!VkDevice;
-
-        // Create the shader layout
-        shaderLayout = generateCombinedDescriptorSetFor(shaders);
-
-        shaderObjects.resize(shaders.length);
+        this.shaderObjects.resize(shaders.length);
         
         // Generate shader info
         vector!VkShaderCreateInfoEXT shaderInfos;
@@ -249,7 +224,7 @@ protected:
             nuvkLogError("Failed to link shaders!");
             foreach(i, shader; shaderObjects) {
                 if (shader == VK_NULL_HANDLE)
-                    nuvkLogError("Shader {0} bound to stage '{1}' failed!", i, shaders[i].getType().toString());
+                    nuvkLogError("Shader '{0}' failed linking step!", shaders[i].getName());
                 else
                     vkDestroyShaderEXT(device, shader, null);
             }
@@ -258,6 +233,35 @@ protected:
             return false;
         }
         return true;
+    }
+
+    VkShaderCreateInfoEXT generateInfoFor(NuvkShader shader) {
+        VkShaderCreateInfoEXT shaderCreateInfo;
+        shaderCreateInfo.codeType = VK_SHADER_CODE_TYPE_SPIRV_EXT;
+        shaderCreateInfo.codeSize = shader.getBytecodeSize();
+        shaderCreateInfo.pCode = shader.getBytecode().ptr;
+        shaderCreateInfo.stage = shader.getStage().toVkShaderStage();
+        shaderCreateInfo.pName = shader.getEntryPoint().ptr;
+
+        shaderCreateInfo.setLayoutCount = 1;
+        shaderCreateInfo.pSetLayouts = &shaderLayout;
+        shaderCreateInfo.pushConstantRangeCount = 0;
+
+        return shaderCreateInfo;
+    }
+
+    weak_vector!VkShaderStageFlagBits shaderStageFlags;
+
+protected:
+
+    override
+    bool onLink(NuvkShader[] shaders) {
+
+        // Create the shader layout
+        this.generateInputsVk();
+        this.generateDescriptorSetVk();
+        this.generatePipelineLayoutVk();
+        return this.generateShaderObjectsVk(shaders);
     }
 
 public:
@@ -320,4 +324,19 @@ public:
         return inputAttributes[];
     }
 
+    /**
+        Gets the descriptor set layout for the shader.
+    */
+    final
+    VkDescriptorSetLayout getDescriptorSetLayout() {
+        return shaderLayout;
+    }
+
+    /**
+        Gets the pipeline layout for the shader.
+    */
+    final
+    VkPipelineLayout getPipelineLayout() {
+        return pipelineLayout;
+    }
 }

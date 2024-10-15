@@ -6,96 +6,15 @@
 */
 
 module nuvk.core.shader.program;
+import nuvk.core.shader.mapper;
+import nuvk.core.shader.table;
+import spirv;
 import numem.all;
 import nuvk.core;
+import inmath;
 
-/**
-    Input rate
-*/
-enum NuvkInputRate {
-    /**
-        Input is per-vertex
-    */
-    vertex,
-
-    /**
-        Input is per-instance
-    */
-    instance
-}
-
-/**
-    A vertex attribute
-*/
-struct NuvkVertexAttribute {
-
-    /**
-        Binding point
-    */
-    uint binding;
-
-    /**
-        Byte-offset of attribute
-    */
-    uint offset;
-
-    /**
-        Location that the attribute is bound to
-    */
-    uint location;
-
-    /**
-        The format of the attribute
-    */
-    NuvkVertexFormat format;
-}
-
-struct NuvkVertexBinding {
-
-    /**
-        Binding point
-    */
-    uint binding;
-
-    /**
-        Stride 
-    */
-    uint stride;
-
-    /**
-        InputRate 
-    */
-    NuvkInputRate inputRate;
-}
-
-/**
-    Creation information for a graphics pipeline
-*/
-struct NuvkGraphicsPipelineDescriptor {
-@nogc:
-
-    /**
-        List of formats for the fragment output.
-
-        If this list is empty nuvk will attempt to guess
-        the texture formats of outputs from the fragment shader.
-    */
-    vector!NuvkTextureFormat fragmentOutputs;
-
-    /**
-        Vertex bindings
-
-        May be empty if no vertex shader is specified.
-    */
-    vector!NuvkVertexBinding bindings;
-
-    /**
-        Vertex attributes
-
-        May be empty if no vertex shader is specified.
-    */
-    vector!NuvkVertexAttribute attributes;
-}
+public import spirv.variant : SpirvVarKind;
+import std.traits : EnumMembers;
 
 /**
     A linked shader program
@@ -103,9 +22,11 @@ struct NuvkGraphicsPipelineDescriptor {
 class NuvkShaderProgram : NuvkDeviceObject {
 @nogc:
 private:
+    NuvkDescriptorMapper mapper;
+    NuvkShaderArgumentTableManager tables;
     size_t linked = 0;
     NuvkShaderStage stages;
-    weak_vector!NuvkShader shaders;
+    vector!NuvkShader shaders;
 
     bool isGraphicsProgram() {
         return stages == 0 || (stages & NuvkShaderStage.graphics) > 0;
@@ -124,8 +45,134 @@ private:
             ((this.isGraphicsProgram() && shader.isGraphicsShader()) ||
             (stages == 0 || !this.isGraphicsProgram() && shader.getStage() == NuvkShaderStage.compute));
     }
+    
+    void buildArgumentTables(NuvkShader shader) {
+        auto shaderType = shader.getType();
+        auto module_ = shader.getModule();
+
+        foreach(ref var; module_.getVariables()) {
+            auto kind = var.getVarKind();
+
+            switch(kind) {
+
+                case SpirvVarKind.uniformBuffer:
+                case SpirvVarKind.image:
+                case SpirvVarKind.sampler:
+                case SpirvVarKind.sampledImage:
+                case SpirvVarKind.storageBuffer:
+                    auto index = tables.findNextFreeIndex(shaderType, kind);
+
+                    if (auto decor = module_.getDecorationFor(var.getId(), Decoration.Binding)) {
+                        auto requestedIndex = decor.getArguments()[0];
+                        if (!tables.findArgument(shaderType, kind, requestedIndex)) {
+                            index = requestedIndex;
+                        }
+                    }
+
+                    tables.addArgument(shaderType, kind, NuvkShaderArgumentTableEntry(
+                        name: nstring(var.getName()),
+                        index: index,
+                        binding: var.getId()
+                    ));
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        // Then remap
+        mapper.remap(shader);
+        
+        // Update all the bindings, we reused the binding to store the variable mapping.
+        foreach(ref table; tables.getTables(shaderType)) {
+            foreach(ref entry; table.entries) {
+                if (auto var = module_.findVariable(entry.binding)) {
+                    if (auto decor = module_.getDecorationFor(var.getId(), Decoration.Binding)) {
+                        entry.binding = decor.getArguments()[0];
+                        this.onBuildArgumentTable(shader, entry);
+                    }
+                }
+            }
+        }
+
+        shader.emit();
+        shader.reparse();
+    }
+
+    void buildVertexInputs(NuvkShader shader) {
+        vertexInputs.clear();
+        auto module_ = shader.getModule();
+        auto variables = module_.getVariablesForKind(SpirvVarKind.stageInput);
+
+        size_t offset;
+        size_t location;
+        foreach(ref SpirvVariable var; variables) {
+
+            auto type = var.getType();
+            size_t size = type.getSize();
+            size_t bitwidth = type.getWidth();
+
+            size_t locations = max(1, size/16);
+            size_t subSize = size/locations;
+            size_t elementCount = type.getComponents();
+            location = module_.getDecorationArgFor(var.getId(), Decoration.Location);
+            foreach(i; 0..locations) {
+                NuvkSpirvVertexInput input;
+                input.name = var.getName();
+                input.location = cast(uint)(location+i);
+                input.offset = cast(uint)offset;
+                input.size = cast(uint)subSize;
+                input.format = createVertexFormat(cast(uint)elementCount, cast(uint)bitwidth);
+
+                offset += subSize;
+                vertexInputs ~= input;
+            }
+        }
+
+        foreach(ref input; vertexInputs) {
+            input.stride = cast(uint)offset;
+        }
+    }
+
+    void buildDescriptors() {
+        descriptors.clear();
+        static foreach(enumMember; EnumMembers!NuvkShaderType) {
+            foreach(ref table; tables.getTables(enumMember)) {
+                auto kind = table.bindingKind;
+                foreach(ref entry; table.entries) {
+                    descriptors ~= NuvkSpirvDescriptor(
+                        stage: enumMember.toStage(),
+                        name: entry.name,
+                        kind: kind,
+                        binding: entry.binding,
+                    );
+                }
+            }
+        }
+
+    }
+
+    // Bindings
+    vector!NuvkSpirvDescriptor descriptors;
+    vector!NuvkSpirvVertexInput vertexInputs;
 
 protected:
+
+    /**
+        Gets the argument tables which onLink needs to fill out.
+    */
+    final
+    NuvkShaderArgumentTableManager getArgumentTables() {
+        return tables;
+    }
+
+    /**
+        Implementation for argument table modifications.
+
+        Called before linking, after SPIR-V transformation is completed.
+    */
+    void onBuildArgumentTable(NuvkShader shader, ref NuvkShaderArgumentTableEntry entry) { }
 
     /**
         Implementation for linking the provided shaders together.
@@ -134,6 +181,11 @@ protected:
 
 public:
 
+    ~this() {
+        nogc_delete(descriptors);
+        nogc_delete(vertexInputs);
+    }
+
     /**
         Creates a new empty shader program.
 
@@ -141,6 +193,8 @@ public:
     */
     this(NuvkDevice device) {
         super(device);
+        this.tables = nogc_new!NuvkShaderArgumentTableManager();
+        this.mapper = nogc_new!NuvkDescriptorMapper();
     }
 
     /**
@@ -183,7 +237,7 @@ public:
         );
 
         // Add shader.
-        shaders ~= shader;
+        shaders ~= shader.toUnique();
         stages |= shader.getStage();
 
         return this;
@@ -199,10 +253,46 @@ public:
             "Program is already linked!"
         );
 
-        if (this.onLink(shaders[])) {
-            this.linked = shaders.length;
-            shaders.clear();
+        foreach(shader; shaders) {
+            if (shader.getType() == NuvkShaderType.vertex)
+                this.buildVertexInputs(shader);
+            this.buildArgumentTables(shader);
         }
+        this.buildDescriptors();
+
+        nuvkEnforce(
+            this.onLink(shaders[]), 
+            "Failed to link shaders!"
+        );
+        this.linked = shaders.length;
+        shaders.clear();
+    }
+
+    /**
+        Gets an argument within the argument table.
+
+        This is used by nuvk backends to map type indices into 
+        API specific bindings.
+    */
+    final
+    NuvkShaderArgumentTableEntry* findArgument(NuvkShaderType type, SpirvVarKind binding, uint index) {
+        return tables.findArgument(type, binding, index);
+    }
+
+    /**
+        Gets the vertex inputs
+    */
+    final
+    NuvkSpirvVertexInput[] getVertexInputs() {
+        return vertexInputs[];
+    }
+
+    /**
+        Gets the descriptors of the program
+    */
+    final
+    NuvkSpirvDescriptor[] getDescriptors() {
+        return descriptors[];
     }
 
     /**

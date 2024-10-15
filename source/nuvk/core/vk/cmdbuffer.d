@@ -63,18 +63,22 @@ VkBlendFactor toVkBlendFactor(NuvkBlendFactor factor) @nogc {
             return VK_BLEND_FACTOR_ONE;
         case NuvkBlendFactor.srcColor:
             return VK_BLEND_FACTOR_SRC_COLOR;
+        case NuvkBlendFactor.srcAlpha:
+            return VK_BLEND_FACTOR_SRC_ALPHA;
+        case NuvkBlendFactor.srcAlphaSaturated:
+            return VK_BLEND_FACTOR_SRC_ALPHA_SATURATE;
         case NuvkBlendFactor.oneMinusSrcColor:
             return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
         case NuvkBlendFactor.oneMinusSrcAlpha:
             return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-        case NuvkBlendFactor.destColor:
+        case NuvkBlendFactor.dstColor:
             return VK_BLEND_FACTOR_DST_COLOR;
-        case NuvkBlendFactor.oneMinusDestColor:
+        case NuvkBlendFactor.dstAlpha:
+            return VK_BLEND_FACTOR_DST_ALPHA;
+        case NuvkBlendFactor.oneMinusDstColor:
             return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
-        case NuvkBlendFactor.oneMinusDestAlpha:
+        case NuvkBlendFactor.oneMinusDstAlpha:
             return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
-        case NuvkBlendFactor.srcAlphaSaturated:
-            return VK_BLEND_FACTOR_SRC_ALPHA_SATURATE;
     }
 }
 
@@ -90,6 +94,15 @@ VkBlendOp toVkBlendOp(NuvkBlendOp op) @nogc {
             return VK_BLEND_OP_MIN;
         case NuvkBlendOp.max:
             return VK_BLEND_OP_MAX;
+    }
+}
+
+VkPolygonMode toVkPolygonMode(NuvkFillMode mode) @nogc {
+    final switch(mode) {
+        case NuvkFillMode.fill:
+            return VK_POLYGON_MODE_FILL;
+        case NuvkFillMode.lines:
+            return VK_POLYGON_MODE_LINE;
     }
 }
 
@@ -134,9 +147,9 @@ private:
         auto device = cast(VkDevice)this.getOwner().getHandle();
         auto pool = (cast(NuvkQueueVk)this.getQueue()).getCommandPool();
 
-        if (commandBuffers.size() > 0) {
-            vkFreeCommandBuffers(device, pool, cast(uint)commandBuffers.size(), commandBuffers.data());
-            commandBuffers.resize(0);
+        if (commandBuffers.length > 0) {
+            vkFreeCommandBuffers(device, pool, cast(uint)commandBuffers.length, commandBuffers.ptr);
+            commandBuffers.clear();
         }
     }
 
@@ -179,8 +192,10 @@ protected:
         Implements the logic to finish encoding.
     */
     override
-    void onEncoderFinished(void* handle) {
-        this.commandBuffers ~= cast(VkCommandBuffer)handle;
+    void onEncoderFinished(NuvkEncoder encoder) {
+        auto handle = cast(VkCommandBuffer)encoder.getHandle();
+        vkEndCommandBuffer(handle);
+        this.commandBuffers ~= handle;
     }
 
     /**
@@ -216,11 +231,6 @@ protected:
     */
     override
     void onPresent(NuvkSurface surface) {
-        nuvkEnforce(
-            this.getStatus() == NuvkCommandBufferStatus.submitted,
-            "Nothing to present."
-        );
-
         auto nuvkswapchain = (cast(NuvkVkSwapchain)surface.getSwapchain());
         auto swapchain = cast(VkSwapchainKHR)nuvkswapchain.getHandle();
         uint index = nuvkswapchain.getCurrentImageIndex();
@@ -317,10 +327,12 @@ private:
     NuvkCommandBufferVk parent;
     VkCommandBuffer writeBuffer;
     VkDevice device;
+    NuvkShaderProgram program;
 
     // Pipeline state
-    VkDescriptorSet currentSet;
-    VkDescriptorSet boundSet;
+    VkDescriptorSetLayout[1] setLayout;
+    VkDescriptorSet descriptorSet;
+    VkPipelineLayout pipelineLayout;
 
 protected:
 
@@ -331,14 +343,15 @@ protected:
     override
     void onBegin(ref NuvkCommandBuffer buffer) {
         NuvkRenderPassDescriptor descriptor = this.getDescriptor();
+        this.program = descriptor.shader;
 
         VkRenderingInfo renderInfo;
         renderInfo.layerCount = 1;
 
-        weak_vector!VkImageMemoryBarrier memoryBarriers;
+        vector!VkImageMemoryBarrier memoryBarriers;
 
-        weak_vector!VkRenderingAttachmentInfo colorAttachments
-            = weak_vector!VkRenderingAttachmentInfo(descriptor.colorAttachments.size());
+        vector!VkRenderingAttachmentInfo colorAttachments
+            = vector!VkRenderingAttachmentInfo(descriptor.colorAttachments.size());
         VkRenderingAttachmentInfo depthStencilAttachment;
 
         uint attachmentCount = 0;
@@ -456,50 +469,51 @@ protected:
         viewport.width = descriptor.renderArea.width;
         viewport.height = descriptor.renderArea.height;
 
-        if (colorAttachments.size() > 0) {
+        if (descriptor.colorAttachments.length > 0) {
+            weak_vector!VkColorBlendEquationEXT blendEquations;
+            weak_vector!VkBool32 blendingEnabled;
+            weak_vector!VkBool32 writeEnabled;
+            weak_vector!uint writeMasks;
+            
             foreach(i, colorAttachment; descriptor.colorAttachments) {
-                uint attachmentIndex = cast(uint)i;
-
-                VkBool32 enabled = colorAttachment.isBlendingEnabled;
-                vkCmdSetColorBlendEnableEXT(writeBuffer, attachmentIndex, 1, &enabled);
-                if (colorAttachment.isBlendingEnabled) {
-                    VkColorBlendEquationEXT equation;
-                    equation.colorBlendOp = colorAttachment.blendOp.toVkBlendOp();
-                    equation.alphaBlendOp = colorAttachment.blendOp.toVkBlendOp();
-                    equation.srcColorBlendFactor = colorAttachment.sourceColorFactor.toVkBlendFactor();
-                    equation.srcAlphaBlendFactor = colorAttachment.sourceAlphaFactor.toVkBlendFactor();
-                    equation.dstColorBlendFactor = colorAttachment.destinationColorFactor.toVkBlendFactor();
-                    equation.dstAlphaBlendFactor = colorAttachment.destinationAlphaFactor.toVkBlendFactor();
-
-                    vkCmdSetColorBlendEquationEXT(writeBuffer, attachmentIndex, 1, &equation);
-                }
-
-                uint writeMask = VK_COLOR_COMPONENT_R_BIT | 
-                                 VK_COLOR_COMPONENT_G_BIT | 
-                                 VK_COLOR_COMPONENT_B_BIT | 
-                                 VK_COLOR_COMPONENT_A_BIT;
-                vkCmdSetColorWriteMaskEXT(writeBuffer, 0, 1, &writeMask);
+                blendingEnabled ~= colorAttachment.isBlendingEnabled;
+                blendEquations ~= VkColorBlendEquationEXT(
+                    colorBlendOp: colorAttachment.blendOpColor.toVkBlendOp(),
+                    alphaBlendOp: colorAttachment.blendOpAlpha.toVkBlendOp(),
+                    srcColorBlendFactor: colorAttachment.sourceColorFactor.toVkBlendFactor(),
+                    srcAlphaBlendFactor: colorAttachment.sourceAlphaFactor.toVkBlendFactor(),
+                    dstColorBlendFactor: colorAttachment.destinationColorFactor.toVkBlendFactor(),
+                    dstAlphaBlendFactor: colorAttachment.destinationAlphaFactor.toVkBlendFactor(),
+                );
+                writeEnabled ~= VK_TRUE;
+                writeMasks ~= VK_COLOR_COMPONENT_R_BIT | 
+                              VK_COLOR_COMPONENT_G_BIT | 
+                              VK_COLOR_COMPONENT_B_BIT | 
+                              VK_COLOR_COMPONENT_A_BIT;
             }
+            vkCmdSetColorBlendEnableEXT(writeBuffer, 0, cast(uint)blendingEnabled.length, blendingEnabled.ptr);
+            vkCmdSetColorBlendEquationEXT(writeBuffer, 0, cast(uint)blendEquations.length, blendEquations.ptr);
+            vkCmdSetColorWriteMaskEXT(writeBuffer, 0, cast(uint)writeMasks.length, writeMasks.ptr);
         }
 
 
         auto linkedCount = descriptor.shader.getLinkedCount();
-        auto objects = (cast(NuvkShaderProgramVk)descriptor.shader).getObjects();
-        auto stages = (cast(NuvkShaderProgramVk)descriptor.shader).getVkStages();
-        auto bindings = (cast(NuvkShaderProgramVk)descriptor.shader).getInputBindings();
-        auto attributes = (cast(NuvkShaderProgramVk)descriptor.shader).getInputAttributes();
-
-
+        auto shaderProgram = cast(NuvkShaderProgramVk)descriptor.shader;
+        auto objects = shaderProgram.getObjects();
+        auto stages = shaderProgram.getVkStages();
+        auto bindings = shaderProgram.getInputBindings();
+        auto attributes = shaderProgram.getInputAttributes();
         VkSampleMask mask = 0xFFFFFFFF;
+
 
         // Set all the dynamic state
         vkCmdBindShadersEXT(writeBuffer, cast(uint)linkedCount, stages.ptr, objects.ptr);
         vkCmdSetVertexInputEXT(writeBuffer, cast(uint)bindings.length, bindings.ptr, cast(uint)attributes.length, attributes.ptr);
 
-        vkCmdSetRasterizerDiscardEnable(writeBuffer, VK_FALSE);
+        vkCmdSetRasterizerDiscardEnable(writeBuffer, !descriptor.isRasterizationEnabled);
         vkCmdSetDepthClampEnableEXT(writeBuffer, VK_FALSE);
-        vkCmdSetAlphaToOneEnableEXT(writeBuffer, VK_FALSE);
-        vkCmdSetAlphaToCoverageEnableEXT(writeBuffer, VK_FALSE);
+        vkCmdSetAlphaToOneEnableEXT(writeBuffer, descriptor.isAlphaToOneEnabled);
+        vkCmdSetAlphaToCoverageEnableEXT(writeBuffer, descriptor.isAlphaToCoverageEnabled);
         vkCmdSetLogicOpEnableEXT(writeBuffer, VK_FALSE);
         vkCmdSetDepthBoundsTestEnable(writeBuffer, VK_FALSE);
         vkCmdSetPrimitiveTopology(writeBuffer, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
@@ -512,20 +526,24 @@ protected:
         vkCmdSetSampleMaskEXT(writeBuffer, VK_SAMPLE_COUNT_1_BIT, &mask);
         vkCmdSetPrimitiveRestartEnable(writeBuffer, VK_TRUE);
         vkCmdSetCullMode(writeBuffer, VK_CULL_MODE_BACK_BIT);
-        vkCmdSetFrontFace(writeBuffer, VK_FRONT_FACE_CLOCKWISE);
+        vkCmdSetFrontFace(writeBuffer, VK_FRONT_FACE_COUNTER_CLOCKWISE);
 
         vkCmdSetViewportWithCount(writeBuffer, 1, &viewport);
         vkCmdSetScissorWithCount(writeBuffer, 1, &scissorRect);
+
+        pipelineLayout = shaderProgram.getPipelineLayout();
+        setLayout = [shaderProgram.getDescriptorSetLayout()];
+        this.nextDescriptor();
     }
 
     /**
         Called by the implementation when the encoding ends
     */
     override
-    void* onEnd(ref NuvkCommandBuffer buffer) {
+    void onEnd(ref NuvkCommandBuffer buffer) {
         NuvkRenderPassDescriptor descriptor = this.getDescriptor();
 
-        weak_vector!VkImageMemoryBarrier memoryBarriers;
+        vector!VkImageMemoryBarrier memoryBarriers;
 
         foreach(i; 0..descriptor.colorAttachments.size()) {
             NuvkTextureVkView nuvkTextureView = cast(NuvkTextureVkView)descriptor.colorAttachments[i].texture;
@@ -559,9 +577,19 @@ protected:
             cast(uint)memoryBarriers.size(),
             memoryBarriers.data()
         );
+    }
 
-        vkEndCommandBuffer(writeBuffer);
-        return writeBuffer;
+    void nextDescriptor() {
+        descriptorSet = parent.pools.getNext(setLayout[]);
+
+        vkCmdBindDescriptorSets(
+            writeBuffer,
+            VK_PIPELINE_BIND_POINT_GRAPHICS,
+            pipelineLayout,
+            0, 1,
+            &descriptorSet,
+            0, null
+        );
     }
 
 public:
@@ -569,12 +597,11 @@ public:
     /**
         Constructor
     */
-    this(NuvkCommandBufferVk parent, ref NuvkRenderPassDescriptor descriptor, VkCommandBuffer rDestination) {
+    this(NuvkCommandBufferVk parent, ref NuvkRenderPassDescriptor descriptor, VkCommandBuffer handle) {
         this.device = cast(VkDevice)parent.getOwner().getHandle();
         this.parent = parent;
-        this.writeBuffer = rDestination;
-
-        super(parent, descriptor);
+        this.writeBuffer = handle;
+        super(parent, handle, descriptor);
     }
 
     /**
@@ -649,7 +676,7 @@ public:
     */
     override
     void setFillMode(NuvkFillMode fillMode) {
-        
+        vkCmdSetPolygonModeEXT(writeBuffer, fillMode.toVkPolygonMode());
     }
 
     /**
@@ -665,20 +692,22 @@ public:
                 break;
 
             case NuvkBufferUsage.uniform:
-                VkDescriptorBufferInfo bufferInfo;
-                bufferInfo.buffer = cast(VkBuffer)buffer.getHandle();
-                bufferInfo.offset = offset;
-                bufferInfo.range = buffer.getSize();
+                if (auto arg = program.findArgument(NuvkShaderType.vertex, SpirvVarKind.uniformBuffer, index)) {
+                    VkDescriptorBufferInfo bufferInfo;
+                    bufferInfo.buffer = cast(VkBuffer)buffer.getHandle();
+                    bufferInfo.offset = offset;
+                    bufferInfo.range = buffer.getSize();
 
-                VkWriteDescriptorSet writeInfo;
-                writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                writeInfo.descriptorCount = 1;
-                writeInfo.dstBinding = index;
-                writeInfo.dstArrayElement = 0;
-                writeInfo.pBufferInfo = &bufferInfo;
-                writeInfo.dstSet = currentSet;
+                    VkWriteDescriptorSet writeInfo;
+                    writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    writeInfo.descriptorCount = 1;
+                    writeInfo.dstBinding = arg.binding;
+                    writeInfo.dstArrayElement = 0;
+                    writeInfo.pBufferInfo = &bufferInfo;
+                    writeInfo.dstSet = descriptorSet;
 
-                vkUpdateDescriptorSets(device, 1, &writeInfo, 0, null);
+                    vkUpdateDescriptorSets(device, 1, &writeInfo, 0, null);
+                }
                 break;
 
             case NuvkBufferUsage.vertex:
@@ -699,20 +728,22 @@ public:
                 break;
 
             case NuvkBufferUsage.uniform:
-                VkDescriptorBufferInfo bufferInfo;
-                bufferInfo.buffer = cast(VkBuffer)buffer.getHandle();
-                bufferInfo.offset = offset;
-                bufferInfo.range = buffer.getSize();
+                if (auto arg = program.findArgument(NuvkShaderType.fragment, SpirvVarKind.uniformBuffer, index)) {
+                    VkDescriptorBufferInfo bufferInfo;
+                    bufferInfo.buffer = cast(VkBuffer)buffer.getHandle();
+                    bufferInfo.offset = offset;
+                    bufferInfo.range = buffer.getSize();
 
-                VkWriteDescriptorSet writeInfo;
-                writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                writeInfo.descriptorCount = 1;
-                writeInfo.dstBinding = index;
-                writeInfo.dstArrayElement = 0;
-                writeInfo.pBufferInfo = &bufferInfo;
-                writeInfo.dstSet = currentSet;
+                    VkWriteDescriptorSet writeInfo;
+                    writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    writeInfo.descriptorCount = 1;
+                    writeInfo.dstBinding = arg.binding;
+                    writeInfo.dstArrayElement = 0;
+                    writeInfo.pBufferInfo = &bufferInfo;
+                    writeInfo.dstSet = descriptorSet;
 
-                vkUpdateDescriptorSets(device, 1, &writeInfo, 0, null);
+                    vkUpdateDescriptorSets(device, 1, &writeInfo, 0, null);
+                }
                 break;
         }
     }
@@ -723,20 +754,22 @@ public:
     */
     override
     void setFragmentTexture(NuvkTextureView texture, int index) {
-        VkDescriptorImageInfo imageInfo;
-        imageInfo.imageLayout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL;
-        imageInfo.imageView = cast(VkImageView)texture.getHandle();
+        if (auto arg = program.findArgument(NuvkShaderType.fragment, SpirvVarKind.image, index)) {
+            VkDescriptorImageInfo imageInfo;
+            imageInfo.imageLayout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL;
+            imageInfo.imageView = cast(VkImageView)texture.getHandle();
 
-        VkWriteDescriptorSet writeInfo;
-        writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-        writeInfo.descriptorCount = 1;
-        writeInfo.dstBinding = index;
-        writeInfo.dstArrayElement = 0;
-        writeInfo.pBufferInfo = null;
-        writeInfo.pImageInfo = &imageInfo;
-        writeInfo.dstSet = currentSet;
+            VkWriteDescriptorSet writeInfo;
+            writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+            writeInfo.descriptorCount = 1;
+            writeInfo.dstBinding = arg.binding;
+            writeInfo.dstArrayElement = 0;
+            writeInfo.pBufferInfo = null;
+            writeInfo.pImageInfo = &imageInfo;
+            writeInfo.dstSet = descriptorSet;
 
-        vkUpdateDescriptorSets(device, 1, &writeInfo, 0, null);
+            vkUpdateDescriptorSets(device, 1, &writeInfo, 0, null);
+        }
     }
 
     /**
@@ -744,19 +777,21 @@ public:
     */
     override
     void setFragmentSampler(NuvkSampler sampler, int index) {
-        VkDescriptorImageInfo imageInfo;
-        imageInfo.sampler = cast(VkSampler)sampler.getHandle();
+        if (auto arg = program.findArgument(NuvkShaderType.fragment, SpirvVarKind.sampler, index)) {
+            VkDescriptorImageInfo imageInfo;
+            imageInfo.sampler = cast(VkSampler)sampler.getHandle();
 
-        VkWriteDescriptorSet writeInfo;
-        writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-        writeInfo.descriptorCount = 1;
-        writeInfo.dstBinding = index;
-        writeInfo.dstArrayElement = 0;
-        writeInfo.pBufferInfo = null;
-        writeInfo.pImageInfo = &imageInfo;
-        writeInfo.dstSet = currentSet;
+            VkWriteDescriptorSet writeInfo;
+            writeInfo.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+            writeInfo.descriptorCount = 1;
+            writeInfo.dstBinding = arg.binding;
+            writeInfo.dstArrayElement = 0;
+            writeInfo.pBufferInfo = null;
+            writeInfo.pImageInfo = &imageInfo;
+            writeInfo.dstSet = descriptorSet;
 
-        vkUpdateDescriptorSets(device, 1, &writeInfo, 0, null);
+            vkUpdateDescriptorSets(device, 1, &writeInfo, 0, null);
+        }
     }
 
     /**
@@ -766,6 +801,7 @@ public:
     override
     void draw(NuvkPrimitive primitive, uint offset, uint count) {
         vkCmdDraw(writeBuffer, count, 1, offset, 0);
+        this.nextDescriptor();
     }
 
     /**
@@ -776,6 +812,7 @@ public:
     override
     void drawIndexed(NuvkPrimitive primitive, uint offset, uint count) {
         vkCmdDrawIndexed(writeBuffer, count, 1, 0, offset, 0);
+        this.nextDescriptor();
     }
 
 
@@ -943,10 +980,7 @@ protected:
         Called by the implementation when the encoding ends
     */
     override
-    void* onEnd(ref NuvkCommandBuffer buffer) {
-        vkEndCommandBuffer(writeBuffer);
-        return writeBuffer;
-    }
+    void onEnd(ref NuvkCommandBuffer buffer) { }
 
     void transitionImageToGeneral(ref NuvkTexture texture) {
 
@@ -958,12 +992,11 @@ public:
     /**
         Constructor
     */
-    this(NuvkCommandBufferVk parent, VkCommandBuffer rDestination) {
+    this(NuvkCommandBufferVk parent, VkCommandBuffer handle) {
         this.device = cast(VkDevice)parent.getOwner().getHandle();
         this.parent = parent;
-        this.writeBuffer = rDestination;
-
-        super(parent);
+        this.writeBuffer = handle;
+        super(parent, handle);
     }
 
     /**

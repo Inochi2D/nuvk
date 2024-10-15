@@ -51,11 +51,9 @@ void main(string[] args) {
     NuvkCommandBuffer cmdbuffer = queue.createCommandBuffer();
 
     // Rendering pipeline
-    NuvkPipeline pipeline = device.createRenderPipeline(
+    NuvkShaderProgram program = device.createRenderPipeline(
         vertex: vertexShaderSrc, 
-        fragment: fragmentShaderSrc,
-        attributes: [NuvkVertexAttribute(location: 0, format: NuvkVertexFormat.vec3)],
-        bindings: [NuvkVertexBinding(stride: vec3.sizeof, inputRate: NuvkInputRate.vertex)]
+        fragment: fragmentShaderSrc
     );
 
     // Vertex buffer
@@ -93,10 +91,11 @@ void main(string[] args) {
                 clearValue: NuvkClearValue(0, 0, 0, 1),
                 texture: nextImage
             );
+
+            renderPassDescriptor.shader = program;
             
             // Render
             if (NuvkRenderEncoder renderPass = cmdbuffer.beginRenderPass(renderPassDescriptor)) {
-                renderPass.setPipeline(pipeline);
                 renderPass.setVertexBuffer(vertexBuffer, 0, 0);
                 renderPass.setVertexBuffer(uniformBuffer, 0, 0);
                 renderPass.draw(NuvkPrimitive.triangles, 0, 6);
@@ -105,7 +104,8 @@ void main(string[] args) {
 
             cmdbuffer.commit();
             cmdbuffer.present(myWindow.getSurface());
-            cmdbuffer.awaitCompletion();
         }
+        
+        cmdbuffer.awaitCompletion();
     }
 }

@@ -635,6 +635,8 @@ private:
             vkCreateSampler(device, &samplerCreateInfo, null, &sampler) == VK_SUCCESS,
             "Failed creating sampler"
         );
+
+        this.setHandle(sampler);
     }
 
 public:

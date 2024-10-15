@@ -278,12 +278,14 @@ enum NuvkBlendFactor {
     zero,
     one,
     srcColor,
+    srcAlpha,
+    srcAlphaSaturated,
     oneMinusSrcColor,
     oneMinusSrcAlpha,
-    destColor,
-    oneMinusDestColor,
-    oneMinusDestAlpha,
-    srcAlphaSaturated,
+    dstColor,
+    dstAlpha,
+    oneMinusDstColor,
+    oneMinusDstAlpha,
 }
 
 /**
@@ -326,22 +328,27 @@ struct NuvkColorAttachment {
     /**
         The blending operation to use
     */
-    NuvkBlendOp blendOp = NuvkBlendOp.add;
+    NuvkBlendOp blendOpColor = NuvkBlendOp.add;
+    
+    /**
+        The blending operation to use
+    */
+    NuvkBlendOp blendOpAlpha = NuvkBlendOp.add;
     
     /**
         The source color blending factor
     */
-    NuvkBlendFactor sourceColorFactor = NuvkBlendFactor.one;
+    NuvkBlendFactor sourceColorFactor = NuvkBlendFactor.srcAlpha;
 
     /**
         The source alpha blending factor
     */
-    NuvkBlendFactor sourceAlphaFactor = NuvkBlendFactor.one;
+    NuvkBlendFactor sourceAlphaFactor = NuvkBlendFactor.oneMinusSrcAlpha;
     
     /**
         The destination color blending factor
     */
-    NuvkBlendFactor destinationColorFactor = NuvkBlendFactor.oneMinusSrcAlpha;
+    NuvkBlendFactor destinationColorFactor = NuvkBlendFactor.srcAlpha;
     
     /**
         The destination alpha blending factor
@@ -410,6 +417,22 @@ struct NuvkRenderPassDescriptor {
         Depth-stencil attachment for the render pass
     */
     NuvkDepthStencilAttachment depthStencilAttachment;
+
+    /**
+        Indicates whether to use the alpha channel
+        to create a sampler coverage mask.
+    */
+    bool isAlphaToCoverageEnabled = false;
+
+    /**
+        Whether to force alpha values to the highest possible value.
+    */
+    bool isAlphaToOneEnabled = false;
+
+    /**
+        Whether rasterization is enabled.
+    */
+    bool isRasterizationEnabled = true;
 }
 
 /**
@@ -488,8 +511,9 @@ private:
         return this.getStatus() == NuvkCommandBufferStatus.recording;
     }
 
-    void finishEncoding(void* handle) {
-        this.onEncoderFinished(handle);
+    void finishEncoding(NuvkEncoder encoder) {
+        this.onEncoderFinished(encoder);
+        nogc_delete(encoder);
     }
 
 protected:
@@ -541,7 +565,7 @@ protected:
     /**
         Implements the logic to finish encoding.
     */
-    abstract void onEncoderFinished(void* handle);
+    abstract void onEncoderFinished(NuvkEncoder encoder);
 
     /**
         Commits the commands stored in the command buffer
@@ -658,7 +682,7 @@ public:
     */
     final
     void commit() {
-        this.onCommit(commits != 0 && waiting > 0);
+        this.onCommit(commits != 0 && waiting == 0);
         
         waiting = 0;
         commits++;
@@ -698,6 +722,7 @@ class NuvkEncoder {
 @nogc:
 private:
     NuvkCommandBuffer commandBuffer;
+    void* handle;
 
 protected:
 
@@ -711,7 +736,7 @@ protected:
 
         Should return a handle to the finished command list if applicable.
     */
-    abstract void* onEnd(ref NuvkCommandBuffer buffer);
+    abstract void onEnd(ref NuvkCommandBuffer buffer);
 
 public:
 
@@ -719,15 +744,14 @@ public:
         Destructor
     */
     ~this() {
-        auto handle = this.onEnd(commandBuffer);
-        commandBuffer.finishEncoding(handle);
         commandBuffer = null;
     }
 
     /**
         Constructor
     */
-    this(NuvkCommandBuffer buffer) {
+    this(NuvkCommandBuffer buffer, void* handle) {
+        this.handle = handle;
         this.commandBuffer = buffer;
         this.onBegin(buffer);
     }
@@ -752,10 +776,8 @@ public:
     */
     final
     void endEncoding() {
-
-        // Work around for the fact that "this" is not a rvalue
-        auto self = this;
-        nogc_delete(self);
+        this.onEnd(commandBuffer);
+        commandBuffer.finishEncoding(this);
     }
 
     /**
@@ -772,6 +794,14 @@ public:
     final
     NuvkCommandBuffer getCommandBuffer() {
         return commandBuffer;
+    }
+
+    /**
+        Gets the underlying handle for the encoder.
+    */
+    final
+    void* getHandle() {
+        return handle;
     }
 }
 
@@ -800,9 +830,9 @@ public:
     /**
         Constructor
     */
-    this(NuvkCommandBuffer buffer, ref NuvkRenderPassDescriptor descriptor) {
+    this(NuvkCommandBuffer buffer, void* handle, ref NuvkRenderPassDescriptor descriptor) {
         this.descriptor = descriptor;
-        super(buffer);
+        super(buffer, handle);
     }
 
     /**
@@ -930,9 +960,9 @@ public:
     /**
         Constructor
     */
-    this(NuvkCommandBuffer buffer, ref NuvkComputePassDescriptor computePassDescriptor) {
+    this(NuvkCommandBuffer buffer, void* handle, ref NuvkComputePassDescriptor computePassDescriptor) {
         this.descriptor = computePassDescriptor;
-        super(buffer);
+        super(buffer, handle);
     }
 
     /**
@@ -1004,8 +1034,8 @@ public:
     /**
         Constructor
     */
-    this(NuvkCommandBuffer buffer) {
-        super(buffer);
+    this(NuvkCommandBuffer buffer, void* handle) {
+        super(buffer, handle);
     }
 
     /**

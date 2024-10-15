@@ -12,6 +12,7 @@ module app;
 
 import common;
 import std.stdio : writeln;
+import nuvk.core.shader.program;
 
 ubyte[] vertexShaderSrc = cast(ubyte[])import("shaders/textures_vert.spv");
 ubyte[] fragmentShaderSrc = cast(ubyte[])import("shaders/textures_frag.spv");
@@ -28,13 +29,13 @@ struct VertexAttrib {
 
 // Vertex buffer
 VertexAttrib[6] vertices = [
-    VertexAttrib(position: vec3(0,   0, 64), uv: vec2(0, 0)),
-    VertexAttrib(position: vec3(0,  64, 64), uv: vec2(0, 1)),
-    VertexAttrib(position: vec3(64,  0, 64), uv: vec2(1, 0)),
+    VertexAttrib(position: vec3(  0,    0, 64), uv: vec2(0, 0)),
+    VertexAttrib(position: vec3(  0,  256, 64), uv: vec2(0, 1)),
+    VertexAttrib(position: vec3(256,    0, 64), uv: vec2(1, 0)),
 
-    VertexAttrib(position: vec3(64,  0, 64), uv: vec2(1, 0)),
-    VertexAttrib(position: vec3( 0, 64, 64), uv: vec2(0, 1)),
-    VertexAttrib(position: vec3(64, 64, 64), uv: vec2(1, 1)),
+    VertexAttrib(position: vec3(256,   0, 64), uv: vec2(1, 0)),
+    VertexAttrib(position: vec3(  0, 256, 64), uv: vec2(0, 1)),
+    VertexAttrib(position: vec3(256, 256, 64), uv: vec2(1, 1)),
 ];
 
 /**
@@ -55,23 +56,17 @@ void main(string[] args) {
         format: NuvkTextureFormat.rgba8UnormSRGB,
         type: NuvkTextureType.texture2d,
     ));
+
     NuvkSampler sampler = device.createSampler(NuvkSamplerDescriptor(
         minFilter: NuvkSamplerTextureFilter.linear,
         magFilter: NuvkSamplerTextureFilter.linear,
         mipFilter: NuvkSamplerMipmapFilter.notMipmapped,
     ));
 
-    // Rendering pipeline
-    NuvkPipeline pipeline = device.createRenderPipeline(
+    // Shader program
+    NuvkShaderProgram program = device.createRenderPipeline(
         vertex: vertexShaderSrc, 
         fragment: fragmentShaderSrc,
-        attributes: [
-            NuvkVertexAttribute(location: 0, format: NuvkVertexFormat.vec3),
-            NuvkVertexAttribute(location: 1, format: NuvkVertexFormat.vec2),
-        ],
-        bindings: [
-            NuvkVertexBinding(stride: VertexAttrib.sizeof, inputRate: NuvkInputRate.vertex)
-        ]
     );
 
     // Vertex buffer
@@ -98,7 +93,8 @@ void main(string[] args) {
             // Update matrix
             vec2i fbSize = myWindow.getFramebufferSize();
             uniform0.mvp = (
-                mat4.orthographic01(0, fbSize.x, fbSize.y, 0, 0.1, 1000)
+                mat4.orthographic01(0, fbSize.x, 0, fbSize.y, 0.1, 1000) *
+                mat4.translation(32, 32, 0)
             ).transposed();
 
             // Set color attachment
@@ -106,14 +102,15 @@ void main(string[] args) {
                 loadOp: NuvkLoadOp.clear,
                 storeOp: NuvkStoreOp.store,
                 clearValue: NuvkClearValue(0, 0, 0, 1),
-                texture: nextImage
+                texture: nextImage,
             );
+
+            renderPassDescriptor.shader = program;
             
             // Render
             if (NuvkRenderEncoder renderPass = cmdbuffer.beginRenderPass(renderPassDescriptor)) {
-                renderPass.setPipeline(pipeline);
-                renderPass.setFragmentTexture(view, 1);
-                renderPass.setFragmentSampler(sampler, 2);
+                renderPass.setFragmentTexture(view, 0);
+                renderPass.setFragmentSampler(sampler, 0);
                 renderPass.setVertexBuffer(vertexBuffer, 0, 0);
                 renderPass.setVertexBuffer(uniformBuffer, 0, 0);
                 renderPass.draw(NuvkPrimitive.triangles, 0, 6);
@@ -122,7 +119,8 @@ void main(string[] args) {
 
             cmdbuffer.commit();
             cmdbuffer.present(myWindow.getSurface());
-            cmdbuffer.awaitCompletion();
         }
+        
+        cmdbuffer.awaitCompletion();
     }
 }

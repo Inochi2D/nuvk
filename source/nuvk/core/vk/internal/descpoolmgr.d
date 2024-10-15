@@ -110,7 +110,7 @@ public:
 
         foreach(pool; pools) {
             vkResetDescriptorPool(vkdevice, pool.pool, 0);
-            pool.sets.resize(0);
+            pool.sets.clear();
             pool.allocSucceeded = true;
         }
     }

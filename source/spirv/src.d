@@ -5,8 +5,9 @@
     Authors: Luna Nielsen
 */
 
-module spirv.parser;
+module spirv.src;
 import spirv;
+import spirv.reflection;
 import nuvk.core.logging;
 
 import numem.all;
@@ -15,7 +16,7 @@ import numem.all;
     A parser for SPIR-V modules
 */
 abstract
-class SpirvParserBase {
+class SpirvSource {
 @nogc:
 private:
     SpirvIDPool pool;
@@ -42,7 +43,7 @@ private:
 
     void verify() {
         nuvkEnforce(
-            bytecode.length > 5,
+            bytecode.length > SpirvHeaderSize,
             "Not SPIR-V source! (too short)"
         );
 
@@ -70,12 +71,15 @@ private:
         return size;
     }
 
-    void preparse() {
+    void parseBytecode() {
 
-        // Instruction stream starts a byte 5.
-        size_t i = 5;
+        // NOTE: reparseClean may call this again,
+        // As such clear the instruction stream.
+        this.instructions.clear();
+
+        size_t i = SpirvHeaderSize;
         do {
-            uint length = getOpLength(bytecode[i]);
+            uint length = bytecode[i].getOpCodeLength();
             auto instr = nogc_new!SpirvInstr(this.verify(i, length));
 
             instructions ~= instr;
@@ -87,8 +91,11 @@ private:
     }
 
     void parseModInfo() {
+        this.executionModes.clear();
+        this.capabilities.clear();
+
         foreach(ref instr; instructions) {
-            switch(instr.getOpcode()) {
+            switch(instr.getOpCode()) {
                 case Op.OpEntryPoint:
                     this.executionModel = cast(ExecutionModel)instr.getOperand(0);
                     break;
@@ -141,22 +148,11 @@ protected:
     abstract void onRemapEnd();
 
     /**
-        Gets an instruction by its result id
+        Called when the instruction stream is modified.
     */
-    final
-    bool get(SpirvID id, ref SpirvInstr* instr) {
-        foreach(ref instr_; instructions) {
-            if (instr.getResult() == id) {
-                instr = instr_;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    final
-    SpirvInstr*[] getInstructions() {
-        return instructions[];
+    void onModified() {
+        this.parseModInfo();
+        this.parse();
     }
 
 public:
@@ -174,13 +170,16 @@ public:
 
         // Then update all the IDs.
         foreach(ref instr; instructions) {
-
             if (instr.hasResult()) {
                 auto oldId = instr.getResult();
                 auto newId = pool.getVirtualId(oldId);
                 instr.setResult(newId);
                 this.onRemap(oldId, newId);
             }
+        }
+
+        // This happens in 2 steps since there may be back references.
+        foreach(ref instr; instructions) {
 
             // Make type refer to the correct IDs
             if (instr.hasResultType()) {
@@ -214,15 +213,45 @@ public:
     }
 
     /**
-        Instantiates the parser.
+        Instantiates the source.
 
-        This will fix the SPIR-V endianess and verify it.
+        This will fix the SPIR-V endianess, verify it, then parse it.
     */
     this(SpirvID[] source) {
         this.pool = nogc_new!SpirvIDPool();
         this.bytecode = vector!SpirvID(source);
         this.fixupEndian();
         this.verify();
+        this.reparseClean();
+    }
+
+
+    /**
+        Instantiates the source.
+
+        This creates a blank SPIR-V shader which needs to be filled out
+        with instructions.
+    */
+    this() {
+        this.pool = nogc_new!SpirvIDPool();
+        this.bytecode = vector!SpirvID(SpirvHeaderSize);
+        this.bytecode[0] = MagicNumber;
+        this.setGenerator(SpirvGeneratorMagicNumber);
+        this.setBound(0);
+        this.setSchema(0);
+        this.reparseClean();
+    }
+
+    /**
+        Does a full clean re-parse of the bytecode.
+
+        This will destroy any non-emitted instructions
+        added to the stream.
+    */
+    final
+    void reparseClean() {
+        this.parseBytecode();
+        this.parse();
     }
 
     /**
@@ -230,10 +259,7 @@ public:
     */
     final
     void parse() {
-
-        this.preparse();
         this.remap();
-        this.emit();
 
         // We call the implementor afterwards,
         // This allows the parser to look up IDs
@@ -255,11 +281,27 @@ public:
     }
 
     /**
+        Gets the version of the document.
+    */
+    final
+    void setVersion(uint version_) {
+        this.bytecode[1] = version_;
+    }
+
+    /**
         Gets the generator used to emit the document.
     */
     final
     uint getGenerator() {
         return bytecode[2];
+    }
+
+    /**
+        Sets the generator used to emit the document.
+    */
+    final
+    void setGenerator(uint generatorId) {
+        this.bytecode[2] = generatorId;
     }
 
     /**
@@ -288,6 +330,14 @@ public:
     }
 
     /**
+        Sets the SPIR-V schema, currently pointless.
+    */
+    final
+    void setSchema(SpirvID schema) {
+        this.bytecode[4] = schema;
+    }
+
+    /**
         Gets the declared execution model for the module.
     */
     final
@@ -312,21 +362,189 @@ public:
     }
 
     /**
-        Allocates a new instruction for the specified opcode.
+        Gets all of the instructions in the instruction stream.
+    */
+    final
+    SpirvInstr*[] getInstructions() {
+        return instructions[];
+    }
+
+    /**
+        Removes an instruction at an offset.
+
+        This will invalidate and free the instruction.
+    */
+    final
+    void remove(size_t offset) {
+        if (offset < instructions.length) {
+            instructions.remove(offset);
+            this.onModified();
+        }
+    }
+    
+    /**
+        Removes an instruction from the module.
+
+        This will invalidate and free the instruction.
+    */
+    final
+    void remove(SpirvInstr* instr) {
+        auto idx = this.findInstruction(instr);
+        if (idx != -1)
+            this.remove(idx);
+    }
+
+    /**
+        Allocates a new instruction for the specified opcode and puts it
+        at the specified offset.
+
         Additionally automatically sets the result ID if applicable.
     */
-    SpirvInstr* insert(SpirvID offset, Op opcode) {
+    final
+    SpirvInstr* insert(size_t offset, Op opcode) {
         SpirvInstr* instr = nogc_new!SpirvInstr(opcode);
         if (instr.hasResult())
             instr.setResult(pool.allocate());
         
         instructions.insert(offset, instr);
+        this.onModified();
         return instr;
+    }
+
+    /**
+        Inserts an instruction at the given offset.
+
+        Additionally automatically sets the result ID if applicable.
+    */
+    final
+    SpirvInstr* insert(size_t offset, SpirvInstr toAdd) {
+        SpirvInstr* instr = nogc_new!SpirvInstr(toAdd);
+        if (instr.hasResult())
+            instr.setResult(pool.allocate());
+        
+        instructions.insert(offset, instr);
+        this.onModified();
+        return instr;
+    }
+
+    /**
+        Allocates a new instruction for the specified opcode and puts it at the
+        end of the file.
+        
+        Additionally automatically sets the result ID if applicable.
+    */
+    final
+    SpirvInstr* pushBack(Op opcode) {
+        SpirvInstr* instr = nogc_new!SpirvInstr(opcode);
+        if (instr.hasResult())
+            instr.setResult(pool.allocate());
+
+        instructions.pushBack(instr);
+        this.onModified();
+        return instr;
+    }
+
+    /**
+        Allocates a new instruction for the specified opcode and puts it at the
+        end of the file.
+        
+        Additionally automatically sets the result ID if applicable.
+    */
+    final
+    SpirvInstr* pushBack(SpirvInstr toAdd) {
+        SpirvInstr* instr = nogc_new!SpirvInstr(toAdd);
+        if (instr.hasResult())
+            instr.setResult(pool.allocate());
+
+        instructions.pushBack(instr);
+        this.onModified();
+        return instr;
+    }
+
+    /**
+        Finds the first instance of a given instruction.
+    */
+    final
+    SpirvInstr* findFirstOf(Op opcode) {
+        ptrdiff_t offset = findFirstOfOffset(opcode);
+        if (offset != -1)
+            return instructions[offset];
+        return null;
+    }
+
+    /**
+        Finds the first instance of a given instruction.
+    */
+    final
+    ptrdiff_t findFirstOfOffset(Op opcode) {
+        foreach(i, instr; instructions) {
+            if (instr.getOpCode() == opcode) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+        Finds the first instance of a given instruction class.
+    */
+    final
+    SpirvInstr* findFirstOf(OpClass class_) {
+        ptrdiff_t offset = findFirstOfOffsetForClass(class_);
+        if (offset != -1)
+            return instructions[offset];
+        return null;
+    }
+
+    /**
+        Finds the first instance of a given instruction class.
+    */
+    final
+    ptrdiff_t findFirstOfOffsetForClass(OpClass class_) {
+        foreach(i, instr; instructions) {
+            if (instr.getOpClass() == class_) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+        Allocates a new instruction for the specified opcode.
+        The opcode will be inserted at the nearest instruction of the same type.
+        If there's no such instruction, it will try to put it near the first instruction
+        of the same instruction class.
+        Finally if that fails, it will be put at the last instruction before the first 
+        OpFunction or at the end of the file.
+
+        Additionally automatically sets the result ID if applicable.
+    */
+    final
+    SpirvInstr* insertNear(Op opcode, SpirvInstr instr) {
+
+        // Try to find the first instance of opcode.
+        ptrdiff_t offset = this.findFirstOfOffset(opcode);
+        if (offset != -1) 
+            return this.insert(offset, instr);
+        
+        // Try finding any related instructions
+        offset = this.findFirstOfOffsetForClass(opcode.getClass());
+        if (offset != -1) 
+            return this.insert(offset-1, instr);
+
+        // That failed, try to find OpFunction and insert behind that.
+        offset = this.findFirstOfOffset(Op.OpFunction);
+        if (offset != -1) 
+            return this.insert(offset-1, instr);
+
+        // That failed, insert at end of file.
+        return this.pushBack(instr);
     }
 
     /**
         Finds a instruction by its result id.
     */
+    final
     SpirvInstr* findInstruction(SpirvID id) {
         foreach(instr; instructions) {
             if (instr.hasResult()) {
@@ -337,18 +555,33 @@ public:
         return null;
     }
 
+    /**
+        Finds a instruction by its result id.
+    */
+    final
+    ptrdiff_t findInstruction(SpirvInstr* toFind) {
+        foreach(i, instr; instructions) {
+            if (instr == toFind) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     /**
         Emits any modifications made to the bytecode.
     */
     final
-    ref vector!uint emit() {
+    void emit() {
 
         // Remap IDs before emitting.
         this.remap();
-        
-        // First resize to fit all of our instructions
-        this.bytecode.resize(5);
+        this.parseModInfo();
+        this.bytecode.resize(SpirvHeaderSize);
+
+        // Since we've emitted code now, set all these variables.
+        this.setGenerator(SpirvGeneratorMagicNumber);
+        this.setBound(pool.getAllocated());
 
         // Write every single instruction in our instruction list in.
         // Instruction is also verified before being written.
@@ -358,10 +591,8 @@ public:
                 "Malformed SPIR-V instruction {0}!",
                 instr.toString()[] // TODO: Fix this.
             );
-
             this.bytecode ~= instr.emit();
         }
-        return bytecode;
     }
 
     /**

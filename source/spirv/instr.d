@@ -11,7 +11,7 @@
 module spirv.instr;
 import spirv.spv;
 import spirv;
-import spirv.parser;
+import spirv.src;
 
 import numem.collections;
 import numem.io.endian;
@@ -23,22 +23,22 @@ import conv = numem.conv;
 /**
     Gets the length of an opcode
 */
-uint getOpLength(SpirvID op) @nogc nothrow {
+uint getOpCodeLength(SpirvID op) @nogc nothrow {
     return op >> WordCountShift;
 }
 
 /**
     Gets the opcode stored in a SPIR-V ID
 */
-Op getOpcode(SpirvID op) @nogc nothrow {
+Op getOpCodeOnly(SpirvID op) @nogc nothrow {
     return cast(Op)(op & OpCodeMask);
 }
 
 /**
     Creates a combined SpirvID opcode + operand count
 */
-SpirvID getCombinedOp(Op opcode, uint operands) @nogc nothrow {
-    return cast(SpirvID)(((operands+1) << WordCountShift) + (cast(SpirvID)opcode));
+SpirvID getCombinedOp(Op opcode, uint wordCount) @nogc nothrow {
+    return (wordCount << WordCountShift) | (cast(SpirvID)opcode);
 }
 
 /**
@@ -51,7 +51,7 @@ uint fixWord(SpirvID word, Endianess endian) @nogc nothrow {
 /**
     Parses a SPIR-V compliant string from a range of [SpirvID]s
 */
-nstring fromSpirvString(T)(auto ref T ids) @nogc nothrow if (isCompatibleRange!(T, SpirvID)) {
+nstring fromSpirvString(T)(auto ref T ids) @nogc if (isCompatibleRange!(T, SpirvID)) {
     nstring str;
     char tmp;
 
@@ -95,16 +95,16 @@ vector!SpirvID toSpirvString(nstring str) @nogc nothrow {
 
     uint acc;
     SpirvID tmp;
-    foreach(i; 0..str.length) {
+    foreach(char c; str) {
+        tmp |= (c << acc*8);
+        acc++;
+
         if (acc == 4) {
 
             oStr ~= tmp;
             acc = 0;
             tmp = 0;
         }
-
-        tmp = (tmp << 8) + str[i];
-        acc++;
     }
     oStr ~= tmp;
     return oStr;
@@ -129,7 +129,7 @@ public:
         Copy constructor
     */
     this(ref SpirvInstr rhs) {
-        this.opcode = rhs.opcode;
+        this.opcode = rhs.opcode.getOpCodeOnly();
         this.operands = vector!SpirvID(operands);
     }
 
@@ -137,16 +137,16 @@ public:
         Instantiates the instruction
     */
     this(SpirvID[] source) {
-        this.opcode = source[0].getOpcode();
+        this.opcode = source[0].getOpCodeOnly();
         if (source.length > 1)
-            this.operands = vector!SpirvID(source[1..$]);
+            this.operands = source[1..$];
     }
 
     /**
         Instantiates the instruction
     */
     this(Op opcode) {
-        this.opcode = opcode;
+        this.opcode = opcode.getOpCodeOnly();
         this.operands = vector!SpirvID(opcode.getMinLength());
     }
 
@@ -154,22 +154,29 @@ public:
         Instantiates the instruction
     */
     this(T)(Op opcode, auto ref T ops) if (isCompatibleRange!(T, SpirvID)) {
-        this.opcode = opcode;
+        this.opcode = opcode.getOpCodeOnly();
         this.operands = vector!SpirvID(cast(SpirvID[])ops[]);
     }
 
     /**
         Gets the opcode for the instruction
     */
-    Op getOpcode() {
+    Op getOpCode() {
         return opcode;
+    }
+
+    /**
+        Gets the class of the instruction's opcode.
+    */
+    OpClass getOpClass() {
+        return opcode.getClass();
     }
 
     /**
         Gets the total size of the instruction
     */
     size_t getSize() {
-        return 1+operands.length;
+        return 1+operands.length; 
     }
 
     /**
@@ -221,6 +228,13 @@ public:
     */
     void clear() {
         this.operands.clear();
+    }
+
+    /**
+        Resizes the operand list for the instruction.
+    */
+    void resize(size_t operandCount) {
+        this.operands.resize(operandCount);
     }
 
     /**
@@ -402,7 +416,7 @@ public:
     */
     vector!SpirvID emit() {
         vector!SpirvID ret;
-        ret ~= opcode.getCombinedOp(cast(ushort)operands.length);
+        ret ~= opcode.getCombinedOp(cast(uint)this.getSize());
         ret ~= operands;
         return ret;
     }
@@ -542,7 +556,7 @@ public:
     */
     SpirvID getVirtualId(SpirvID originalId) {
         auto idx = this.findOriginal(originalId);
-        if (idx != -1 && vIds[idx].mappedToSource)
+        if (idx != -1)
             return vIds[idx].virtualId;
         return originalId;
     }
