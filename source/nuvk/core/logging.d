@@ -1,7 +1,13 @@
+/*
+    Copyright © 2024, Inochi2D Project
+    Distributed under the 2-Clause BSD License, see LICENSE file.
+    
+    Authors: Luna Nielsen
+*/
+
 module nuvk.core.logging;
 import numem.all;
 import numem.format;
-import core.stdc.stdio;
 
 /**
     Write to log
@@ -65,5 +71,6 @@ void function(nstring) @nogc nuvkLogSink = &nuvkDefaultSink;
     The default sink.
 */
 void nuvkDefaultSink(nstring text) @nogc {
+    import core.stdc.stdio : printf;
     printf("%s\n", text.toCString());
 }

@@ -12,6 +12,7 @@ module app;
 import common;
 
 import std.stdio;
+import numem.core.memory;
 
 ubyte[] vertexShaderSrc = cast(ubyte[])import("shaders/triangle_vert.spv");
 ubyte[] fragmentShaderSrc = cast(ubyte[])import("shaders/triangle_frag.spv");
@@ -33,7 +34,6 @@ void main(string[] args) {
     NuvkSwapchain swapchain = myWindow.getSurface().getSwapchain();
 
     NuvkQueue queue = device.createQueue();
-    NuvkCommandBuffer cmdbuffer = queue.createCommandBuffer();
 
     // shader program
     NuvkShaderProgram program = device.createRenderPipeline(
@@ -55,27 +55,29 @@ void main(string[] args) {
     while(!myWindow.isCloseRequested()) {
         myWindow.updateEvents();
 
-        if (NuvkTextureView nextImage = swapchain.getNext()) {
+        if (auto cmdbuffer = queue.nextCommandBuffer()) {
+            if (NuvkTextureView nextImage = swapchain.getNext()) {
 
-            // Set color attachment
-            renderPassDescriptor.colorAttachments[0] = NuvkColorAttachment(
-                loadOp: NuvkLoadOp.clear,
-                storeOp: NuvkStoreOp.store,
-                clearValue: NuvkClearValue(0, 0, 0, 1),
-                texture: nextImage
-            );
-            
-            renderPassDescriptor.shader = program;
-            
-            if (NuvkRenderEncoder renderPass = cmdbuffer.beginRenderPass(renderPassDescriptor)) {
-                renderPass.setVertexBuffer(vertexBuffer, 0, 0);
-                renderPass.draw(NuvkPrimitive.triangles, 0, 3);
-                renderPass.endEncoding();
+                // Set color attachment
+                renderPassDescriptor.colorAttachments[0] = NuvkColorAttachment(
+                    loadOp: NuvkLoadOp.clear,
+                    storeOp: NuvkStoreOp.store,
+                    clearValue: NuvkClearValue(0, 0, 0, 1),
+                    texture: nextImage
+                );
+                
+                renderPassDescriptor.shader = program;
+                
+                if (NuvkRenderEncoder renderPass = cmdbuffer.beginRenderPass(renderPassDescriptor)) {
+                    renderPass.setVertexBuffer(vertexBuffer, 0, 0);
+                    renderPass.draw(NuvkPrimitive.triangles, 0, 3);
+                    renderPass.endEncoding();
+                }
+                cmdbuffer.present(myWindow.getSurface());
+                cmdbuffer.commit();
             }
 
-            cmdbuffer.commit();
-            cmdbuffer.present(myWindow.getSurface());
+            cmdbuffer.awaitCompletion();
         }
-        cmdbuffer.awaitCompletion();
     }
 }

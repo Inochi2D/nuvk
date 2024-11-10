@@ -1,6 +1,6 @@
 module common;
 import bindbc.sdl;
-import nuvk.core;
+import nuvk;
 import imagefmt;
 import numem.all;
 import inmath;
@@ -8,7 +8,7 @@ import inmath;
 public import window;
 public import inmath;
 public import numem.all;
-public import nuvk.core;
+public import nuvk;
 
 /**
     Initialises the example with a predefined set of arguments and such.

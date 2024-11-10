@@ -13,6 +13,8 @@ dependency "inmath" version="*"
 dependency "nuvk" path="../../"
 dependency "common" path="../common/"
 
+buildOptions "debugInfoC"
+
 configuration "default" {
 	targetType "executable"
 }
