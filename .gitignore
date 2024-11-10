@@ -21,3 +21,4 @@ out/
 
 # Python generated shenanigans.
 __*__
+.vscode
