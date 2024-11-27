@@ -48,7 +48,6 @@ void main(string[] args) {
     NuvkSwapchain swapchain = myWindow.getSurface().getSwapchain();
 
     NuvkQueue queue = device.createQueue();
-    NuvkCommandBuffer cmdbuffer = queue.createCommandBuffer();
 
     // Rendering pipeline
     NuvkShaderProgram program = device.createRenderPipeline(
@@ -75,37 +74,40 @@ void main(string[] args) {
     while(!myWindow.isCloseRequested()) {
         myWindow.updateEvents();
 
-        if (NuvkTextureView nextImage = swapchain.getNext()) {
+        if (auto cmdbuffer = queue.nextCommandBuffer()) {
+            if (NuvkTextureView nextImage = swapchain.getNext()) {
 
-            // Update matrix
-            vec2i fbSize = myWindow.getFramebufferSize();
-            uniform0.mvp = (
-                mat4.perspective01(fbSize.x, fbSize.y, 90.0, 0.1, 1000) *
-                mat4.lookAt(vec3(0, 64, 0), vec3(32, 32, 64), vec3(0, 1, 0))
-            ).transposed();
+                // Update matrix
+                vec2i fbSize = myWindow.getFramebufferSize();
+                uniform0.mvp = (
+                    mat4.perspective01(fbSize.x, fbSize.y, 90.0, 0.1, 1000) *
+                    mat4.lookAt(vec3(0, 64, 0), vec3(32, 32, 64), vec3(0, 1, 0))
+                ).transposed();
 
-            // Set color attachment
-            renderPassDescriptor.colorAttachments[0] = NuvkColorAttachment(
-                loadOp: NuvkLoadOp.clear,
-                storeOp: NuvkStoreOp.store,
-                clearValue: NuvkClearValue(0, 0, 0, 1),
-                texture: nextImage
-            );
+                // Set color attachment
+                renderPassDescriptor.colorAttachments[0] = NuvkColorAttachment(
+                    loadOp: NuvkLoadOp.clear,
+                    storeOp: NuvkStoreOp.store,
+                    clearValue: NuvkClearValue(0, 0, 0, 1),
+                    texture: nextImage
+                );
 
-            renderPassDescriptor.shader = program;
-            
-            // Render
-            if (NuvkRenderEncoder renderPass = cmdbuffer.beginRenderPass(renderPassDescriptor)) {
-                renderPass.setVertexBuffer(vertexBuffer, 0, 0);
-                renderPass.setVertexBuffer(uniformBuffer, 0, 0);
-                renderPass.draw(NuvkPrimitive.triangles, 0, 6);
-                renderPass.endEncoding();
+                renderPassDescriptor.shader = program;
+                
+                // Render
+                if (NuvkRenderEncoder renderPass = cmdbuffer.beginRenderPass(renderPassDescriptor)) {
+                    renderPass.setCulling(NuvkCulling.none);
+                    renderPass.setVertexBuffer(vertexBuffer, 0, 0);
+                    renderPass.setVertexBuffer(uniformBuffer, 0, 0);
+                    renderPass.draw(NuvkPrimitive.triangles, 0, 6);
+                    renderPass.endEncoding();
+                }
+
+                cmdbuffer.present(myWindow.getSurface());
+                cmdbuffer.commit();
             }
-
-            cmdbuffer.commit();
-            cmdbuffer.present(myWindow.getSurface());
+            
+            cmdbuffer.awaitCompletion();
         }
-        
-        cmdbuffer.awaitCompletion();
     }
 }

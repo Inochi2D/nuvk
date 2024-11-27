@@ -386,6 +386,7 @@ class NuvkRenderEncoder : NuvkEncoder {
 @nogc:
 private:
     NuvkRenderPassDescriptor descriptor;
+    NuvkShaderProgram program;
 
 protected:
 
@@ -397,6 +398,14 @@ protected:
         return descriptor;
     }
 
+    /**
+        Gets the program bound to the encoder.
+    */
+    final
+    NuvkShaderProgram getProgram() {
+        return program;
+    }
+
 public:
 
     /**
@@ -404,6 +413,7 @@ public:
     */
     this(NuvkCommandBuffer buffer, ref NuvkRenderPassDescriptor descriptor) {
         this.descriptor = descriptor;
+        this.program = descriptor.shader;
         super(buffer);
     }
 
@@ -1002,12 +1012,12 @@ struct NuvkColorAttachment {
     /**
         The source alpha blending factor
     */
-    NuvkBlendFactor sourceAlphaFactor = NuvkBlendFactor.oneMinusSrcAlpha;
+    NuvkBlendFactor sourceAlphaFactor = NuvkBlendFactor.srcAlpha;
     
     /**
         The destination color blending factor
     */
-    NuvkBlendFactor destinationColorFactor = NuvkBlendFactor.srcAlpha;
+    NuvkBlendFactor destinationColorFactor = NuvkBlendFactor.oneMinusSrcAlpha;
     
     /**
         The destination alpha blending factor

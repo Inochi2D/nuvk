@@ -18,17 +18,19 @@ abstract
 class NuvkSurface : NuvkDeviceObject {
 @nogc:
 private:
+    // Swapchain handle
     NuvkSwapchain swapchain;
+
+    // Surface info and settings
     NuvkPresentMode presentMode;
     NuvkTextureFormat textureFormat;
+    NuvkSurfaceCompositeMode compositeMode = NuvkSurfaceCompositeMode.opaque;
     vec2u surfaceSize;
-
-    void updateSwapchainState(bool stateChanged = false) {
-        if (!swapchain) 
-            swapchain = this.onCreateSwapchain();
-        else if (stateChanged)
-            swapchain.update();
-    }
+    vec2u minExtents = vec2u(0, 0);
+    vec2u maxExtents = vec2u(uint.max, uint.max);
+    uint framesInFlight = 1;
+    uint minInFlight = 1;
+    uint maxInFlight = uint.max;
 
 protected:
 
@@ -38,24 +40,145 @@ protected:
     abstract NuvkSwapchain onCreateSwapchain();
 
     /**
-        Gets whether it is possible to use the specified texture format.
+        Called when the surface is requested to re-enumerate.
+
+        This function should set all the relevant info
     */
-    abstract bool isFormatValid(NuvkTextureFormat textureFormat);
-    
+    abstract void onRequestReenumerate();
+
     /**
-        Gets whether it is possible to use the specified presentation mode.
+        Set the minimum allowed extents
     */
-    abstract bool isPresentModeValid(NuvkPresentMode presentMode);
+    final
+    void setMinExtents(vec2u minExtents) {
+        this.minExtents = minExtents;
+    }
+
+    /**
+        Set the maximum allowed extents
+    */
+    final
+    void setMaxExtents(vec2u maxExtents) {
+        this.maxExtents = maxExtents;
+    }
+
+    /**
+        Sets the minimum number of frames that can be in-flight
+        for the swapchain.
+    */
+    final
+    void setMinimumInFlight(uint minImages) {
+        if (minImages == 0)
+            minImages = 1;
+        
+        this.minInFlight = minImages;
+    }
+
+    /**
+        Sets the maximum number of frames that can be in-flight
+        for the swapchain.
+    */
+    final
+    void setMaximumInFlight(uint maxImages) {
+        
+        // 0 means "no limit" for Vulkan, so
+        // just set it arbitrarily high.
+        if (maxImages == 0)
+            maxImages = uint.max;
+
+        this.maxInFlight = maxImages;
+    }
+
+    /**
+        Clips given extents to fit within the current minimum
+        and maximum.
+    */
+    final
+    vec2u clipExtents(vec2u size) {
+        this.reenumerate();
+
+        return vec2u(
+            clamp(size.x, minExtents.x, maxExtents.x),
+            clamp(size.y, minExtents.y, maxExtents.y)
+        );
+    }
+
+    /**
+        Clips the in-flight frames to be within the allowed range.
+    */
+    final
+    uint clipInFlight(uint inFlight) {
+        this.reenumerate();
+
+        return clamp(inFlight, minInFlight, maxInFlight);
+    }
 
 public:
+
+    ~this() {
+        if (swapchain)
+            nogc_delete(swapchain);
+    }
 
     /**
         Constructor
     */
-    this(NuvkDevice device, NuvkPresentMode presentMode, NuvkTextureFormat textureFormat) {
+    this(NuvkDevice device, NuvkPresentMode presentMode, NuvkTextureFormat textureFormat, NuvkHandle surfaceHandle) {
         super(device);
-        this.presentMode = presentMode;
-        this.textureFormat = textureFormat;
+        this.setHandle(surfaceHandle);
+        this.reenumerate();
+
+        this.setPresentationMode(presentMode);
+        this.setFormat(textureFormat);
+        this.setCompositeMode(NuvkSurfaceCompositeMode.opaque);
+        this.setFramesInFlight(this.getMinimumInFlight);
+    }
+
+    /**
+        Requests that the surface re-enumerates its properties.
+    */
+    final
+    void reenumerate() {
+        this.onRequestReenumerate();
+    }
+
+    /**
+        Gets the amount of frames that the surface can have in-flight
+    */
+    final
+    uint getFramesInFlight() {
+        return framesInFlight;
+    }
+
+    /**
+        Sets the amount of frames that the surface can have in-flight
+    */
+    final
+    void setFramesInFlight(uint framesInFlight) {
+        this.framesInFlight = this.clipInFlight(framesInFlight);
+        this.notifyChanged();
+    }
+
+    /**
+        Gets the composition mode of the surface
+    */
+    final
+    NuvkSurfaceCompositeMode getCompositeMode() {
+        return compositeMode;
+    }
+
+    /**
+        Gets the composition mode of the surface
+    */
+    final
+    void setCompositeMode(NuvkSurfaceCompositeMode compositeMode) {
+        nuvkEnforce(
+            isCompositeModeSupported(compositeMode),
+            "Specified composition mode is not supported!"
+        );
+
+        this.compositeMode = compositeMode;
+        this.notifyChanged();
     }
 
     /**
@@ -74,7 +197,7 @@ public:
     final
     void setPresentationMode(NuvkPresentMode presentMode) {
         nuvkEnforce(
-            isPresentModeValid(presentMode),
+            isPresentationModeSupported(presentMode),
             "Specified presentation mode not supported!"
         );
 
@@ -91,14 +214,14 @@ public:
     }
 
     /**
-        Sets the presentation mode of the surface.
+        Sets the texture format of the surface.
 
         This will invalidate the swapchain!
     */
     final
     void setFormat(NuvkTextureFormat textureFormat) {
         nuvkEnforce(
-            isFormatValid(textureFormat),
+            isFormatSupported(textureFormat),
             "Specified format not supported!"
         );
 
@@ -113,7 +236,7 @@ public:
     */
     final
     void resize(vec2u size) {
-        this.surfaceSize = size;
+        this.surfaceSize = this.clipExtents(size);
         this.notifyChanged();
     }
 
@@ -126,6 +249,32 @@ public:
     }
 
     /**
+        Gets the minimum size of swapchain textures
+    */
+    final
+    vec2u getMinExtents() => this.minExtents;
+
+    /**
+        Gets the maximum size of swapchain textures
+    */
+    final
+    vec2u getMaxExtents() => this.maxExtents;
+
+    /**
+        Gets the minimum number of frames that can be in-flight
+        for the swapchain.
+    */
+    final
+    uint getMinimumInFlight() => this.minInFlight;
+
+    /**
+        Gets the maximum number of frames that can be in-flight
+        for the swapchain.
+    */
+    final
+    uint getMaximumInFlight() => this.maxInFlight;
+
+    /**
         Notify the surface that it has been changed.
         This should be called when the window is resized,
         or restored from a minimized state.
@@ -134,7 +283,10 @@ public:
     */
     final
     void notifyChanged() {
-        this.updateSwapchainState(true);
+        if (swapchain) {
+            this.reenumerate();
+            swapchain.recreate();
+        }
     }
 
     /**
@@ -142,9 +294,38 @@ public:
     */
     final
     NuvkSwapchain getSwapchain() {
-        this.updateSwapchainState();
+        if (!swapchain)
+            swapchain = this.onCreateSwapchain();
+        
         return swapchain;
     }
+
+    /**
+        Gets whether it is possible to use the specified texture format.
+    */
+    abstract bool isFormatSupported(NuvkTextureFormat textureFormat);
+    
+    /**
+        Gets whether it is possible to use the specified presentation mode.
+    */
+    abstract bool isPresentationModeSupported(NuvkPresentMode presentMode);
+
+    /**
+        Gets whether it is possible to use the specified composite mode.
+    */
+    abstract bool isCompositeModeSupported(NuvkSurfaceCompositeMode compositeMode);
+
+    /**
+        Gets whether it's possible to render to the surface in its
+        current state. 
+    */
+    final
+    bool isRenderCapable() {
+        return 
+            this.maxExtents.x > 0 && 
+            this.maxExtents.y > 0;
+    }
+
 }
 
 /**
@@ -157,13 +338,18 @@ private:
     NuvkSurface surface;
     NuvkFence frameAvailableFence;
 
+    uint allocatedFrameCount;
 protected:
     
     /**
         Updates the swapchain with new information from the
         surface.
     */
-    abstract void update(bool forceRecreate=false);
+    final
+    void recreate() {
+        surface.reenumerate();
+        this.onRecreate();
+    }
 
     /**
         Resets the synchronization objects.
@@ -174,11 +360,24 @@ protected:
     }
 
     /**
+        Sets the maximum amount of frames in flight
+    */
+    final
+    void setAllocatedFrameCount(uint allocatedFrameCount) {
+        this.allocatedFrameCount = allocatedFrameCount;
+    }
+
+    /**
         Gets the next texture in the swapchain.
 
         This texture is owned by the swapchain, do not free it.
     */
     abstract NuvkTextureView onGetNext(ulong timeout = ulong.max);
+
+    /**
+        Called wheb the surface should be re-created.
+    */
+    abstract void onRecreate();
 
 public:
 
@@ -189,12 +388,14 @@ public:
     /**
         Constructor
     */
-    this(NuvkDevice device, NuvkSurface surface) {
-        super(device);
+    this(NuvkSurface surface) {
+        super(surface.getOwner());
         this.surface = surface;
 
-        this.frameAvailableFence = device.createFence();
+        this.frameAvailableFence = surface.getOwner().createFence();
         frameAvailableFence.reset();
+
+        this.recreate();
     }
 
     /**
@@ -224,7 +425,7 @@ public:
 
         // Acquire the image, as it will be in an undefined state after
         // it has been acquired from the swapchain.
-        if (next)
+        if (next) 
             next.getTexture().acquire();
         
         return next;
@@ -236,6 +437,19 @@ public:
         This texture is owned by the swapchain, do not free it.
     */
     abstract NuvkTextureView getCurrent();
+
+    /**
+        Gets the amount of texture views that have been allocated
+        for in-flight textures.
+    */
+    final
+    uint getAllocatedFrameCount() => allocatedFrameCount;
+
+    /**
+        Gets the maximum number of frames that can be in-flight.
+    */
+    final
+    uint getMaxFramesInFlight() => allocatedFrameCount > 0 ? allocatedFrameCount-1 : 0;
 }
 
 /**
@@ -262,4 +476,25 @@ enum NuvkPresentMode {
         while allowing submission at higher rates.
     */
     tripleBuffered
+}
+
+/**
+    Composition modes for the windowing system.
+*/
+enum NuvkSurfaceCompositeMode {
+
+    /**
+        Surface should be composited with no transparency.
+    */
+    opaque          = 0x01,
+
+    /**
+        Surface should be composited with premultipled alpha
+    */
+    preMultiplied   = 0x02,
+
+    /**
+        Surface should be composited with premultipled alpha
+    */
+    postMultiplied  = 0x04
 }

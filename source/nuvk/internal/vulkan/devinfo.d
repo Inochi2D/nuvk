@@ -126,7 +126,7 @@ private:
             VkPhysicalDeviceShaderObjectFeaturesEXT shaderObjectFeature;
             VkPhysicalDeviceShaderTileImageFeaturesEXT tileFeatures;
             
-            VkPhysicalDeviceFeatures baseFeatures = features2.features;
+            VkPhysicalDeviceFeatures baseFeatures;
             features2.pNext = &vk13Features;
             vk13Features.pNext = &vk12Features;
             vk12Features.pNext = &vk11Features;
@@ -141,7 +141,6 @@ private:
                 features.tileShading = true;
             }
 
-
             vkGetPhysicalDeviceFeatures2(physicalDevice, &features2);
 
             // Force disable some features.
@@ -149,10 +148,13 @@ private:
                 // These are bad, mesh shaders should be used instead.
                 features2.features.geometryShader = VK_FALSE;
                 features2.features.tessellationShader = VK_FALSE;
+
             }
 
             // Required features.
             {
+                baseFeatures = features2.features;
+
                 // Vulkan 1.3
                 this.enforceFeature(vk13Features.dynamicRendering);
                 this.enforceFeature(vk13Features.maintenance4);

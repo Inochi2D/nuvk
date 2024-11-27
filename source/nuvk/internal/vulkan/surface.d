@@ -12,70 +12,13 @@ import numem.all;
 
 import inmath;
 
-VkPresentModeKHR toVkPresentMode(NuvkPresentMode presentMode) @nogc {
-    final switch(presentMode) {
-        case NuvkPresentMode.immediate:
-            return VK_PRESENT_MODE_IMMEDIATE_KHR;
-
-        case NuvkPresentMode.vsync:
-            return VK_PRESENT_MODE_FIFO_KHR;
-
-        case NuvkPresentMode.tripleBuffered:
-            return VK_PRESENT_MODE_MAILBOX_KHR;
-    }
-}
-
 /**
     A surface that can be rendered to
 */
 class NuvkSurfaceVk : NuvkSurface {
 @nogc:
 private:
-    struct NuvkSurfaceVkCapability {
-    @nogc:
-        VkSurfaceCapabilitiesKHR surfaceCaps;
-        vector!VkSurfaceFormatKHR surfaceFormats;
-        vector!VkPresentModeKHR presentModes;
-    }
-
-    VkSurfaceKHR surface;
     NuvkSurfaceVkCapability capability;
-
-    void enumerateCapabilities() {
-        VkPhysicalDevice physicalDevice = cast(VkPhysicalDevice)this.getOwner().getDeviceInfo().getHandle();
-        
-        // Surface formats and present modes
-        {
-            uint formatCount;
-            uint presentModeCount;
-
-            // Surface formats
-            vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, null);
-            if (formatCount > 0) {
-                capability.surfaceFormats.resize(formatCount);
-                vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, capability.surfaceFormats.data());
-            }
-            
-            // Present modes
-            vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, null);
-            if (presentModeCount > 0) {
-                capability.presentModes.resize(presentModeCount);
-                vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, capability.presentModes.data());
-            }
-        }
-
-        this.updateSurfaceCapabilities();
-    }
-
-    void updateSurfaceCapabilities() {
-        VkPhysicalDevice physicalDevice = cast(VkPhysicalDevice)this.getOwner().getDeviceInfo().getHandle();
-
-        // Capabilities
-        nuvkEnforce(
-            vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &capability.surfaceCaps) == VK_SUCCESS,
-            "Failed getting surface capabilties"
-        );
-    }
 
     ptrdiff_t findSurfaceFormat(NuvkTextureFormat format_) {
         VkFormat fmt = format_.toVkImageFormat();
@@ -107,32 +50,60 @@ protected:
     */
     override
     NuvkSwapchain onCreateSwapchain() {
-        return nogc_new!NuvkSwapchainVk(this.getOwner(), this);
-    }
-
-    /**
-        Gets whether it is possible to use the specified texture format.
-    */
-    override
-    bool isFormatValid(NuvkTextureFormat textureFormat) {
-        return findSurfaceFormat(textureFormat) != -1;
+        return nogc_new!NuvkSwapchainVk(this);
     }
     
     /**
-        Gets whether it is possible to use the specified presentation mode.
+        Called when the surface is requested to re-enumerate.
     */
     override
-    bool isPresentModeValid(NuvkPresentMode presentMode) {
-        return findPresentationMode(presentMode) != -1;
+    void onRequestReenumerate() {
+        VkPhysicalDevice physicalDevice = this.getOwner().getDeviceInfo().getHandle!VkPhysicalDevice();
+        VkSurfaceKHR surface = this.getHandle!VkSurfaceKHR();
+        
+        // Surface formats and present modes
+        {
+            uint formatCount;
+            uint presentModeCount;
+
+            // Surface formats
+            vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, null);
+            if (formatCount > 0) {
+                capability.surfaceFormats.resize(formatCount);
+                vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, capability.surfaceFormats.data());
+            }
+            
+            // Present modes
+            vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, null);
+            if (presentModeCount > 0) {
+                capability.presentModes.resize(presentModeCount);
+                vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, capability.presentModes.data());
+            }
+        }
+
+        // Capabilities
+        nuvkEnforce(
+            vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &capability.surfaceCaps) == VK_SUCCESS,
+            "Failed getting surface capabilties"
+        );
+
+        this.setMinExtents(vec2u(
+            capability.surfaceCaps.minImageExtent.width,
+            capability.surfaceCaps.minImageExtent.height,
+        ));
+
+        this.setMaxExtents(vec2u(
+            capability.surfaceCaps.maxImageExtent.width,
+            capability.surfaceCaps.maxImageExtent.height,
+        ));
+
+        this.setMinimumInFlight(capability.surfaceCaps.minImageCount);
+        this.setMaximumInFlight(capability.surfaceCaps.maxImageCount);
     }
 
 public:
     this(NuvkDevice device, NuvkPresentMode presentMode, NuvkTextureFormat textureFormat, VkSurfaceKHR surface) {
-        super(device, presentMode, textureFormat);
-        this.surface = surface;
-        this.setHandle(surface);
-
-        this.enumerateCapabilities();
+        super(device, presentMode, textureFormat, cast(NuvkHandle)surface);
     }
 
     /**
@@ -176,6 +147,39 @@ public:
         ptrdiff_t idx = findPresentationMode(this.getPresentationMode());
         return capability.presentModes[idx];
     }
+
+    /**
+        Gets the vulkan alpha composition flags.
+    */
+    final
+    VkCompositeAlphaFlagBitsKHR getVkAlphaFlags() {
+        return this.getCompositeMode().toVkAlphaFlags();
+    }
+
+    /**
+        Gets whether it is possible to use the specified texture format.
+    */
+    override
+    bool isFormatSupported(NuvkTextureFormat textureFormat) {
+        return findSurfaceFormat(textureFormat) != -1;
+    }
+    
+    /**
+        Gets whether it is possible to use the specified presentation mode.
+    */
+    override
+    bool isPresentationModeSupported(NuvkPresentMode presentMode) {
+        return findPresentationMode(presentMode) != -1;
+    }
+
+    /**
+        Gets whether it is possible to use the specified composite mode.
+    */
+    override
+    bool isCompositeModeSupported(NuvkSurfaceCompositeMode compositeMode) {
+        auto alphaFlags = compositeMode.toVkAlphaFlags();
+        return (alphaFlags & capability.surfaceCaps.supportedCompositeAlpha) > 0;
+    }
 }
 
 /**
@@ -188,115 +192,17 @@ private:
     uint currentImageIndex = 0;
 
     // Swapchain
-    VkSwapchainKHR swapchain = VK_NULL_HANDLE;
     vector!NuvkTexture textures;
     vector!NuvkTextureView views;
 
-
-    void createSwapchain(NuvkSurfaceVk surface, bool forceRecreate=false) {
-        auto device = cast(VkDevice)this.getOwner().getHandle();
-
-        // Destroy swapchain if it already exists
-        if (swapchain != VK_NULL_HANDLE || forceRecreate) {
-            if (swapchain != VK_NULL_HANDLE) {
-                this.getOwner().awaitAll();
-                vkDestroySwapchainKHR(device, swapchain, null);
-
-                swapchain = VK_NULL_HANDLE;
-                this.setHandle(swapchain);
-            }
-
-            this.textures.clear();
-            this.views.clear();
-
-            this.currentImageIndex = 0;            
-            this.resetSyncObjects();
-        }
-
-        vec2u surfaceSize = surface.getSize();
-        VkSurfaceFormatKHR surfaceFormat = surface.getVkSurfaceFormat();
-        VkPresentModeKHR presentMode = surface.getVkPresentMode();
-        VkSurfaceCapabilitiesKHR surfaceCaps = surface.getCapabilities();
-
-        // Clamp surface size.
-        surfaceSize = vec2u(  
-            clamp(surfaceSize.x, surfaceCaps.minImageExtent.width, surfaceCaps.maxImageExtent.width),
-            clamp(surfaceSize.y, surfaceCaps.minImageExtent.height, surfaceCaps.maxImageExtent.height),
-        );
-
-
-        // Swapchain creation
-        {
-
-            // Minimized?
-            if (surfaceCaps.maxImageExtent.width == 0 || surfaceCaps.maxImageExtent.height == 0) {
-                return;
-            }
-
-            VkSwapchainCreateInfoKHR swapchainCreateInfo;
-            swapchainCreateInfo.minImageCount = surfaceCaps.minImageCount+1;
-            swapchainCreateInfo.imageFormat = surfaceFormat.format;
-            swapchainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
-            swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-            swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-            swapchainCreateInfo.imageExtent = VkExtent2D(surfaceSize.x, surfaceSize.y);
-            swapchainCreateInfo.imageArrayLayers = 1;
-            swapchainCreateInfo.preTransform = surfaceCaps.currentTransform;
-            swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-            swapchainCreateInfo.presentMode = presentMode;
-            swapchainCreateInfo.clipped = VK_FALSE;
-            swapchainCreateInfo.surface = cast(VkSurfaceKHR)surface.getHandle();
-
-            nuvkEnforce(
-                vkCreateSwapchainKHR(device, &swapchainCreateInfo, null, &swapchain) == VK_SUCCESS,
-                "Failed to create swapchain"
-            );
-
-            this.setHandle(swapchain);
-        }
-
-        // NuvkTexture creation
-        {
-            weak_vector!VkImage swapchainImages;
-            uint swapchainImageCount;
-            vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount, null);
-
-            swapchainImages = weak_vector!VkImage(swapchainImageCount);
-            nuvkEnforce(
-                vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount, swapchainImages.data()) == VK_SUCCESS,
-                "Failed to create swapchain images."
-            );
-
-            this.textures.resize(swapchainImageCount);
-            this.views.resize(swapchainImageCount);
-
-            foreach(i; 0..swapchainImageCount) {
-                NuvkTextureViewDescriptor viewDescriptor;
-                viewDescriptor.type = NuvkTextureType.texture2d;
-                viewDescriptor.format = surfaceFormat.format.toNuvkTextureFormat();
-                viewDescriptor.arraySlices = NuvkRange!int(0, 1);
-                viewDescriptor.mipLevels = NuvkRange!int(0, 1);
-
-                this.textures[i] = nogc_new!NuvkTextureVk(this.getOwner(), swapchainImages[i], surfaceFormat.format, surfaceSize);
-                this.views[i] = this.textures[i].createTextureView(viewDescriptor);
-            }
-        }
-    }
-
 protected:
-
-    override
-    void update(bool forceRecreate=false) {
-        NuvkSurfaceVk surface = cast(NuvkSurfaceVk)this.getSurface();
-        surface.enumerateCapabilities();
-        this.createSwapchain(surface);
-    }
 
     /**
         Gets the next texture in the swapchain
     */
     override
     NuvkTextureView onGetNext(ulong timeout) {
+        auto swapchain = this.getHandle!VkSwapchainKHR();
         
         // Window is minimized or something, we got no images.
         if (swapchain == VK_NULL_HANDLE) 
@@ -308,7 +214,7 @@ protected:
 
         VkResult status = vkAcquireNextImageKHR(device, swapchain, timeout, VK_NULL_HANDLE, frameAvailableFencePtr, &currentImageIndex);
         if (status == VK_ERROR_OUT_OF_DATE_KHR) {
-            this.update(true);
+            this.recreate();
             return this.getNext(timeout);
         }
 
@@ -321,14 +227,125 @@ protected:
         return null;
     }
 
+    void resetState() {
+        this.textures.clear();
+        this.views.clear();
+
+        this.currentImageIndex = 0;            
+        this.resetSyncObjects();
+    }
+
+    bool createSwapchain() {
+        auto device = this.getOwner().getHandle!VkDevice();
+        auto surface = cast(NuvkSurfaceVk)this.getSurface();
+
+        vec2u surfaceSize = surface.getSize();
+        VkSurfaceFormatKHR surfaceFormat = surface.getVkSurfaceFormat();
+        VkPresentModeKHR presentMode = surface.getVkPresentMode();
+        VkCompositeAlphaFlagBitsKHR alphaFlags = surface.getVkAlphaFlags();
+        VkSurfaceCapabilitiesKHR surfaceCaps = surface.getCapabilities();
+
+        // Swapchain creation
+        VkSwapchainKHR swapchain;
+
+        VkSwapchainCreateInfoKHR swapchainCreateInfo;
+        swapchainCreateInfo.minImageCount = surface.getFramesInFlight();
+        swapchainCreateInfo.imageFormat = surfaceFormat.format;
+        swapchainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
+        swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+        swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        swapchainCreateInfo.imageExtent = VkExtent2D(surfaceSize.x, surfaceSize.y);
+        swapchainCreateInfo.imageArrayLayers = 1;
+        swapchainCreateInfo.preTransform = surfaceCaps.currentTransform;
+        swapchainCreateInfo.compositeAlpha = alphaFlags;
+        swapchainCreateInfo.presentMode = presentMode;
+        swapchainCreateInfo.clipped = VK_FALSE;
+        swapchainCreateInfo.surface = surface.getHandle!VkSurfaceKHR();
+
+        if (vkCreateSwapchainKHR(device, &swapchainCreateInfo, null, &swapchain) == VK_SUCCESS) {
+            this.setHandle(swapchain);
+            return true;
+        }
+
+        return false;
+    }
+
+    uint getSwapchainImageCount() {
+        auto device = this.getOwner().getHandle!VkDevice();
+        auto swapchain = this.getHandle!VkSwapchainKHR();
+
+        uint swapchainImageCount;
+        vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount, null);
+        return swapchainImageCount;
+    }
+
+    bool recreateImageList() {
+        auto device = this.getOwner().getHandle!VkDevice();
+        auto swapchain = this.getHandle!VkSwapchainKHR();
+        auto surface = cast(NuvkSurfaceVk)this.getSurface();
+
+        uint swapchainImageCount = this.getSwapchainImageCount();
+        if (swapchainImageCount == 0)
+            return false;
+
+        weak_vector!VkImage swapchainImages = weak_vector!VkImage(swapchainImageCount);
+        if (vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount, swapchainImages.ptr) != VK_SUCCESS)
+            return false;
+
+        // Success, recreate the image list.
+        this.setAllocatedFrameCount(swapchainImageCount);
+        this.textures.resize(swapchainImageCount);
+        this.views.resize(swapchainImageCount);
+
+        vec2u surfaceSize = surface.getSize();
+        VkSurfaceFormatKHR surfaceFormat = surface.getVkSurfaceFormat();
+        foreach(i; 0..swapchainImageCount) {
+            NuvkTextureViewDescriptor viewDescriptor;
+            viewDescriptor.type = NuvkTextureType.texture2d;
+            viewDescriptor.format = surfaceFormat.format.toNuvkTextureFormat();
+            viewDescriptor.arraySlices = NuvkRange!int(0, 1);
+            viewDescriptor.mipLevels = NuvkRange!int(0, 1);
+
+            this.textures[i] = nogc_new!NuvkTextureVk(this.getOwner(), swapchainImages[i], surfaceFormat.format, surfaceSize);
+            this.views[i] = this.textures[i].createTextureView(viewDescriptor);
+        }
+
+        return true;
+    }
+
+    override
+    void onRecreate() {
+        auto device = this.getOwner();
+        auto deviceHandle = device.getHandle!VkDevice();
+        auto swapchain = this.getHandle!VkSwapchainKHR();
+        auto surface = cast(NuvkSurfaceVk)this.getSurface();
+
+        // Destroy swapchain if it already exists
+        if (swapchain) {
+            device.awaitAll();
+            vkDestroySwapchainKHR(deviceHandle, swapchain, null);
+
+            this.setHandle(null);
+            swapchain = null;
+        }
+
+        this.resetState();
+
+        if (!surface.isRenderCapable())
+            return;
+        
+        if (this.createSwapchain()) {
+            this.recreateImageList();
+        }
+    }
+
 public:
 
     /**
         Constructor
     */
-    this(NuvkDevice device, NuvkSurfaceVk surface) {
-        super(device, surface);
-        this.createSwapchain(surface);
+    this(NuvkSurfaceVk surface) {
+        super(surface);
     }
 
     /**
@@ -345,5 +362,44 @@ public:
     final
     uint getCurrentImageIndex() {
         return currentImageIndex;
+    }
+}
+
+/**
+    Gets the Vulkan Alpha flags for the specified surface composite mode.
+*/
+VkCompositeAlphaFlagBitsKHR toVkAlphaFlags(NuvkSurfaceCompositeMode compositeMode) @nogc nothrow {
+    final switch(compositeMode) {
+        case NuvkSurfaceCompositeMode.opaque:
+            return VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+        case NuvkSurfaceCompositeMode.preMultiplied:
+            return VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR;
+        case NuvkSurfaceCompositeMode.postMultiplied:
+            return VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR;
+    }
+}
+
+/**
+    Gets the Vulkan presentation mode for the specified nuvk present mode.
+*/
+VkPresentModeKHR toVkPresentMode(NuvkPresentMode presentMode) @nogc {
+    final switch(presentMode) {
+        case NuvkPresentMode.immediate:
+            return VK_PRESENT_MODE_IMMEDIATE_KHR;
+
+        case NuvkPresentMode.vsync:
+            return VK_PRESENT_MODE_FIFO_KHR;
+
+        case NuvkPresentMode.tripleBuffered:
+            return VK_PRESENT_MODE_MAILBOX_KHR;
+    }
+}
+
+private {
+    struct NuvkSurfaceVkCapability {
+    @nogc:
+        VkSurfaceCapabilitiesKHR surfaceCaps;
+        vector!VkSurfaceFormatKHR surfaceFormats;
+        vector!VkPresentModeKHR presentModes;
     }
 }

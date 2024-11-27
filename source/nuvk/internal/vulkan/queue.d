@@ -110,14 +110,15 @@ protected:
     */
     override
     void onSubmit(NuvkSurface surface) {
-        auto nuvkswapchain = (cast(NuvkSwapchainVk)surface.getSwapchain());
-        auto swapchain = cast(VkSwapchainKHR)nuvkswapchain.getHandle();
-        uint index = nuvkswapchain.getCurrentImageIndex();
         auto cSemaphoreHandle = cSemaphore.getHandle!VkSemaphore;
+        auto swapchain = (cast(NuvkSwapchainVk)surface.getSwapchain());
+        auto swapchainHandle = cast(VkSwapchainKHR)swapchain.getHandle();
+        uint index = swapchain.getCurrentImageIndex();
+
 
         VkPresentInfoKHR presentInfo;
         presentInfo.swapchainCount = 1;
-        presentInfo.pSwapchains = &swapchain;
+        presentInfo.pSwapchains = &swapchainHandle;
         presentInfo.pImageIndices = &index;
         presentInfo.waitSemaphoreCount = 1;
         presentInfo.pWaitSemaphores = &cSemaphoreHandle;

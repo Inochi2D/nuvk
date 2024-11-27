@@ -196,6 +196,7 @@ public:
         this.isUserOwned = false;
         this.image = image;
         this.setHandle(this.image);
+        this.setPresentable(true);
         super(device, descriptor, NuvkProcessSharing.processLocal);
     }
 
@@ -263,14 +264,14 @@ public:
         Returns an image memory barrier for this image.
     */
     final
-    VkImageMemoryBarrier createTransition(NuvkTextureLayout newLayout, NuvkSyncDirection direction) {
+    VkImageMemoryBarrier createTransition(NuvkTextureLayout newLayout, NuvkSyncDirection direction, NuvkSyncDirection cacheDirection) {
         
         auto oldLayout = this.getLayout();
         this.setTextureLayout(newLayout);
         
         return VkImageMemoryBarrier(
-            dstAccessMask: this.getFormat().toVkAccessFlags((direction & NuvkSyncDirection.write) ? NuvkSyncDirection.write : NuvkSyncDirection.none),
-            srcAccessMask: this.getFormat().toVkAccessFlags((direction & NuvkSyncDirection.read) ? NuvkSyncDirection.read : NuvkSyncDirection.none),
+            dstAccessMask: this.getFormat().toVkAccessFlags((cacheDirection & NuvkSyncDirection.read) ? direction : NuvkSyncDirection.none),
+            srcAccessMask: this.getFormat().toVkAccessFlags((cacheDirection & NuvkSyncDirection.write) ? direction : NuvkSyncDirection.none),
             oldLayout: oldLayout.toVkImageLayout(),
             newLayout: newLayout.toVkImageLayout(),
             image: cast(VkImage)this.getHandle(),

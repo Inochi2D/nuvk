@@ -5,12 +5,11 @@ layout(location = 1) in vec2 inUV;
 
 layout(location = 0) out vec2 outUV;
 
-layout(binding = 0) 
-uniform Camera {
+layout(binding = 0) uniform Camera {
     mat4 mvp;
-};
+} camera;
 
 void main() {
-    gl_Position = mvp * vec4(inVertex, 1.0);
+    gl_Position = camera.mvp * vec4(inVertex, 1.0);
     outUV = inUV;
 }

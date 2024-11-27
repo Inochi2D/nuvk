@@ -131,7 +131,6 @@ private:
     NuvkCommandBufferVk parent;
     VkCommandBuffer writeBuffer;
     VkDevice device;
-    NuvkShaderProgram program;
 
     // Pipeline state
     VkDescriptorSetLayout[1] setLayout;
@@ -147,7 +146,6 @@ protected:
     override
     void onBegin(ref NuvkCommandBuffer buffer) {
         NuvkRenderPassDescriptor descriptor = this.getDescriptor();
-        this.program = descriptor.shader;
 
         VkRenderingInfo renderInfo;
         renderInfo.layerCount = 1;
@@ -186,7 +184,7 @@ protected:
                 }
 
                 if (nuvkTexture.getLayout() != NuvkTextureLayout.attachment)
-                    memoryBarriers ~= nuvkTexture.createTransition(NuvkTextureLayout.attachment, NuvkSyncDirection.write);
+                    memoryBarriers ~= nuvkTexture.createTransition(NuvkTextureLayout.attachment, NuvkSyncDirection.write, NuvkSyncDirection.write);
                 attachmentCount++;
             }
 
@@ -292,13 +290,12 @@ protected:
 
 
         auto linkedCount = descriptor.shader.getLinkedCount();
-        auto shaderProgram = cast(NuvkShaderProgramVk)descriptor.shader;
+        auto shaderProgram = cast(NuvkShaderProgramVk)this.getProgram();
         auto objects = shaderProgram.getObjects();
         auto stages = shaderProgram.getVkStages();
         auto bindings = shaderProgram.getInputBindings();
         auto attributes = shaderProgram.getInputAttributes();
         VkSampleMask mask = 0xFFFFFFFF;
-
 
         // Set all the dynamic state
         vkCmdBindShadersEXT(writeBuffer, cast(uint)linkedCount, stages.ptr, objects.ptr);
@@ -335,28 +332,18 @@ protected:
     */
     override
     void onEnd(ref NuvkCommandBuffer buffer) {
+        vkCmdEndRendering(writeBuffer);
+
         NuvkRenderPassDescriptor descriptor = this.getDescriptor();
-
         vector!VkImageMemoryBarrier memoryBarriers;
-
         foreach(i; 0..descriptor.colorAttachments.size()) {
             NuvkTextureVkView nuvkTextureView = cast(NuvkTextureVkView)descriptor.colorAttachments[i].texture;
+            if (nuvkTextureView.isPresentable()) {
 
-            VkImageMemoryBarrier memoryBarrier;
-            memoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-            memoryBarrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-            memoryBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-            memoryBarrier.image = cast(VkImage)nuvkTextureView.getTexture().getHandle();
-            memoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-            memoryBarrier.subresourceRange.baseMipLevel = 0;
-            memoryBarrier.subresourceRange.levelCount = 1;
-            memoryBarrier.subresourceRange.baseArrayLayer = 0;
-            memoryBarrier.subresourceRange.layerCount = 1;
-
-            memoryBarriers ~= memoryBarrier;
+                NuvkTextureVk nuvkTexture = cast(NuvkTextureVk)nuvkTextureView.getTexture();
+                memoryBarriers ~= nuvkTexture.createTransition(NuvkTextureLayout.presentation, NuvkSyncDirection.write, NuvkSyncDirection.read);
+            }
         }
-
-        vkCmdEndRendering(writeBuffer);
 
         // Swap image type
         vkCmdPipelineBarrier(
@@ -392,7 +379,7 @@ public:
         Constructor
     */
     this(NuvkCommandBufferVk parent, ref NuvkRenderPassDescriptor descriptor) {
-        this.device = cast(VkDevice)parent.getOwner().getHandle();
+        this.device = parent.getOwner().getHandle!VkDevice();
         this.parent = parent;
         this.writeBuffer = parent.getHandle!VkCommandBuffer;
         super(parent, descriptor);
@@ -490,9 +477,9 @@ public:
             default:
                 break;
             case NuvkBufferUsage.uniform:
-                if (auto arg = program.findArgument(NuvkShaderType.vertex, SpirvVarKind.uniformBuffer, index)) {
+                if (auto arg = this.getProgram().findArgument(NuvkShaderType.vertex, SpirvVarKind.uniformBuffer, index)) {
                     VkDescriptorBufferInfo bufferInfo;
-                    bufferInfo.buffer = cast(VkBuffer)buffer.getHandle();
+                    bufferInfo.buffer = buffer.getHandle!VkBuffer();
                     bufferInfo.offset = offset;
                     bufferInfo.range = buffer.getSize();
 
@@ -509,7 +496,7 @@ public:
                 break;
 
             case NuvkBufferUsage.vertex:
-                VkBuffer pBuffer = cast(VkBuffer)buffer.getHandle();
+                VkBuffer pBuffer = buffer.getHandle!VkBuffer();
                 VkDeviceSize pOffset = offset;
                 vkCmdBindVertexBuffers(writeBuffer, index, 1, &pBuffer, &pOffset);
                 break;
@@ -526,7 +513,7 @@ public:
                 break;
 
             case NuvkBufferUsage.uniform:
-                if (auto arg = program.findArgument(NuvkShaderType.fragment, SpirvVarKind.uniformBuffer, index)) {
+                if (auto arg = this.getProgram().findArgument(NuvkShaderType.fragment, SpirvVarKind.uniformBuffer, index)) {
                     VkDescriptorBufferInfo bufferInfo;
                     bufferInfo.buffer = cast(VkBuffer)buffer.getHandle();
                     bufferInfo.offset = offset;
@@ -552,7 +539,7 @@ public:
     */
     override
     void setFragmentTexture(NuvkTextureView texture, int index) {
-        if (auto arg = program.findArgument(NuvkShaderType.fragment, SpirvVarKind.image, index)) {
+        if (auto arg = this.getProgram().findArgument(NuvkShaderType.fragment, SpirvVarKind.image, index)) {
             VkDescriptorImageInfo imageInfo;
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL;
             imageInfo.imageView = cast(VkImageView)texture.getHandle();
@@ -562,7 +549,6 @@ public:
             writeInfo.descriptorCount = 1;
             writeInfo.dstBinding = arg.binding;
             writeInfo.dstArrayElement = 0;
-            writeInfo.pBufferInfo = null;
             writeInfo.pImageInfo = &imageInfo;
             writeInfo.dstSet = descriptorSet;
 
@@ -575,7 +561,7 @@ public:
     */
     override
     void setFragmentSampler(NuvkSampler sampler, int index) {
-        if (auto arg = program.findArgument(NuvkShaderType.fragment, SpirvVarKind.sampler, index)) {
+        if (auto arg = this.getProgram().findArgument(NuvkShaderType.fragment, SpirvVarKind.sampler, index)) {
             VkDescriptorImageInfo imageInfo;
             imageInfo.sampler = cast(VkSampler)sampler.getHandle();
 
@@ -584,7 +570,6 @@ public:
             writeInfo.descriptorCount = 1;
             writeInfo.dstBinding = arg.binding;
             writeInfo.dstArrayElement = 0;
-            writeInfo.pBufferInfo = null;
             writeInfo.pImageInfo = &imageInfo;
             writeInfo.dstSet = descriptorSet;
 

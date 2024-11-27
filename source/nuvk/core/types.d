@@ -38,7 +38,7 @@ abstract
 class NuvkObject {
 @nogc:
 private:
-    NuvkHandle handle;
+    NuvkHandle handle = null;
     nstring name;
 
 protected:

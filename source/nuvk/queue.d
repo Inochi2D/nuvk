@@ -76,7 +76,7 @@ private:
 
             buffer.notifySubmit();
             this.onSubmit(buffer);
-            foreach_reverse(ref surface; buffer.getPresentRequests()) {
+            foreach(ref surface; buffer.getPresentRequests()) {
                 this.onSubmit(surface);
             }
         }

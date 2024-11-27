@@ -18,6 +18,6 @@ uniform Camera {
 };
 
 void main() {
-    gl_Position = mvp * vec4(inVertex, 1.0);
+    gl_Position = vec4(inVertex, 1.0);
     fragColor = colors[gl_VertexIndex];
 }

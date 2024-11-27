@@ -1,4 +1,4 @@
-module nuvk.staging;
+module nuvk.internal.impl.staging;
 import nuvk;
 
 import numem.all;

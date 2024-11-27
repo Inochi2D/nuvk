@@ -76,7 +76,6 @@ void main(string[] args) {
                 cmdbuffer.present(myWindow.getSurface());
                 cmdbuffer.commit();
             }
-
             cmdbuffer.awaitCompletion();
         }
     }
