@@ -9,8 +9,6 @@ module nuvk.context;
 import nuvk;
 import numem.all;
 
-import nuvk.internal.vulkan.context;
-
 /**
     The root context of the rendering engine
 */
@@ -115,46 +113,6 @@ public:
 }
 
 /**
-    Creates a context
-
-    Returns null if context creation failed.
-*/
-NuvkContext nuvkCreateContext(NuvkContextDescriptor descriptor) @nogc {
-    switch(descriptor.type) {
-        case NuvkContextType.best:
-            version(AppleOS) {
-
-                // First try metal
-                descriptor.type = NuvkContextType.metal;
-                descriptor.metal = NuvkMtlContextDescriptor.init;
-                auto ctx = nuvkCreateContext(descriptor);
-                if (ctx)
-                    return ctx;
-                
-            }
-
-            // Attempt vulkan
-            descriptor.type = NuvkContextType.vulkan;
-            descriptor.vulkan = NuvkContextVkDescriptor.init;
-            return nuvkCreateContext(descriptor);
-
-        case NuvkContextType.vulkan:
-            return nogc_new!NuvkContextVk(descriptor);
-
-        case NuvkContextType.metal:
-            
-            // Metal is only supported on apple devices.
-            version(AppleOS) 
-                return nogc_new!NuvkMtlContext(descriptor);
-            else
-                return null;
-
-        default:
-            return null;
-    }
-}
-
-/**
     The type of the context.
 */
 enum NuvkContextType {
@@ -215,5 +173,92 @@ struct NuvkContextDescriptor {
             Information which can be passed to Metal
         */
         NuvkMtlContextDescriptor metal;
+    }
+}
+
+/**
+    Bitflag over every backend that nuvk supports.
+
+    See [nuvkAvailableBackends].
+*/
+enum NuvkBackend {
+    /// No backend
+    none        = 0x00,
+
+    /// Vulkan backend
+    vulkan      = 0x01,
+
+    /// Metal backend
+    metal       = 0x02, 
+
+    /// WebGPU backend
+    webgpu      = 0x03,
+}
+
+/**
+    Whether the Metal dependency is present.
+*/
+version(Have_metal_d) enum NuvkHasMetal = true;
+else enum NuvkHasMetal = false;
+
+version(Have_erupted) enum NuvkHasVulkan = true;
+else enum NuvkHasVulkan = false;
+
+/**
+    All of the available backends of Nuvk on the current system.
+
+    The available backends depends on the platform and which optional
+    dependencies nuvk was compiled with.
+*/
+__gshared const(NuvkBackend) nuvkAvailableBackends = 
+    (NuvkHasMetal ? NuvkBackend.metal : NuvkBackend.none) |
+    (NuvkHasVulkan ? NuvkBackend.vulkan : NuvkBackend.none);
+
+static if (!(NuvkHasMetal || NuvkHasVulkan))
+    pragma(msg, "WARNING: No backends specfied for nuvk!");
+
+static if (NuvkHasMetal)  import nuvk.metal.context;
+static if (NuvkHasVulkan) import nuvk.vulkan.context;
+
+/**
+    Creates a context
+
+    Returns null if context creation failed.
+*/
+NuvkContext nuvkCreateContext(NuvkContextDescriptor descriptor) @nogc {
+    switch(descriptor.type) {
+        case NuvkContextType.best:
+            static if (NuvkHasMetal) {
+
+                // First try metal
+                descriptor.type = NuvkContextType.metal;
+                descriptor.metal = NuvkMtlContextDescriptor.init;
+                auto ctx = nuvkCreateContext(descriptor);
+                if (ctx)
+                    return ctx;
+                
+            }
+
+            // Attempt vulkan
+            descriptor.type = NuvkContextType.vulkan;
+            descriptor.vulkan = NuvkContextVkDescriptor.init;
+            return nuvkCreateContext(descriptor);
+
+        case NuvkContextType.vulkan:
+            static if (NuvkHasVulkan)
+                return nogc_new!NuvkContextVk(descriptor);
+            else
+                return null;
+
+        case NuvkContextType.metal:
+            
+            // Metal is only supported on apple devices.
+            static if (NuvkHasMetal)
+                return nogc_new!MTLNuvkContext(descriptor);
+            else
+                return null;
+
+        default:
+            return null;
     }
 }

@@ -6,6 +6,7 @@
 */
 
 module nuvk.texture;
+import nuvk.resource;
 import nuvk;
 import inmath;
 

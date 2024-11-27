@@ -19,8 +19,8 @@ bool nuvkCloseSharedHandle(NuvkHandleShared handle) @nogc {
         return CloseHandle(cast(HANDLE)handle) == TRUE;
     } else static if (NuvkIsAppleOS) {
         
-        import nuvk.apple.port;
-        return mach_port_deallocate(mach_task_self(), cast(mach_port_name_t)handle);
+        import mach.ports;
+        return mach_port_deallocate(cast(ipc_space*)mach_task_self(), cast(mach_port_name_t)handle) == KERN_SUCCESS;
     } else static if (NuvkIsPOSIX) {
 
         import core.sys.posix.unistd : close;

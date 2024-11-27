@@ -9,6 +9,9 @@
     Resources
 */
 module nuvk.resource;
+import nuvk.core;
+import nuvk.device;
+import nuvk.sync;
 
 /**
     A Nuvk resources.
@@ -88,10 +91,7 @@ public:
     */
     this(NuvkDevice owner, NuvkProcessSharing sharing) {
         super(owner);
-        this.sharing = canShare() ? 
-            sharing : 
-            NuvkProcessSharing.processLocal;
-        
+        this.sharing = sharing;
         this.onCreated(this.sharing);
     }
 

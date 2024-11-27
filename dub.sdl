@@ -6,17 +6,35 @@ license "BSD 2-clause"
 
 dependency "numem" version="~>0.23.6"
 dependency "inmath" version="~>1.3.0"
-dependency "erupted" version="~>2.1.98"
 dependency "bindbc-loader" version=">=1.1.5"
 
-targetPath "out/"
+dependency "erupted" optional=true version="~>2.1"
 
 lflags "-rpath=.:/usr/local/lib64:/usr/local/lib" platform="linux"
 
+targetPath "out/"
 workingDirectory "out/"
-excludedSourceFiles "source/nuvk/dlsl/compiler/*"
 
-copyFiles "libs/x86_64/*.dll" platform="windows" 
+configuration "apple" {
+	platforms "osx" "ios" "tvos"
+	copyFiles "res/apple/*.dylib"
+
+	versions "MetalFX" "MetalKit" "Mach"
+	dependency "objective-d" version="~>1.0"
+	dependency "metal-d" version="~>0.5" optional=true
+}
+
+configuration "posix" {
+	platforms "posix"
+	copyFiles "res/amd64/*.so" platform="x86_64"
+	copyFiles "res/arm64/*.so" platform="aarch64"
+}
+
+configuration "windows" {
+	platforms "windows"
+	copyFiles "res/amd64/*.dll" platform="x86_64"
+	copyFiles "res/arm64/*.dll" platform="aarch64"
+}
 
 configuration "build" {
 	targetType "library"

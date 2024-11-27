@@ -6,6 +6,7 @@
 */
 
 module nuvk.cmdbuffer;
+import nuvk.resource;
 import nuvk;
 import numem.all;
 import inmath.linalg;

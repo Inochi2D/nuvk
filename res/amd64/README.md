@@ -1,0 +1,1 @@
+Resources for x86_64 platforms go here.

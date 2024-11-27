@@ -25,4 +25,4 @@ else:
 for name in fileList:
     f = os.path.join("emitters/", name + ".py")
     if (os.path.isfile(f)):
-        emit(f, scanner, open(f"../source/spirv/reflection/{name}.d", "w"))
+        emit(f, scanner, open(f"../source/spirv/{name}.d", "w"))

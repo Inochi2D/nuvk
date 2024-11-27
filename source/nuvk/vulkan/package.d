@@ -9,6 +9,10 @@
     Nuvk Vulkan Backend
 */
 module nuvk.internal.vulkan;
+import nuvk.context;
+static if (NuvkHasVulkan):
+
+
 import erupted.platform_extensions;
 import erupted.vulkan_lib_loader;
 

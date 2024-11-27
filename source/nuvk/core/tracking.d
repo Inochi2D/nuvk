@@ -1,4 +1,12 @@
+/*
+    Copyright © 2024, Inochi2D Project
+    Distributed under the 2-Clause BSD License, see LICENSE file.
+    
+    Authors: Luna Nielsen
+*/
+
 module nuvk.internal.impl.tracking;
+import nuvk.resource;
 import nuvk.sync;
 import numem.collections.map;
 
@@ -14,7 +22,7 @@ struct NuvkResourceTrackingInfo {
 class NuvkResourceTracker {
 @nogc:
 private:
-    weak_map!(NuvkResource, NuvkResourceTrackingInfo) tracked;
+    // weak_map!(NuvkResource, NuvkResourceTrackingInfo) tracked;
 
 public:
 

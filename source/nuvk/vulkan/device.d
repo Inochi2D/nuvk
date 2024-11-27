@@ -6,6 +6,10 @@
 */
 
 module nuvk.internal.vulkan.device;
+import nuvk.context;
+static if (NuvkHasVulkan):
+
+
 import nuvk.internal.vulkan.internal.queuemanager;
 import nuvk.internal.vulkan;
 import nuvk;

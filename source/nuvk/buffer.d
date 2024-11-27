@@ -6,6 +6,7 @@
 */
 
 module nuvk.buffer;
+import nuvk.resource;
 import nuvk;
 
 import numem.collections.vector;

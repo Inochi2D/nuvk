@@ -6,6 +6,10 @@
 */
 
 module nuvk.internal.vulkan.context;
+import nuvk.context;
+static if (NuvkHasVulkan):
+
+
 import nuvk.internal.vulkan.internal.utils;
 import nuvk.internal.vulkan;
 import nuvk;

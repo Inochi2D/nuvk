@@ -6,6 +6,9 @@
 */
 
 module nuvk.internal.vulkan.queue;
+import nuvk.context;
+static if (NuvkHasVulkan):
+
 import nuvk.internal.vulkan;
 import nuvk.core;
 import nuvk.queue;
@@ -16,6 +19,7 @@ import nuvk.sync;
 import numem.all;
 
 import core.stdc.stdio : printf;
+
 
 NuvkQueueSpecialization toNuvkSpecialization(VkQueueFlags flags) @nogc {
     uint oFlags = 0;

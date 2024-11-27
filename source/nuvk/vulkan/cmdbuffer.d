@@ -6,6 +6,10 @@
 */
 
 module nuvk.internal.vulkan.cmdbuffer;
+import nuvk.context;
+static if (NuvkHasVulkan):
+
+
 import nuvk.internal.vulkan.internal.descpoolmgr;
 import nuvk.internal.vulkan;
 import nuvk.core;

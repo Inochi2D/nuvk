@@ -6,6 +6,10 @@
 */
 
 module nuvk.internal.vulkan.shader;
+import nuvk.context;
+static if (NuvkHasVulkan):
+
+
 import nuvk.internal.vulkan;
 import nuvk.core;
 import nuvk.shader;

@@ -6,10 +6,13 @@
 */
 
 module nuvk.internal.vulkan.surface;
+import nuvk.context;
+static if (NuvkHasVulkan):
+
+
 import nuvk.internal.vulkan;
 import nuvk;
 import numem.all;
-
 import inmath;
 
 /**

@@ -1,4 +1,15 @@
+/*
+    Copyright © 2024, Inochi2D Project
+    Distributed under the 2-Clause BSD License, see LICENSE file.
+    
+    Authors: Luna Nielsen
+*/
+
 module nuvk.internal.vulkan.devinfo;
+import nuvk.context;
+static if (NuvkHasVulkan):
+
+
 import nuvk.internal.vulkan.internal.utils;
 import nuvk.internal.vulkan;
 import nuvk;
