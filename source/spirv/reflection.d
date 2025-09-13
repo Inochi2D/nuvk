@@ -1,6 +1,6 @@
 
 /*
-    Copyright © 2024, Inochi2D Project
+    Copyright © 2025, Inochi2D Project
     Distributed under the 2-Clause BSD License, see LICENSE file.
     
     Authors: Luna Nielsen
@@ -14,207 +14,223 @@ import numem.all;
 
 enum OpClass {
 
-    cMiscellaneous,
-    cDebug,
-    cAnnotation,
-    cExtension,
-    cModeSetting,
-    cTypeDeclaration,
-    cConstantCreation,
-    cMemory,
-    cFunction,
-    cImage,
-    cConversion,
-    cComposite,
-    cArithmetic,
-    cBit,
-    cRelationalandLogical,
-    cDerivative,
-    cControlFlow,
-    cAtomic,
-    cPrimitive,
-    cBarrier,
-    cGroup,
-    cDeviceSideEnqueue,
-    cPipe,
-    cNonUniform,
-    cReserved,
-    cUnknown,
+    miscellaneous,
+    debug_,
+    annotation,
+    extension,
+    modeSetting,
+    typeDeclaration,
+    constantCreation,
+    memory,
+    function_,
+    image,
+    conversion,
+    composite,
+    arithmetic,
+    bit,
+    relationalAndLogical,
+    derivative,
+    controlFlow,
+    atomic,
+    primitive,
+    barrier,
+    group,
+    deviceSideEnqueue,
+    pipe,
+    nonUniform,
+    tensor,
+    graph,
+    reserved,
+    unknown,
 }
 
 /**
     Gets whether [Op] is of the Miscellaneous Instructions class.
 */
 bool isMiscellaneous(Op code) @nogc {
-    return getClass(code) == OpClass.cMiscellaneous;
+    return getClass(code) == OpClass.miscellaneous;
 }
 
 /**
     Gets whether [Op] is of the Debug Instructions class.
 */
 bool isDebug(Op code) @nogc {
-    return getClass(code) == OpClass.cDebug;
+    return getClass(code) == OpClass.debug_;
 }
 
 /**
     Gets whether [Op] is of the Annotation Instructions class.
 */
 bool isAnnotation(Op code) @nogc {
-    return getClass(code) == OpClass.cAnnotation;
+    return getClass(code) == OpClass.annotation;
 }
 
 /**
     Gets whether [Op] is of the Extension Instructions class.
 */
 bool isExtension(Op code) @nogc {
-    return getClass(code) == OpClass.cExtension;
+    return getClass(code) == OpClass.extension;
 }
 
 /**
     Gets whether [Op] is of the Mode-Setting Instructions class.
 */
 bool isModeSetting(Op code) @nogc {
-    return getClass(code) == OpClass.cModeSetting;
+    return getClass(code) == OpClass.modeSetting;
 }
 
 /**
     Gets whether [Op] is of the Type-Declaration Instructions class.
 */
 bool isTypeDeclaration(Op code) @nogc {
-    return getClass(code) == OpClass.cTypeDeclaration;
+    return getClass(code) == OpClass.typeDeclaration;
 }
 
 /**
     Gets whether [Op] is of the Constant-Creation Instructions class.
 */
 bool isConstantCreation(Op code) @nogc {
-    return getClass(code) == OpClass.cConstantCreation;
+    return getClass(code) == OpClass.constantCreation;
 }
 
 /**
     Gets whether [Op] is of the Memory Instructions class.
 */
 bool isMemory(Op code) @nogc {
-    return getClass(code) == OpClass.cMemory;
+    return getClass(code) == OpClass.memory;
 }
 
 /**
     Gets whether [Op] is of the Function Instructions class.
 */
 bool isFunction(Op code) @nogc {
-    return getClass(code) == OpClass.cFunction;
+    return getClass(code) == OpClass.function_;
 }
 
 /**
     Gets whether [Op] is of the Image Instructions class.
 */
 bool isImage(Op code) @nogc {
-    return getClass(code) == OpClass.cImage;
+    return getClass(code) == OpClass.image;
 }
 
 /**
     Gets whether [Op] is of the Conversion Instructions class.
 */
 bool isConversion(Op code) @nogc {
-    return getClass(code) == OpClass.cConversion;
+    return getClass(code) == OpClass.conversion;
 }
 
 /**
     Gets whether [Op] is of the Composite Instructions class.
 */
 bool isComposite(Op code) @nogc {
-    return getClass(code) == OpClass.cComposite;
+    return getClass(code) == OpClass.composite;
 }
 
 /**
     Gets whether [Op] is of the Arithmetic Instructions class.
 */
 bool isArithmetic(Op code) @nogc {
-    return getClass(code) == OpClass.cArithmetic;
+    return getClass(code) == OpClass.arithmetic;
 }
 
 /**
     Gets whether [Op] is of the Bit Instructions class.
 */
 bool isBit(Op code) @nogc {
-    return getClass(code) == OpClass.cBit;
+    return getClass(code) == OpClass.bit;
 }
 
 /**
     Gets whether [Op] is of the Relational and Logical Instructions class.
 */
 bool isRelationalandLogical(Op code) @nogc {
-    return getClass(code) == OpClass.cRelationalandLogical;
+    return getClass(code) == OpClass.relationalAndLogical;
 }
 
 /**
     Gets whether [Op] is of the Derivative Instructions class.
 */
 bool isDerivative(Op code) @nogc {
-    return getClass(code) == OpClass.cDerivative;
+    return getClass(code) == OpClass.derivative;
 }
 
 /**
     Gets whether [Op] is of the Control-Flow Instructions class.
 */
 bool isControlFlow(Op code) @nogc {
-    return getClass(code) == OpClass.cControlFlow;
+    return getClass(code) == OpClass.controlFlow;
 }
 
 /**
     Gets whether [Op] is of the Atomic Instructions class.
 */
 bool isAtomic(Op code) @nogc {
-    return getClass(code) == OpClass.cAtomic;
+    return getClass(code) == OpClass.atomic;
 }
 
 /**
     Gets whether [Op] is of the Primitive Instructions class.
 */
 bool isPrimitive(Op code) @nogc {
-    return getClass(code) == OpClass.cPrimitive;
+    return getClass(code) == OpClass.primitive;
 }
 
 /**
     Gets whether [Op] is of the Barrier Instructions class.
 */
 bool isBarrier(Op code) @nogc {
-    return getClass(code) == OpClass.cBarrier;
+    return getClass(code) == OpClass.barrier;
 }
 
 /**
     Gets whether [Op] is of the Group and Subgroup Instructions class.
 */
 bool isGroup(Op code) @nogc {
-    return getClass(code) == OpClass.cGroup;
+    return getClass(code) == OpClass.group;
 }
 
 /**
     Gets whether [Op] is of the Device-Side Enqueue Instructions class.
 */
 bool isDeviceSideEnqueue(Op code) @nogc {
-    return getClass(code) == OpClass.cDeviceSideEnqueue;
+    return getClass(code) == OpClass.deviceSideEnqueue;
 }
 
 /**
     Gets whether [Op] is of the Pipe Instructions class.
 */
 bool isPipe(Op code) @nogc {
-    return getClass(code) == OpClass.cPipe;
+    return getClass(code) == OpClass.pipe;
 }
 
 /**
     Gets whether [Op] is of the Non-Uniform Instructions class.
 */
 bool isNonUniform(Op code) @nogc {
-    return getClass(code) == OpClass.cNonUniform;
+    return getClass(code) == OpClass.nonUniform;
+}
+
+/**
+    Gets whether [Op] is of the Tensor Instructions class.
+*/
+bool isTensor(Op code) @nogc {
+    return getClass(code) == OpClass.tensor;
+}
+
+/**
+    Gets whether [Op] is of the Graph Instructions class.
+*/
+bool isGraph(Op code) @nogc {
+    return getClass(code) == OpClass.graph;
 }
 
 /**
     Gets whether [Op] is of the Reserved Instructions class.
 */
 bool isReserved(Op code) @nogc {
-    return getClass(code) == OpClass.cReserved;
+    return getClass(code) == OpClass.reserved;
 }
 
 /**
@@ -223,7 +239,7 @@ bool isReserved(Op code) @nogc {
 OpClass getClass(Op code) @nogc {
     switch (code) {
         default:
-            return OpClass.cUnknown;
+            return OpClass.unknown;
         
         case Op.OpNop:
         case Op.OpUndef:
@@ -231,7 +247,8 @@ OpClass getClass(Op code) @nogc {
         case Op.OpCooperativeMatrixLengthKHR:
         case Op.OpAssumeTrueKHR:
         case Op.OpExpectKHR:
-            return OpClass.cMiscellaneous;
+        case Op.OpArithmeticFenceEXT:
+            return OpClass.miscellaneous;
         case Op.OpSourceContinued:
         case Op.OpSource:
         case Op.OpSourceExtension:
@@ -241,7 +258,7 @@ OpClass getClass(Op code) @nogc {
         case Op.OpLine:
         case Op.OpNoLine:
         case Op.OpModuleProcessed:
-            return OpClass.cDebug;
+            return OpClass.debug_;
         case Op.OpDecorate:
         case Op.OpMemberDecorate:
         case Op.OpDecorationGroup:
@@ -250,18 +267,21 @@ OpClass getClass(Op code) @nogc {
         case Op.OpDecorateId:
         case Op.OpDecorateString:
         case Op.OpMemberDecorateString:
-            return OpClass.cAnnotation;
+            return OpClass.annotation;
         case Op.OpExtension:
         case Op.OpExtInstImport:
         case Op.OpExtInst:
         case Op.OpExtInstWithForwardRefsKHR:
-            return OpClass.cExtension;
+        case Op.OpConditionalExtensionINTEL:
+            return OpClass.extension;
         case Op.OpMemoryModel:
         case Op.OpEntryPoint:
         case Op.OpExecutionMode:
         case Op.OpCapability:
         case Op.OpExecutionModeId:
-            return OpClass.cModeSetting;
+        case Op.OpConditionalEntryPointINTEL:
+        case Op.OpConditionalCapabilityINTEL:
+            return OpClass.modeSetting;
         case Op.OpTypeVoid:
         case Op.OpTypeBool:
         case Op.OpTypeInt:
@@ -285,15 +305,21 @@ OpClass getClass(Op code) @nogc {
         case Op.OpTypeForwardPointer:
         case Op.OpTypePipeStorage:
         case Op.OpTypeNamedBarrier:
+        case Op.OpTypeTensorARM:
+        case Op.OpTypeGraphARM:
         case Op.OpTypeUntypedPointerKHR:
         case Op.OpTypeCooperativeMatrixKHR:
         case Op.OpTypeRayQueryKHR:
         case Op.OpTypeHitObjectNV:
+        case Op.OpTypeCooperativeVectorNV:
         case Op.OpTypeAccelerationStructureKHR:
         case Op.OpTypeCooperativeMatrixNV:
+        case Op.OpTypeTensorLayoutNV:
+        case Op.OpTypeTensorViewNV:
         case Op.OpTypeBufferSurfaceINTEL:
         case Op.OpTypeStructContinuedINTEL:
-            return OpClass.cTypeDeclaration;
+        case Op.OpTypeTaskSequenceINTEL:
+            return OpClass.typeDeclaration;
         case Op.OpConstantTrue:
         case Op.OpConstantFalse:
         case Op.OpConstant:
@@ -309,7 +335,10 @@ OpClass getClass(Op code) @nogc {
         case Op.OpSpecConstantCompositeReplicateEXT:
         case Op.OpConstantCompositeContinuedINTEL:
         case Op.OpSpecConstantCompositeContinuedINTEL:
-            return OpClass.cConstantCreation;
+        case Op.OpSpecConstantTargetINTEL:
+        case Op.OpSpecConstantArchitectureINTEL:
+        case Op.OpSpecConstantCapabilitiesINTEL:
+            return OpClass.constantCreation;
         case Op.OpVariable:
         case Op.OpImageTexelPointer:
         case Op.OpLoad:
@@ -334,15 +363,24 @@ OpClass getClass(Op code) @nogc {
         case Op.OpUntypedPrefetchKHR:
         case Op.OpCooperativeMatrixLoadKHR:
         case Op.OpCooperativeMatrixStoreKHR:
+        case Op.OpCooperativeVectorLoadNV:
+        case Op.OpCooperativeVectorStoreNV:
+        case Op.OpCooperativeMatrixLoadTensorNV:
+        case Op.OpCooperativeMatrixStoreTensorNV:
         case Op.OpRawAccessChainNV:
+        case Op.OpVariableLengthArrayINTEL:
+        case Op.OpSaveMemoryINTEL:
+        case Op.OpRestoreMemoryINTEL:
+        case Op.OpUntypedVariableLengthArrayINTEL:
         case Op.OpMaskedGatherINTEL:
         case Op.OpMaskedScatterINTEL:
-            return OpClass.cMemory;
+            return OpClass.memory;
         case Op.OpFunction:
         case Op.OpFunctionParameter:
         case Op.OpFunctionEnd:
         case Op.OpFunctionCall:
-            return OpClass.cFunction;
+        case Op.OpCooperativeMatrixPerElementOpNV:
+            return OpClass.function_;
         case Op.OpSampledImage:
         case Op.OpImageSampleImplicitLod:
         case Op.OpImageSampleExplicitLod:
@@ -390,7 +428,10 @@ OpClass getClass(Op code) @nogc {
         case Op.OpImageBlockMatchGatherSSDQCOM:
         case Op.OpImageBlockMatchGatherSADQCOM:
         case Op.OpImageSampleFootprintNV:
-            return OpClass.cImage;
+        case Op.OpConvertHandleToImageINTEL:
+        case Op.OpConvertHandleToSamplerINTEL:
+        case Op.OpConvertHandleToSampledImageINTEL:
+            return OpClass.image;
         case Op.OpConvertFToU:
         case Op.OpConvertFToS:
         case Op.OpConvertSToF:
@@ -407,9 +448,13 @@ OpClass getClass(Op code) @nogc {
         case Op.OpGenericCastToPtr:
         case Op.OpGenericCastToPtrExplicit:
         case Op.OpBitcast:
+        case Op.OpBitCastArrayQCOM:
+        case Op.OpCooperativeMatrixConvertNV:
+        case Op.OpCooperativeMatrixTransposeNV:
         case Op.OpConvertFToBF16INTEL:
         case Op.OpConvertBF16ToFINTEL:
-            return OpClass.cConversion;
+        case Op.OpRoundFToTF32INTEL:
+            return OpClass.conversion;
         case Op.OpVectorExtractDynamic:
         case Op.OpVectorInsertDynamic:
         case Op.OpVectorShuffle:
@@ -420,8 +465,12 @@ OpClass getClass(Op code) @nogc {
         case Op.OpTranspose:
         case Op.OpCopyLogical:
         case Op.OpCompositeConstructReplicateEXT:
+        case Op.OpCompositeConstructCoopMatQCOM:
+        case Op.OpCompositeExtractCoopMatQCOM:
+        case Op.OpExtractSubArrayQCOM:
         case Op.OpCompositeConstructContinuedINTEL:
-            return OpClass.cComposite;
+        case Op.OpConditionalCopyObjectINTEL:
+            return OpClass.composite;
         case Op.OpSNegate:
         case Op.OpFNegate:
         case Op.OpIAdd:
@@ -456,7 +505,8 @@ OpClass getClass(Op code) @nogc {
         case Op.OpUDotAccSat:
         case Op.OpSUDotAccSat:
         case Op.OpCooperativeMatrixMulAddKHR:
-            return OpClass.cArithmetic;
+        case Op.OpCooperativeMatrixReduceNV:
+            return OpClass.arithmetic;
         case Op.OpShiftRightLogical:
         case Op.OpShiftRightArithmetic:
         case Op.OpShiftLeftLogical:
@@ -469,7 +519,8 @@ OpClass getClass(Op code) @nogc {
         case Op.OpBitFieldUExtract:
         case Op.OpBitReverse:
         case Op.OpBitCount:
-            return OpClass.cBit;
+        case Op.OpBitwiseFunctionINTEL:
+            return OpClass.bit;
         case Op.OpAny:
         case Op.OpAll:
         case Op.OpIsNan:
@@ -508,7 +559,7 @@ OpClass getClass(Op code) @nogc {
         case Op.OpFUnordLessThanEqual:
         case Op.OpFOrdGreaterThanEqual:
         case Op.OpFUnordGreaterThanEqual:
-            return OpClass.cRelationalandLogical;
+            return OpClass.relationalAndLogical;
         case Op.OpDPdx:
         case Op.OpDPdy:
         case Op.OpFwidth:
@@ -518,7 +569,7 @@ OpClass getClass(Op code) @nogc {
         case Op.OpDPdxCoarse:
         case Op.OpDPdyCoarse:
         case Op.OpFwidthCoarse:
-            return OpClass.cDerivative;
+            return OpClass.derivative;
         case Op.OpPhi:
         case Op.OpLoopMerge:
         case Op.OpSelectionMerge:
@@ -534,7 +585,7 @@ OpClass getClass(Op code) @nogc {
         case Op.OpLifetimeStop:
         case Op.OpTerminateInvocation:
         case Op.OpDemoteToHelperInvocation:
-            return OpClass.cControlFlow;
+            return OpClass.controlFlow;
         case Op.OpAtomicLoad:
         case Op.OpAtomicStore:
         case Op.OpAtomicExchange:
@@ -556,19 +607,19 @@ OpClass getClass(Op code) @nogc {
         case Op.OpAtomicFMinEXT:
         case Op.OpAtomicFMaxEXT:
         case Op.OpAtomicFAddEXT:
-            return OpClass.cAtomic;
+            return OpClass.atomic;
         case Op.OpEmitVertex:
         case Op.OpEndPrimitive:
         case Op.OpEmitStreamVertex:
         case Op.OpEndStreamPrimitive:
-            return OpClass.cPrimitive;
+            return OpClass.primitive;
         case Op.OpControlBarrier:
         case Op.OpMemoryBarrier:
         case Op.OpNamedBarrierInitialize:
         case Op.OpMemoryNamedBarrier:
         case Op.OpControlBarrierArriveINTEL:
         case Op.OpControlBarrierWaitINTEL:
-            return OpClass.cBarrier;
+            return OpClass.barrier;
         case Op.OpGroupAsyncCopy:
         case Op.OpGroupWaitEvents:
         case Op.OpGroupAll:
@@ -589,6 +640,7 @@ OpClass getClass(Op code) @nogc {
         case Op.OpSubgroupAllEqualKHR:
         case Op.OpGroupNonUniformRotateKHR:
         case Op.OpSubgroupReadInvocationKHR:
+        case Op.OpUntypedGroupAsyncCopyKHR:
         case Op.OpGroupIAddNonUniformAMD:
         case Op.OpGroupFAddNonUniformAMD:
         case Op.OpGroupFMinNonUniformAMD:
@@ -608,6 +660,12 @@ OpClass getClass(Op code) @nogc {
         case Op.OpSubgroupImageMediaBlockReadINTEL:
         case Op.OpSubgroupImageMediaBlockWriteINTEL:
         case Op.OpSubgroupBlockPrefetchINTEL:
+        case Op.OpSubgroup2DBlockLoadINTEL:
+        case Op.OpSubgroup2DBlockLoadTransformINTEL:
+        case Op.OpSubgroup2DBlockLoadTransposeINTEL:
+        case Op.OpSubgroup2DBlockPrefetchINTEL:
+        case Op.OpSubgroup2DBlockStoreINTEL:
+        case Op.OpSubgroupMatrixMultiplyAccumulateINTEL:
         case Op.OpGroupIMulKHR:
         case Op.OpGroupFMulKHR:
         case Op.OpGroupBitwiseAndKHR:
@@ -616,7 +674,7 @@ OpClass getClass(Op code) @nogc {
         case Op.OpGroupLogicalAndKHR:
         case Op.OpGroupLogicalOrKHR:
         case Op.OpGroupLogicalXorKHR:
-            return OpClass.cGroup;
+            return OpClass.group;
         case Op.OpEnqueueMarker:
         case Op.OpEnqueueKernel:
         case Op.OpGetKernelNDrangeSubGroupCount:
@@ -633,7 +691,7 @@ OpClass getClass(Op code) @nogc {
         case Op.OpBuildNDRange:
         case Op.OpGetKernelLocalSizeForSubgroupCount:
         case Op.OpGetKernelMaxNumSubgroups:
-            return OpClass.cDeviceSideEnqueue;
+            return OpClass.deviceSideEnqueue;
         case Op.OpReadPipe:
         case Op.OpWritePipe:
         case Op.OpReservedReadPipe:
@@ -653,7 +711,7 @@ OpClass getClass(Op code) @nogc {
         case Op.OpCreatePipeFromPipeStorage:
         case Op.OpReadPipeBlockingINTEL:
         case Op.OpWritePipeBlockingINTEL:
-            return OpClass.cPipe;
+            return OpClass.pipe;
         case Op.OpGroupNonUniformElect:
         case Op.OpGroupNonUniformAll:
         case Op.OpGroupNonUniformAny:
@@ -691,7 +749,18 @@ OpClass getClass(Op code) @nogc {
         case Op.OpGroupNonUniformQuadAllKHR:
         case Op.OpGroupNonUniformQuadAnyKHR:
         case Op.OpGroupNonUniformPartitionNV:
-            return OpClass.cNonUniform;
+            return OpClass.nonUniform;
+        case Op.OpTensorReadARM:
+        case Op.OpTensorWriteARM:
+        case Op.OpTensorQuerySizeARM:
+            return OpClass.tensor;
+        case Op.OpGraphConstantARM:
+        case Op.OpGraphEntryPointARM:
+        case Op.OpGraphARM:
+        case Op.OpGraphInputARM:
+        case Op.OpGraphSetOutputARM:
+        case Op.OpGraphEndARM:
+            return OpClass.graph;
         case Op.OpTraceRayKHR:
         case Op.OpExecuteCallableKHR:
         case Op.OpConvertUToAccelerationStructureKHR:
@@ -706,9 +775,14 @@ OpClass getClass(Op code) @nogc {
         case Op.OpFragmentMaskFetchAMD:
         case Op.OpFragmentFetchAMD:
         case Op.OpReadClockKHR:
-        case Op.OpFinalizeNodePayloadsAMDX:
+        case Op.OpAllocateNodePayloadsAMDX:
+        case Op.OpEnqueueNodePayloadsAMDX:
+        case Op.OpTypeNodePayloadArrayAMDX:
         case Op.OpFinishWritingNodePayloadAMDX:
-        case Op.OpInitializeNodePayloadsAMDX:
+        case Op.OpNodePayloadArrayLengthAMDX:
+        case Op.OpIsNodePayloadValidAMDX:
+        case Op.OpConstantStringAMDX:
+        case Op.OpSpecConstantStringAMDX:
         case Op.OpHitObjectRecordHitMotionNV:
         case Op.OpHitObjectRecordHitWithIndexMotionNV:
         case Op.OpHitObjectRecordMissMotionNV:
@@ -741,6 +815,10 @@ OpClass getClass(Op code) @nogc {
         case Op.OpHitObjectIsMissNV:
         case Op.OpReorderThreadWithHitObjectNV:
         case Op.OpReorderThreadWithHintNV:
+        case Op.OpCooperativeVectorMatrixMulNV:
+        case Op.OpCooperativeVectorOuterProductAccumulateNV:
+        case Op.OpCooperativeVectorReduceSumAccumulateNV:
+        case Op.OpCooperativeVectorMatrixMulAddNV:
         case Op.OpEmitMeshTasksEXT:
         case Op.OpSetMeshOutputsEXT:
         case Op.OpWritePackedPrimitiveIndices4x8NV:
@@ -754,13 +832,25 @@ OpClass getClass(Op code) @nogc {
         case Op.OpTraceRayMotionNV:
         case Op.OpRayQueryGetIntersectionTriangleVertexPositionsKHR:
         case Op.OpExecuteCallableNV:
+        case Op.OpRayQueryGetIntersectionClusterIdNV:
+        case Op.OpHitObjectGetClusterIdNV:
         case Op.OpCooperativeMatrixLoadNV:
         case Op.OpCooperativeMatrixStoreNV:
         case Op.OpCooperativeMatrixMulAddNV:
         case Op.OpCooperativeMatrixLengthNV:
         case Op.OpBeginInvocationInterlockEXT:
         case Op.OpEndInvocationInterlockEXT:
+        case Op.OpCreateTensorLayoutNV:
+        case Op.OpTensorLayoutSetDimensionNV:
+        case Op.OpTensorLayoutSetStrideNV:
+        case Op.OpTensorLayoutSliceNV:
+        case Op.OpTensorLayoutSetClampValueNV:
+        case Op.OpCreateTensorViewNV:
+        case Op.OpTensorViewSetDimensionNV:
+        case Op.OpTensorViewSetStrideNV:
         case Op.OpIsHelperInvocationEXT:
+        case Op.OpTensorViewSetClipNV:
+        case Op.OpTensorLayoutSetBlockSizeNV:
         case Op.OpConvertUToImageNV:
         case Op.OpConvertUToSamplerNV:
         case Op.OpConvertImageToUNV:
@@ -768,6 +858,19 @@ OpClass getClass(Op code) @nogc {
         case Op.OpConvertUToSampledImageNV:
         case Op.OpConvertSampledImageToUNV:
         case Op.OpSamplerImageAddressingModeNV:
+        case Op.OpRayQueryGetIntersectionSpherePositionNV:
+        case Op.OpRayQueryGetIntersectionSphereRadiusNV:
+        case Op.OpRayQueryGetIntersectionLSSPositionsNV:
+        case Op.OpRayQueryGetIntersectionLSSRadiiNV:
+        case Op.OpRayQueryGetIntersectionLSSHitValueNV:
+        case Op.OpHitObjectGetSpherePositionNV:
+        case Op.OpHitObjectGetSphereRadiusNV:
+        case Op.OpHitObjectGetLSSPositionsNV:
+        case Op.OpHitObjectGetLSSRadiiNV:
+        case Op.OpHitObjectIsSphereHitNV:
+        case Op.OpHitObjectIsLSSHitNV:
+        case Op.OpRayQueryIsSphereHitNV:
+        case Op.OpRayQueryIsLSSHitNV:
         case Op.OpUCountLeadingZerosINTEL:
         case Op.OpUCountTrailingZerosINTEL:
         case Op.OpAbsISubINTEL:
@@ -801,7 +904,11 @@ OpClass getClass(Op code) @nogc {
         case Op.OpRayQueryGetWorldRayOriginKHR:
         case Op.OpRayQueryGetIntersectionObjectToWorldKHR:
         case Op.OpRayQueryGetIntersectionWorldToObjectKHR:
-            return OpClass.cReserved;
+        case Op.OpTaskSequenceCreateINTEL:
+        case Op.OpTaskSequenceAsyncINTEL:
+        case Op.OpTaskSequenceGetINTEL:
+        case Op.OpTaskSequenceReleaseINTEL:
+            return OpClass.reserved;
     }
 }
 
@@ -1105,6 +1212,13 @@ bool hasResult(Op code) @nogc {
         case Op.OpColorAttachmentReadEXT:
         case Op.OpDepthAttachmentReadEXT:
         case Op.OpStencilAttachmentReadEXT:
+        case Op.OpTypeTensorARM:
+        case Op.OpTensorReadARM:
+        case Op.OpTensorQuerySizeARM:
+        case Op.OpGraphConstantARM:
+        case Op.OpGraphARM:
+        case Op.OpGraphInputARM:
+        case Op.OpTypeGraphARM:
         case Op.OpTypeUntypedPointerKHR:
         case Op.OpUntypedVariableKHR:
         case Op.OpUntypedAccessChainKHR:
@@ -1120,6 +1234,7 @@ bool hasResult(Op code) @nogc {
         case Op.OpGroupNonUniformRotateKHR:
         case Op.OpSubgroupReadInvocationKHR:
         case Op.OpExtInstWithForwardRefsKHR:
+        case Op.OpUntypedGroupAsyncCopyKHR:
         case Op.OpConvertUToAccelerationStructureKHR:
         case Op.OpSDot:
         case Op.OpUDot:
@@ -1141,10 +1256,14 @@ bool hasResult(Op code) @nogc {
         case Op.OpImageBoxFilterQCOM:
         case Op.OpImageBlockMatchSSDQCOM:
         case Op.OpImageBlockMatchSADQCOM:
+        case Op.OpBitCastArrayQCOM:
         case Op.OpImageBlockMatchWindowSSDQCOM:
         case Op.OpImageBlockMatchWindowSADQCOM:
         case Op.OpImageBlockMatchGatherSSDQCOM:
         case Op.OpImageBlockMatchGatherSADQCOM:
+        case Op.OpCompositeConstructCoopMatQCOM:
+        case Op.OpCompositeExtractCoopMatQCOM:
+        case Op.OpExtractSubArrayQCOM:
         case Op.OpGroupIAddNonUniformAMD:
         case Op.OpGroupFAddNonUniformAMD:
         case Op.OpGroupFMinNonUniformAMD:
@@ -1156,7 +1275,13 @@ bool hasResult(Op code) @nogc {
         case Op.OpFragmentMaskFetchAMD:
         case Op.OpFragmentFetchAMD:
         case Op.OpReadClockKHR:
+        case Op.OpAllocateNodePayloadsAMDX:
+        case Op.OpTypeNodePayloadArrayAMDX:
         case Op.OpFinishWritingNodePayloadAMDX:
+        case Op.OpNodePayloadArrayLengthAMDX:
+        case Op.OpIsNodePayloadValidAMDX:
+        case Op.OpConstantStringAMDX:
+        case Op.OpSpecConstantStringAMDX:
         case Op.OpGroupNonUniformQuadAllKHR:
         case Op.OpGroupNonUniformQuadAnyKHR:
         case Op.OpHitObjectGetWorldToObjectNV:
@@ -1180,17 +1305,40 @@ bool hasResult(Op code) @nogc {
         case Op.OpHitObjectIsMissNV:
         case Op.OpTypeHitObjectNV:
         case Op.OpImageSampleFootprintNV:
+        case Op.OpTypeCooperativeVectorNV:
+        case Op.OpCooperativeVectorMatrixMulNV:
+        case Op.OpCooperativeVectorMatrixMulAddNV:
+        case Op.OpCooperativeMatrixConvertNV:
         case Op.OpGroupNonUniformPartitionNV:
         case Op.OpFetchMicroTriangleVertexPositionNV:
         case Op.OpFetchMicroTriangleVertexBarycentricNV:
+        case Op.OpCooperativeVectorLoadNV:
         case Op.OpReportIntersectionKHR:
         case Op.OpRayQueryGetIntersectionTriangleVertexPositionsKHR:
         case Op.OpTypeAccelerationStructureKHR:
+        case Op.OpRayQueryGetIntersectionClusterIdNV:
+        case Op.OpHitObjectGetClusterIdNV:
         case Op.OpTypeCooperativeMatrixNV:
         case Op.OpCooperativeMatrixLoadNV:
         case Op.OpCooperativeMatrixMulAddNV:
         case Op.OpCooperativeMatrixLengthNV:
+        case Op.OpCooperativeMatrixReduceNV:
+        case Op.OpCooperativeMatrixLoadTensorNV:
+        case Op.OpCooperativeMatrixPerElementOpNV:
+        case Op.OpTypeTensorLayoutNV:
+        case Op.OpTypeTensorViewNV:
+        case Op.OpCreateTensorLayoutNV:
+        case Op.OpTensorLayoutSetDimensionNV:
+        case Op.OpTensorLayoutSetStrideNV:
+        case Op.OpTensorLayoutSliceNV:
+        case Op.OpTensorLayoutSetClampValueNV:
+        case Op.OpCreateTensorViewNV:
+        case Op.OpTensorViewSetDimensionNV:
+        case Op.OpTensorViewSetStrideNV:
         case Op.OpIsHelperInvocationEXT:
+        case Op.OpTensorViewSetClipNV:
+        case Op.OpTensorLayoutSetBlockSizeNV:
+        case Op.OpCooperativeMatrixTransposeNV:
         case Op.OpConvertUToImageNV:
         case Op.OpConvertUToSamplerNV:
         case Op.OpConvertImageToUNV:
@@ -1198,6 +1346,19 @@ bool hasResult(Op code) @nogc {
         case Op.OpConvertUToSampledImageNV:
         case Op.OpConvertSampledImageToUNV:
         case Op.OpRawAccessChainNV:
+        case Op.OpRayQueryGetIntersectionSpherePositionNV:
+        case Op.OpRayQueryGetIntersectionSphereRadiusNV:
+        case Op.OpRayQueryGetIntersectionLSSPositionsNV:
+        case Op.OpRayQueryGetIntersectionLSSRadiiNV:
+        case Op.OpRayQueryGetIntersectionLSSHitValueNV:
+        case Op.OpHitObjectGetSpherePositionNV:
+        case Op.OpHitObjectGetSphereRadiusNV:
+        case Op.OpHitObjectGetLSSPositionsNV:
+        case Op.OpHitObjectGetLSSRadiiNV:
+        case Op.OpHitObjectIsSphereHitNV:
+        case Op.OpHitObjectIsLSSHitNV:
+        case Op.OpRayQueryIsSphereHitNV:
+        case Op.OpRayQueryIsLSSHitNV:
         case Op.OpSubgroupShuffleINTEL:
         case Op.OpSubgroupShuffleDownINTEL:
         case Op.OpSubgroupShuffleUpINTEL:
@@ -1429,6 +1590,17 @@ bool hasResult(Op code) @nogc {
         case Op.OpCompositeConstructContinuedINTEL:
         case Op.OpConvertFToBF16INTEL:
         case Op.OpConvertBF16ToFINTEL:
+        case Op.OpArithmeticFenceEXT:
+        case Op.OpTaskSequenceCreateINTEL:
+        case Op.OpTaskSequenceGetINTEL:
+        case Op.OpTypeTaskSequenceINTEL:
+        case Op.OpSubgroupMatrixMultiplyAccumulateINTEL:
+        case Op.OpBitwiseFunctionINTEL:
+        case Op.OpUntypedVariableLengthArrayINTEL:
+        case Op.OpSpecConstantTargetINTEL:
+        case Op.OpSpecConstantArchitectureINTEL:
+        case Op.OpSpecConstantCapabilitiesINTEL:
+        case Op.OpConditionalCopyObjectINTEL:
         case Op.OpGroupIMulKHR:
         case Op.OpGroupFMulKHR:
         case Op.OpGroupBitwiseAndKHR:
@@ -1437,7 +1609,11 @@ bool hasResult(Op code) @nogc {
         case Op.OpGroupLogicalAndKHR:
         case Op.OpGroupLogicalOrKHR:
         case Op.OpGroupLogicalXorKHR:
+        case Op.OpRoundFToTF32INTEL:
         case Op.OpMaskedGatherINTEL:
+        case Op.OpConvertHandleToImageINTEL:
+        case Op.OpConvertHandleToSamplerINTEL:
+        case Op.OpConvertHandleToSampledImageINTEL:
             return true;
     }
 }
@@ -1716,6 +1892,11 @@ bool hasResultType(Op code) @nogc {
         case Op.OpColorAttachmentReadEXT:
         case Op.OpDepthAttachmentReadEXT:
         case Op.OpStencilAttachmentReadEXT:
+        case Op.OpTensorReadARM:
+        case Op.OpTensorQuerySizeARM:
+        case Op.OpGraphConstantARM:
+        case Op.OpGraphARM:
+        case Op.OpGraphInputARM:
         case Op.OpUntypedVariableKHR:
         case Op.OpUntypedAccessChainKHR:
         case Op.OpUntypedInBoundsAccessChainKHR:
@@ -1730,6 +1911,7 @@ bool hasResultType(Op code) @nogc {
         case Op.OpGroupNonUniformRotateKHR:
         case Op.OpSubgroupReadInvocationKHR:
         case Op.OpExtInstWithForwardRefsKHR:
+        case Op.OpUntypedGroupAsyncCopyKHR:
         case Op.OpConvertUToAccelerationStructureKHR:
         case Op.OpSDot:
         case Op.OpUDot:
@@ -1749,10 +1931,14 @@ bool hasResultType(Op code) @nogc {
         case Op.OpImageBoxFilterQCOM:
         case Op.OpImageBlockMatchSSDQCOM:
         case Op.OpImageBlockMatchSADQCOM:
+        case Op.OpBitCastArrayQCOM:
         case Op.OpImageBlockMatchWindowSSDQCOM:
         case Op.OpImageBlockMatchWindowSADQCOM:
         case Op.OpImageBlockMatchGatherSSDQCOM:
         case Op.OpImageBlockMatchGatherSADQCOM:
+        case Op.OpCompositeConstructCoopMatQCOM:
+        case Op.OpCompositeExtractCoopMatQCOM:
+        case Op.OpExtractSubArrayQCOM:
         case Op.OpGroupIAddNonUniformAMD:
         case Op.OpGroupFAddNonUniformAMD:
         case Op.OpGroupFMinNonUniformAMD:
@@ -1764,7 +1950,10 @@ bool hasResultType(Op code) @nogc {
         case Op.OpFragmentMaskFetchAMD:
         case Op.OpFragmentFetchAMD:
         case Op.OpReadClockKHR:
+        case Op.OpAllocateNodePayloadsAMDX:
         case Op.OpFinishWritingNodePayloadAMDX:
+        case Op.OpNodePayloadArrayLengthAMDX:
+        case Op.OpIsNodePayloadValidAMDX:
         case Op.OpGroupNonUniformQuadAllKHR:
         case Op.OpGroupNonUniformQuadAnyKHR:
         case Op.OpHitObjectGetWorldToObjectNV:
@@ -1787,15 +1976,35 @@ bool hasResultType(Op code) @nogc {
         case Op.OpHitObjectIsHitNV:
         case Op.OpHitObjectIsMissNV:
         case Op.OpImageSampleFootprintNV:
+        case Op.OpCooperativeVectorMatrixMulNV:
+        case Op.OpCooperativeVectorMatrixMulAddNV:
+        case Op.OpCooperativeMatrixConvertNV:
         case Op.OpGroupNonUniformPartitionNV:
         case Op.OpFetchMicroTriangleVertexPositionNV:
         case Op.OpFetchMicroTriangleVertexBarycentricNV:
+        case Op.OpCooperativeVectorLoadNV:
         case Op.OpReportIntersectionKHR:
         case Op.OpRayQueryGetIntersectionTriangleVertexPositionsKHR:
+        case Op.OpRayQueryGetIntersectionClusterIdNV:
+        case Op.OpHitObjectGetClusterIdNV:
         case Op.OpCooperativeMatrixLoadNV:
         case Op.OpCooperativeMatrixMulAddNV:
         case Op.OpCooperativeMatrixLengthNV:
+        case Op.OpCooperativeMatrixReduceNV:
+        case Op.OpCooperativeMatrixLoadTensorNV:
+        case Op.OpCooperativeMatrixPerElementOpNV:
+        case Op.OpCreateTensorLayoutNV:
+        case Op.OpTensorLayoutSetDimensionNV:
+        case Op.OpTensorLayoutSetStrideNV:
+        case Op.OpTensorLayoutSliceNV:
+        case Op.OpTensorLayoutSetClampValueNV:
+        case Op.OpCreateTensorViewNV:
+        case Op.OpTensorViewSetDimensionNV:
+        case Op.OpTensorViewSetStrideNV:
         case Op.OpIsHelperInvocationEXT:
+        case Op.OpTensorViewSetClipNV:
+        case Op.OpTensorLayoutSetBlockSizeNV:
+        case Op.OpCooperativeMatrixTransposeNV:
         case Op.OpConvertUToImageNV:
         case Op.OpConvertUToSamplerNV:
         case Op.OpConvertImageToUNV:
@@ -1803,6 +2012,19 @@ bool hasResultType(Op code) @nogc {
         case Op.OpConvertUToSampledImageNV:
         case Op.OpConvertSampledImageToUNV:
         case Op.OpRawAccessChainNV:
+        case Op.OpRayQueryGetIntersectionSpherePositionNV:
+        case Op.OpRayQueryGetIntersectionSphereRadiusNV:
+        case Op.OpRayQueryGetIntersectionLSSPositionsNV:
+        case Op.OpRayQueryGetIntersectionLSSRadiiNV:
+        case Op.OpRayQueryGetIntersectionLSSHitValueNV:
+        case Op.OpHitObjectGetSpherePositionNV:
+        case Op.OpHitObjectGetSphereRadiusNV:
+        case Op.OpHitObjectGetLSSPositionsNV:
+        case Op.OpHitObjectGetLSSRadiiNV:
+        case Op.OpHitObjectIsSphereHitNV:
+        case Op.OpHitObjectIsLSSHitNV:
+        case Op.OpRayQueryIsSphereHitNV:
+        case Op.OpRayQueryIsLSSHitNV:
         case Op.OpSubgroupShuffleINTEL:
         case Op.OpSubgroupShuffleDownINTEL:
         case Op.OpSubgroupShuffleUpINTEL:
@@ -1826,7 +2048,6 @@ bool hasResultType(Op code) @nogc {
         case Op.OpUMul32x16INTEL:
         case Op.OpConstantFunctionPointerINTEL:
         case Op.OpFunctionPointerCallINTEL:
-        case Op.OpAsmTargetINTEL:
         case Op.OpAsmINTEL:
         case Op.OpAsmCallINTEL:
         case Op.OpAtomicFMinEXT:
@@ -2017,6 +2238,16 @@ bool hasResultType(Op code) @nogc {
         case Op.OpCompositeConstructContinuedINTEL:
         case Op.OpConvertFToBF16INTEL:
         case Op.OpConvertBF16ToFINTEL:
+        case Op.OpArithmeticFenceEXT:
+        case Op.OpTaskSequenceCreateINTEL:
+        case Op.OpTaskSequenceGetINTEL:
+        case Op.OpSubgroupMatrixMultiplyAccumulateINTEL:
+        case Op.OpBitwiseFunctionINTEL:
+        case Op.OpUntypedVariableLengthArrayINTEL:
+        case Op.OpSpecConstantTargetINTEL:
+        case Op.OpSpecConstantArchitectureINTEL:
+        case Op.OpSpecConstantCapabilitiesINTEL:
+        case Op.OpConditionalCopyObjectINTEL:
         case Op.OpGroupIMulKHR:
         case Op.OpGroupFMulKHR:
         case Op.OpGroupBitwiseAndKHR:
@@ -2025,7 +2256,11 @@ bool hasResultType(Op code) @nogc {
         case Op.OpGroupLogicalAndKHR:
         case Op.OpGroupLogicalOrKHR:
         case Op.OpGroupLogicalXorKHR:
+        case Op.OpRoundFToTF32INTEL:
         case Op.OpMaskedGatherINTEL:
+        case Op.OpConvertHandleToImageINTEL:
+        case Op.OpConvertHandleToSamplerINTEL:
+        case Op.OpConvertHandleToSampledImageINTEL:
             return true;
     }
 }
@@ -2732,6 +2967,28 @@ uint getMinLength(Op code) @nogc {
             return 2;
         case Op.OpStencilAttachmentReadEXT:
             return 2;
+        case Op.OpTypeTensorARM:
+            return 2;
+        case Op.OpTensorReadARM:
+            return 4;
+        case Op.OpTensorWriteARM:
+            return 3;
+        case Op.OpTensorQuerySizeARM:
+            return 4;
+        case Op.OpGraphConstantARM:
+            return 3;
+        case Op.OpGraphEntryPointARM:
+            return 2;
+        case Op.OpGraphARM:
+            return 2;
+        case Op.OpGraphInputARM:
+            return 3;
+        case Op.OpGraphSetOutputARM:
+            return 2;
+        case Op.OpGraphEndARM:
+            return 0;
+        case Op.OpTypeGraphARM:
+            return 2;
         case Op.OpTerminateInvocation:
             return 0;
         case Op.OpTypeUntypedPointerKHR:
@@ -2766,6 +3023,8 @@ uint getMinLength(Op code) @nogc {
             return 4;
         case Op.OpExtInstWithForwardRefsKHR:
             return 4;
+        case Op.OpUntypedGroupAsyncCopyKHR:
+            return 9;
         case Op.OpTraceRayKHR:
             return 11;
         case Op.OpExecuteCallableKHR:
@@ -2826,6 +3085,8 @@ uint getMinLength(Op code) @nogc {
             return 7;
         case Op.OpImageBlockMatchSADQCOM:
             return 7;
+        case Op.OpBitCastArrayQCOM:
+            return 3;
         case Op.OpImageBlockMatchWindowSSDQCOM:
             return 7;
         case Op.OpImageBlockMatchWindowSADQCOM:
@@ -2834,6 +3095,12 @@ uint getMinLength(Op code) @nogc {
             return 7;
         case Op.OpImageBlockMatchGatherSADQCOM:
             return 7;
+        case Op.OpCompositeConstructCoopMatQCOM:
+            return 3;
+        case Op.OpCompositeExtractCoopMatQCOM:
+            return 3;
+        case Op.OpExtractSubArrayQCOM:
+            return 4;
         case Op.OpGroupIAddNonUniformAMD:
             return 5;
         case Op.OpGroupFAddNonUniformAMD:
@@ -2856,12 +3123,22 @@ uint getMinLength(Op code) @nogc {
             return 5;
         case Op.OpReadClockKHR:
             return 3;
-        case Op.OpFinalizeNodePayloadsAMDX:
+        case Op.OpAllocateNodePayloadsAMDX:
+            return 5;
+        case Op.OpEnqueueNodePayloadsAMDX:
             return 1;
+        case Op.OpTypeNodePayloadArrayAMDX:
+            return 2;
         case Op.OpFinishWritingNodePayloadAMDX:
             return 3;
-        case Op.OpInitializeNodePayloadsAMDX:
+        case Op.OpNodePayloadArrayLengthAMDX:
+            return 3;
+        case Op.OpIsNodePayloadValidAMDX:
             return 4;
+        case Op.OpConstantStringAMDX:
+            return 2;
+        case Op.OpSpecConstantStringAMDX:
+            return 2;
         case Op.OpGroupNonUniformQuadAllKHR:
             return 3;
         case Op.OpGroupNonUniformQuadAnyKHR:
@@ -2934,6 +3211,18 @@ uint getMinLength(Op code) @nogc {
             return 1;
         case Op.OpImageSampleFootprintNV:
             return 6;
+        case Op.OpTypeCooperativeVectorNV:
+            return 3;
+        case Op.OpCooperativeVectorMatrixMulNV:
+            return 11;
+        case Op.OpCooperativeVectorOuterProductAccumulateNV:
+            return 6;
+        case Op.OpCooperativeVectorReduceSumAccumulateNV:
+            return 3;
+        case Op.OpCooperativeVectorMatrixMulAddNV:
+            return 14;
+        case Op.OpCooperativeMatrixConvertNV:
+            return 3;
         case Op.OpEmitMeshTasksEXT:
             return 3;
         case Op.OpSetMeshOutputsEXT:
@@ -2946,6 +3235,10 @@ uint getMinLength(Op code) @nogc {
             return 7;
         case Op.OpFetchMicroTriangleVertexBarycentricNV:
             return 7;
+        case Op.OpCooperativeVectorLoadNV:
+            return 4;
+        case Op.OpCooperativeVectorStoreNV:
+            return 3;
         case Op.OpReportIntersectionKHR:
             return 4;
         case Op.OpIgnoreIntersectionNV:
@@ -2964,6 +3257,10 @@ uint getMinLength(Op code) @nogc {
             return 1;
         case Op.OpExecuteCallableNV:
             return 2;
+        case Op.OpRayQueryGetIntersectionClusterIdNV:
+            return 4;
+        case Op.OpHitObjectGetClusterIdNV:
+            return 3;
         case Op.OpTypeCooperativeMatrixNV:
             return 5;
         case Op.OpCooperativeMatrixLoadNV:
@@ -2978,10 +3275,44 @@ uint getMinLength(Op code) @nogc {
             return 0;
         case Op.OpEndInvocationInterlockEXT:
             return 0;
+        case Op.OpCooperativeMatrixReduceNV:
+            return 5;
+        case Op.OpCooperativeMatrixLoadTensorNV:
+            return 7;
+        case Op.OpCooperativeMatrixStoreTensorNV:
+            return 5;
+        case Op.OpCooperativeMatrixPerElementOpNV:
+            return 4;
+        case Op.OpTypeTensorLayoutNV:
+            return 3;
+        case Op.OpTypeTensorViewNV:
+            return 3;
+        case Op.OpCreateTensorLayoutNV:
+            return 2;
+        case Op.OpTensorLayoutSetDimensionNV:
+            return 3;
+        case Op.OpTensorLayoutSetStrideNV:
+            return 3;
+        case Op.OpTensorLayoutSliceNV:
+            return 3;
+        case Op.OpTensorLayoutSetClampValueNV:
+            return 4;
+        case Op.OpCreateTensorViewNV:
+            return 2;
+        case Op.OpTensorViewSetDimensionNV:
+            return 3;
+        case Op.OpTensorViewSetStrideNV:
+            return 3;
         case Op.OpDemoteToHelperInvocation:
             return 0;
         case Op.OpIsHelperInvocationEXT:
             return 2;
+        case Op.OpTensorViewSetClipNV:
+            return 7;
+        case Op.OpTensorLayoutSetBlockSizeNV:
+            return 3;
+        case Op.OpCooperativeMatrixTransposeNV:
+            return 3;
         case Op.OpConvertUToImageNV:
             return 3;
         case Op.OpConvertUToSamplerNV:
@@ -2998,6 +3329,32 @@ uint getMinLength(Op code) @nogc {
             return 1;
         case Op.OpRawAccessChainNV:
             return 6;
+        case Op.OpRayQueryGetIntersectionSpherePositionNV:
+            return 4;
+        case Op.OpRayQueryGetIntersectionSphereRadiusNV:
+            return 4;
+        case Op.OpRayQueryGetIntersectionLSSPositionsNV:
+            return 4;
+        case Op.OpRayQueryGetIntersectionLSSRadiiNV:
+            return 4;
+        case Op.OpRayQueryGetIntersectionLSSHitValueNV:
+            return 4;
+        case Op.OpHitObjectGetSpherePositionNV:
+            return 3;
+        case Op.OpHitObjectGetSphereRadiusNV:
+            return 3;
+        case Op.OpHitObjectGetLSSPositionsNV:
+            return 3;
+        case Op.OpHitObjectGetLSSRadiiNV:
+            return 3;
+        case Op.OpHitObjectIsSphereHitNV:
+            return 3;
+        case Op.OpHitObjectIsLSSHitNV:
+            return 3;
+        case Op.OpRayQueryIsSphereHitNV:
+            return 4;
+        case Op.OpRayQueryIsLSSHitNV:
+            return 4;
         case Op.OpSubgroupShuffleINTEL:
             return 4;
         case Op.OpSubgroupShuffleDownINTEL:
@@ -3051,7 +3408,7 @@ uint getMinLength(Op code) @nogc {
         case Op.OpFunctionPointerCallINTEL:
             return 2;
         case Op.OpAsmTargetINTEL:
-            return 3;
+            return 2;
         case Op.OpAsmINTEL:
             return 6;
         case Op.OpAsmCallINTEL:
@@ -3311,13 +3668,13 @@ uint getMinLength(Op code) @nogc {
         case Op.OpRestoreMemoryINTEL:
             return 1;
         case Op.OpArbitraryFloatSinCosPiINTEL:
-            return 9;
+            return 8;
         case Op.OpArbitraryFloatCastINTEL:
             return 8;
         case Op.OpArbitraryFloatCastFromIntINTEL:
             return 8;
         case Op.OpArbitraryFloatCastToIntINTEL:
-            return 7;
+            return 8;
         case Op.OpArbitraryFloatAddINTEL:
             return 10;
         case Op.OpArbitraryFloatSubINTEL:
@@ -3391,7 +3748,7 @@ uint getMinLength(Op code) @nogc {
         case Op.OpArbitraryFloatPowRINTEL:
             return 10;
         case Op.OpArbitraryFloatPowNINTEL:
-            return 9;
+            return 10;
         case Op.OpLoopControlINTEL:
             return 0;
         case Op.OpAliasDomainDeclINTEL:
@@ -3401,27 +3758,27 @@ uint getMinLength(Op code) @nogc {
         case Op.OpAliasScopeListDeclINTEL:
             return 1;
         case Op.OpFixedSqrtINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedRecipINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedRsqrtINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedSinINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedCosINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedSinCosINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedSinPiINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedCosPiINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedSinCosPiINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedLogINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedExpINTEL:
-            return 9;
+            return 8;
         case Op.OpPtrCastToCrossWorkgroupINTEL:
             return 3;
         case Op.OpCrossWorkgroupCastToPtrINTEL:
@@ -3431,7 +3788,7 @@ uint getMinLength(Op code) @nogc {
         case Op.OpWritePipeBlockingINTEL:
             return 4;
         case Op.OpFPGARegINTEL:
-            return 4;
+            return 3;
         case Op.OpRayQueryGetRayTMinKHR:
             return 3;
         case Op.OpRayQueryGetRayFlagsKHR:
@@ -3486,7 +3843,49 @@ uint getMinLength(Op code) @nogc {
             return 3;
         case Op.OpControlBarrierWaitINTEL:
             return 3;
+        case Op.OpArithmeticFenceEXT:
+            return 3;
+        case Op.OpTaskSequenceCreateINTEL:
+            return 7;
+        case Op.OpTaskSequenceAsyncINTEL:
+            return 1;
+        case Op.OpTaskSequenceGetINTEL:
+            return 3;
+        case Op.OpTaskSequenceReleaseINTEL:
+            return 1;
+        case Op.OpTypeTaskSequenceINTEL:
+            return 1;
         case Op.OpSubgroupBlockPrefetchINTEL:
+            return 2;
+        case Op.OpSubgroup2DBlockLoadINTEL:
+            return 10;
+        case Op.OpSubgroup2DBlockLoadTransformINTEL:
+            return 10;
+        case Op.OpSubgroup2DBlockLoadTransposeINTEL:
+            return 10;
+        case Op.OpSubgroup2DBlockPrefetchINTEL:
+            return 9;
+        case Op.OpSubgroup2DBlockStoreINTEL:
+            return 10;
+        case Op.OpSubgroupMatrixMultiplyAccumulateINTEL:
+            return 6;
+        case Op.OpBitwiseFunctionINTEL:
+            return 6;
+        case Op.OpUntypedVariableLengthArrayINTEL:
+            return 4;
+        case Op.OpConditionalExtensionINTEL:
+            return 2;
+        case Op.OpConditionalEntryPointINTEL:
+            return 4;
+        case Op.OpConditionalCapabilityINTEL:
+            return 2;
+        case Op.OpSpecConstantTargetINTEL:
+            return 3;
+        case Op.OpSpecConstantArchitectureINTEL:
+            return 6;
+        case Op.OpSpecConstantCapabilitiesINTEL:
+            return 2;
+        case Op.OpConditionalCopyObjectINTEL:
             return 2;
         case Op.OpGroupIMulKHR:
             return 5;
@@ -3504,10 +3903,18 @@ uint getMinLength(Op code) @nogc {
             return 5;
         case Op.OpGroupLogicalXorKHR:
             return 5;
+        case Op.OpRoundFToTF32INTEL:
+            return 3;
         case Op.OpMaskedGatherINTEL:
             return 6;
         case Op.OpMaskedScatterINTEL:
             return 4;
+        case Op.OpConvertHandleToImageINTEL:
+            return 3;
+        case Op.OpConvertHandleToSamplerINTEL:
+            return 3;
+        case Op.OpConvertHandleToSampledImageINTEL:
+            return 3;
     }
 }
 
@@ -4213,6 +4620,28 @@ uint getMaxLength(Op code) @nogc {
             return 3;
         case Op.OpStencilAttachmentReadEXT:
             return 3;
+        case Op.OpTypeTensorARM:
+            return 4;
+        case Op.OpTensorReadARM:
+            return 5;
+        case Op.OpTensorWriteARM:
+            return 4;
+        case Op.OpTensorQuerySizeARM:
+            return 4;
+        case Op.OpGraphConstantARM:
+            return 3;
+        case Op.OpGraphEntryPointARM:
+            return 65535;
+        case Op.OpGraphARM:
+            return 2;
+        case Op.OpGraphInputARM:
+            return 65535;
+        case Op.OpGraphSetOutputARM:
+            return 65535;
+        case Op.OpGraphEndARM:
+            return 0;
+        case Op.OpTypeGraphARM:
+            return 65535;
         case Op.OpTerminateInvocation:
             return 0;
         case Op.OpTypeUntypedPointerKHR:
@@ -4247,6 +4676,8 @@ uint getMaxLength(Op code) @nogc {
             return 4;
         case Op.OpExtInstWithForwardRefsKHR:
             return 65535;
+        case Op.OpUntypedGroupAsyncCopyKHR:
+            return 11;
         case Op.OpTraceRayKHR:
             return 11;
         case Op.OpExecuteCallableKHR:
@@ -4307,6 +4738,8 @@ uint getMaxLength(Op code) @nogc {
             return 7;
         case Op.OpImageBlockMatchSADQCOM:
             return 7;
+        case Op.OpBitCastArrayQCOM:
+            return 3;
         case Op.OpImageBlockMatchWindowSSDQCOM:
             return 7;
         case Op.OpImageBlockMatchWindowSADQCOM:
@@ -4315,6 +4748,12 @@ uint getMaxLength(Op code) @nogc {
             return 7;
         case Op.OpImageBlockMatchGatherSADQCOM:
             return 7;
+        case Op.OpCompositeConstructCoopMatQCOM:
+            return 3;
+        case Op.OpCompositeExtractCoopMatQCOM:
+            return 3;
+        case Op.OpExtractSubArrayQCOM:
+            return 4;
         case Op.OpGroupIAddNonUniformAMD:
             return 5;
         case Op.OpGroupFAddNonUniformAMD:
@@ -4337,12 +4776,22 @@ uint getMaxLength(Op code) @nogc {
             return 5;
         case Op.OpReadClockKHR:
             return 3;
-        case Op.OpFinalizeNodePayloadsAMDX:
+        case Op.OpAllocateNodePayloadsAMDX:
+            return 5;
+        case Op.OpEnqueueNodePayloadsAMDX:
             return 1;
+        case Op.OpTypeNodePayloadArrayAMDX:
+            return 2;
         case Op.OpFinishWritingNodePayloadAMDX:
             return 3;
-        case Op.OpInitializeNodePayloadsAMDX:
+        case Op.OpNodePayloadArrayLengthAMDX:
+            return 3;
+        case Op.OpIsNodePayloadValidAMDX:
             return 4;
+        case Op.OpConstantStringAMDX:
+            return 65535;
+        case Op.OpSpecConstantStringAMDX:
+            return 65535;
         case Op.OpGroupNonUniformQuadAllKHR:
             return 3;
         case Op.OpGroupNonUniformQuadAnyKHR:
@@ -4415,6 +4864,18 @@ uint getMaxLength(Op code) @nogc {
             return 1;
         case Op.OpImageSampleFootprintNV:
             return 7;
+        case Op.OpTypeCooperativeVectorNV:
+            return 3;
+        case Op.OpCooperativeVectorMatrixMulNV:
+            return 13;
+        case Op.OpCooperativeVectorOuterProductAccumulateNV:
+            return 7;
+        case Op.OpCooperativeVectorReduceSumAccumulateNV:
+            return 3;
+        case Op.OpCooperativeVectorMatrixMulAddNV:
+            return 16;
+        case Op.OpCooperativeMatrixConvertNV:
+            return 3;
         case Op.OpEmitMeshTasksEXT:
             return 4;
         case Op.OpSetMeshOutputsEXT:
@@ -4427,6 +4888,10 @@ uint getMaxLength(Op code) @nogc {
             return 7;
         case Op.OpFetchMicroTriangleVertexBarycentricNV:
             return 7;
+        case Op.OpCooperativeVectorLoadNV:
+            return 5;
+        case Op.OpCooperativeVectorStoreNV:
+            return 4;
         case Op.OpReportIntersectionKHR:
             return 4;
         case Op.OpIgnoreIntersectionNV:
@@ -4445,6 +4910,10 @@ uint getMaxLength(Op code) @nogc {
             return 1;
         case Op.OpExecuteCallableNV:
             return 2;
+        case Op.OpRayQueryGetIntersectionClusterIdNV:
+            return 4;
+        case Op.OpHitObjectGetClusterIdNV:
+            return 3;
         case Op.OpTypeCooperativeMatrixNV:
             return 5;
         case Op.OpCooperativeMatrixLoadNV:
@@ -4459,10 +4928,44 @@ uint getMaxLength(Op code) @nogc {
             return 0;
         case Op.OpEndInvocationInterlockEXT:
             return 0;
+        case Op.OpCooperativeMatrixReduceNV:
+            return 5;
+        case Op.OpCooperativeMatrixLoadTensorNV:
+            return 7;
+        case Op.OpCooperativeMatrixStoreTensorNV:
+            return 5;
+        case Op.OpCooperativeMatrixPerElementOpNV:
+            return 65535;
+        case Op.OpTypeTensorLayoutNV:
+            return 3;
+        case Op.OpTypeTensorViewNV:
+            return 65535;
+        case Op.OpCreateTensorLayoutNV:
+            return 2;
+        case Op.OpTensorLayoutSetDimensionNV:
+            return 65535;
+        case Op.OpTensorLayoutSetStrideNV:
+            return 65535;
+        case Op.OpTensorLayoutSliceNV:
+            return 65535;
+        case Op.OpTensorLayoutSetClampValueNV:
+            return 4;
+        case Op.OpCreateTensorViewNV:
+            return 2;
+        case Op.OpTensorViewSetDimensionNV:
+            return 65535;
+        case Op.OpTensorViewSetStrideNV:
+            return 65535;
         case Op.OpDemoteToHelperInvocation:
             return 0;
         case Op.OpIsHelperInvocationEXT:
             return 2;
+        case Op.OpTensorViewSetClipNV:
+            return 7;
+        case Op.OpTensorLayoutSetBlockSizeNV:
+            return 65535;
+        case Op.OpCooperativeMatrixTransposeNV:
+            return 3;
         case Op.OpConvertUToImageNV:
             return 3;
         case Op.OpConvertUToSamplerNV:
@@ -4479,6 +4982,32 @@ uint getMaxLength(Op code) @nogc {
             return 1;
         case Op.OpRawAccessChainNV:
             return 7;
+        case Op.OpRayQueryGetIntersectionSpherePositionNV:
+            return 4;
+        case Op.OpRayQueryGetIntersectionSphereRadiusNV:
+            return 4;
+        case Op.OpRayQueryGetIntersectionLSSPositionsNV:
+            return 4;
+        case Op.OpRayQueryGetIntersectionLSSRadiiNV:
+            return 4;
+        case Op.OpRayQueryGetIntersectionLSSHitValueNV:
+            return 4;
+        case Op.OpHitObjectGetSpherePositionNV:
+            return 3;
+        case Op.OpHitObjectGetSphereRadiusNV:
+            return 3;
+        case Op.OpHitObjectGetLSSPositionsNV:
+            return 3;
+        case Op.OpHitObjectGetLSSRadiiNV:
+            return 3;
+        case Op.OpHitObjectIsSphereHitNV:
+            return 3;
+        case Op.OpHitObjectIsLSSHitNV:
+            return 3;
+        case Op.OpRayQueryIsSphereHitNV:
+            return 4;
+        case Op.OpRayQueryIsLSSHitNV:
+            return 4;
         case Op.OpSubgroupShuffleINTEL:
             return 4;
         case Op.OpSubgroupShuffleDownINTEL:
@@ -4792,13 +5321,13 @@ uint getMaxLength(Op code) @nogc {
         case Op.OpRestoreMemoryINTEL:
             return 1;
         case Op.OpArbitraryFloatSinCosPiINTEL:
-            return 9;
+            return 8;
         case Op.OpArbitraryFloatCastINTEL:
             return 8;
         case Op.OpArbitraryFloatCastFromIntINTEL:
             return 8;
         case Op.OpArbitraryFloatCastToIntINTEL:
-            return 7;
+            return 8;
         case Op.OpArbitraryFloatAddINTEL:
             return 10;
         case Op.OpArbitraryFloatSubINTEL:
@@ -4872,7 +5401,7 @@ uint getMaxLength(Op code) @nogc {
         case Op.OpArbitraryFloatPowRINTEL:
             return 10;
         case Op.OpArbitraryFloatPowNINTEL:
-            return 9;
+            return 10;
         case Op.OpLoopControlINTEL:
             return 65535;
         case Op.OpAliasDomainDeclINTEL:
@@ -4882,27 +5411,27 @@ uint getMaxLength(Op code) @nogc {
         case Op.OpAliasScopeListDeclINTEL:
             return 65535;
         case Op.OpFixedSqrtINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedRecipINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedRsqrtINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedSinINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedCosINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedSinCosINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedSinPiINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedCosPiINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedSinCosPiINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedLogINTEL:
-            return 9;
+            return 8;
         case Op.OpFixedExpINTEL:
-            return 9;
+            return 8;
         case Op.OpPtrCastToCrossWorkgroupINTEL:
             return 3;
         case Op.OpCrossWorkgroupCastToPtrINTEL:
@@ -4912,7 +5441,7 @@ uint getMaxLength(Op code) @nogc {
         case Op.OpWritePipeBlockingINTEL:
             return 4;
         case Op.OpFPGARegINTEL:
-            return 4;
+            return 3;
         case Op.OpRayQueryGetRayTMinKHR:
             return 3;
         case Op.OpRayQueryGetRayFlagsKHR:
@@ -4967,8 +5496,50 @@ uint getMaxLength(Op code) @nogc {
             return 3;
         case Op.OpControlBarrierWaitINTEL:
             return 3;
+        case Op.OpArithmeticFenceEXT:
+            return 3;
+        case Op.OpTaskSequenceCreateINTEL:
+            return 7;
+        case Op.OpTaskSequenceAsyncINTEL:
+            return 65535;
+        case Op.OpTaskSequenceGetINTEL:
+            return 3;
+        case Op.OpTaskSequenceReleaseINTEL:
+            return 1;
+        case Op.OpTypeTaskSequenceINTEL:
+            return 1;
         case Op.OpSubgroupBlockPrefetchINTEL:
             return 3;
+        case Op.OpSubgroup2DBlockLoadINTEL:
+            return 10;
+        case Op.OpSubgroup2DBlockLoadTransformINTEL:
+            return 10;
+        case Op.OpSubgroup2DBlockLoadTransposeINTEL:
+            return 10;
+        case Op.OpSubgroup2DBlockPrefetchINTEL:
+            return 9;
+        case Op.OpSubgroup2DBlockStoreINTEL:
+            return 10;
+        case Op.OpSubgroupMatrixMultiplyAccumulateINTEL:
+            return 7;
+        case Op.OpBitwiseFunctionINTEL:
+            return 6;
+        case Op.OpUntypedVariableLengthArrayINTEL:
+            return 4;
+        case Op.OpConditionalExtensionINTEL:
+            return 65535;
+        case Op.OpConditionalEntryPointINTEL:
+            return 65535;
+        case Op.OpConditionalCapabilityINTEL:
+            return 2;
+        case Op.OpSpecConstantTargetINTEL:
+            return 65535;
+        case Op.OpSpecConstantArchitectureINTEL:
+            return 6;
+        case Op.OpSpecConstantCapabilitiesINTEL:
+            return 65535;
+        case Op.OpConditionalCopyObjectINTEL:
+            return 65535;
         case Op.OpGroupIMulKHR:
             return 5;
         case Op.OpGroupFMulKHR:
@@ -4985,10 +5556,18 @@ uint getMaxLength(Op code) @nogc {
             return 5;
         case Op.OpGroupLogicalXorKHR:
             return 5;
+        case Op.OpRoundFToTF32INTEL:
+            return 3;
         case Op.OpMaskedGatherINTEL:
             return 6;
         case Op.OpMaskedScatterINTEL:
             return 4;
+        case Op.OpConvertHandleToImageINTEL:
+            return 3;
+        case Op.OpConvertHandleToSamplerINTEL:
+            return 3;
+        case Op.OpConvertHandleToSampledImageINTEL:
+            return 3;
     }
 }
 
@@ -5870,6 +6449,27 @@ vector!uint getIDRefIndices(Op code) @nogc {
         case Op.OpColorAttachmentReadEXT:
             uint[1] tmp = [2];
             return vector!uint(tmp);
+        case Op.OpTypeTensorARM:
+            uint[1] tmp = [1];
+            return vector!uint(tmp);
+        case Op.OpTensorReadARM:
+            uint[2] tmp = [2, 3];
+            return vector!uint(tmp);
+        case Op.OpTensorWriteARM:
+            uint[3] tmp = [0, 1, 2];
+            return vector!uint(tmp);
+        case Op.OpTensorQuerySizeARM:
+            uint[2] tmp = [2, 3];
+            return vector!uint(tmp);
+        case Op.OpGraphEntryPointARM:
+            uint[1] tmp = [0];
+            return vector!uint(tmp);
+        case Op.OpGraphInputARM:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpGraphSetOutputARM:
+            uint[2] tmp = [0, 1];
+            return vector!uint(tmp);
         case Op.OpUntypedAccessChainKHR:
             uint[2] tmp = [2, 3];
             return vector!uint(tmp);
@@ -5911,6 +6511,9 @@ vector!uint getIDRefIndices(Op code) @nogc {
             return vector!uint(tmp);
         case Op.OpExtInstWithForwardRefsKHR:
             uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpUntypedGroupAsyncCopyKHR:
+            uint[7] tmp = [2, 3, 4, 5, 6, 7, 8];
             return vector!uint(tmp);
         case Op.OpTraceRayKHR:
             uint[11] tmp = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -5993,6 +6596,9 @@ vector!uint getIDRefIndices(Op code) @nogc {
         case Op.OpImageBlockMatchSADQCOM:
             uint[5] tmp = [2, 3, 4, 5, 6];
             return vector!uint(tmp);
+        case Op.OpBitCastArrayQCOM:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
         case Op.OpImageBlockMatchWindowSSDQCOM:
             uint[5] tmp = [2, 3, 4, 5, 6];
             return vector!uint(tmp);
@@ -6004,6 +6610,15 @@ vector!uint getIDRefIndices(Op code) @nogc {
             return vector!uint(tmp);
         case Op.OpImageBlockMatchGatherSADQCOM:
             uint[5] tmp = [2, 3, 4, 5, 6];
+            return vector!uint(tmp);
+        case Op.OpCompositeConstructCoopMatQCOM:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpCompositeExtractCoopMatQCOM:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpExtractSubArrayQCOM:
+            uint[2] tmp = [2, 3];
             return vector!uint(tmp);
         case Op.OpGroupIAddNonUniformAMD:
             uint[1] tmp = [4];
@@ -6035,14 +6650,23 @@ vector!uint getIDRefIndices(Op code) @nogc {
         case Op.OpFragmentFetchAMD:
             uint[3] tmp = [2, 3, 4];
             return vector!uint(tmp);
-        case Op.OpFinalizeNodePayloadsAMDX:
+        case Op.OpAllocateNodePayloadsAMDX:
+            uint[2] tmp = [3, 4];
+            return vector!uint(tmp);
+        case Op.OpEnqueueNodePayloadsAMDX:
             uint[1] tmp = [0];
+            return vector!uint(tmp);
+        case Op.OpTypeNodePayloadArrayAMDX:
+            uint[1] tmp = [1];
             return vector!uint(tmp);
         case Op.OpFinishWritingNodePayloadAMDX:
             uint[1] tmp = [2];
             return vector!uint(tmp);
-        case Op.OpInitializeNodePayloadsAMDX:
-            uint[3] tmp = [0, 2, 3];
+        case Op.OpNodePayloadArrayLengthAMDX:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpIsNodePayloadValidAMDX:
+            uint[2] tmp = [2, 3];
             return vector!uint(tmp);
         case Op.OpGroupNonUniformQuadAllKHR:
             uint[1] tmp = [2];
@@ -6149,6 +6773,24 @@ vector!uint getIDRefIndices(Op code) @nogc {
         case Op.OpImageSampleFootprintNV:
             uint[4] tmp = [2, 3, 4, 5];
             return vector!uint(tmp);
+        case Op.OpTypeCooperativeVectorNV:
+            uint[2] tmp = [1, 2];
+            return vector!uint(tmp);
+        case Op.OpCooperativeVectorMatrixMulNV:
+            uint[9] tmp = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+            return vector!uint(tmp);
+        case Op.OpCooperativeVectorOuterProductAccumulateNV:
+            uint[6] tmp = [0, 1, 2, 3, 4, 5];
+            return vector!uint(tmp);
+        case Op.OpCooperativeVectorReduceSumAccumulateNV:
+            uint[3] tmp = [0, 1, 2];
+            return vector!uint(tmp);
+        case Op.OpCooperativeVectorMatrixMulAddNV:
+            uint[12] tmp = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+            return vector!uint(tmp);
+        case Op.OpCooperativeMatrixConvertNV:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
         case Op.OpEmitMeshTasksEXT:
             uint[3] tmp = [0, 1, 2];
             return vector!uint(tmp);
@@ -6166,6 +6808,12 @@ vector!uint getIDRefIndices(Op code) @nogc {
             return vector!uint(tmp);
         case Op.OpFetchMicroTriangleVertexBarycentricNV:
             uint[5] tmp = [2, 3, 4, 5, 6];
+            return vector!uint(tmp);
+        case Op.OpCooperativeVectorLoadNV:
+            uint[2] tmp = [2, 3];
+            return vector!uint(tmp);
+        case Op.OpCooperativeVectorStoreNV:
+            uint[3] tmp = [0, 1, 2];
             return vector!uint(tmp);
         case Op.OpReportIntersectionKHR:
             uint[2] tmp = [2, 3];
@@ -6185,6 +6833,12 @@ vector!uint getIDRefIndices(Op code) @nogc {
         case Op.OpExecuteCallableNV:
             uint[2] tmp = [0, 1];
             return vector!uint(tmp);
+        case Op.OpRayQueryGetIntersectionClusterIdNV:
+            uint[2] tmp = [2, 3];
+            return vector!uint(tmp);
+        case Op.OpHitObjectGetClusterIdNV:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
         case Op.OpTypeCooperativeMatrixNV:
             uint[3] tmp = [1, 3, 4];
             return vector!uint(tmp);
@@ -6198,6 +6852,51 @@ vector!uint getIDRefIndices(Op code) @nogc {
             uint[3] tmp = [2, 3, 4];
             return vector!uint(tmp);
         case Op.OpCooperativeMatrixLengthNV:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpCooperativeMatrixReduceNV:
+            uint[2] tmp = [2, 4];
+            return vector!uint(tmp);
+        case Op.OpCooperativeMatrixLoadTensorNV:
+            uint[3] tmp = [2, 3, 4];
+            return vector!uint(tmp);
+        case Op.OpCooperativeMatrixStoreTensorNV:
+            uint[3] tmp = [0, 1, 2];
+            return vector!uint(tmp);
+        case Op.OpCooperativeMatrixPerElementOpNV:
+            uint[2] tmp = [2, 3];
+            return vector!uint(tmp);
+        case Op.OpTypeTensorLayoutNV:
+            uint[2] tmp = [1, 2];
+            return vector!uint(tmp);
+        case Op.OpTypeTensorViewNV:
+            uint[2] tmp = [1, 2];
+            return vector!uint(tmp);
+        case Op.OpTensorLayoutSetDimensionNV:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpTensorLayoutSetStrideNV:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpTensorLayoutSliceNV:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpTensorLayoutSetClampValueNV:
+            uint[2] tmp = [2, 3];
+            return vector!uint(tmp);
+        case Op.OpTensorViewSetDimensionNV:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpTensorViewSetStrideNV:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpTensorViewSetClipNV:
+            uint[5] tmp = [2, 3, 4, 5, 6];
+            return vector!uint(tmp);
+        case Op.OpTensorLayoutSetBlockSizeNV:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpCooperativeMatrixTransposeNV:
             uint[1] tmp = [2];
             return vector!uint(tmp);
         case Op.OpConvertUToImageNV:
@@ -6220,6 +6919,45 @@ vector!uint getIDRefIndices(Op code) @nogc {
             return vector!uint(tmp);
         case Op.OpRawAccessChainNV:
             uint[4] tmp = [2, 3, 4, 5];
+            return vector!uint(tmp);
+        case Op.OpRayQueryGetIntersectionSpherePositionNV:
+            uint[2] tmp = [2, 3];
+            return vector!uint(tmp);
+        case Op.OpRayQueryGetIntersectionSphereRadiusNV:
+            uint[2] tmp = [2, 3];
+            return vector!uint(tmp);
+        case Op.OpRayQueryGetIntersectionLSSPositionsNV:
+            uint[2] tmp = [2, 3];
+            return vector!uint(tmp);
+        case Op.OpRayQueryGetIntersectionLSSRadiiNV:
+            uint[2] tmp = [2, 3];
+            return vector!uint(tmp);
+        case Op.OpRayQueryGetIntersectionLSSHitValueNV:
+            uint[2] tmp = [2, 3];
+            return vector!uint(tmp);
+        case Op.OpHitObjectGetSpherePositionNV:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpHitObjectGetSphereRadiusNV:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpHitObjectGetLSSPositionsNV:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpHitObjectGetLSSRadiiNV:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpHitObjectIsSphereHitNV:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpHitObjectIsLSSHitNV:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpRayQueryIsSphereHitNV:
+            uint[2] tmp = [2, 3];
+            return vector!uint(tmp);
+        case Op.OpRayQueryIsLSSHitNV:
+            uint[2] tmp = [2, 3];
             return vector!uint(tmp);
         case Op.OpSubgroupShuffleINTEL:
             uint[2] tmp = [2, 3];
@@ -6756,37 +7494,37 @@ vector!uint getIDRefIndices(Op code) @nogc {
             uint[1] tmp = [1];
             return vector!uint(tmp);
         case Op.OpFixedSqrtINTEL:
-            uint[2] tmp = [2, 3];
+            uint[1] tmp = [2];
             return vector!uint(tmp);
         case Op.OpFixedRecipINTEL:
-            uint[2] tmp = [2, 3];
+            uint[1] tmp = [2];
             return vector!uint(tmp);
         case Op.OpFixedRsqrtINTEL:
-            uint[2] tmp = [2, 3];
+            uint[1] tmp = [2];
             return vector!uint(tmp);
         case Op.OpFixedSinINTEL:
-            uint[2] tmp = [2, 3];
+            uint[1] tmp = [2];
             return vector!uint(tmp);
         case Op.OpFixedCosINTEL:
-            uint[2] tmp = [2, 3];
+            uint[1] tmp = [2];
             return vector!uint(tmp);
         case Op.OpFixedSinCosINTEL:
-            uint[2] tmp = [2, 3];
+            uint[1] tmp = [2];
             return vector!uint(tmp);
         case Op.OpFixedSinPiINTEL:
-            uint[2] tmp = [2, 3];
+            uint[1] tmp = [2];
             return vector!uint(tmp);
         case Op.OpFixedCosPiINTEL:
-            uint[2] tmp = [2, 3];
+            uint[1] tmp = [2];
             return vector!uint(tmp);
         case Op.OpFixedSinCosPiINTEL:
-            uint[2] tmp = [2, 3];
+            uint[1] tmp = [2];
             return vector!uint(tmp);
         case Op.OpFixedLogINTEL:
-            uint[2] tmp = [2, 3];
+            uint[1] tmp = [2];
             return vector!uint(tmp);
         case Op.OpFixedExpINTEL:
-            uint[2] tmp = [2, 3];
+            uint[1] tmp = [2];
             return vector!uint(tmp);
         case Op.OpPtrCastToCrossWorkgroupINTEL:
             uint[1] tmp = [2];
@@ -6801,7 +7539,7 @@ vector!uint getIDRefIndices(Op code) @nogc {
             uint[2] tmp = [2, 3];
             return vector!uint(tmp);
         case Op.OpFPGARegINTEL:
-            uint[2] tmp = [2, 3];
+            uint[1] tmp = [2];
             return vector!uint(tmp);
         case Op.OpRayQueryGetRayTMinKHR:
             uint[1] tmp = [2];
@@ -6863,8 +7601,56 @@ vector!uint getIDRefIndices(Op code) @nogc {
         case Op.OpConvertBF16ToFINTEL:
             uint[1] tmp = [2];
             return vector!uint(tmp);
+        case Op.OpArithmeticFenceEXT:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpTaskSequenceCreateINTEL:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpTaskSequenceAsyncINTEL:
+            uint[1] tmp = [0];
+            return vector!uint(tmp);
+        case Op.OpTaskSequenceGetINTEL:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpTaskSequenceReleaseINTEL:
+            uint[1] tmp = [0];
+            return vector!uint(tmp);
         case Op.OpSubgroupBlockPrefetchINTEL:
             uint[2] tmp = [0, 1];
+            return vector!uint(tmp);
+        case Op.OpSubgroup2DBlockLoadINTEL:
+            uint[10] tmp = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+            return vector!uint(tmp);
+        case Op.OpSubgroup2DBlockLoadTransformINTEL:
+            uint[10] tmp = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+            return vector!uint(tmp);
+        case Op.OpSubgroup2DBlockLoadTransposeINTEL:
+            uint[10] tmp = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+            return vector!uint(tmp);
+        case Op.OpSubgroup2DBlockPrefetchINTEL:
+            uint[9] tmp = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+            return vector!uint(tmp);
+        case Op.OpSubgroup2DBlockStoreINTEL:
+            uint[10] tmp = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+            return vector!uint(tmp);
+        case Op.OpSubgroupMatrixMultiplyAccumulateINTEL:
+            uint[4] tmp = [2, 3, 4, 5];
+            return vector!uint(tmp);
+        case Op.OpBitwiseFunctionINTEL:
+            uint[4] tmp = [2, 3, 4, 5];
+            return vector!uint(tmp);
+        case Op.OpUntypedVariableLengthArrayINTEL:
+            uint[2] tmp = [2, 3];
+            return vector!uint(tmp);
+        case Op.OpConditionalExtensionINTEL:
+            uint[1] tmp = [0];
+            return vector!uint(tmp);
+        case Op.OpConditionalEntryPointINTEL:
+            uint[2] tmp = [0, 2];
+            return vector!uint(tmp);
+        case Op.OpConditionalCapabilityINTEL:
+            uint[1] tmp = [0];
             return vector!uint(tmp);
         case Op.OpGroupIMulKHR:
             uint[1] tmp = [4];
@@ -6890,11 +7676,23 @@ vector!uint getIDRefIndices(Op code) @nogc {
         case Op.OpGroupLogicalXorKHR:
             uint[1] tmp = [4];
             return vector!uint(tmp);
+        case Op.OpRoundFToTF32INTEL:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
         case Op.OpMaskedGatherINTEL:
             uint[3] tmp = [2, 4, 5];
             return vector!uint(tmp);
         case Op.OpMaskedScatterINTEL:
             uint[3] tmp = [0, 1, 3];
+            return vector!uint(tmp);
+        case Op.OpConvertHandleToImageINTEL:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpConvertHandleToSamplerINTEL:
+            uint[1] tmp = [2];
+            return vector!uint(tmp);
+        case Op.OpConvertHandleToSampledImageINTEL:
+            uint[1] tmp = [2];
             return vector!uint(tmp);
     }
 }
@@ -6970,6 +7768,9 @@ vector!uint getOptionalIDRefIndices(Op code) @nogc {
         case Op.OpStencilAttachmentReadEXT:
             uint[1] tmp = [2];
             return vector!uint(tmp);
+        case Op.OpTypeTensorARM:
+            uint[2] tmp = [2, 3];
+            return vector!uint(tmp);
         case Op.OpUntypedVariableKHR:
             uint[2] tmp = [3, 4];
             return vector!uint(tmp);
@@ -6987,6 +7788,15 @@ vector!uint getOptionalIDRefIndices(Op code) @nogc {
             return vector!uint(tmp);
         case Op.OpReorderThreadWithHitObjectNV:
             uint[2] tmp = [1, 2];
+            return vector!uint(tmp);
+        case Op.OpCooperativeVectorMatrixMulNV:
+            uint[1] tmp = [11];
+            return vector!uint(tmp);
+        case Op.OpCooperativeVectorOuterProductAccumulateNV:
+            uint[1] tmp = [6];
+            return vector!uint(tmp);
+        case Op.OpCooperativeVectorMatrixMulAddNV:
+            uint[1] tmp = [14];
             return vector!uint(tmp);
         case Op.OpEmitMeshTasksEXT:
             uint[1] tmp = [3];
@@ -7022,11 +7832,23 @@ bool getHasArbitraryRefIndices(Op code) @nogc {
         case Op.OpGroupDecorate:
         case Op.OpCompositeConstruct:
         case Op.OpEnqueueKernel:
+        case Op.OpGraphEntryPointARM:
+        case Op.OpGraphInputARM:
+        case Op.OpGraphSetOutputARM:
+        case Op.OpTypeGraphARM:
         case Op.OpUntypedAccessChainKHR:
         case Op.OpUntypedInBoundsAccessChainKHR:
         case Op.OpUntypedPtrAccessChainKHR:
         case Op.OpUntypedInBoundsPtrAccessChainKHR:
         case Op.OpExtInstWithForwardRefsKHR:
+        case Op.OpCooperativeMatrixPerElementOpNV:
+        case Op.OpTypeTensorViewNV:
+        case Op.OpTensorLayoutSetDimensionNV:
+        case Op.OpTensorLayoutSetStrideNV:
+        case Op.OpTensorLayoutSliceNV:
+        case Op.OpTensorViewSetDimensionNV:
+        case Op.OpTensorViewSetStrideNV:
+        case Op.OpTensorLayoutSetBlockSizeNV:
         case Op.OpFunctionPointerCallINTEL:
         case Op.OpAsmCallINTEL:
         case Op.OpAliasScopeListDeclINTEL:
@@ -7034,6 +7856,9 @@ bool getHasArbitraryRefIndices(Op code) @nogc {
         case Op.OpConstantCompositeContinuedINTEL:
         case Op.OpSpecConstantCompositeContinuedINTEL:
         case Op.OpCompositeConstructContinuedINTEL:
+        case Op.OpTaskSequenceAsyncINTEL:
+        case Op.OpConditionalEntryPointINTEL:
+        case Op.OpConditionalCopyObjectINTEL:
             return true;
     }
 }

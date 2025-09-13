@@ -13,13 +13,13 @@ module.add(BodyEmitter("import numem.all;"))
 spirvClasses = EnumEmitter("OpClass")
 for klass in scanner.getClasses():
     spirvClasses.add(klass.getDName())
-spirvClasses.add("cUnknown")
+spirvClasses.add("unknown")
 module.add(spirvClasses)
 
 # Helpers
 returnTrue = BodyEmitter("return true;")
 returnFalse = BodyEmitter("return false;")
-returnClassUnk = BodyEmitter("return OpClass.cUnknown;")
+returnClassUnk = BodyEmitter("return OpClass.unknown;")
 returnEmptyArr = BodyEmitter("return vector!(uint).init;")
 returnZero = BodyEmitter("return 0;")
 

@@ -1,6 +1,120 @@
 from typing import *
 import json
 
+d_keywords = [
+    "abstract",
+    "alias",
+    "align",
+    "asm",
+    "assert",
+    "auto",
+    "body",
+    "bool",
+    "break",
+    "byte",
+    "case",
+    "cast",
+    "catch",
+    "cdouble",
+    "cent",
+    "cfloat",
+    "char",
+    "class",
+    "const",
+    "continue",
+    "creal",
+    "dchar",
+    "debug",
+    "default",
+    "delegate",
+    "delete",
+    "deprecated",
+    "do",
+    "double",
+    "else",
+    "enum",
+    "export",
+    "extern",
+    "false",
+    "final",
+    "finally",
+    "float",
+    "for",
+    "foreach",
+    "foreach_reverse",
+    "function",
+    "goto",
+    "idouble",
+    "if",
+    "ifloat",
+    "immutable",
+    "import",
+    "in",
+    "inout",
+    "int",
+    "interface",
+    "invariant",
+    "ireal",
+    "is",
+    "lazy",
+    "long",
+    "macro",
+    "mixin",
+    "module",
+    "new",
+    "nothrow",
+    "null",
+    "out",
+    "override",
+    "package",
+    "pragma",
+    "private",
+    "protected",
+    "public",
+    "pure",
+    "real",
+    "ref",
+    "return",
+    "scope",
+    "shared",
+    "short",
+    "static",
+    "struct",
+    "super",
+    "switch",
+    "synchronized",
+    "template",
+    "this",
+    "throw",
+    "true",
+    "try",
+    "typeid",
+    "typeof",
+    "ubyte",
+    "ucent",
+    "uint",
+    "ulong",
+    "union",
+    "unittest",
+    "ushort",
+    "version",
+    "void",
+    "wchar",
+    "while",
+    "with",
+    "__FILE__",
+    "__FILE_FULL_PATH__",
+    "__FUNCTION__",
+    "__LINE__",
+    "__MODULE__",
+    "__PRETTY_FUNCTION__",
+    "__gshared",
+    "__parameters",
+    "__rvalue",
+    "__traits",
+    "__vector",
+]
+
 class SpirvOperandInfo:
     def __init__(self, data: dict[str, str]):
         self.kind = data["kind"]
@@ -114,7 +228,7 @@ class SpirvClassInfo:
     def __init__(self, klass: dict):
         self.tag = klass["tag"]
         self.desc = klass["heading"]
-        self.dName = "c" + toPascalCase(self.tag)
+        self.dName = toDName(self.tag)
 
     def getTag(self) -> str:
         return self.tag
@@ -165,6 +279,18 @@ class SpirvGrammarScanner:
     
     def getClasses(self) -> list[SpirvClassInfo]:
         return self.classes    
+
+def isDKeyword(text: str) -> bool:
+    return text in d_keywords
+
+def toDName(text: str) -> str:
+    if text[0].isupper():
+        text = toCamelCase(text)
+
+    if isDKeyword(text):
+        text += "_"
+    
+    return text
 
 def toCamelCase(text: str) -> str:
     return text[0].lower() + ''.join(c for c in text.title() if c.isalnum())[1:]
