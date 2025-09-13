@@ -1,10 +1,14 @@
-/*
-    Copyright © 2024, Inochi2D Project
-    Distributed under the 2-Clause BSD License, see LICENSE file.
+/**
+    SPIR-V Source Introspection
     
-    Authors: Luna Nielsen
+    Copyright:
+        Copyright © 2025, Kitsunebi Games
+        Copyright © 2025, Inochi2D Project
+    
+    License:    $(LINK2 http://www.boost.org/LICENSE_1_0.txt, Boost License 1.0)
+    Authors:
+        Luna Nielsen
 */
-
 module spirv.src;
 import spirv.reflection;
 import spirv;
