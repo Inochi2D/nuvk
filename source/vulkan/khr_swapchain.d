@@ -126,3 +126,15 @@ alias PFN_vkGetPhysicalDevicePresentRectanglesKHR = VkResult function(
     VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint* pRectCount, VkRect2D* pRects);
 alias PFN_vkAcquireNextImage2KHR = VkResult function(VkDevice device, const(
         VkAcquireNextImageInfoKHR)* pAcquireInfo, uint* pImageIndex);
+
+version(VK_KHR_swapchain) {
+    extern VkResult vkCreateSwapchainKHR(VkDevice device, const(VkSwapchainCreateInfoKHR)* pCreateInfo, const(VkAllocationCallbacks)* pAllocator, VkSwapchainKHR* pSwapchain);
+    extern void vkDestroySwapchainKHR(VkDevice device, VkSwapchainKHR swapchain, const(VkAllocationCallbacks)* pAllocator);
+    extern VkResult vkGetSwapchainImagesKHR(VkDevice device, VkSwapchainKHR swapchain, uint* pSwapchainImageCount, VkImage* pSwapchainImages);
+    extern VkResult vkAcquireNextImageKHR(VkDevice device, VkSwapchainKHR swapchain, ulong timeout, VkSemaphore semaphore, VkFence fence, uint* pImageIndex);
+    extern VkResult vkQueuePresentKHR(VkQueue queue, const(VkPresentInfoKHR)* pPresentInfo);
+    extern VkResult vkGetDeviceGroupPresentCapabilitiesKHR(VkDevice device, VkDeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities);
+    extern VkResult vkGetDeviceGroupSurfacePresentModesKHR(VkDevice device, VkSurfaceKHR surface, VkDeviceGroupPresentModeFlagsKHR* pModes);
+    extern VkResult vkGetPhysicalDevicePresentRectanglesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint* pRectCount, VkRect2D* pRects);
+    extern VkResult vkAcquireNextImage2KHR(VkDevice device, const(VkAcquireNextImageInfoKHR)* pAcquireInfo, uint* pImageIndex);
+}
