@@ -1,5 +1,5 @@
 /**
-    Helpers for Feature Enumeration
+    Vulkan struct chaining helpers
     
     Copyright:
         Copyright © 2025, Kitsunebi Games

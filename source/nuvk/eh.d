@@ -43,7 +43,7 @@ public:
         Constructs a VkException from a VkResult.
     */
     this(VkResult result, string file = __FILE__, uint line = __LINE__) {
-        super(code.fromVkResult(), null, file, line);
+        super(result.fromVkResult(), null, file, line);
         this.code = result;
     }
 }
