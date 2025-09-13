@@ -7,7 +7,8 @@ scanner: SpirvGrammarScanner = scanner
 file: io.FileIO = file
 
 module = ModuleEmitter("reflection")
-module.add(BodyEmitter("import numem.all;"))
+module.add(BodyEmitter("import nulib.collections;"))
+module.add(BodyEmitter("import numem;"))
 
 # Spirv OpClass
 spirvClasses = EnumEmitter("OpClass")

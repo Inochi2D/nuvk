@@ -10,7 +10,9 @@
 module spirv.reflection;
 import spirv.spv;
 
-import numem.all;
+import nulib.collections;
+
+import numem;
 
 enum OpClass {
 

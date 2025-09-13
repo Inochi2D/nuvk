@@ -6,11 +6,12 @@
 */
 
 module spirv.src;
-import spirv;
 import spirv.reflection;
-import nuvk.core.logging;
+import spirv;
 
-import numem.all;
+import numem;
+import nulib.memory.endian;
+import nulib;
 
 /**
     A parser for SPIR-V modules
@@ -42,19 +43,19 @@ private:
     }
 
     void verify() {
-        nuvkEnforce(
+        enforce(
             bytecode.length > SpirvHeaderSize,
             "Not SPIR-V source! (too short)"
         );
 
-        nuvkEnforce(
+        enforce(
             bytecode[0] == MagicNumber,
             "Not SPIR-V source! (Invalid magic number)"
         );
     }
 
     SpirvID[] verify(size_t offset, size_t length) {
-        nuvkEnforce(
+        enforce(
             offset+length <= bytecode.length,
             "Opcode out of bounds!"
         );
@@ -377,7 +378,7 @@ public:
     final
     void remove(size_t offset) {
         if (offset < instructions.length) {
-            instructions.remove(offset);
+            instructions.removeAt(offset);
             this.onModified();
         }
     }
@@ -406,7 +407,7 @@ public:
         if (instr.hasResult())
             instr.setResult(pool.allocate());
         
-        instructions.insert(offset, instr);
+        instructions.insert(instr, offset);
         this.onModified();
         return instr;
     }
@@ -422,7 +423,7 @@ public:
         if (instr.hasResult())
             instr.setResult(pool.allocate());
         
-        instructions.insert(offset, instr);
+        instructions.insert(instr, offset);
         this.onModified();
         return instr;
     }
@@ -439,7 +440,7 @@ public:
         if (instr.hasResult())
             instr.setResult(pool.allocate());
 
-        instructions.pushBack(instr);
+        instructions ~= instr;
         this.onModified();
         return instr;
     }
@@ -456,7 +457,7 @@ public:
         if (instr.hasResult())
             instr.setResult(pool.allocate());
 
-        instructions.pushBack(instr);
+        instructions ~= instr;
         this.onModified();
         return instr;
     }
@@ -586,10 +587,9 @@ public:
         // Write every single instruction in our instruction list in.
         // Instruction is also verified before being written.
         foreach(ref SpirvInstr* instr; instructions) {
-            nuvkEnforce(
+            enforce(
                 instr.verify(),
-                "Malformed SPIR-V instruction {0}!",
-                instr.toString()[] // TODO: Fix this.
+                "Malformed SPIR-V instruction!"
             );
             this.bytecode ~= instr.emit();
         }

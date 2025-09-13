@@ -10,15 +10,15 @@
 */
 module spirv.instr;
 import spirv.spv;
-import spirv;
 import spirv.src;
+import spirv;
 
-import numem.collections;
-import numem.io.endian;
-import numem.string;
-import numem.core.memory;
-import numem.format;
-import conv = numem.conv;
+import nulib.collections;
+import nulib.memory.endian;
+import nulib.string;
+import nulib;
+import numem.core.traits;
+import numem;
 
 /**
     Gets the length of an opcode
@@ -45,13 +45,13 @@ SpirvID getCombinedOp(Op opcode, uint wordCount) @nogc nothrow {
     Fixes word in instruction stream to local endianess.
 */
 uint fixWord(SpirvID word, Endianess endian) @nogc nothrow {
-    return toEndianReinterpret(word, endian);
+    return nu_etoh(word, endian);
 }
 
 /**
     Parses a SPIR-V compliant string from a range of [SpirvID]s
 */
-nstring fromSpirvString(T)(auto ref T ids) @nogc if (isCompatibleRange!(T, SpirvID)) {
+nstring fromSpirvString(T)(auto ref T ids) @nogc if (isAnyCompatibleRange!(T, SpirvID)) {
     nstring str;
     char tmp;
 
@@ -122,7 +122,7 @@ private:
 public:
 
     ~this() nothrow {
-        nogc_delete(operands);
+        operands.clear();
     }
 
     /**
@@ -130,7 +130,7 @@ public:
     */
     this(ref SpirvInstr rhs) {
         this.opcode = rhs.opcode.getOpCodeOnly();
-        this.operands = vector!SpirvID(operands);
+        this.operands = vector!SpirvID(operands[]);
     }
 
     /**
@@ -190,7 +190,7 @@ public:
         Pushes an operand to the operands
     */
     void push(SpirvID operand) {
-        this.operands.pushBack(operand);
+        this.operands ~= operand;
     }
 
     /**
@@ -198,14 +198,14 @@ public:
     */
     void push(nstring str) {
         auto operand = toSpirvString(str);
-        this.operands.pushBack(operand);
+        this.operands ~= operand;
     }
 
     /**
         Inserts an operand at the specified offset
     */
     void insert(size_t offset, SpirvID operand) {
-        this.operands.insert(offset, operand);
+        this.operands.insert(operand, offset);
     }
 
     /**
@@ -213,14 +213,14 @@ public:
     */
     void insert(size_t offset, nstring str) {
         auto operand = toSpirvString(str);
-        this.operands.insert(offset, operand);
+        this.operands.insert(operand, offset);
     }
 
     /**
         Removes operand(s) from the instruction
     */
     void remove(size_t offset, size_t length = 1) {
-        this.operands.remove(offset, offset+length);
+        this.operands.removeAt(offset, length);
     }
 
     /**
@@ -425,9 +425,10 @@ public:
         Gets a string describing the instruction
     */
     nstring toString() {
-        if (hasResult())
-            return "%{0} = {1} ({2} args)".format(getResult(), conv.toString(opcode), operands.length-1);
-        return "{0} ({1} args)".format(conv.toString(opcode), operands.length);
+        // if (hasResult())
+        //     return "%{0} = {1} ({2} args)".format(getResult(), conv.toString(opcode), operands.length-1);
+        // return "{0} ({1} args)".format(conv.toString(opcode), operands.length);
+        return nstring.init;
     }
 }
 

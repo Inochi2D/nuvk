@@ -1,20 +1,17 @@
-/*
+/**
     Copyright © 2024, Inochi2D Project
     Distributed under the 2-Clause BSD License, see LICENSE file.
     
     Authors: Luna Nielsen
 */
-
 module spirv.mod;
 import spirv.spv;
-import spirv;
 import spirv.src;
+import spirv;
 
-import nuvk.core.logging;
-
-import numem.all;
-import std.file;
 import std.traits : EnumMembers;
+import numem;
+import nulib;
 
 class SpirvModule {
 @nogc:
@@ -133,7 +130,7 @@ public:
         Gets all the declared variables in the module.
     */
     SpirvVariable[] getVariables() {
-        return cast(SpirvVariable[])parsed.variants[SpirvVariantKind.kVariable][];
+        return cast(SpirvVariable[])parsed.variants[SpirvVariantKind.variable][];
     }
 
     /**
@@ -173,7 +170,7 @@ public:
     */
     final
     SpirvType[] getTypes() {
-        return cast(SpirvType[])parsed.variants[SpirvVariantKind.kType][];
+        return cast(SpirvType[])parsed.variants[SpirvVariantKind.type][];
     }
 
     /**
@@ -181,7 +178,7 @@ public:
     */
     final
     SpirvDecoration[] getDecorations() {
-        return cast(SpirvDecoration[])parsed.variants[SpirvVariantKind.kDecoration][];
+        return cast(SpirvDecoration[])parsed.variants[SpirvVariantKind.decoration][];
     }
 
     /**
@@ -190,7 +187,7 @@ public:
     */
     final
     SpirvVariant[] getVariants() {
-        return parsed.variants[SpirvVariantKind.kBasic][];
+        return parsed.variants[SpirvVariantKind.basic][];
     }
 
     /**
@@ -198,7 +195,7 @@ public:
     */
     final
     SpirvEntryPoint[] getEntryPoints() {
-        return cast(SpirvEntryPoint[])parsed.variants[SpirvVariantKind.kEntryPoint][];
+        return cast(SpirvEntryPoint[])parsed.variants[SpirvVariantKind.entryPoint][];
     }
 
     /**
@@ -298,31 +295,31 @@ protected:
     void onParse(SpirvInstr* instr) {
         auto opcode = instr.getOpCode();
         if (opcode == Op.OpEntryPoint) {
-            variants[SpirvVariantKind.kEntryPoint] ~= nogc_new!SpirvEntryPoint(parent, instr);
+            variants[SpirvVariantKind.entryPoint] ~= nogc_new!SpirvEntryPoint(parent, instr);
             return;
         }
 
         switch(opcode.getClass()) {
 
-            case OpClass.cTypeDeclaration:
-                variants[SpirvVariantKind.kType] ~= nogc_new!SpirvType(parent, instr);
+            case OpClass.typeDeclaration:
+                variants[SpirvVariantKind.type] ~= nogc_new!SpirvType(parent, instr);
                 return;
                 
-            case OpClass.cMemory:
+            case OpClass.memory:
                 if (opcode == Op.OpVariable)
-                    variants[SpirvVariantKind.kVariable] ~= nogc_new!SpirvVariable(parent, instr);
+                    variants[SpirvVariantKind.variable] ~= nogc_new!SpirvVariable(parent, instr);
                 else 
                     goto default;
                 return;
                 
-            case OpClass.cAnnotation:
-                variants[SpirvVariantKind.kDecoration] ~= nogc_new!SpirvDecoration(parent, instr);
+            case OpClass.annotation:
+                variants[SpirvVariantKind.decoration] ~= nogc_new!SpirvDecoration(parent, instr);
                 return;
 
             default:
 
                 // Fallback
-                variants[SpirvVariantKind.kBasic] ~= nogc_new!SpirvVariant(parent, instr);
+                variants[SpirvVariantKind.basic] ~= nogc_new!SpirvVariant(parent, instr);
                 return;
         }
         

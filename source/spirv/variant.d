@@ -7,27 +7,26 @@
 
 module spirv.variant;
 import spirv;
-import numem.collections;
-import numem.string;
 
-import std.traits : EnumMembers;
+import nulib.collections;
+import nulib.string;
 
 /**
     Variant kinds
 */
 enum SpirvVariantKind {
-    kBasic      = 0,
-    kType       = 1,
-    kVariable   = 2,
-    kDecoration = 3,
-    kConstant   = 4,
-    kEntryPoint = 5,
+    basic      = 0,
+    type       = 1,
+    variable   = 2,
+    decoration = 3,
+    constant   = 4,
+    entryPoint = 5,
 }
 
 /**
     Gets the amount of variants in the SpirvVariantKind enum
 */
-enum SpirvVariantKindCount = (EnumMembers!SpirvVariantKind).length;
+enum SpirvVariantKindCount = __traits(allMembers, SpirvVariantKind).length;
 
 /**
     Variant containing specialised information about an instruction.
@@ -67,7 +66,7 @@ public:
         Allows constructing a variant without any extra info.
     */
     this(SpirvModule mod, SpirvInstr* instr) {
-        this(mod, instr, SpirvVariantKind.kBasic);
+        this(mod, instr, SpirvVariantKind.basic);
     }
 
     /**
@@ -295,7 +294,7 @@ public:
         Instantiates a Spirv type
     */
     this(SpirvModule mod, SpirvInstr* instr) {
-        super(mod, instr, SpirvVariantKind.kType);
+        super(mod, instr, SpirvVariantKind.type);
     }
 
     /**
@@ -428,9 +427,11 @@ public:
 
     /**
         Gets the member types of this type, if it's a struct or function.
+
+        You are responsible for freeing the members list.
     */
     final
-    vector!SpirvType getMembers() {
+    SpirvType[] getMembers() {
         if (this.isPointer()) {
             return this.getBaseType().getMembers();
         }
@@ -439,7 +440,9 @@ public:
         foreach(member; members) {
             membersOut ~= mod.findType(member);
         }
-        return membersOut;
+
+        // TODO: Fix the issue causing this.
+        return membersOut.take();
     }
 
     /**
@@ -550,7 +553,7 @@ public:
         Instantiates a Spirv Variable
     */
     this(SpirvModule mod, SpirvInstr* instr) {
-        super(mod, instr, SpirvVariantKind.kVariable);
+        super(mod, instr, SpirvVariantKind.variable);
     }
 
 
@@ -742,7 +745,7 @@ public:
         Instantiates a Spirv Decoration
     */
     this(SpirvModule mod, SpirvInstr* instr) {
-        super(mod, instr, SpirvVariantKind.kDecoration);
+        super(mod, instr, SpirvVariantKind.decoration);
     }
 
     /**
@@ -849,7 +852,7 @@ public:
         Instantiates a Spirv Decoration
     */
     this(SpirvModule mod, SpirvInstr* instr) {
-        super(mod, instr, SpirvVariantKind.kEntryPoint);
+        super(mod, instr, SpirvVariantKind.entryPoint);
     }
 
     /**
