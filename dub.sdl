@@ -11,6 +11,12 @@ dependency "inmath" version="~>1.3"
 targetPath "out/"
 workingDirectory "out/"
 
+# Linking
+libs "vulkan-1"
+lflags "/libpath:$VULKAN_SDK\\Lib\\" platform="windows"
+lflags "-L$VULKAN_SDK/lib" platform="posix"
+
+# Configs
 configuration "static" {
 	targetType "staticLibrary"
 }

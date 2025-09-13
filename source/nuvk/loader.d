@@ -10,4 +10,3 @@
         Luna Nielsen
 */
 module nuvk.loader;
-
