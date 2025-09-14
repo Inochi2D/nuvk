@@ -16,5 +16,24 @@ public import vulkan.khr_display_swapchain;
 
 extern (System) @nogc nothrow:
 
+//
+//                  VK_KHR_sampler_mirror_clamp_to_edge
+//
 enum uint VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_SPEC_VERSION = 3;
 enum string VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_EXTENSION_NAME = "VK_KHR_sampler_mirror_clamp_to_edge";
+
+//
+//                  VK_KHR_multiview
+//
+enum uint VK_KHR_MULTIVIEW_SPEC_VERSION =     1;
+enum string VK_KHR_MULTIVIEW_EXTENSION_NAME =   "VK_KHR_multiview";
+
+alias VkRenderPassMultiviewCreateInfoKHR = VkRenderPassMultiviewCreateInfo;
+alias VkPhysicalDeviceMultiviewFeaturesKHR = VkPhysicalDeviceMultiviewFeatures;
+alias VkPhysicalDeviceMultiviewPropertiesKHR = VkPhysicalDeviceMultiviewProperties;
+
+//
+//                  VK_KHR_shader_draw_parameters
+//
+enum uint VK_KHR_SHADER_DRAW_PARAMETERS_SPEC_VERSION = 1;
+enum string VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME = "VK_KHR_shader_draw_parameters";
