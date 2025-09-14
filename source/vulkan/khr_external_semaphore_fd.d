@@ -34,3 +34,8 @@ struct VkSemaphoreGetFdInfoKHR {
 alias PFN_vkImportSemaphoreFdKHR = VkResult function(VkDevice device, const(
         VkImportSemaphoreFdInfoKHR)* pImportSemaphoreFdInfo);
 alias PFN_vkGetSemaphoreFdKHR = VkResult function(VkDevice device, const(VkSemaphoreGetFdInfoKHR)* pGetFdInfo, int* pFd);
+
+version(VK_KHR_external_semaphore_fd) {
+    VkResult vkImportSemaphoreFdKHR(VkDevice device, const(VkImportSemaphoreFdInfoKHR)* pImportSemaphoreFdInfo);
+    VkResult vkGetSemaphoreFdKHR(VkDevice device, const(VkSemaphoreGetFdInfoKHR)* pGetFdInfo, int* pFd);
+}
