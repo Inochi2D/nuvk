@@ -26,7 +26,7 @@ struct VkPresentRegionKHR {
 }
 
 struct VkPresentRegionsKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_PRESENT_REGIONS_KHR;
     const(void)* pNext;
     uint swapchainCount;
     const(VkPresentRegionKHR)* pRegions;

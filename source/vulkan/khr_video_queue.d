@@ -71,19 +71,19 @@ enum VkVideoCodingControlFlagsKHR VK_VIDEO_CODING_CONTROL_RESET_BIT_KHR = 0x0000
     VK_VIDEO_CODING_CONTROL_ENCODE_QUALITY_LEVEL_BIT_KHR = 0x00000004;
 
 struct VkQueueFamilyQueryResultStatusPropertiesKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_QUERY_RESULT_STATUS_PROPERTIES_KHR;
     void* pNext;
     VkBool32 queryResultStatusSupport;
 }
 
 struct VkQueueFamilyVideoPropertiesKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_VIDEO_PROPERTIES_KHR;
     void* pNext;
     VkVideoCodecOperationFlagsKHR videoCodecOperations;
 }
 
 struct VkVideoProfileInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_PROFILE_INFO_KHR;
     const(void)* pNext;
     VkVideoCodecOperationFlagsKHR videoCodecOperation;
     VkVideoChromaSubsamplingFlagsKHR chromaSubsampling;
@@ -92,14 +92,14 @@ struct VkVideoProfileInfoKHR {
 }
 
 struct VkVideoProfileListInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_PROFILE_LIST_INFO_KHR;
     const(void)* pNext;
     uint profileCount;
     const(VkVideoProfileInfoKHR)* pProfiles;
 }
 
 struct VkVideoCapabilitiesKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_CAPABILITIES_KHR;
     void* pNext;
     VkVideoCapabilityFlagsKHR flags;
     VkDeviceSize minBitstreamBufferOffsetAlignment;
@@ -113,13 +113,13 @@ struct VkVideoCapabilitiesKHR {
 }
 
 struct VkPhysicalDeviceVideoFormatInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_FORMAT_INFO_KHR;
     const(void)* pNext;
     VkImageUsageFlags imageUsage;
 }
 
 struct VkVideoFormatPropertiesKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_FORMAT_PROPERTIES_KHR;
     void* pNext;
     VkFormat format;
     VkComponentMapping componentMapping;
@@ -130,7 +130,7 @@ struct VkVideoFormatPropertiesKHR {
 }
 
 struct VkVideoPictureResourceInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_PICTURE_RESOURCE_INFO_KHR;
     const(void)* pNext;
     VkOffset2D codedOffset;
     VkExtent2D codedExtent;
@@ -139,21 +139,21 @@ struct VkVideoPictureResourceInfoKHR {
 }
 
 struct VkVideoReferenceSlotInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_REFERENCE_SLOT_INFO_KHR;
     const(void)* pNext;
     int slotIndex;
     const(VkVideoPictureResourceInfoKHR)* pPictureResource;
 }
 
 struct VkVideoSessionMemoryRequirementsKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_SESSION_MEMORY_REQUIREMENTS_KHR;
     void* pNext;
     uint memoryBindIndex;
     VkMemoryRequirements memoryRequirements;
 }
 
 struct VkBindVideoSessionMemoryInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_BIND_VIDEO_SESSION_MEMORY_INFO_KHR;
     const(void)* pNext;
     uint memoryBindIndex;
     VkDeviceMemory memory;
@@ -162,7 +162,7 @@ struct VkBindVideoSessionMemoryInfoKHR {
 }
 
 struct VkVideoSessionCreateInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_SESSION_CREATE_INFO_KHR;
     const(void)* pNext;
     uint queueFamilyIndex;
     VkVideoSessionCreateFlagsKHR flags;
@@ -176,7 +176,7 @@ struct VkVideoSessionCreateInfoKHR {
 }
 
 struct VkVideoSessionParametersCreateInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_SESSION_PARAMETERS_CREATE_INFO_KHR;
     const(void)* pNext;
     VkVideoSessionParametersCreateFlagsKHR flags;
     VkVideoSessionParametersKHR videoSessionParametersTemplate;
@@ -184,13 +184,13 @@ struct VkVideoSessionParametersCreateInfoKHR {
 }
 
 struct VkVideoSessionParametersUpdateInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_SESSION_PARAMETERS_UPDATE_INFO_KHR;
     const(void)* pNext;
     uint updateSequenceCount;
 }
 
 struct VkVideoBeginCodingInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_BEGIN_CODING_INFO_KHR;
     const(void)* pNext;
     VkVideoBeginCodingFlagsKHR flags;
     VkVideoSessionKHR videoSession;
@@ -200,13 +200,13 @@ struct VkVideoBeginCodingInfoKHR {
 }
 
 struct VkVideoEndCodingInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_END_CODING_INFO_KHR;
     const(void)* pNext;
     VkVideoEndCodingFlagsKHR flags;
 }
 
 struct VkVideoCodingControlInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_CODING_CONTROL_INFO_KHR;
     const(void)* pNext;
     VkVideoCodingControlFlagsKHR flags;
 }

@@ -17,7 +17,7 @@ enum uint VK_KHR_EXTERNAL_FENCE_WIN32_SPEC_VERSION = 1;
 enum string VK_KHR_EXTERNAL_FENCE_WIN32_EXTENSION_NAME = "VK_KHR_external_fence_win32";
 
 struct VkImportFenceWin32HandleInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_FENCE_WIN32_HANDLE_INFO_KHR;
     const(void)* pNext;
     VkFence fence;
     VkFenceImportFlags flags;
@@ -27,7 +27,7 @@ struct VkImportFenceWin32HandleInfoKHR {
 }
 
 struct VkExportFenceWin32HandleInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_EXPORT_FENCE_WIN32_HANDLE_INFO_KHR;
     const(void)* pNext;
     const(SECURITY_ATTRIBUTES)* pAttributes;
     uint dwAccess;
@@ -35,7 +35,7 @@ struct VkExportFenceWin32HandleInfoKHR {
 }
 
 struct VkFenceGetWin32HandleInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_FENCE_GET_WIN32_HANDLE_INFO_KHR;
     const(void)* pNext;
     VkFence fence;
     VkExternalFenceHandleTypeFlags handleType;

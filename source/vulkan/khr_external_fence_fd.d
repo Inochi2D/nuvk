@@ -17,7 +17,7 @@ enum uint VK_KHR_EXTERNAL_FENCE_FD_SPEC_VERSION = 1;
 enum string VK_KHR_EXTERNAL_FENCE_FD_EXTENSION_NAME = "VK_KHR_external_fence_fd";
 
 struct VkImportFenceFdInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_FENCE_FD_INFO_KHR;
     const(void)* pNext;
     VkFence fence;
     VkFenceImportFlags flags;
@@ -26,7 +26,7 @@ struct VkImportFenceFdInfoKHR {
 }
 
 struct VkFenceGetFdInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_FENCE_GET_FD_INFO_KHR;
     const(void)* pNext;
     VkFence fence;
     VkExternalFenceHandleTypeFlags handleType;

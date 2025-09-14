@@ -33,7 +33,7 @@ alias xcb_visualid_t = uint;
 
 alias VkXcbSurfaceCreateFlagsKHR = VkFlags;
 struct VkXcbSurfaceCreateInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
     const(void)* pNext;
     VkXcbSurfaceCreateFlagsKHR flags;
     xcb_connection_t* connection;

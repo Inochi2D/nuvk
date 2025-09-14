@@ -28,7 +28,7 @@ struct wl_surface;
 
 alias VkWaylandSurfaceCreateFlagsKHR = VkFlags;
 struct VkWaylandSurfaceCreateInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
     const(void)* pNext;
     VkWaylandSurfaceCreateFlagsKHR flags;
     wl_display* display;

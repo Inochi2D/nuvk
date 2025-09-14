@@ -16,7 +16,7 @@ enum uint VK_KHR_EXTERNAL_SEMAPHORE_FD_SPEC_VERSION = 1;
 enum string VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME = "VK_KHR_external_semaphore_fd";
 
 struct VkImportSemaphoreFdInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_FD_INFO_KHR;
     const(void)* pNext;
     VkSemaphore semaphore;
     VkSemaphoreImportFlags flags;
@@ -25,7 +25,7 @@ struct VkImportSemaphoreFdInfoKHR {
 }
 
 struct VkSemaphoreGetFdInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR;
     const(void)* pNext;
     VkSemaphore semaphore;
     VkExternalSemaphoreHandleTypeFlags handleType;

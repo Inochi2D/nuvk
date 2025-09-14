@@ -18,7 +18,7 @@ enum string VK_KHR_WIN32_SURFACE_EXTENSION_NAME = "VK_KHR_win32_surface";
 
 alias VkWin32SurfaceCreateFlagsKHR = VkFlags;
 struct VkWin32SurfaceCreateInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
     const(void)* pNext;
     VkWin32SurfaceCreateFlagsKHR flags;
     void* hinstance;

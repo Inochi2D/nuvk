@@ -17,11 +17,12 @@ enum uint VK_KHR_DISPLAY_SWAPCHAIN_SPEC_VERSION = 10;
 enum string VK_KHR_DISPLAY_SWAPCHAIN_EXTENSION_NAME = "VK_KHR_display_swapchain";
 
 struct VkDisplayPresentInfoKHR {
-    VkStructureType    sType;
-    const(void)*        pNext;
-    VkRect2D           srcRect;
-    VkRect2D           dstRect;
-    VkBool32           persistent;
+    VkStructureType sType = VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR;
+    const(void)* pNext;
+    VkRect2D srcRect;
+    VkRect2D dstRect;
+    VkBool32 persistent;
 }
 
-alias PFN_vkCreateSharedSwapchainsKHR = VkResult function(VkDevice device, uint swapchainCount, const(VkSwapchainCreateInfoKHR)* pCreateInfos, const(VkAllocationCallbacks)* pAllocator, VkSwapchainKHR* pSwapchains);
+alias PFN_vkCreateSharedSwapchainsKHR = VkResult function(VkDevice device, uint swapchainCount, const(
+        VkSwapchainCreateInfoKHR)* pCreateInfos, const(VkAllocationCallbacks)* pAllocator, VkSwapchainKHR* pSwapchains);

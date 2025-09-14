@@ -17,7 +17,7 @@ enum VK_KHR_EXTERNAL_MEMORY_WIN32_SPEC_VERSION = 1;
 enum VK_KHR_EXTERNAL_MEMORY_WIN32_EXTENSION_NAME = "VK_KHR_external_memory_win32";
 
 struct VkImportMemoryWin32HandleInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_KHR;
     const(void)* pNext;
     VkExternalMemoryHandleTypeFlags handleType;
     void* handle;
@@ -25,7 +25,7 @@ struct VkImportMemoryWin32HandleInfoKHR {
 }
 
 struct VkExportMemoryWin32HandleInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_WIN32_HANDLE_INFO_KHR;
     const(void)* pNext;
     const(SECURITY_ATTRIBUTES)* pAttributes;
     uint dwAccess;
@@ -33,13 +33,13 @@ struct VkExportMemoryWin32HandleInfoKHR {
 }
 
 struct VkMemoryWin32HandlePropertiesKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_MEMORY_WIN32_HANDLE_PROPERTIES_KHR;
     void* pNext;
     uint memoryTypeBits;
 }
 
 struct VkMemoryGetWin32HandleInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_MEMORY_GET_WIN32_HANDLE_INFO_KHR;
     const(void)* pNext;
     VkDeviceMemory memory;
     VkExternalMemoryHandleTypeFlags handleType;

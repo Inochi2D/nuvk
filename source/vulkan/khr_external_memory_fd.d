@@ -16,20 +16,20 @@ enum uint VK_KHR_EXTERNAL_MEMORY_FD_SPEC_VERSION = 1;
 enum string VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME = "VK_KHR_external_memory_fd";
 
 struct VkImportMemoryFdInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR;
     const(void)* pNext;
     VkExternalMemoryHandleTypeFlags handleType;
     int fd;
 }
 
 struct VkMemoryFdPropertiesKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR;
     void* pNext;
     uint memoryTypeBits;
 }
 
 struct VkMemoryGetFdInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR;
     const(void)* pNext;
     VkDeviceMemory memory;
     VkExternalMemoryHandleTypeFlags handleType;

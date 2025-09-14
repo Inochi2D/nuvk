@@ -34,7 +34,7 @@ struct VkDisplayModeParametersKHR {
 }
 
 struct VkDisplayModeCreateInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR;
     const(void)* pNext;
     VkDisplayModeCreateFlagsKHR flags;
     VkDisplayModeParametersKHR parameters;
@@ -73,7 +73,7 @@ struct VkDisplayPropertiesKHR {
 }
 
 struct VkDisplaySurfaceCreateInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR;
     const(void)* pNext;
     VkDisplaySurfaceCreateFlagsKHR flags;
     VkDisplayModeKHR displayMode;

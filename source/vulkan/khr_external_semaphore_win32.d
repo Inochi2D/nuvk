@@ -17,7 +17,7 @@ enum uint VK_KHR_EXTERNAL_SEMAPHORE_WIN32_SPEC_VERSION = 1;
 enum string VK_KHR_EXTERNAL_SEMAPHORE_WIN32_EXTENSION_NAME = "VK_KHR_external_semaphore_win32";
 
 struct VkImportSemaphoreWin32HandleInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_WIN32_HANDLE_INFO_KHR;
     const(void)* pNext;
     VkSemaphore semaphore;
     VkSemaphoreImportFlags flags;
@@ -27,7 +27,7 @@ struct VkImportSemaphoreWin32HandleInfoKHR {
 }
 
 struct VkExportSemaphoreWin32HandleInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_WIN32_HANDLE_INFO_KHR;
     const(void)* pNext;
     const(SECURITY_ATTRIBUTES)* pAttributes;
     uint dwAccess;
@@ -35,7 +35,7 @@ struct VkExportSemaphoreWin32HandleInfoKHR {
 }
 
 struct VkD3D12FenceSubmitInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_D3D12_FENCE_SUBMIT_INFO_KHR;
     const(void)* pNext;
     uint waitSemaphoreValuesCount;
     const(ulong)* pWaitSemaphoreValues;
@@ -44,7 +44,7 @@ struct VkD3D12FenceSubmitInfoKHR {
 }
 
 struct VkSemaphoreGetWin32HandleInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_WIN32_HANDLE_INFO_KHR;
     const(void)* pNext;
     VkSemaphore semaphore;
     VkExternalSemaphoreHandleTypeFlags handleType;

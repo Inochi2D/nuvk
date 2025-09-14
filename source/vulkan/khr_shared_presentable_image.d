@@ -16,7 +16,7 @@ enum uint VK_KHR_SHARED_PRESENTABLE_IMAGE_SPEC_VERSION = 1;
 enum string VK_KHR_SHARED_PRESENTABLE_IMAGE_EXTENSION_NAME = "VK_KHR_shared_presentable_image";
 
 struct VkSharedPresentSurfaceCapabilitiesKHR {
-    VkStructureType      sType;
+    VkStructureType      sType = VK_STRUCTURE_TYPE_SHARED_PRESENT_SURFACE_CAPABILITIES_KHR;
     void*                pNext;
     VkImageUsageFlags    sharedPresentSupportedUsageFlags;
 }

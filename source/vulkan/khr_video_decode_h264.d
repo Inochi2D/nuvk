@@ -22,21 +22,21 @@ enum VkVideoDecodeH264PictureLayoutFlagsKHR VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_
     VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_INTERLACED_SEPARATE_PLANES_BIT_KHR = 0x00000002;
 
 struct VkVideoDecodeH264ProfileInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PROFILE_INFO_KHR;
     const(void)* pNext;
     StdVideoH264ProfileIdc stdProfileIdc;
     VkVideoDecodeH264PictureLayoutFlagsKHR pictureLayout;
 }
 
 struct VkVideoDecodeH264CapabilitiesKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_CAPABILITIES_KHR;
     void* pNext;
     StdVideoH264LevelIdc maxLevelIdc;
     VkOffset2D fieldOffsetGranularity;
 }
 
 struct VkVideoDecodeH264SessionParametersAddInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_ADD_INFO_KHR;
     const(void)* pNext;
     uint stdSPSCount;
     const(StdVideoH264SequenceParameterSet)* pStdSPSs;
@@ -45,7 +45,7 @@ struct VkVideoDecodeH264SessionParametersAddInfoKHR {
 }
 
 struct VkVideoDecodeH264SessionParametersCreateInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_CREATE_INFO_KHR;
     const(void)* pNext;
     uint maxStdSPSCount;
     uint maxStdPPSCount;
@@ -53,7 +53,7 @@ struct VkVideoDecodeH264SessionParametersCreateInfoKHR {
 }
 
 struct VkVideoDecodeH264PictureInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PICTURE_INFO_KHR;
     const(void)* pNext;
     const(StdVideoDecodeH264PictureInfo)* pStdPictureInfo;
     uint sliceCount;
@@ -61,7 +61,7 @@ struct VkVideoDecodeH264PictureInfoKHR {
 }
 
 struct VkVideoDecodeH264DpbSlotInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_DPB_SLOT_INFO_KHR;
     const(void)* pNext;
     const(StdVideoDecodeH264ReferenceInfo)* pStdReferenceInfo;
 }

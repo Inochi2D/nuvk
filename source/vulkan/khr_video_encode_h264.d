@@ -59,7 +59,7 @@ enum VkVideoEncodeH264RateControlFlagsKHR VK_VIDEO_ENCODE_H264_RATE_CONTROL_ATTE
     VK_VIDEO_ENCODE_H264_RATE_CONTROL_TEMPORAL_LAYER_PATTERN_DYADIC_BIT_KHR = 0x00000010;
 
 struct VkVideoEncodeH264CapabilitiesKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_CAPABILITIES_KHR;
     void* pNext;
     VkVideoEncodeH264CapabilityFlagsKHR flags;
     StdVideoH264LevelIdc maxLevelIdc;
@@ -83,7 +83,7 @@ struct VkVideoEncodeH264QpKHR {
 }
 
 struct VkVideoEncodeH264QualityLevelPropertiesKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_QUALITY_LEVEL_PROPERTIES_KHR;
     void* pNext;
     VkVideoEncodeH264RateControlFlagsKHR preferredRateControlFlags;
     uint preferredGopFrameCount;
@@ -97,14 +97,14 @@ struct VkVideoEncodeH264QualityLevelPropertiesKHR {
 }
 
 struct VkVideoEncodeH264SessionCreateInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_CREATE_INFO_KHR;
     const(void)* pNext;
     VkBool32 useMaxLevelIdc;
     StdVideoH264LevelIdc maxLevelIdc;
 }
 
 struct VkVideoEncodeH264SessionParametersAddInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_ADD_INFO_KHR;
     const(void)* pNext;
     uint stdSPSCount;
     const(StdVideoH264SequenceParameterSet)* pStdSPSs;
@@ -113,7 +113,7 @@ struct VkVideoEncodeH264SessionParametersAddInfoKHR {
 }
 
 struct VkVideoEncodeH264SessionParametersCreateInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_CREATE_INFO_KHR;
     const(void)* pNext;
     uint maxStdSPSCount;
     uint maxStdPPSCount;
@@ -121,7 +121,7 @@ struct VkVideoEncodeH264SessionParametersCreateInfoKHR {
 }
 
 struct VkVideoEncodeH264SessionParametersGetInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_GET_INFO_KHR;
     const(void)* pNext;
     VkBool32 writeStdSPS;
     VkBool32 writeStdPPS;
@@ -130,21 +130,21 @@ struct VkVideoEncodeH264SessionParametersGetInfoKHR {
 }
 
 struct VkVideoEncodeH264SessionParametersFeedbackInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_FEEDBACK_INFO_KHR;
     void* pNext;
     VkBool32 hasStdSPSOverrides;
     VkBool32 hasStdPPSOverrides;
 }
 
 struct VkVideoEncodeH264NaluSliceInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_NALU_SLICE_INFO_KHR;
     const(void)* pNext;
     int constantQp;
     const(StdVideoEncodeH264SliceHeader)* pStdSliceHeader;
 }
 
 struct VkVideoEncodeH264PictureInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_PICTURE_INFO_KHR;
     const(void)* pNext;
     uint naluSliceEntryCount;
     const(VkVideoEncodeH264NaluSliceInfoKHR)* pNaluSliceEntries;
@@ -153,19 +153,19 @@ struct VkVideoEncodeH264PictureInfoKHR {
 }
 
 struct VkVideoEncodeH264DpbSlotInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_DPB_SLOT_INFO_KHR;
     const(void)* pNext;
     const(StdVideoEncodeH264ReferenceInfo)* pStdReferenceInfo;
 }
 
 struct VkVideoEncodeH264ProfileInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_PROFILE_INFO_KHR;
     const(void)* pNext;
     StdVideoH264ProfileIdc stdProfileIdc;
 }
 
 struct VkVideoEncodeH264RateControlInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_RATE_CONTROL_INFO_KHR;
     const(void)* pNext;
     VkVideoEncodeH264RateControlFlagsKHR flags;
     uint gopFrameCount;
@@ -181,7 +181,7 @@ struct VkVideoEncodeH264FrameSizeKHR {
 }
 
 struct VkVideoEncodeH264RateControlLayerInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_RATE_CONTROL_LAYER_INFO_KHR;
     const(void)* pNext;
     VkBool32 useMinQp;
     VkVideoEncodeH264QpKHR minQp;
@@ -192,7 +192,7 @@ struct VkVideoEncodeH264RateControlLayerInfoKHR {
 }
 
 struct VkVideoEncodeH264GopRemainingFrameInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_GOP_REMAINING_FRAME_INFO_KHR;
     const(void)* pNext;
     VkBool32 useGopRemainingFrames;
     uint gopRemainingI;

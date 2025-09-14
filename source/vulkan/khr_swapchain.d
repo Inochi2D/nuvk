@@ -39,7 +39,7 @@ enum VkDeviceGroupPresentModeFlagsKHR VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR
     VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR = 0x00000008;
 
 struct VkSwapchainCreateInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     const(void)* pNext;
     VkSwapchainCreateFlagsKHR flags;
     VkSurfaceKHR surface;
@@ -60,7 +60,7 @@ struct VkSwapchainCreateInfoKHR {
 }
 
 struct VkPresentInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     const(void)* pNext;
     uint waitSemaphoreCount;
     const(VkSemaphore)* pWaitSemaphores;
@@ -71,20 +71,20 @@ struct VkPresentInfoKHR {
 }
 
 struct VkImageSwapchainCreateInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHR;
     const(void)* pNext;
     VkSwapchainKHR swapchain;
 }
 
 struct VkBindImageMemorySwapchainInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHR;
     const(void)* pNext;
     VkSwapchainKHR swapchain;
     uint imageIndex;
 }
 
 struct VkAcquireNextImageInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR;
     const(void)* pNext;
     VkSwapchainKHR swapchain;
     ulong timeout;
@@ -94,14 +94,14 @@ struct VkAcquireNextImageInfoKHR {
 }
 
 struct VkDeviceGroupPresentCapabilitiesKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_CAPABILITIES_KHR;
     void* pNext;
     uint[VK_MAX_DEVICE_GROUP_SIZE] presentMask;
     VkDeviceGroupPresentModeFlagsKHR modes;
 }
 
 struct VkDeviceGroupPresentInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_INFO_KHR;
     const(void)* pNext;
     uint swapchainCount;
     const(uint)* pDeviceMasks;
@@ -109,7 +109,7 @@ struct VkDeviceGroupPresentInfoKHR {
 }
 
 struct VkDeviceGroupSwapchainCreateInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_SWAPCHAIN_CREATE_INFO_KHR;
     const(void)* pNext;
     VkDeviceGroupPresentModeFlagsKHR modes;
 }

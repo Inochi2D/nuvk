@@ -34,7 +34,7 @@ alias VisualID = uint;
 alias VkXlibSurfaceCreateFlagsKHR = VkFlags;
 
 struct VkXlibSurfaceCreateInfoKHR {
-    VkStructureType sType;
+    VkStructureType sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
     const(void)* pNext;
     VkXlibSurfaceCreateFlagsKHR flags;
     Display* dpy;
