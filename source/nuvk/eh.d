@@ -12,6 +12,7 @@
 module nuvk.eh;
 import vulkan.core;
 import numem;
+import nulib;
 
 /**
     Enforces that the given VkResult code is a success code,
@@ -46,6 +47,35 @@ public:
         super(result.fromVkResult(), null, file, line);
         this.code = result;
     }
+
+    /**
+        Constructs a VkException from a VkResult
+        and a custom error string.
+    */
+    this(VkResult result, string error, string file = __FILE__, uint line = __LINE__) {
+        super(error, null, file, line);
+        this.code = result;
+    }
+}
+
+package(nuvk)
+nstring makeErrorMessage(Args...)(string formatString, Args args) {
+    import nulib.c.stdio : snprintf;
+    size_t toAllocate = formatString.length;
+    static foreach(arg; args) {
+        static if (isSomeSafeString!(typeof(arg))) {
+            toAllocate += arg.length;
+        } else static if (isSomeString!(typeof(arg))) {
+            toAllocate += nu_strlen(arg);
+        } else toAllocate += 16;
+    }
+
+    char* buffer = cast(char*)nu_malloc(toAllocate);
+    int c = snprintf(buffer, toAllocate, formatString.ptr, args);
+    nstring result = nstring(buffer[0..c]);
+
+    nu_free(buffer);
+    return result;
 }
 
 private

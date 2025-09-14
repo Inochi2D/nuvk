@@ -13,3 +13,5 @@
 module vulkan;
 
 public import vulkan.core;
+public import vulkan.khr_surface;
+public import vulkan.khr_swapchain;

@@ -1,5 +1,5 @@
 /**
-    vulkan_core.h
+    Vulkan Core
     
     Copyright:
         Copyright © 2015-2025, The Khronos Group Inc.
