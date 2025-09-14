@@ -16,6 +16,8 @@ libs "vulkan-1"
 lflags "/libpath:$VULKAN_SDK\\Lib\\" platform="windows"
 lflags "-L$VULKAN_SDK/lib" platform="posix"
 
+dflags "-preview=bitfields"
+
 # Configs
 configuration "static" {
 	targetType "staticLibrary"
