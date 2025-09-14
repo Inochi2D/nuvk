@@ -1,5 +1,5 @@
 /**
-    vulkan_core.h (VkSwapchainKHR)
+    VK_KHR_swapchain
     
     Copyright:
         Copyright © 2015-2025, The Khronos Group Inc.

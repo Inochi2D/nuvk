@@ -1,5 +1,5 @@
 /**
-    vulkan_core.h (VkSurfaceKHR)
+    VK_KHR_surface
     
     Copyright:
         Copyright © 2015-2025, The Khronos Group Inc.
