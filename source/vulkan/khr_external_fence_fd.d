@@ -18,7 +18,7 @@ enum string VK_KHR_EXTERNAL_FENCE_FD_EXTENSION_NAME = "VK_KHR_external_fence_fd"
 
 struct VkImportFenceFdInfoKHR {
     VkStructureType sType;
-    const void* pNext;
+    const(void)* pNext;
     VkFence fence;
     VkFenceImportFlags flags;
     VkExternalFenceHandleTypeFlags handleType;
@@ -27,15 +27,15 @@ struct VkImportFenceFdInfoKHR {
 
 struct VkFenceGetFdInfoKHR {
     VkStructureType sType;
-    const void* pNext;
+    const(void)* pNext;
     VkFence fence;
     VkExternalFenceHandleTypeFlags handleType;
 }
 
-alias PFN_vkImportFenceFdKHR = VkResult function(VkDevice device, const VkImportFenceFdInfoKHR* pImportFenceFdInfo);
-alias PFN_vkGetFenceFdKHR = VkResult function(VkDevice device, const VkFenceGetFdInfoKHR* pGetFdInfo, int* pFd);
+alias PFN_vkImportFenceFdKHR = VkResult function(VkDevice device, const(VkImportFenceFdInfoKHR)* pImportFenceFdInfo);
+alias PFN_vkGetFenceFdKHR = VkResult function(VkDevice device, const(VkFenceGetFdInfoKHR)* pGetFdInfo, int* pFd);
 
 version (VK_KHR_external_fence_fd) {
-    VkResult vkImportFenceFdKHR(VkDevice device, const VkImportFenceFdInfoKHR* pImportFenceFdInfo);
-    VkResult vkGetFenceFdKHR(VkDevice device, const VkFenceGetFdInfoKHR* pGetFdInfo, int* pFd);
+    VkResult vkImportFenceFdKHR(VkDevice device, const(VkImportFenceFdInfoKHR)* pImportFenceFdInfo);
+    VkResult vkGetFenceFdKHR(VkDevice device, const(VkFenceGetFdInfoKHR)* pGetFdInfo, int* pFd);
 }

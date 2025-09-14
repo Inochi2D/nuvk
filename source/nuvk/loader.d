@@ -22,9 +22,6 @@ struct VkProcName { string procName; }
 /**
     Loads all procedures that are referenced within a struct.
 
-    This will load them as bound to the given device, allowing
-    for faster access to the procedures.
-
     Params:
         device = The device to load the procedures for
         target = The target struct to store the procedures within.
@@ -34,6 +31,22 @@ void loadProcs(T)(VkDevice device, ref T target) if (is(T == struct)) {
         static if (hasUDA!(__traits(getMember, T, member), VkProcName)) {
             __traits(getMember, target, member) = 
                 device.getProcAddr!(typeof(__traits(getMember, T, member)))(getUDAs!(__traits(getMember, T, member), VkProcName)[0].procName);
+        }
+    }
+}
+
+/**
+    Loads all procedures that are referenced within a struct.
+
+    Params:
+        instance =  The instance to load the procedures for
+        target =    The target struct to store the procedures within.
+*/
+void loadProcs(T)(VkInstance instance, ref T target) if (is(T == struct)) {
+    static foreach(member; __traits(allMembers, T)) {
+        static if (hasUDA!(__traits(getMember, T, member), VkProcName)) {
+            __traits(getMember, target, member) = 
+                instance.getProcAddr!(typeof(__traits(getMember, T, member)))(getUDAs!(__traits(getMember, T, member), VkProcName)[0].procName);
         }
     }
 }
