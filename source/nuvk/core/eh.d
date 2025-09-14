@@ -9,7 +9,7 @@
     Authors:
         Luna Nielsen
 */
-module nuvk.eh;
+module nuvk.core.eh;
 import vulkan.core;
 import numem;
 import nulib;

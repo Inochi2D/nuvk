@@ -9,7 +9,7 @@
 module vulkan.khr_wayland_surface;
 import vulkan.khr_surface;
 import vulkan.core;
-import nuvk.loader;
+import nuvk.core.loader;
 
 extern (System) @nogc nothrow:
 
@@ -42,7 +42,7 @@ alias PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR = VkBool32 function(V
     VK_KHR_wayland_surface procedures.
 
     See_Also:
-        $(D nuvk.loader.loadProcs)
+        $(D nuvk.core.loader.loadProcs)
 */
 struct VK_KHR_wayland_surface {
     

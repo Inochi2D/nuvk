@@ -1,5 +1,5 @@
 /**
-    NuVK Vulkan Utilities
+    NuVK Instance
     
     Copyright:
         Copyright © 2025, Kitsunebi Games
@@ -9,86 +9,47 @@
     Authors:
         Luna Nielsen
 */
-module nuvk.utils;
-import nuvk.eh;
-import vulkan;
+module nuvk.instance;
+import nuvk.physicaldevice;
+import vulkan.core;
+import nuvk.core;
 import numem;
 import nulib;
 
 /**
-    Gets all of the extension properties for the
-    global vulkan instance.
-    
-    Returns:
-        A slice of all of the instance extension properties.
+    A vulkan instance
 */
-VkExtensionProperties[] nuvkGetInstanceExtensionProperties() @nogc nothrow {
-    uint pCount;
-    vkEnumerateInstanceExtensionProperties(null, &pCount, null);
+struct Instance {
+public:
+@nogc:
+    VkInstance ptr;
+    alias ptr this;
 
-    VkExtensionProperties[] props = nu_malloca!VkExtensionProperties(pCount);
-    vkEnumerateInstanceExtensionProperties(null, &pCount, props.ptr);
-    return props;
-}
+    /**
+        Constructs a Instance.
 
-/**
-    Gets all of the layer properties for the
-    global vulkan instance.
-    
-    Returns:
-        A slice of all of the instance layer properties.
-*/
-VkLayerProperties[] nuvkGetInstanceLayerProperties() @nogc {
-    uint pCount;
-    vkEnumerateInstanceLayerProperties(&pCount, null);
-
-    VkLayerProperties[] props = nu_malloca!VkLayerProperties(pCount);
-    vkEnumerateInstanceLayerProperties(&pCount, props.ptr);
-    return props;
-}
-
-/**
-    Gets whether the given extension is in the extension properties
-    slice.
-
-    Params:
-        props =     The properties slice.
-        extension = Name of the extension.
-    
-    Returns:
-        $(D true) if the slice has the given extension,
-        $(D false) otherwise.
-*/
-bool nuvkIsExtensionInPropertySlice(VkExtensionProperties[] props, string extension) @nogc {
-    foreach(prop; props) {
-        if (prop.extensionName.ptr.fromStringz == extension) {
-            return true;
-        }
+        Params:
+            ptr = The pointer to the instance.
+    */
+    this(VkInstance ptr) {
+        this.ptr = ptr;
     }
-    return false;
-}
 
-/**
-    Gets whether the given layer is in the layer properties
-    slice.
+    /**
+        Gets all of the physical devices for the given vulkan instance.
+        
+        Returns:
+            A slice of all of the instance's devices.
+    */
+    PhysicalDevice[] getPhysicalDevices() {
+        uint pCount;
+        vkEnumeratePhysicalDevices(ptr, &pCount, null);
 
-    Params:
-        props = The properties slice.
-        layer = Name of the layer.
-    
-    Returns:
-        $(D true) if the slice has the given layer,
-        $(D false) otherwise.
-*/
-bool nuvkIsLayerInPropertySlice(VkLayerProperties[] props, string layer) @nogc nothrow {
-    foreach(prop; props) {
-        if (prop.layerName.ptr.fromStringz == layer) {
-            return true;
-        }
+        PhysicalDevice[] devices = nu_malloca!PhysicalDevice(pCount);
+        vkEnumeratePhysicalDevices(ptr, &pCount, cast(VkPhysicalDevice*)devices.ptr);
+        return devices;
     }
-    return false;
 }
-
 
 /**
     Helps building Vulkan Instances.
@@ -119,9 +80,9 @@ private:
     }
 
     void validateLayers() {
-        auto props = nuvkGetInstanceLayerProperties();
+        auto props = getInstanceLayerProperties();
         foreach(layer; layers) {
-            if (!nuvkIsLayerInPropertySlice(props, cast(string)layer.fromStringz)) {
+            if (!props.hasLayer(cast(string)layer.fromStringz)) {
 
                 nu_freea(props);
                 nstring errMsg = makeErrorMessage("Layer '%s' is not present or could not be loaded.", layer);
@@ -133,9 +94,9 @@ private:
     }
 
     void validateExtensions() {
-        auto props = nuvkGetInstanceExtensionProperties();
+        auto props = getInstanceExtensionProperties();
         foreach(extension; extensions) {
-            if (!nuvkIsExtensionInPropertySlice(props, cast(string)extension.fromStringz)) {
+            if (!props.hasExtension(cast(string)extension.fromStringz)) {
 
                 nu_freea(props);
                 nstring errMsg = makeErrorMessage("Extension '%s' is not supported.", extension);
@@ -147,6 +108,16 @@ private:
     }
 
 public:
+
+    /**
+        Begins building an instance.
+
+        Returns:
+            A new instance.
+    */
+    static InstanceBuilder begin() {
+        return InstanceBuilder.init;
+    }
 
     /**
         Sets the application name.
@@ -347,171 +318,5 @@ public:
         vkEnforce(vkCreateInstance(&createInfo, null, instance));
         this.freeSelf();
         return instance;
-    }
-}
-
-/**
-    Gets whether the given type is a chainable vulkan struct.
-*/
-enum isVkChain(T) = 
-    is(T == struct) &&
-    is(typeof(T.tupleof[0]) : VkStructureType) && 
-    is(typeof(T.tupleof[1]) : const(void)*);
-
-/**
-    A class which helps building feature chains.
-*/
-final
-class ChainBuilder : NuObject {
-private:
-@nogc:
-    void[] data_;
-    vector!ChainInfo elements;
-    
-    static
-    struct ChainInfo {
-        VkStructureType sType;
-        size_t offset;
-        size_t size;
-    }
-
-    static
-    struct VkStruct {
-        VkStructureType sType;
-        const(void)* pNext;
-    }
-    
-    // Allocates space for the given struct.
-    T* allocate(T)() {
-        this.elements ~= ChainInfo(T.init.sType, data_.length, T.sizeof);
-        this.data_ = data_.nu_resize(data_.length+elements[$-1].size);
-        return cast(T*)(data_.ptr+elements[$-1].offset);
-    }
-
-    // Finds the requested struct.
-    T* find(T)() {
-        foreach(i; 0..elements.length)
-            if (elements[i].sType == T.init.sType)
-                return cast(T*)(data_.ptr + elements[i].offset);
-
-        return this.allocate!T;
-    }
-
-    // Finalizes all of the chain by pointing the pNext to the next
-    // struct.
-    void finalize() {
-        if (elements.length < 2)
-            return;
-
-        import std.stdio : printf;
-
-        foreach(i; 0..cast(ptrdiff_t)elements.length-1) {
-            VkStruct* ptr = cast(VkStruct*)(data_.ptr+elements[i].offset);
-            ptr.pNext = data_.ptr+elements[i].size;
-        }
-    }
-
-public:
-
-    /**
-        Creates a new chain builder.
-
-        Returns:
-            A new $(D ChainBuilder) instance.
-    */
-    static ChainBuilder create() {
-        return nogc_new!ChainBuilder();
-    }
-
-    /**
-        Whether the chain is empty.
-    */
-    @property bool empty() => data_.length == 0;
-
-    // Destructor
-    ~this() {
-        this.clear();
-    }
-
-    /**
-        Adds a feature struct in the chain,
-        if the given struct is already present, sets
-        the current instance instead.
-    
-        Params:
-            struct_ = The structure to set in the chain.
-        
-        Returns:
-            The $(D FeaturesChain) instance that the function
-            was called on.
-    */
-    ChainBuilder add(T)(T struct_) if (isVkChain!T) {
-        T* toSet = this.find!T;
-        *toSet = struct_; 
-        return this;
-    }
-
-    /**
-        Gets whether the given struct is present in the chain.
-
-        Returns:
-            $(D true) if the given struct is in the chain,
-            $(D false) otherwise.
-    */
-    bool has(T)() if (isVkChain!T) {
-        foreach(i; 0..elements.length)
-            if (elements[i].sType == T.init.sType)
-                return true;
-        
-        return false;
-    }
-
-    /**
-        Gets whether the given struct type id is present 
-        in the chain.
-
-        Params:
-            type = The structure type ID to query.
-
-        Returns:
-            $(D true) if the given struct is in the chain,
-            $(D false) otherwise.
-    */
-    bool has(VkStructureType type) {
-        foreach(i; 0..elements.length)
-            if (elements[i].sType == type)
-                return true;
-        
-        return false;
-    }
-
-    /**
-        Finalizes the feature chain and gets the result.
-
-        This result has to be cast to the needed type by yourself.
-
-        Returns:
-            A pointer to the first vulkan struct in the chain,
-            $(D null) if the chain is empty.
-    */
-    void* get() {
-        this.finalize();
-        return data_.length > 0 ? data_.ptr : null;
-    }
-
-    /**
-        Clears all elements from the chain.
-    */
-    void clear() {
-        elements.clear();
-        nu_freea(data_);
-    }
-
-    /**
-        Frees this chain.
-    */
-    void free() {
-        auto self = this;
-        nogc_delete(self);
     }
 }

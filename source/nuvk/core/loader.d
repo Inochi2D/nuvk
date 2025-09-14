@@ -9,9 +9,9 @@
     Authors:
         Luna Nielsen
 */
-module nuvk.loader;
-import vulkan.core;
+module nuvk.core.loader;
 import numem.core.traits;
+import vulkan.core;
 
 /**
     Attribute applied to functions in the nuvk bindings to tell nuvk
