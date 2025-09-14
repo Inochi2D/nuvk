@@ -23,4 +23,31 @@ public:
 @nogc:
     VkDevice ptr;
     alias ptr this;
+
+    /**
+        Constructs a Device.
+
+        Params:
+            ptr = The pointer to the Device.
+    */
+    this(VkDevice ptr) {
+        this.ptr = ptr;
+    }
+
+    /**
+        Waits for the device to be idle.
+
+        Returns:
+            A $(D VkResult).
+    */
+    VkResult waitIdle() {
+        return vkDeviceWaitIdle(ptr);
+    }
+
+    /**
+        Destroys the device.
+    */
+    void destroy() {
+        vkDestroyDevice(ptr, null);
+    }
 }

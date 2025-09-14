@@ -49,6 +49,13 @@ public:
         vkEnumeratePhysicalDevices(ptr, &pCount, cast(VkPhysicalDevice*)devices.ptr);
         return devices;
     }
+
+    /**
+        Destroys the instance.
+    */
+    void destroy() {
+        vkDestroyInstance(ptr, null);
+    }
 }
 
 /**

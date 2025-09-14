@@ -20,17 +20,27 @@ import vulkan.core;
 struct VkProcName { string procName; }
 
 /**
+    A feature name attached to a Vulkan Feature struct.
+
+    This allows mapping features to their respective
+    extensions.
+*/
+struct VkFeatureName { string featureName; }
+
+/**
     Loads all procedures that are referenced within a struct.
 
     Params:
         device = The device to load the procedures for
         target = The target struct to store the procedures within.
 */
-void loadProcs(T)(VkDevice device, ref T target) if (is(T == struct)) {
+void loadProcs(T)(VkDevice device, ref T target) @nogc if (is(T == struct)) {
+    import nuvk.core.loader : getProcAddress;
+
     static foreach(member; __traits(allMembers, T)) {
         static if (hasUDA!(__traits(getMember, T, member), VkProcName)) {
             __traits(getMember, target, member) = 
-                device.getProcAddr!(typeof(__traits(getMember, T, member)))(getUDAs!(__traits(getMember, T, member), VkProcName)[0].procName);
+                device.getProcAddress!(typeof(__traits(getMember, T, member)))(getUDAs!(__traits(getMember, T, member), VkProcName)[0].procName);
         }
     }
 }
@@ -42,11 +52,16 @@ void loadProcs(T)(VkDevice device, ref T target) if (is(T == struct)) {
         instance =  The instance to load the procedures for
         target =    The target struct to store the procedures within.
 */
-void loadProcs(T)(VkInstance instance, ref T target) if (is(T == struct)) {
+void loadProcs(T)(VkInstance instance, ref T target) @nogc if (is(T == struct)) {
+    import nuvk.core.loader : getProcAddress;
+
     static foreach(member; __traits(allMembers, T)) {
         static if (hasUDA!(__traits(getMember, T, member), VkProcName)) {
             __traits(getMember, target, member) = 
-                instance.getProcAddr!(typeof(__traits(getMember, T, member)))(getUDAs!(__traits(getMember, T, member), VkProcName)[0].procName);
+                instance.getProcAddress!(typeof(__traits(getMember, T, member)))(
+                    getUDAs!(__traits(getMember, T, member), 
+                    VkProcName)[0].procName
+                );
         }
     }
 }
@@ -63,7 +78,7 @@ void loadProcs(T)(VkInstance instance, ref T target) if (is(T == struct)) {
         A function reference to the procedure,
         or $(D null) on failure.
 */
-T getProcAddress(T)(VkInstance instance, string procName) @nogc if (is(T == function)) {
+T getProcAddress(T)(VkInstance instance, string procName) @nogc {
     return cast(T)vkGetInstanceProcAddr(instance, procName.ptr);
 }
 
@@ -79,6 +94,6 @@ T getProcAddress(T)(VkInstance instance, string procName) @nogc if (is(T == func
         A function reference to the procedure,
         or $(D null) on failure.
 */
-T getProcAddress(T)(VkDevice device, string procName) @nogc if (is(T == function)) {
+T getProcAddress(T)(VkDevice device, string procName) @nogc {
     return cast(T)vkGetDeviceProcAddr(device, procName.ptr);
 }

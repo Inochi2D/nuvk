@@ -15,6 +15,9 @@ import vulkan;
 import numem;
 import nulib;
 
+/// Invalid structure type to use as sentinel.
+enum VK_STRUCTURE_TYPE_SENTINEL = uint.max;
+
 /**
     Gets all of the extension properties for the global 
     vulkan instance.
@@ -136,159 +139,282 @@ enum isVkChain(T) =
     is(typeof(T.tupleof[1]) : const(void)*);
 
 /**
-    A class which helps building feature chains.
+    A chain of vulkan structs.
 */
-final
-class ChainBuilder : NuObject {
+struct VkStructChain {
 private:
 @nogc:
     void[] data_;
-    vector!ChainInfo elements;
-    
-    static
-    struct ChainInfo {
-        VkStructureType sType;
-        size_t offset;
-        size_t size;
-    }
 
-    static
-    struct VkStruct {
-        VkStructureType sType;
-        const(void)* pNext;
-    }
-    
-    // Allocates space for the given struct.
-    T* allocate(T)() {
-        this.elements ~= ChainInfo(T.init.sType, data_.length, T.sizeof);
-        this.data_ = data_.nu_resize(data_.length+elements[$-1].size);
-        return cast(T*)(data_.ptr+elements[$-1].offset);
-    }
+    // Helper which readjusts the data array from
+    // an old target memory location to a new one.
+    void readjust(void* src, void* tgt, ptrdiff_t offset = 0) {
+        VkBaseOutStructure* next = cast(VkBaseOutStructure*)tgt;
+        while(next) {
+            if (!next.pNext)
+                break;
 
-    // Finds the requested struct.
-    T* find(T)() {
-        foreach(i; 0..elements.length)
-            if (elements[i].sType == T.init.sType)
-                return cast(T*)(data_.ptr + elements[i].offset);
-
-        return this.allocate!T;
-    }
-
-    // Finalizes all of the chain by pointing the pNext to the next
-    // struct.
-    void finalize() {
-        if (elements.length < 2)
-            return;
-
-        import std.stdio : printf;
-
-        foreach(i; 0..cast(ptrdiff_t)elements.length-1) {
-            VkStruct* ptr = cast(VkStruct*)(data_.ptr+elements[i].offset);
-            ptr.pNext = data_.ptr+elements[i].size;
+            next.pNext = cast(VkBaseOutStructure*)((tgt+offset)+(cast(void*)next.pNext-src));
+            next = cast(VkBaseOutStructure*)next.pNext;
         }
     }
 
 public:
 
-    /**
-        Creates a new chain builder.
-
-        Returns:
-            A new $(D ChainBuilder) instance.
-    */
-    static ChainBuilder create() {
-        return nogc_new!ChainBuilder();
-    }
-
-    /**
-        Whether the chain is empty.
-    */
-    @property bool empty() => data_.length == 0;
-
     // Destructor
     ~this() {
-        this.clear();
-    }
-
-    /**
-        Adds a feature struct in the chain,
-        if the given struct is already present, sets
-        the current instance instead.
-    
-        Params:
-            struct_ = The structure to set in the chain.
-        
-        Returns:
-            The $(D FeaturesChain) instance that the function
-            was called on.
-    */
-    ChainBuilder add(T)(T struct_) if (isVkChain!T) {
-        T* toSet = this.find!T;
-        *toSet = struct_; 
-        return this;
-    }
-
-    /**
-        Gets whether the given struct is present in the chain.
-
-        Returns:
-            $(D true) if the given struct is in the chain,
-            $(D false) otherwise.
-    */
-    bool has(T)() if (isVkChain!T) {
-        foreach(i; 0..elements.length)
-            if (elements[i].sType == T.init.sType)
-                return true;
-        
-        return false;
-    }
-
-    /**
-        Gets whether the given struct type id is present 
-        in the chain.
-
-        Params:
-            type = The structure type ID to query.
-
-        Returns:
-            $(D true) if the given struct is in the chain,
-            $(D false) otherwise.
-    */
-    bool has(VkStructureType type) {
-        foreach(i; 0..elements.length)
-            if (elements[i].sType == type)
-                return true;
-        
-        return false;
-    }
-
-    /**
-        Finalizes the feature chain and gets the result.
-
-        This result has to be cast to the needed type by yourself.
-
-        Returns:
-            A pointer to the first vulkan struct in the chain,
-            $(D null) if the chain is empty.
-    */
-    void* get() {
-        this.finalize();
-        return data_.length > 0 ? data_.ptr : null;
-    }
-
-    /**
-        Clears all elements from the chain.
-    */
-    void clear() {
-        elements.clear();
         nu_freea(data_);
     }
 
     /**
-        Frees this chain.
+        Pointer to the chain.
     */
-    void free() {
-        auto self = this;
-        nogc_delete(self);
+    @property VkBaseOutStructure* front() => cast(VkBaseOutStructure*)data_.ptr;
+
+    /**
+        Gets the last structure in the chain.
+    */
+    @property VkBaseOutStructure* back() {
+        VkBaseOutStructure* next = front;
+        while(next.pNext) {
+
+            // Skip sentinel value.
+            if (next.pNext.sType == VK_STRUCTURE_TYPE_SENTINEL)
+                break;
+
+            next = cast(VkBaseOutStructure*)next.pNext;
+        }
+        return next;
     }
+
+    /**
+        Pointer to the sentinel value.
+    */
+    @property VkBaseOutStructure* sentinel() => cast(VkBaseOutStructure*)(data_.ptr+(data_.length-VkBaseOutStructure.sizeof));
+
+    /**
+        Tries to find the given structure within the chain.
+
+        Params:
+            type = The structure type to look for.
+        
+        Returns:
+            The address of the in structure on success,
+            $(D null) otherwise.
+    */
+    VkBaseOutStructure* find(VkStructureType type) {
+        VkBaseOutStructure* next = front;
+        while(next.pNext) {
+            if (next.sType == type)
+                return next;
+
+            next = cast(VkBaseOutStructure*)next.pNext;
+        }
+        return null;
+    }
+
+    /**
+        Resizes the struct chain while updating all the pointers
+        to point be based off their new base address.
+    */
+    void resize(size_t newSize) {
+        ptrdiff_t sizeDelta = cast(ptrdiff_t)newSize-cast(ptrdiff_t)data_.length;
+        if (sizeDelta > 0) {
+
+            void* oldptr = data_.ptr;
+            data_ = data_.nu_resize(newSize+VkBaseOutStructure.sizeof);
+            this.readjust(data_.ptr, oldptr);
+
+            // Zero fill end of resized array.
+            (cast(ubyte[])data_)[$-sizeDelta..$] = 0;
+
+            // Set sentinel type to 0xFFFFFFFF
+            VkBaseOutStructure* sentinel = cast(VkBaseOutStructure*)(data_.ptr+(data_.length-VkBaseOutStructure.sizeof));
+            sentinel.sType = VK_STRUCTURE_TYPE_SENTINEL;
+        }
+    }
+
+    /**
+        Adds a struct to the chain.
+    */
+    void add(T)(T struct_) if (isVkChain!T) {
+        this.resize(data_.length+T.sizeof);
+
+        // Update the "next" pointer.
+        auto dest = cast(T*)back.pNext;
+        struct_.pNext = this.sentinel;
+        *dest = struct_;
+    }
+
+    /**
+        Makes a new struct chain that consists of the combined
+        elements of this chain and another.
+
+        Params:
+            other = The other struct chain to combine with.
+        
+        Returns:
+            A new struct chain containing elements from both.
+    */
+    VkStructChain combined(ref VkStructChain other) {
+        VkStructChain new_;
+        ptrdiff_t splitIdx = cast(ptrdiff_t)data_.length-cast(ptrdiff_t)VkBaseOutStructure.sizeof;
+        if (splitIdx > 0) {
+            new_.data_ = nu_malloc(data_.length + other.data_.length)[0..data_.length + other.data_.length];
+            new_.data_[0..splitIdx] = data_[0..splitIdx];
+            new_.data_[splitIdx..splitIdx+other.data_.length] = other.data_[0..$];
+            this.readjust(other.data_.ptr, new_.data_.ptr+splitIdx, -splitIdx);
+            this.readjust(data_.ptr, new_.data_.ptr);
+        }
+        return new_;
+    }
+
+    /**
+        Makes a copy of the struct chain.
+    */
+    VkStructChain copy() {
+        void[] cpdata_ = data_.nu_dup();
+        this.readjust(cpdata_.ptr, data_.ptr);
+        return VkStructChain(cpdata_);
+    }
+
+    /**
+        Takes ownership of the structure chain's memory.
+    */
+    void* take() {
+        this.finalize();
+
+        void* ptr = cast(void*)this.front;
+        nogc_zeroinit(data_);
+        return ptr;
+    }
+
+    /**
+        Finalizes the struct chain, removing the sentinel
+        value from the chain.
+    */
+    void finalize() {
+        back.pNext = null;
+    }
+
+    /**
+        Clears the chain.
+    */
+    void clear() {
+        nu_freea(data_);
+    }
+}
+
+/**
+    Finds the given structue type in the given chain.
+
+    Params:
+        chain = The chain to look within.
+        type =  The type to look for.
+    
+    Returns:
+        A pointer to the structure within the chain if found,
+        $(D null) otherwise.
+*/
+VkBaseOutStructure* findInChain(VkBaseOutStructure* chain, VkStructureType type) @nogc {
+    while(chain) {
+        if (chain.sType == type)
+            return chain;
+
+        chain = chain.pNext;
+    }
+    return null;
+}
+
+/**
+    Gets feature flags from a feature flag vulkan struct.
+
+    Params:
+        target = The target struct to get the feature flags from.
+    
+    Returns:
+        A VkBool32 slice of all the feature flags of the structure
+        if possible, $(D null) otherwise.
+*/
+VkBool32[] getFeatureFlags(VkBaseOutStructure* target) @nogc {
+    
+    // sentinel value.
+    if (target.sType == VK_STRUCTURE_TYPE_SENTINEL)
+        return null;
+
+    void* ptr = cast(void*)target;
+    void* nptr = cast(void*)target.pNext;
+    ptrdiff_t elements = ((nptr-ptr)-VkBaseOutStructure.sizeof)/VkBool32.sizeof;
+    if (elements <= 0)
+        return null;
+    
+    return (cast(VkBool32*)(ptr+VkBaseOutStructure.sizeof))[0..elements];
+}
+
+/**
+    Applies the given mask to the given chain.
+
+    Params:
+        target =    The right hand chain of requested features.
+        mask =      The left hand chain of required features.
+
+    Note:
+        Both chains MUST end with a sentinel structure.
+*/
+void maskChain(VkBaseOutStructure* target, VkBaseOutStructure* mask) @nogc {
+    while(target) {
+
+        // Skip sentinel value.
+        if (target.sType == VK_STRUCTURE_TYPE_SENTINEL)
+            break;
+
+        VkBool32[] tgtFeatures = target.getFeatureFlags();
+
+        if (VkBaseOutStructure* imask = mask.findInChain(target.sType)) {
+            VkBool32[] maskFeatures = imask.getFeatureFlags();
+
+            // Mismatched sizes?
+            if (tgtFeatures.length != maskFeatures.length)
+                return;
+
+            tgtFeatures[0..$] &= maskFeatures[0..$];
+        }
+        target = target.pNext;
+    }
+}
+
+/**
+    Gets whether the left hand size structure is deemed compatible with
+    the right hand side structure.
+
+    Params:
+        req =   The right hand chain of requested features.
+        mask =  The left hand chain of required features.
+
+    Returns:
+        $(D true) if $(D rhs) enables features that are
+        supported by $(D lhs), $(D false) otherwise.
+*/
+bool isFeaturesCompatible(VkBaseOutStructure* req, VkBaseOutStructure* mask) @nogc {
+    while(req) {
+
+        // Skip sentinel value.
+        if (req.sType == VK_STRUCTURE_TYPE_SENTINEL)
+            break;
+
+        VkBool32[] reqFeatures = req.getFeatureFlags();
+        if (VkBaseOutStructure* imask = mask.findInChain(req.sType)) {
+            VkBool32[] maskFeatures = imask.getFeatureFlags();
+
+            // Mismatched sizes?
+            if (reqFeatures.length != maskFeatures.length)
+                return false;
+
+            foreach(i; 0..reqFeatures.length) {
+                if ((reqFeatures[i] & maskFeatures[i]) != reqFeatures[i])
+                    return false;
+            }
+        }
+    }
+    return true;
 }

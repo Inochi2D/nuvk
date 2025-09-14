@@ -11,10 +11,12 @@
 */
 module nuvk.physicaldevice;
 import nuvk.device;
-import vulkan.core;
 import nuvk.core;
+import vulkan.khr_surface;
+import vulkan.core;
 import numem;
 import nulib;
+import nuvk.instance;
 
 /**
     A wrapped VkPhysicalDevice.
@@ -39,12 +41,12 @@ public:
         Gets the features of the device.
 
         Returns:
-            VkPhysicalDeviceFeatures enumerating features
+            VkPhysicalDeviceFeatures2 enumerating features
             of the device.
     */
-    VkPhysicalDeviceFeatures getFeatures() {
-        VkPhysicalDeviceFeatures result_;
-        vkGetPhysicalDeviceFeatures(ptr, &result_);
+    VkPhysicalDeviceFeatures2 getFeatures() {
+        VkPhysicalDeviceFeatures2 result_;
+        vkGetPhysicalDeviceFeatures2(ptr, &result_);
         return result_;
     }
 
@@ -52,12 +54,12 @@ public:
         Gets the properties of the device.
 
         Returns:
-            VkPhysicalDeviceProperties enumerating properties
+            VkPhysicalDeviceProperties2 enumerating properties
             of the device.
     */
-    VkPhysicalDeviceProperties getProperties() {
-        VkPhysicalDeviceProperties result_;
-        vkGetPhysicalDeviceProperties(ptr, &result_);
+    VkPhysicalDeviceProperties2 getProperties() {
+        VkPhysicalDeviceProperties2 result_;
+        vkGetPhysicalDeviceProperties2(ptr, &result_);
         return result_;
     }
 
@@ -81,12 +83,12 @@ public:
         Gets the memory properties of the physical device.
         
         Returns:
-            A VkPhysicalDeviceMemoryProperties describing the 
+            A VkPhysicalDeviceMemoryProperties2 describing the 
             memory properties of the physical device.
     */
-    VkPhysicalDeviceMemoryProperties getMemoryProperties() {
-        VkPhysicalDeviceMemoryProperties props;
-        vkGetPhysicalDeviceMemoryProperties(ptr, &props);
+    VkPhysicalDeviceMemoryProperties2 getMemoryProperties() {
+        VkPhysicalDeviceMemoryProperties2 props;
+        vkGetPhysicalDeviceMemoryProperties2(ptr, &props);
         return props;
     }
 
@@ -95,15 +97,15 @@ public:
         device.
         
         Returns:
-            A slice of VkQueueFamilyProperties describing the
+            A slice of VkQueueFamilyProperties2 describing the
             different queues supported by the physical device.
     */
-    VkQueueFamilyProperties[] getDeviceQueueFamilyProperties() {
+    VkQueueFamilyProperties2[] getDeviceQueueFamilyProperties() {
         uint pCount;
-        vkGetPhysicalDeviceQueueFamilyProperties(ptr, &pCount, null);
+        vkGetPhysicalDeviceQueueFamilyProperties2(ptr, &pCount, null);
 
-        VkQueueFamilyProperties[] props = nu_malloca!VkQueueFamilyProperties(pCount);
-        vkGetPhysicalDeviceQueueFamilyProperties(ptr, &pCount, props.ptr);
+        VkQueueFamilyProperties2[] props = nu_malloca!VkQueueFamilyProperties2(pCount);
+        vkGetPhysicalDeviceQueueFamilyProperties2(ptr, &pCount, props.ptr);
         return props;
     }
 
@@ -112,14 +114,242 @@ public:
 
         Params:
             createInfo =    Info used to create the device.
-            alloc =         The allocator to create it with or $(D null).
         
         Returns:
             A newly allocated device.
     */
-    Device createDevice(VkDeviceCreateInfo createInfo, const(VkAllocationCallbacks)* alloc = null) {
+    Device createDevice(VkDeviceCreateInfo createInfo) {
         Device result_;
-        vkEnforce(vkCreateDevice(ptr, &createInfo, alloc, &result_.ptr));
+        vkEnforce(vkCreateDevice(ptr, &createInfo, null, &result_.ptr));
         return result_;
+    }
+}
+
+/**
+    Helps selecting a physical device.
+*/
+struct PhysicalDeviceSelector {
+private:
+@nogc:
+    Instance instance;
+    uint minimumVersion;
+    VkStructChain requiredFeatures;
+    VkStructChain optionalFeatures;
+    vector!(const(char)*) extensions;
+    VkFlags queueTypes;
+    VkSurfaceKHR surface;
+
+public:
+
+    /// Destructor
+    ~this() {
+        requiredFeatures.clear();
+        optionalFeatures.clear();
+        nogc_delete(extensions);
+    }
+
+    /**
+        Constructs a DeviceSelector.
+    */
+    this(VkInstance instance) {
+        this.instance = instance;
+        this.requiredFeatures.add!VkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2());
+        this.optionalFeatures.add!VkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2());
+    }
+        
+    /**
+        Sets the queue types that are wanted.
+    */
+    void setQueueTypes(VkFlags types) {
+        this.queueTypes = types;
+    }
+
+    /**
+        Sets the surface of the device.
+
+        Params:
+            surface = The surface to set.
+    */
+    void setSurface(VkSurfaceKHR surface) {
+        this.surface = surface;
+    }
+
+    /**
+        Sets the minimum Vulkan Core version to be used.
+
+        Params:
+            major = Major version
+            minor = Minor version
+    */
+    void setMinimumVersion(uint major, uint minor) {
+        this.minimumVersion = (major << 22U) | (minor << 12U);
+    }
+
+    /**
+        Adds the given features to the device as required
+        features.
+
+        Params:
+            features = The features to add.
+    */
+    void addRequiredFeatures(T)(T features) if (isVkChain!T) {
+        if (auto st = requiredFeatures.find(features.sType)) {
+            features.pNext = st.pNext;
+            *cast(T*)st = features;
+            return;
+        }
+
+        requiredFeatures.add!T(features);
+    }
+
+    /**
+        Adds the given features to the device as optional
+        features.
+
+        Params:
+            features = The features to add.
+    */
+    void addOptionalFeatures(T)(T features) if (isVkChain!T) {
+        if (auto st = optionalFeatures.find(features.sType)) {
+            features.pNext = st.pNext;
+            *cast(T*)st = features;
+            return;
+        }
+
+        optionalFeatures.add!T(features);
+    }
+
+    /**
+        Adds the given extension to the device as an required
+        extension.
+
+        Params:
+            extName = Name of the extension.
+    */
+    void addRequiredExtension(string extName) {
+        extensions ~= nstring(extName).take().ptr;
+    }
+
+    /**
+        Selects the best Physical Device and Device
+        from the given options.
+    */
+    PhysicalDeviceSelection select() {
+        PhysicalDeviceSelection result;
+        auto physicalDevices = instance.getPhysicalDevices();
+
+        // Just to ensure we can get them no matter what.
+        VK_KHR_surface surfaceProcs;
+        instance.loadProcs(surfaceProcs);
+
+        if (surface)
+            queueTypes |= VK_QUEUE_GRAPHICS_BIT;
+
+        vector!VkDeviceQueueCreateInfo queuesToCreate;
+        auto reqFeatures = requiredFeatures.copy();
+        auto optFeatures = optionalFeatures.copy();
+        outer: foreach(physicalDevice; physicalDevices) {
+            bool isSurfaceSupported = surface ? false : true;
+            bool hasRequiredQueues = false;
+            bool hasRequiredFeatures = false;
+
+            vkGetPhysicalDeviceFeatures2(physicalDevice, cast(VkPhysicalDeviceFeatures2*)reqFeatures.front);
+            vkGetPhysicalDeviceFeatures2(physicalDevice, cast(VkPhysicalDeviceFeatures2*)optFeatures.front);
+            
+            hasRequiredFeatures = requiredFeatures.front.isFeaturesCompatible(reqFeatures.front);
+
+            // Queues
+            queuesToCreate.clear();
+            VkQueueFamilyProperties2[] queues = physicalDevice.getDeviceQueueFamilyProperties();
+            foreach(i, queue; queues) {
+                if ((queue.queueFamilyProperties.queueFlags & queueTypes) > 0)
+                    queuesToCreate ~= VkDeviceQueueCreateInfo(
+                        queueFamilyIndex: cast(uint)i,
+                        queueCount: 1
+                    );
+            }
+            nu_freea(queues);
+
+            // Surface
+            if (surface) {
+                foreach(qi; 0..queues.length) {
+                    uint supported;
+                    surfaceProcs.vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, cast(uint)qi, surface, &supported);
+
+                    if (supported) {
+                        isSurfaceSupported = true;
+                        break;
+                    }
+                }
+            }
+
+            if (isSurfaceSupported && hasRequiredQueues && hasRequiredFeatures) {
+                optionalFeatures.front.maskChain(optFeatures.front);
+                auto chain = requiredFeatures.combined(optionalFeatures);
+
+                result.physicalDevice = physicalDevice;
+                result.features = cast(VkPhysicalDeviceFeatures2*)chain.take();
+                result.queuesToCreate = queuesToCreate.take();
+                result.enabledExtensions = extensions.take();
+                break outer; 
+            }
+        }
+
+        reqFeatures.clear();
+        optFeatures.clear();
+        nu_freea(physicalDevices);
+        return result;
+    }
+}
+
+/**
+    The selection result of a device selector
+*/
+struct PhysicalDeviceSelection {
+public:
+@nogc:
+
+    /**
+        The selected physical device
+    */
+    PhysicalDevice physicalDevice;
+
+    /**
+        The enabled features
+    */
+    VkPhysicalDeviceFeatures2* features;
+
+    /**
+        The selected families
+    */
+    VkDeviceQueueCreateInfo[] queuesToCreate;
+
+    /**
+        Enabled extensions
+    */
+    const(char)*[] enabledExtensions;
+
+    /**
+        Creates a device from this selection.
+
+        This will free the meta-data about the selection,
+        leaving behind the physicalDevice.
+    */
+    Device createDevice() {
+        auto device = physicalDevice.createDevice(VkDeviceCreateInfo(
+            pNext: features,
+            queueCreateInfoCount: cast(uint)queuesToCreate.length,
+            pQueueCreateInfos: queuesToCreate.ptr,
+            enabledExtensionCount: cast(uint)enabledExtensions.length,
+            ppEnabledExtensionNames: enabledExtensions.ptr
+        ));
+
+        // Free all the temporary data.
+        nu_free(cast(void*)features);
+        nu_freea(queuesToCreate);
+        foreach(i; 0..enabledExtensions.length)
+            nu_free(cast(void*)enabledExtensions[i]);
+        nu_freea(enabledExtensions);
+        return device;
     }
 }
