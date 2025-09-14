@@ -10,3 +10,62 @@
         Luna Nielsen
 */
 module nuvk.loader;
+import vulkan.core;
+import numem.core.traits;
+
+/**
+    Attribute applied to functions in the nuvk bindings to tell nuvk
+    how to load them.
+*/
+struct VkProcName { string procName; }
+
+/**
+    Loads all procedures that are referenced within a struct.
+
+    This will load them as bound to the given device, allowing
+    for faster access to the procedures.
+
+    Params:
+        device = The device to load the procedures for
+        target = The target struct to store the procedures within.
+*/
+void loadProcs(T)(VkDevice device, ref T target) if (is(T == struct)) {
+    static foreach(member; __traits(allMembers, T)) {
+        static if (hasUDA!(__traits(getMember, T, member), VkProcName)) {
+            __traits(getMember, target, member) = 
+                device.getProcAddr!(typeof(__traits(getMember, T, member)))(getUDAs!(__traits(getMember, T, member), VkProcName)[0].procName);
+        }
+    }
+}
+
+/**
+    Gets the procedure address for the given procedure name
+    from the given instance.
+
+    Params:
+        instance =  The instance to get the procedure for.
+        procName =  The name of the procedure to get.
+    
+    Returns:
+        A function reference to the procedure,
+        or $(D null) on failure.
+*/
+T getProcAddress(T)(VkInstance instance, string procName) @nogc if (is(T == function)) {
+    return cast(T)vkGetInstanceProcAddr(instance, procName.ptr);
+}
+
+/**
+    Gets the procedure address for the given procedure name
+    from the given device.
+
+    Params:
+        device =    The device to get the procedure for.
+        procName =  The name of the procedure to get.
+    
+    Returns:
+        A function reference to the procedure,
+        or $(D null) on failure.
+*/
+T getProcAddress(T)(VkDevice device, string procName) @nogc if (is(T == function)) {
+    return cast(T)vkGetDeviceProcAddr(device, procName.ptr);
+}

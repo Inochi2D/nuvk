@@ -9,6 +9,7 @@
 module vulkan.khr_win32_surface;
 import vulkan.khr_surface;
 import vulkan.core;
+import nuvk.loader;
 
 extern(System) @nogc nothrow:
 
@@ -24,7 +25,20 @@ struct VkWin32SurfaceCreateInfoKHR {
     void* hwnd;
 }
 
-alias PFN_vkCreateWin32SurfaceKHR = VkResult function(VkInstance instance, const(
-        VkWin32SurfaceCreateInfoKHR)* pCreateInfo, const(VkAllocationCallbacks)* pAllocator, VkSurfaceKHR* pSurface);
-alias PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR = VkBool32 function(
-    VkPhysicalDevice physicalDevice, uint queueFamilyIndex);
+alias PFN_vkCreateWin32SurfaceKHR = VkResult function(VkInstance instance, const(VkWin32SurfaceCreateInfoKHR)* pCreateInfo, const(VkAllocationCallbacks)* pAllocator, VkSurfaceKHR* pSurface);
+alias PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR = VkBool32 function(VkPhysicalDevice physicalDevice, uint queueFamilyIndex);
+
+/**
+    VK_KHR_win32_surface procedures.
+
+    See_Also:
+        $(D nuvk.loader.loadProcs)
+*/
+struct VK_KHR_win32_surface {
+    
+    @VkProcName("vkCreateWin32SurfaceKHR")
+    PFN_vkCreateWin32SurfaceKHR vkCreateWin32SurfaceKHR;
+    
+    @VkProcName("vkGetPhysicalDeviceWin32PresentationSupportKHR")
+    PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR vkGetPhysicalDeviceWin32PresentationSupportKHR;
+}

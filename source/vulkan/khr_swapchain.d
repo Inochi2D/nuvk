@@ -8,6 +8,7 @@
 */
 module vulkan.khr_swapchain;
 import vulkan.core;
+import nuvk.loader;
 
 public import vulkan.khr_surface;
 import numem.core.types : OpaqueHandle;
@@ -113,19 +114,15 @@ struct VkDeviceGroupSwapchainCreateInfoKHR {
     VkDeviceGroupPresentModeFlagsKHR modes;
 }
 
-alias PFN_vkCreateSwapchainKHR = VkResult function(VkDevice device, const(VkSwapchainCreateInfoKHR)* pCreateInfo, const(
-        VkAllocationCallbacks)* pAllocator, VkSwapchainKHR* pSwapchain);
-alias PFN_vkDestroySwapchainKHR = void function(VkDevice device, VkSwapchainKHR swapchain, const(
-        VkAllocationCallbacks)* pAllocator);
+alias PFN_vkCreateSwapchainKHR = VkResult function(VkDevice device, const(VkSwapchainCreateInfoKHR)* pCreateInfo, const(VkAllocationCallbacks)* pAllocator, VkSwapchainKHR* pSwapchain);
+alias PFN_vkDestroySwapchainKHR = void function(VkDevice device, VkSwapchainKHR swapchain, const(VkAllocationCallbacks)* pAllocator);
 alias PFN_vkGetSwapchainImagesKHR = VkResult function(VkDevice device, VkSwapchainKHR swapchain, uint* pSwapchainImageCount, VkImage* pSwapchainImages);
 alias PFN_vkAcquireNextImageKHR = VkResult function(VkDevice device, VkSwapchainKHR swapchain, ulong timeout, VkSemaphore semaphore, VkFence fence, uint* pImageIndex);
 alias PFN_vkQueuePresentKHR = VkResult function(VkQueue queue, const(VkPresentInfoKHR)* pPresentInfo);
 alias PFN_vkGetDeviceGroupPresentCapabilitiesKHR = VkResult function(VkDevice device, VkDeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities);
 alias PFN_vkGetDeviceGroupSurfacePresentModesKHR = VkResult function(VkDevice device, VkSurfaceKHR surface, VkDeviceGroupPresentModeFlagsKHR* pModes);
-alias PFN_vkGetPhysicalDevicePresentRectanglesKHR = VkResult function(
-    VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint* pRectCount, VkRect2D* pRects);
-alias PFN_vkAcquireNextImage2KHR = VkResult function(VkDevice device, const(
-        VkAcquireNextImageInfoKHR)* pAcquireInfo, uint* pImageIndex);
+alias PFN_vkGetPhysicalDevicePresentRectanglesKHR = VkResult function(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint* pRectCount, VkRect2D* pRects);
+alias PFN_vkAcquireNextImage2KHR = VkResult function(VkDevice device, const(VkAcquireNextImageInfoKHR)* pAcquireInfo, uint* pImageIndex);
 
 version(VK_KHR_swapchain) {
     extern VkResult vkCreateSwapchainKHR(VkDevice device, const(VkSwapchainCreateInfoKHR)* pCreateInfo, const(VkAllocationCallbacks)* pAllocator, VkSwapchainKHR* pSwapchain);
@@ -137,4 +134,40 @@ version(VK_KHR_swapchain) {
     extern VkResult vkGetDeviceGroupSurfacePresentModesKHR(VkDevice device, VkSurfaceKHR surface, VkDeviceGroupPresentModeFlagsKHR* pModes);
     extern VkResult vkGetPhysicalDevicePresentRectanglesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint* pRectCount, VkRect2D* pRects);
     extern VkResult vkAcquireNextImage2KHR(VkDevice device, const(VkAcquireNextImageInfoKHR)* pAcquireInfo, uint* pImageIndex);
+}
+
+/**
+    VK_KHR_swapchain procedures.
+
+    See_Also:
+        $(D nuvk.loader.loadProcs)
+*/
+struct VK_KHR_swapchain {
+    
+    @VkProcName("vkCreateSwapchainKHR")
+    PFN_vkCreateSwapchainKHR vkCreateSwapchainKHR;
+    
+    @VkProcName("vkDestroySwapchainKHR")
+    PFN_vkDestroySwapchainKHR vkDestroySwapchainKHR;
+    
+    @VkProcName("vkGetSwapchainImagesKHR")
+    PFN_vkGetSwapchainImagesKHR vkGetSwapchainImagesKHR;
+    
+    @VkProcName("vkAcquireNextImageKHR")
+    PFN_vkAcquireNextImageKHR vkAcquireNextImageKHR;
+    
+    @VkProcName("vkQueuePresentKHR")
+    PFN_vkQueuePresentKHR vkQueuePresentKHR;
+    
+    @VkProcName("vkGetDeviceGroupPresentCapabilitiesKHR")
+    PFN_vkGetDeviceGroupPresentCapabilitiesKHR vkGetDeviceGroupPresentCapabilitiesKHR;
+    
+    @VkProcName("vkGetDeviceGroupSurfacePresentModesKHR")
+    PFN_vkGetDeviceGroupSurfacePresentModesKHR vkGetDeviceGroupSurfacePresentModesKHR;
+    
+    @VkProcName("vkGetPhysicalDevicePresentRectanglesKHR")
+    PFN_vkGetPhysicalDevicePresentRectanglesKHR vkGetPhysicalDevicePresentRectanglesKHR;
+    
+    @VkProcName("vkAcquireNextImage2KHR")
+    PFN_vkAcquireNextImage2KHR vkAcquireNextImage2KHR;
 }

@@ -8,6 +8,7 @@
 */
 module vulkan.khr_surface;
 import vulkan.core;
+import nuvk.loader;
 
 import numem.core.types : OpaqueHandle;
 
@@ -104,4 +105,28 @@ version(VK_KHR_surface) {
     VkResult vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceCapabilitiesKHR* pSurfaceCapabilities);
     VkResult vkGetPhysicalDeviceSurfaceFormatsKHR(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint* pSurfaceFormatCount, VkSurfaceFormatKHR* pSurfaceFormats);
     VkResult vkGetPhysicalDeviceSurfacePresentModesKHR(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint* pPresentModeCount, VkPresentModeKHR* pPresentModes);
+}
+
+/**
+    VK_KHR_surface procedures.
+
+    See_Also:
+        $(D nuvk.loader.loadProcs)
+*/
+struct VK_KHR_surface {
+    
+    @VkProcName("vkDestroySurfaceKHR")
+    PFN_vkDestroySurfaceKHR vkDestroySurfaceKHR;
+    
+    @VkProcName("vkGetPhysicalDeviceSurfaceSupportKHR")
+    PFN_vkGetPhysicalDeviceSurfaceSupportKHR vkGetPhysicalDeviceSurfaceSupportKHR;
+
+    @VkProcName("vkGetPhysicalDeviceSurfaceCapabilitiesKHR")
+    PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR vkGetPhysicalDeviceSurfaceCapabilitiesKHR;
+
+    @VkProcName("vkGetPhysicalDeviceSurfaceFormatsKHR")
+    PFN_vkGetPhysicalDeviceSurfaceFormatsKHR vkGetPhysicalDeviceSurfaceFormatsKHR;
+
+    @VkProcName("vkGetPhysicalDeviceSurfacePresentModesKHR")
+    PFN_vkGetPhysicalDeviceSurfacePresentModesKHR vkGetPhysicalDeviceSurfacePresentModesKHR;
 }

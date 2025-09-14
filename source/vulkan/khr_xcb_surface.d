@@ -9,6 +9,7 @@
 module vulkan.khr_xcb_surface;
 import vulkan.khr_surface;
 import vulkan.core;
+import nuvk.loader;
 
 extern (System) @nogc nothrow:
 
@@ -41,3 +42,18 @@ struct VkXcbSurfaceCreateInfoKHR {
 
 alias PFN_vkCreateXcbSurfaceKHR = VkResult function(VkInstance instance, const(VkXcbSurfaceCreateInfoKHR)* pCreateInfo, const(VkAllocationCallbacks)* pAllocator, VkSurfaceKHR* pSurface);
 alias PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR = VkBool32 function(VkPhysicalDevice physicalDevice, uint queueFamilyIndex, xcb_connection_t* connection, xcb_visualid_t visual_id);
+
+/**
+    VK_KHR_xcb_surface procedures.
+
+    See_Also:
+        $(D nuvk.loader.loadProcs)
+*/
+struct VK_KHR_xcb_surface {
+    
+    @VkProcName("vkCreateXcbSurfaceKHR")
+    PFN_vkCreateXcbSurfaceKHR vkCreateXcbSurfaceKHR;
+    
+    @VkProcName("vkGetPhysicalDeviceXcbPresentationSupportKHR")
+    PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR vkGetPhysicalDeviceXcbPresentationSupportKHR;
+}

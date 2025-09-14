@@ -9,6 +9,7 @@
 module vulkan.khr_wayland_surface;
 import vulkan.khr_surface;
 import vulkan.core;
+import nuvk.loader;
 
 extern (System) @nogc nothrow:
 
@@ -34,7 +35,20 @@ struct VkWaylandSurfaceCreateInfoKHR {
     wl_surface* surface;
 }
 
-alias PFN_vkCreateWaylandSurfaceKHR = VkResult(VkInstance instance, const(VkWaylandSurfaceCreateInfoKHR) * pCreateInfo, const(
-        VkAllocationCallbacks) * pAllocator, VkSurfaceKHR * pSurface);
-alias PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR = VkBool32(
-    VkPhysicalDevice physicalDevice, uint queueFamilyIndex, wl_display * display);
+alias PFN_vkCreateWaylandSurfaceKHR = VkResult function(VkInstance instance, const(VkWaylandSurfaceCreateInfoKHR) * pCreateInfo, const(VkAllocationCallbacks) * pAllocator, VkSurfaceKHR * pSurface);
+alias PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR = VkBool32 function(VkPhysicalDevice physicalDevice, uint queueFamilyIndex, wl_display * display);
+
+/**
+    VK_KHR_wayland_surface procedures.
+
+    See_Also:
+        $(D nuvk.loader.loadProcs)
+*/
+struct VK_KHR_wayland_surface {
+    
+    @VkProcName("vkCreateWaylandSurfaceKHR")
+    PFN_vkCreateWaylandSurfaceKHR vkCreateWaylandSurfaceKHR;
+    
+    @VkProcName("vkGetPhysicalDeviceWaylandPresentationSupportKHR")
+    PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR vkGetPhysicalDeviceWaylandPresentationSupportKHR;
+}

@@ -9,6 +9,7 @@
 module vulkan.khr_xlib_surface;
 import vulkan.khr_surface;
 import vulkan.core;
+import nuvk.loader;
 
 extern (System) @nogc nothrow:
 
@@ -40,7 +41,20 @@ struct VkXlibSurfaceCreateInfoKHR {
     Window window;
 }
 
-alias PFN_vkCreateXlibSurfaceKHR = VkResult function(VkInstance instance, const(
-        VkXlibSurfaceCreateInfoKHR)* pCreateInfo, const(VkAllocationCallbacks)* pAllocator, VkSurfaceKHR* pSurface);
-alias PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR = VkBool32 function(
-    VkPhysicalDevice physicalDevice, uint queueFamilyIndex, Display* dpy, VisualID visualID);
+alias PFN_vkCreateXlibSurfaceKHR = VkResult function(VkInstance instance, const(VkXlibSurfaceCreateInfoKHR)* pCreateInfo, const(VkAllocationCallbacks)* pAllocator, VkSurfaceKHR* pSurface);
+alias PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR = VkBool32 function(VkPhysicalDevice physicalDevice, uint queueFamilyIndex, Display* dpy, VisualID visualID);
+
+/**
+    VK_KHR_xlib_surface procedures.
+
+    See_Also:
+        $(D nuvk.loader.loadProcs)
+*/
+struct VK_KHR_xlib_surface {
+    
+    @VkProcName("vkCreateXlibSurfaceKHR")
+    PFN_vkCreateXlibSurfaceKHR vkCreateXlibSurfaceKHR;
+    
+    @VkProcName("vkGetPhysicalDeviceXlibPresentationSupportKHR")
+    PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR vkGetPhysicalDeviceXlibPresentationSupportKHR;
+}
