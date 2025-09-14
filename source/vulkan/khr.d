@@ -37,3 +37,18 @@ alias VkPhysicalDeviceMultiviewPropertiesKHR = VkPhysicalDeviceMultiviewProperti
 //
 enum uint VK_KHR_SHADER_DRAW_PARAMETERS_SPEC_VERSION = 1;
 enum string VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME = "VK_KHR_shader_draw_parameters";
+
+//
+//                  VK_KHR_shader_float16_int8
+//
+enum uint VK_KHR_SHADER_FLOAT16_INT8_SPEC_VERSION = 1;
+enum string VK_KHR_SHADER_FLOAT16_INT8_EXTENSION_NAME = "VK_KHR_shader_float16_int8";
+alias VkPhysicalDeviceShaderFloat16Int8FeaturesKHR = VkPhysicalDeviceShaderFloat16Int8Features;
+alias VkPhysicalDeviceFloat16Int8FeaturesKHR = VkPhysicalDeviceShaderFloat16Int8Features;
+
+//
+//                  VK_KHR_16bit_storage
+//
+enum uint VK_KHR_16BIT_STORAGE_SPEC_VERSION = 1;
+enum string VK_KHR_16BIT_STORAGE_EXTENSION_NAME = "VK_KHR_16bit_storage";
+alias VkPhysicalDevice16BitStorageFeaturesKHR = VkPhysicalDevice16BitStorageFeatures;
