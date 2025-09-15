@@ -12,3 +12,6 @@ module nuvk;
 public import nuvk.instance;
 public import nuvk.physicaldevice;
 public import nuvk.device;
+public import nuvk.buffer;
+public import nuvk.image;
+public import nuvk.queue;

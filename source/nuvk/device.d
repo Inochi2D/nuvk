@@ -1,5 +1,5 @@
 /**
-    NuVK Device
+    Devices
     
     Copyright:
         Copyright © 2025, Kitsunebi Games
@@ -16,29 +16,65 @@ import nuvk.core;
 import numem;
 import nulib;
 
+import nuvk.queue;
+import nuvk.buffer;
+import nuvk.image;
+
 /**
     A vulkan device.
 */
-class Device : NuRefCounted {
+final
+class NuvkDevice : NuRefCounted {
 private:
-    PhysicalDevice physicalDevice_;
-    VkDevice handle_;
-public:
 @nogc:
+    VkPhysicalDeviceMemoryProperties2 memoryProps_;
+    VkPhysicalDeviceProperties2 physicalDeviceProps_;
+    NuvkPhysicalDevice physicalDevice_;
+    VkDevice handle_;
+    vector!NuvkQueue queues_;
+
+    // Helper that creates all of the allocated queues.
+    void createQueues(VkDeviceCreateInfo createInfo) {
+        VkQueue pQueue;
+
+        foreach(i, VkDeviceQueueCreateInfo queue; createInfo.pQueueCreateInfos[0..createInfo.queueCreateInfoCount]) {
+            foreach(j; 0..queue.queueCount) {
+                vkGetDeviceQueue(handle_, queue.queueFamilyIndex, j, &pQueue);
+                queues_ ~= nogc_new!NuvkQueue(pQueue);
+            }
+        }
+    }
+public:
     alias handle this;
 
     /**
-        Gets the internal VkDevice handle for this device.
+        The internal VkDevice handle for this device.
     */
-    final @property VkDevice handle() => handle_;
+    @property VkDevice handle() => handle_;
 
     /**
-        Gets the internal VkDevice handle for this device.
+        The internal VkDevice handle for this device.
     */
-    final @property PhysicalDevice physicalDevice() => physicalDevice_;
+    @property NuvkPhysicalDevice physicalDevice() => physicalDevice_;
+
+    /**
+        The name of the device.
+    */
+    @property string name() => cast(string)physicalDeviceProps_.properties.deviceName.ptr.fromStringz();
+
+    /**
+        The memory properties of the device.
+    */
+    @property VkPhysicalDeviceMemoryProperties2 memoryProperties() => memoryProps_;
+
+    /**
+        The queues associated with this device.
+    */
+    @property NuvkQueue[] queues() => queues_[];
 
     /// Destructor
     ~this() {
+        queues_.clear();
         vkDestroyDevice(handle_, null);
     }
 
@@ -48,10 +84,43 @@ public:
         Params:
             ptr =               The pointer to the Device.
             physicalDevice =    The physical device associated with the device.
+            createInfo =        The information the device was created with.
     */
-    this(VkDevice ptr, PhysicalDevice physicalDevice) {
+    this(VkDevice ptr, NuvkPhysicalDevice physicalDevice, VkDeviceCreateInfo createInfo) {
         this.handle_ = ptr;
         this.physicalDevice_ = physicalDevice;
+        this.physicalDeviceProps_ = physicalDevice.getProperties();
+        this.memoryProps_ = physicalDevice.getMemoryProperties();
+        this.createQueues(createInfo);
+    }
+
+    /**
+        Creates a new buffer from the device with the given creation
+        properties and memory property flags.
+
+        Params:
+            createInfo  = Creation information for the buffer.
+            reqProps    = Requested properties of the buffer's memory.
+
+        Returns:
+            The new buffer.
+    */
+    NuvkBuffer createBuffer(VkBufferCreateInfo createInfo, VkMemoryPropertyFlags reqProps) {
+        return nogc_new!NuvkBuffer(this, createInfo, reqProps);
+    }
+
+    /**
+        Creates a new image from the device with the given creation
+        properties.
+
+        Params:
+            createInfo  = Creation information for the image.
+
+        Returns:
+            The new image.
+    */
+    NuvkImage createImage(VkImageCreateInfo createInfo) {
+        return nogc_new!NuvkImage(this, createInfo);
     }
 
     /**
@@ -62,5 +131,57 @@ public:
     */
     VkResult waitIdle() {
         return vkDeviceWaitIdle(handle_);
+    }
+
+    /**
+        Gets the memory type index that satisfies all the requirements
+        in the given bitmask.
+
+        Params:
+            reqProps = A bitmask of the required memory properties.
+        
+        Returns:
+            Index of the memory type that satisfies the request,
+            $(D -1) otherwise.
+    */
+    int selectMemoryTypeFor(VkMemoryPropertyFlags reqProps) {
+        auto props = memoryProperties.memoryProperties;
+        foreach(i, memoryType; props.memoryTypes[0..props.memoryTypeCount]) {
+            if ((memoryType.propertyFlags & reqProps) == reqProps)
+                return cast(uint)i;
+        }
+        return -1;
+    }
+}
+
+/**
+    An object belonging to a device.
+*/
+abstract
+class NuvkDeviceObject(T) : NuRefCounted {
+private:
+@nogc:
+    NuvkDevice device_;
+    T handle_;
+
+public:
+    alias handle this;
+
+    /**
+        The native vulkan handle of the object.
+    */
+    @property T handle() => handle_;
+
+    /**
+        The device which created this object.
+    */
+    @property NuvkDevice device() => device_;
+
+    /**
+        A device object.
+    */
+    this(NuvkDevice device, T ptr) {
+        this.device_ = device;
+        this.handle_ = ptr;
     }
 }

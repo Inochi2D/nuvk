@@ -1,5 +1,5 @@
 /**
-    NuVK PhysicalDevice
+    Physical Devices
     
     Copyright:
         Copyright © 2025, Kitsunebi Games
@@ -21,7 +21,7 @@ import nuvk.instance;
 /**
     A wrapped VkPhysicalDevice.
 */
-struct PhysicalDevice {
+struct NuvkPhysicalDevice {
 public:
 @nogc:
     VkPhysicalDevice ptr;
@@ -118,10 +118,10 @@ public:
         Returns:
             A newly allocated device.
     */
-    Device createDevice(VkDeviceCreateInfo createInfo) {
+    NuvkDevice createDevice(VkDeviceCreateInfo createInfo) {
         VkDevice result_;
         vkEnforce(vkCreateDevice(ptr, &createInfo, null, &result_));
-        return nogc_new!Device(result_, this);
+        return nogc_new!NuvkDevice(result_, this, createInfo);
     }
 }
 
@@ -131,7 +131,7 @@ public:
 struct PhysicalDeviceSelector {
 private:
 @nogc:
-    Instance instance;
+    NuvkInstance instance;
     uint minimumVersion;
     VkStructChain requiredFeatures;
     VkStructChain optionalFeatures;
@@ -151,7 +151,7 @@ public:
     /**
         Constructs a DeviceSelector.
     */
-    this(Instance instance) {
+    this(NuvkInstance instance) {
         this.instance = instance;
         this.requiredFeatures.add!VkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2());
         this.optionalFeatures.add!VkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2());
@@ -337,7 +337,7 @@ public:
     /**
         The selected physical device
     */
-    PhysicalDevice physicalDevice;
+    NuvkPhysicalDevice physicalDevice;
 
     /**
         The enabled features
@@ -360,7 +360,7 @@ public:
         This will free the meta-data about the selection,
         leaving behind the physicalDevice.
     */
-    Device createDevice() {
+    NuvkDevice createDevice() {
         if (!physicalDevice)
             return null;
 

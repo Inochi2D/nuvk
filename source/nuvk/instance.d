@@ -1,5 +1,5 @@
 /**
-    NuVK Instance
+    Instances
     
     Copyright:
         Copyright © 2025, Kitsunebi Games
@@ -19,7 +19,7 @@ import nulib;
 /**
     A vulkan instance
 */
-class Instance : NuRefCounted {
+class NuvkInstance : NuRefCounted {
 private:
 @nogc:
     VkInstance handle_;
@@ -53,11 +53,11 @@ public:
         Returns:
             A slice of all of the instance's devices.
     */
-    PhysicalDevice[] getPhysicalDevices() {
+    NuvkPhysicalDevice[] getPhysicalDevices() {
         uint pCount;
         vkEnumeratePhysicalDevices(handle_, &pCount, null);
 
-        PhysicalDevice[] devices = nu_malloca!PhysicalDevice(pCount);
+        NuvkPhysicalDevice[] devices = nu_malloca!NuvkPhysicalDevice(pCount);
         vkEnumeratePhysicalDevices(handle_, &pCount, cast(VkPhysicalDevice*)devices.ptr);
         return devices;
     }
@@ -314,7 +314,7 @@ public:
     /**
         Builds an Instance from the builder.
     */
-    Instance build() {
+    NuvkInstance build() {
         VkInstance instance;
         auto createInfo = VkInstanceCreateInfo(
             pApplicationInfo: &appInfo,
@@ -329,6 +329,6 @@ public:
 
         vkEnforce(vkCreateInstance(&createInfo, null, instance));
         this.freeSelf();
-        return nogc_new!Instance(instance);
+        return nogc_new!NuvkInstance(instance);
     }
 }
