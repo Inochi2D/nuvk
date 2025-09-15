@@ -119,9 +119,9 @@ public:
             A newly allocated device.
     */
     Device createDevice(VkDeviceCreateInfo createInfo) {
-        Device result_;
-        vkEnforce(vkCreateDevice(ptr, &createInfo, null, &result_.ptr));
-        return result_;
+        VkDevice result_;
+        vkEnforce(vkCreateDevice(ptr, &createInfo, null, &result_));
+        return nogc_new!Device(result_, this);
     }
 }
 
@@ -151,7 +151,7 @@ public:
     /**
         Constructs a DeviceSelector.
     */
-    this(VkInstance instance) {
+    this(Instance instance) {
         this.instance = instance;
         this.requiredFeatures.add!VkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2());
         this.optionalFeatures.add!VkPhysicalDeviceFeatures2(VkPhysicalDeviceFeatures2());
@@ -160,8 +160,9 @@ public:
     /**
         Sets the queue types that are wanted.
     */
-    void setQueueTypes(VkFlags types) {
+    auto ref setQueueTypes(VkFlags types) {
         this.queueTypes = types;
+        return this;
     }
 
     /**
@@ -170,8 +171,9 @@ public:
         Params:
             surface = The surface to set.
     */
-    void setSurface(VkSurfaceKHR surface) {
+    auto ref setSurface(VkSurfaceKHR surface) {
         this.surface = surface;
+        return this;
     }
 
     /**
@@ -181,8 +183,20 @@ public:
             major = Major version
             minor = Minor version
     */
-    void setMinimumVersion(uint major, uint minor) {
+    auto ref setMinimumVersion(uint major, uint minor) {
         this.minimumVersion = (major << 22U) | (minor << 12U);
+        return this;
+    }
+
+    /**
+        Sets the minimum Vulkan Core version to be used.
+
+        Params:
+            version_ = A version build with VK_MAKE_API_VERSION
+    */
+    auto ref setMinimumVersion(uint version_) {
+        this.minimumVersion = version_;
+        return this;
     }
 
     /**
@@ -192,14 +206,15 @@ public:
         Params:
             features = The features to add.
     */
-    void addRequiredFeatures(T)(T features) if (isVkChain!T) {
+    auto ref addRequiredFeatures(T)(T features) if (isVkChain!T) {
         if (auto st = requiredFeatures.find(features.sType)) {
-            features.pNext = st.pNext;
-            *cast(T*)st = features;
-            return;
+            *cast(T*)st.ptr = features;
+            requiredFeatures.readjust();
+            return this;
         }
 
         requiredFeatures.add!T(features);
+        return this;
     }
 
     /**
@@ -209,14 +224,15 @@ public:
         Params:
             features = The features to add.
     */
-    void addOptionalFeatures(T)(T features) if (isVkChain!T) {
+    auto ref addOptionalFeatures(T)(T features) if (isVkChain!T) {
         if (auto st = optionalFeatures.find(features.sType)) {
-            features.pNext = st.pNext;
-            *cast(T*)st = features;
-            return;
+            *cast(T*)st.ptr = features;
+            optionalFeatures.readjust();
+            return this;
         }
 
         optionalFeatures.add!T(features);
+        return this;
     }
 
     /**
@@ -226,8 +242,9 @@ public:
         Params:
             extName = Name of the extension.
     */
-    void addRequiredExtension(string extName) {
+    auto ref addRequiredExtension(string extName) {
         extensions ~= nstring(extName).take().ptr;
+        return this;
     }
 
     /**
@@ -253,21 +270,29 @@ public:
             bool hasRequiredQueues = false;
             bool hasRequiredFeatures = false;
 
+            // Skip devices which doesn't support the requested version.
+            VkPhysicalDeviceProperties2 props = physicalDevice.getProperties();
+            if (props.properties.apiVersion < minimumVersion)
+                continue;
+                
+
             vkGetPhysicalDeviceFeatures2(physicalDevice, cast(VkPhysicalDeviceFeatures2*)reqFeatures.front);
             vkGetPhysicalDeviceFeatures2(physicalDevice, cast(VkPhysicalDeviceFeatures2*)optFeatures.front);
             
-            hasRequiredFeatures = requiredFeatures.front.isFeaturesCompatible(reqFeatures.front);
+            hasRequiredFeatures = requiredFeatures.isFeaturesCompatible(reqFeatures);
 
             // Queues
             queuesToCreate.clear();
             VkQueueFamilyProperties2[] queues = physicalDevice.getDeviceQueueFamilyProperties();
             foreach(i, queue; queues) {
-                if ((queue.queueFamilyProperties.queueFlags & queueTypes) > 0)
+                if ((queue.queueFamilyProperties.queueFlags & queueTypes) > 0) {
                     queuesToCreate ~= VkDeviceQueueCreateInfo(
                         queueFamilyIndex: cast(uint)i,
                         queueCount: 1
                     );
+                }
             }
+            hasRequiredQueues = queuesToCreate.length > 0;
             nu_freea(queues);
 
             // Surface
@@ -284,7 +309,7 @@ public:
             }
 
             if (isSurfaceSupported && hasRequiredQueues && hasRequiredFeatures) {
-                optionalFeatures.front.maskChain(optFeatures.front);
+                optionalFeatures.maskChain(optFeatures);
                 auto chain = requiredFeatures.combined(optionalFeatures);
 
                 result.physicalDevice = physicalDevice;
@@ -336,6 +361,9 @@ public:
         leaving behind the physicalDevice.
     */
     Device createDevice() {
+        if (!physicalDevice)
+            return null;
+
         auto device = physicalDevice.createDevice(VkDeviceCreateInfo(
             pNext: features,
             queueCreateInfoCount: cast(uint)queuesToCreate.length,

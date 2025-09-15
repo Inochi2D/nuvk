@@ -19,11 +19,23 @@ import nulib;
 /**
     A vulkan instance
 */
-struct Instance {
-public:
+class Instance : NuRefCounted {
+private:
 @nogc:
-    VkInstance ptr;
-    alias ptr this;
+    VkInstance handle_;
+
+public:
+    alias handle this;
+
+    /**
+        Gets the handle of this instance.
+    */
+    final @property VkInstance handle() => handle_;
+
+    /// Destructor
+    ~this() {
+        vkDestroyInstance(handle_, null);
+    }
 
     /**
         Constructs a Instance.
@@ -32,7 +44,7 @@ public:
             ptr = The pointer to the instance.
     */
     this(VkInstance ptr) {
-        this.ptr = ptr;
+        this.handle_ = ptr;
     }
 
     /**
@@ -43,18 +55,11 @@ public:
     */
     PhysicalDevice[] getPhysicalDevices() {
         uint pCount;
-        vkEnumeratePhysicalDevices(ptr, &pCount, null);
+        vkEnumeratePhysicalDevices(handle_, &pCount, null);
 
         PhysicalDevice[] devices = nu_malloca!PhysicalDevice(pCount);
-        vkEnumeratePhysicalDevices(ptr, &pCount, cast(VkPhysicalDevice*)devices.ptr);
+        vkEnumeratePhysicalDevices(handle_, &pCount, cast(VkPhysicalDevice*)devices.ptr);
         return devices;
-    }
-
-    /**
-        Destroys the instance.
-    */
-    void destroy() {
-        vkDestroyInstance(ptr, null);
     }
 }
 
@@ -307,9 +312,9 @@ public:
     }
 
     /**
-        Builds a VkInstance from the builder.
+        Builds an Instance from the builder.
     */
-    VkInstance build() {
+    Instance build() {
         VkInstance instance;
         auto createInfo = VkInstanceCreateInfo(
             pApplicationInfo: &appInfo,
@@ -324,6 +329,6 @@ public:
 
         vkEnforce(vkCreateInstance(&createInfo, null, instance));
         this.freeSelf();
-        return instance;
+        return nogc_new!Instance(instance);
     }
 }

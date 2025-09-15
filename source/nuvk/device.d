@@ -10,6 +10,7 @@
         Luna Nielsen
 */
 module nuvk.device;
+import nuvk.physicaldevice;
 import vulkan.core;
 import nuvk.core;
 import numem;
@@ -18,20 +19,39 @@ import nulib;
 /**
     A vulkan device.
 */
-struct Device {
+class Device : NuRefCounted {
+private:
+    PhysicalDevice physicalDevice_;
+    VkDevice handle_;
 public:
 @nogc:
-    VkDevice ptr;
-    alias ptr this;
+    alias handle this;
+
+    /**
+        Gets the internal VkDevice handle for this device.
+    */
+    final @property VkDevice handle() => handle_;
+
+    /**
+        Gets the internal VkDevice handle for this device.
+    */
+    final @property PhysicalDevice physicalDevice() => physicalDevice_;
+
+    /// Destructor
+    ~this() {
+        vkDestroyDevice(handle_, null);
+    }
 
     /**
         Constructs a Device.
 
         Params:
-            ptr = The pointer to the Device.
+            ptr =               The pointer to the Device.
+            physicalDevice =    The physical device associated with the device.
     */
-    this(VkDevice ptr) {
-        this.ptr = ptr;
+    this(VkDevice ptr, PhysicalDevice physicalDevice) {
+        this.handle_ = ptr;
+        this.physicalDevice_ = physicalDevice;
     }
 
     /**
@@ -41,13 +61,6 @@ public:
             A $(D VkResult).
     */
     VkResult waitIdle() {
-        return vkDeviceWaitIdle(ptr);
-    }
-
-    /**
-        Destroys the device.
-    */
-    void destroy() {
-        vkDestroyDevice(ptr, null);
+        return vkDeviceWaitIdle(handle_);
     }
 }
