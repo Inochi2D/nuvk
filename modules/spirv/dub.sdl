@@ -1,0 +1,21 @@
+name "spirv"
+description "SPIR-V Introspection and code generation."
+authors "Luna the Foxgirl"
+copyright "Copyright © 2025, Kitsunebi Games"
+license "BSL-1.0"
+
+targetPath "out/"
+workingDirectory "out/"
+
+dependency "numem" version="~>1.3"
+dependency "nulib" version="~>0.3"
+dependency "inmath" version="~>1.3"
+
+# Configs
+configuration "static" {
+	targetType "staticLibrary"
+}
+
+configuration "dynamic" {
+	targetType "dynamicLibrary"
+}
