@@ -8,7 +8,7 @@
 */
 module vulkan.khr_surface;
 import vulkan.core;
-import nuvk.core.loader;
+import vulkan.nuvk.loader;
 
 import numem.core.types : OpaqueHandle;
 
@@ -111,7 +111,7 @@ version(VK_KHR_surface) {
     VK_KHR_surface procedures.
 
     See_Also:
-        $(D nuvk.core.loader.loadProcs)
+        $(D vulkan.nuvk.loader.loadProcs)
 */
 struct VK_KHR_surface {
     

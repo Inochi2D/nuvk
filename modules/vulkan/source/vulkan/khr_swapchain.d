@@ -8,7 +8,7 @@
 */
 module vulkan.khr_swapchain;
 import vulkan.core;
-import nuvk.core.loader;
+import vulkan.nuvk.loader;
 
 public import vulkan.khr_surface;
 import numem.core.types : OpaqueHandle;
@@ -140,7 +140,7 @@ version(VK_KHR_swapchain) {
     VK_KHR_swapchain procedures.
 
     See_Also:
-        $(D nuvk.core.loader.loadProcs)
+        $(D vulkan.nuvk.loader.loadProcs)
 */
 struct VK_KHR_swapchain {
     

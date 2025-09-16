@@ -1,5 +1,5 @@
 /**
-    Nuvk Vulkan Loader
+    Vulkan Loader 
     
     Copyright:
         Copyright © 2025, Kitsunebi Games
@@ -9,7 +9,7 @@
     Authors:
         Luna Nielsen
 */
-module nuvk.core.loader;
+module vulkan.nuvk.loader;
 import numem.core.traits;
 import vulkan.core;
 
@@ -35,7 +35,7 @@ struct VkFeatureName { string featureName; }
         target = The target struct to store the procedures within.
 */
 void loadProcs(T)(VkDevice device, ref T target) @nogc if (is(T == struct)) {
-    import nuvk.core.loader : getProcAddress;
+    import vulkan.nuvk.loader : getProcAddress;
 
     static foreach(member; __traits(allMembers, T)) {
         static if (hasUDA!(__traits(getMember, T, member), VkProcName)) {
@@ -53,7 +53,7 @@ void loadProcs(T)(VkDevice device, ref T target) @nogc if (is(T == struct)) {
         target =    The target struct to store the procedures within.
 */
 void loadProcs(T)(VkInstance instance, ref T target) @nogc if (is(T == struct)) {
-    import nuvk.core.loader : getProcAddress;
+    import vulkan.nuvk.loader : getProcAddress;
 
     static foreach(member; __traits(allMembers, T)) {
         static if (hasUDA!(__traits(getMember, T, member), VkProcName)) {

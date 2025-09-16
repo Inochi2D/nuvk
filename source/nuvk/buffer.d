@@ -11,6 +11,7 @@ module nuvk.buffer;
 import nuvk.device;
 import vulkan.core;
 import nuvk.core;
+import numem;
 
 /**
     A Vulkan Buffer
@@ -103,5 +104,63 @@ public:
     */
     void unmap() {
         vkUnmapMemory(device.handle, memory_);
+    }
+}
+
+/**
+    A Vulkan buffer view.
+*/
+final
+class NuvkBufferView : NuvkDeviceObject!VkBufferView {
+private:
+@nogc:
+    NuvkBuffer buffer_;
+    VkBufferViewCreateInfo createInfo_;
+
+public:
+
+    /**
+        The buffer this is a view of.
+    */
+    @property NuvkBuffer buffer() => buffer_;
+
+    /// Destructor
+    ~this() {
+        if (handle) {
+            vkDestroyBufferView(device.handle, handle, null);
+            buffer_.release();
+        }
+    }
+
+    /**
+        Constructs a new Vulkan Image View
+
+        Params:
+            device      = The device which owns the image view
+            buffer      = The image this is a view of.
+            createInfo  = Creation information for the image.
+    */
+    this(NuvkDevice device, NuvkBuffer buffer, VkBufferViewCreateInfo createInfo) {
+        this.createInfo_ = createInfo;
+        this.createInfo_.buffer = buffer.handle;
+
+        VkBufferView bufferView_;
+        vkEnforce(vkCreateBufferView(device.handle, &createInfo_, null, &bufferView_));
+
+        this.buffer_ = buffer.retained();
+        super(device, bufferView_);
+    }
+
+    /**
+        Constructs a new Vulkan Image View
+
+        Params:
+            device      = The device which owns the buffer view
+            buffer      = The buffer this is a view of.
+            ptr         = The pre-existing vulkan handle to use.
+    */
+    this(NuvkDevice device, NuvkBuffer buffer, VkBufferView ptr) {
+        this.buffer_ = buffer.retained();
+        super(device, ptr);
     }
 }

@@ -12,6 +12,9 @@
 */
 module vulkan;
 
+public import vulkan.nuvk.loader;
+public import vulkan.nuvk.eh;
+
 public import vulkan.core;
 public import vulkan.khr_surface;
 public import vulkan.khr_swapchain;

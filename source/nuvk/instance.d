@@ -97,7 +97,7 @@ private:
             if (!props.hasLayer(cast(string)layer.fromStringz)) {
 
                 nu_freea(props);
-                nstring errMsg = makeErrorMessage("Layer '%s' is not present or could not be loaded.", layer);
+                nstring errMsg = nuvkMakeErrorMessage("Layer '%s' is not present or could not be loaded.", layer);
                 throw nogc_new!VkException(VK_ERROR_LAYER_NOT_PRESENT, errMsg[], __FILE__, __LINE__);
             }
         }
@@ -111,7 +111,7 @@ private:
             if (!props.hasExtension(cast(string)extension.fromStringz)) {
 
                 nu_freea(props);
-                nstring errMsg = makeErrorMessage("Extension '%s' is not supported.", extension);
+                nstring errMsg = nuvkMakeErrorMessage("Extension '%s' is not supported.", extension);
                 throw nogc_new!VkException(VK_ERROR_EXTENSION_NOT_PRESENT, errMsg[], __FILE__, __LINE__);
             }
         }

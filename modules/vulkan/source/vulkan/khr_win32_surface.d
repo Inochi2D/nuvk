@@ -9,7 +9,7 @@
 module vulkan.khr_win32_surface;
 import vulkan.khr_surface;
 import vulkan.core;
-import nuvk.core.loader;
+import vulkan.nuvk.loader;
 
 extern(System) @nogc nothrow:
 
@@ -32,7 +32,7 @@ alias PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR = VkBool32 function(VkP
     VK_KHR_win32_surface procedures.
 
     See_Also:
-        $(D nuvk.core.loader.loadProcs)
+        $(D vulkan.nuvk.loader.loadProcs)
 */
 struct VK_KHR_win32_surface {
     

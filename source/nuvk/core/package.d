@@ -9,6 +9,6 @@
 */
 module nuvk.core;
 
-public import nuvk.core.eh;
 public import nuvk.core.utils;
-public import nuvk.core.loader;
+public import vulkan.nuvk.eh;
+public import vulkan.nuvk.loader;

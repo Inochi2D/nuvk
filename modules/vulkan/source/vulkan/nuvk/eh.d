@@ -9,7 +9,7 @@
     Authors:
         Luna Nielsen
 */
-module nuvk.core.eh;
+module vulkan.nuvk.eh;
 import vulkan.core;
 import numem;
 import nulib;
@@ -58,8 +58,17 @@ public:
     }
 }
 
-package(nuvk)
-nstring makeErrorMessage(Args...)(string formatString, Args args) {
+/**
+    Helper which creates a new nstring error message.
+
+    Params:
+        formatString =  The format string
+        args =          The args
+    
+    Returns:
+        The constructed error message.
+*/
+nstring nuvkMakeErrorMessage(Args...)(string formatString, Args args) {
     import nulib.c.stdio : snprintf;
     size_t toAllocate = formatString.length;
     static foreach(arg; args) {
