@@ -13,6 +13,7 @@ module nuvk.physicaldevice;
 import nuvk.device;
 import nuvk.core;
 import vulkan.khr_surface;
+import vulkan.khr_swapchain;
 import vulkan.core;
 import numem;
 import nulib;
@@ -259,8 +260,10 @@ public:
         VK_KHR_surface surfaceProcs;
         instance.loadProcs(surfaceProcs);
 
-        if (surface)
+        if (surface) {
             queueTypes |= VK_QUEUE_GRAPHICS_BIT;
+            extensions ~= VK_KHR_SWAPCHAIN_EXTENSION_NAME;
+        }
 
         vector!VkDeviceQueueCreateInfo queuesToCreate;
         auto reqFeatures = requiredFeatures.copy();
@@ -293,7 +296,6 @@ public:
                 }
             }
             hasRequiredQueues = queuesToCreate.length > 0;
-            nu_freea(queues);
 
             // Surface
             if (surface) {
@@ -307,6 +309,7 @@ public:
                     }
                 }
             }
+            nu_freea(queues);
 
             if (isSurfaceSupported && hasRequiredQueues && hasRequiredFeatures) {
                 optionalFeatures.maskChain(optFeatures);
@@ -376,7 +379,8 @@ public:
         nu_free(cast(void*)features);
         nu_freea(queuesToCreate);
         foreach(i; 0..enabledExtensions.length)
-            nu_free(cast(void*)enabledExtensions[i]);
+            if (enabledExtensions[i])
+                nu_free(cast(void*)enabledExtensions[i]);
         nu_freea(enabledExtensions);
         return device;
     }

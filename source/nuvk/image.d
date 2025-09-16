@@ -94,6 +94,18 @@ public:
         super(device, ptr);
     }
 
+    /**
+        Creates an image view from the image.
+
+        Params:
+            createInfo = Creation information.
+
+        Returns:
+            A new image view.
+    */
+    NuvkImageView createView(VkImageViewCreateInfo createInfo) {
+        return nogc_new!NuvkImageView(device, this, createInfo);
+    }
 }
 
 /**

@@ -312,6 +312,22 @@ public:
     }
 
     /**
+        Adds multiple extensions to the instance
+
+        Params:
+            values = The extensions to add.
+        
+        Returns:
+            This instance builder instance.
+    */
+    ref InstanceBuilder addExtensions(const(char)*[] values) {
+        foreach(value; values) {
+            this.extensions ~= nstring(value).take().ptr;
+        }
+        return this;
+    }
+
+    /**
         Builds an Instance from the builder.
     */
     NuvkInstance build() {

@@ -40,7 +40,7 @@ private:
         foreach(i, VkDeviceQueueCreateInfo queue; createInfo.pQueueCreateInfos[0..createInfo.queueCreateInfoCount]) {
             foreach(j; 0..queue.queueCount) {
                 vkGetDeviceQueue(handle_, queue.queueFamilyIndex, j, &pQueue);
-                queues_ ~= nogc_new!NuvkQueue(pQueue);
+                queues_ ~= nogc_new!NuvkQueue(this, pQueue, queue.queueFamilyIndex, j);
             }
         }
     }
@@ -50,27 +50,27 @@ public:
     /**
         The internal VkDevice handle for this device.
     */
-    @property VkDevice handle() => handle_;
+    @property VkDevice handle() nothrow => handle_;
 
     /**
         The internal VkDevice handle for this device.
     */
-    @property NuvkPhysicalDevice physicalDevice() => physicalDevice_;
+    @property NuvkPhysicalDevice physicalDevice() nothrow => physicalDevice_;
 
     /**
         The name of the device.
     */
-    @property string name() => cast(string)physicalDeviceProps_.properties.deviceName.ptr.fromStringz();
+    @property string name() nothrow => cast(string)physicalDeviceProps_.properties.deviceName.ptr.fromStringz();
 
     /**
         The memory properties of the device.
     */
-    @property VkPhysicalDeviceMemoryProperties2 memoryProperties() => memoryProps_;
+    @property VkPhysicalDeviceMemoryProperties2 memoryProperties() nothrow => memoryProps_;
 
     /**
         The queues associated with this device.
     */
-    @property NuvkQueue[] queues() => queues_[];
+    @property NuvkQueue[] queues() nothrow => queues_[];
 
     /// Destructor
     ~this() {
