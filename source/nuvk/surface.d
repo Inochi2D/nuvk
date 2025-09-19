@@ -13,6 +13,7 @@ import nuvk.physicaldevice;
 import nuvk.device;
 import nuvk.image;
 import nuvk.queue;
+import nuvk.sync;
 import vulkan.core;
 import vulkan.khr_surface;
 import vulkan.khr_swapchain;
@@ -25,19 +26,13 @@ import nulib;
     A Vulkan Surface
 */
 final
-class NuvkSurface : NuRefCounted {
+class NuvkSurface : VulkanObject!(VkSurfaceKHR, VK_OBJECT_TYPE_SURFACE_KHR) {
 private:
 @nogc:
     VK_KHR_surface surfaceFuncs_;
     NuvkInstance instance_;
-    VkSurfaceKHR handle_;
 
 public:
-
-    /**
-        The handle of this surface.
-    */
-    @property VkSurfaceKHR handle() => handle_;
 
     /**
         Constructs a new surface
@@ -52,7 +47,7 @@ public:
 
     /// Destructor
     ~this() {
-        surfaceFuncs_.vkDestroySurfaceKHR(instance_.handle, handle_, null);
+        surfaceFuncs_.vkDestroySurfaceKHR(instance_.handle, handle, null);
     }
 
     /**
@@ -63,9 +58,9 @@ public:
             surface =       The surface handle.
     */
     this(NuvkInstance instance, VkSurfaceKHR surface) {
-        this.handle_ = surface;
         this.instance_ = instance;
-        instance_.handle.loadProcs!VK_KHR_surface(surfaceFuncs_);
+        this.instance_.loadProcs!VK_KHR_surface(surfaceFuncs_);
+        super(surface);   
     }
 
     /**
@@ -84,7 +79,7 @@ public:
             return false;
         
         VkBool32 supported;
-        VkResult result = surfaceFuncs_.vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, queueFamily, handle_, &supported);
+        VkResult result = surfaceFuncs_.vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice.handle, queueFamily, handle, &supported);
         return result >= 0 && supported;
     }
 
@@ -99,7 +94,7 @@ public:
     */
     VkSurfaceCapabilitiesKHR getCapabilitiesFor(NuvkPhysicalDevice physicalDevice) {
         VkSurfaceCapabilitiesKHR caps_;
-        surfaceFuncs_.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, handle_, &caps_);
+        surfaceFuncs_.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice.handle, handle, &caps_);
         return caps_;
     }
 
@@ -115,10 +110,10 @@ public:
     VkSurfaceFormatKHR[] getSurfaceFormatsFor(NuvkPhysicalDevice physicalDevice) {
         VkSurfaceFormatKHR[] formats_;
         uint pCount;
-        surfaceFuncs_.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, handle_, &pCount, null);
+        surfaceFuncs_.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice.handle, handle, &pCount, null);
         
         formats_ = nu_malloca!VkSurfaceFormatKHR(pCount);
-        surfaceFuncs_.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, handle_, &pCount, formats_.ptr);
+        surfaceFuncs_.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice.handle, handle, &pCount, formats_.ptr);
         return formats_;
     }
 
@@ -134,10 +129,10 @@ public:
     VkPresentModeKHR[] getPresentModesFor(NuvkPhysicalDevice physicalDevice) {
         VkPresentModeKHR[] modes_;
         uint pCount;
-        surfaceFuncs_.vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, handle_, &pCount, null);
+        surfaceFuncs_.vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice.handle, handle, &pCount, null);
         
         modes_ = nu_malloca!VkPresentModeKHR(pCount);
-        surfaceFuncs_.vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, handle_, &pCount, modes_.ptr);
+        surfaceFuncs_.vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice.handle, handle, &pCount, modes_.ptr);
         return modes_;
     }
 
@@ -157,70 +152,83 @@ public:
     A swapchain created from a surface.
 */
 final
-class NuvkSwapchain : NuRefCounted {
+class NuvkSwapchain : NuvkDeviceObject!(VkSwapchainKHR, VK_OBJECT_TYPE_SWAPCHAIN_KHR) {
 private:
 @nogc:
     VkSwapchainCreateInfoKHR createInfo_;
     NuvkSurface surface_;
-    NuvkDevice device_;
     VK_KHR_swapchain swapFuncs_;
-
-    VkSwapchainKHR handle_;
 
     int lastImageIdx;
     vector!NuvkImage images;
     vector!NuvkImageView views;
+    weak_vector!VkSemaphore tmpSemaphores_;
 
     void getImages() {
-        views.clear();
-        images.clear();
+        if (!handle)
+            return;
+
+        this.clearOldImages();
 
         uint pCount;
         VkImage[] images_;
-        swapFuncs_.vkGetSwapchainImagesKHR(device_.handle, handle_, &pCount, null);
+        swapFuncs_.vkGetSwapchainImagesKHR(device.handle, handle, &pCount, null);
 
         images_ = nu_malloca!VkImage(pCount);
-        swapFuncs_.vkGetSwapchainImagesKHR(device_.handle, handle_, &pCount, images_.ptr);
+        swapFuncs_.vkGetSwapchainImagesKHR(device.handle, handle, &pCount, images_.ptr);
+
+        auto imageInfo = VkImageCreateInfo(
+            imageType: VK_IMAGE_TYPE_2D,
+            format: createInfo_.imageFormat,
+            extent: VkExtent3D(createInfo_.imageExtent.width, createInfo_.imageExtent.height, 1),
+            mipLevels: 1,
+            arrayLayers: createInfo_.imageArrayLayers,
+            usage: createInfo_.imageUsage,
+            sharingMode: createInfo_.imageSharingMode,
+            initialLayout: VK_IMAGE_LAYOUT_UNDEFINED
+        );
+
+        auto viewInfo = VkImageViewCreateInfo(
+            viewType: VK_IMAGE_VIEW_TYPE_2D,
+            format: createInfo_.imageFormat,
+            components: VkComponentMapping(VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A),
+            subresourceRange: VkImageSubresourceRange(VK_IMAGE_ASPECT_COLOR_BIT, 0, VK_REMAINING_MIP_LEVELS, 0, VK_REMAINING_ARRAY_LAYERS),
+        );
 
         foreach(image; images_) {
-            images ~= nogc_new!NuvkImage(device_, image);
-            views ~= images[$-1].createView(VkImageViewCreateInfo(
-                viewType: VK_IMAGE_VIEW_TYPE_2D,
-                format: createInfo_.imageFormat,
-                components: VkComponentMapping(VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A),
-                subresourceRange: VkImageSubresourceRange(VK_IMAGE_ASPECT_COLOR_BIT, 1, 1, 1, 1)
-            ));
+            images ~= nogc_new!NuvkImage(device, image, imageInfo);
+            views ~= images[$-1].createView(viewInfo);
         }
     }
 
     void createSwapchain() {
-        if (handle_) {
+        VkSwapchainKHR handle_ = handle;
+        if (handle_)
             createInfo_.oldSwapchain = handle_;
-        }
 
-        swapFuncs_.vkCreateSwapchainKHR(device_.handle, &createInfo_, null, &handle_);
+        vkEnforce(swapFuncs_.vkCreateSwapchainKHR(device.handle, &createInfo_, null, &handle_));
+        this.handle = handle_;
         this.getImages();
     }
-public:
 
-    /**
-        The handle of this swapchain.
-    */
-    @property VkSwapchainKHR handle() => handle_;
+    void clearOldImages() {
+        images.clear();
+
+        foreach(view; views)
+            view.release();
+        views.clear();
+    }
+public:
 
     /**
         The surface that this swapchain belongs to.
     */
     @property NuvkSurface surface() => surface_;
 
-    /**
-        The device that this swapchain belongs to.
-    */
-    @property NuvkDevice device() => device_;
-
     /// Destructor
     ~this() {
-        swapFuncs_.vkDestroySwapchainKHR(device_.handle, handle_, null);
+        this.clearOldImages();
+        swapFuncs_.vkDestroySwapchainKHR(device.handle, handle, null);
     }
 
     /**
@@ -232,12 +240,13 @@ public:
             createInfo =    Swapchain creation info.
     */
     this(NuvkDevice device, NuvkSurface surface, VkSwapchainCreateInfoKHR createInfo) {
-        this.createInfo_ = createInfo;
-        this.surface_ = surface;
-        this.device_ = device;
-        device_.handle.loadProcs!VK_KHR_swapchain(swapFuncs_);
+        super(device, null);
 
+        this.surface_ = surface;
+        this.createInfo_ = createInfo;
         this.createInfo_.surface = surface.handle;
+        device.loadProcs!VK_KHR_swapchain(swapFuncs_);
+
         this.createSwapchain();
     }
 
@@ -266,9 +275,16 @@ public:
             An image view describing the image acquired,
             or $(D null) on failure.
     */
-    NuvkImageView acquireNext(ulong timeout, VkSemaphore semaphore, VkFence fence) {
+    NuvkImageView acquireNext(ulong timeout, NuvkSemaphore semaphore, NuvkFence fence) {
         uint pIdx;
-        VkResult result = swapFuncs_.vkAcquireNextImageKHR(device_.handle, handle_, timeout, semaphore, fence, &pIdx);
+        VkResult result = swapFuncs_.vkAcquireNextImageKHR(
+            device.handle, 
+            handle, 
+            timeout, 
+            semaphore ? semaphore.handle : null, 
+            fence ? fence.handle : null, 
+            &pIdx
+        );
 
         // Success
         if (result >= 0) {
@@ -301,7 +317,7 @@ public:
             An image view describing the image acquired,
             or $(D null) on failure.
     */
-    NuvkImageView acquireNext(ulong timeout, VkFence fence) {
+    NuvkImageView acquireNext(ulong timeout, NuvkFence fence) {
         return this.acquireNext(timeout, null, fence);
     }    
 
@@ -320,7 +336,7 @@ public:
             An image view describing the image acquired,
             or $(D null) on failure.
     */
-    NuvkImageView acquireNext(ulong timeout, VkSemaphore semaphore) {
+    NuvkImageView acquireNext(ulong timeout, NuvkSemaphore semaphore) {
         return this.acquireNext(timeout, semaphore, null);
     }
 
@@ -335,14 +351,22 @@ public:
             A positive VkResult on success, a negative
             VkResult otherwise.
     */
-    VkResult presentOn(NuvkQueue queue, VkSemaphore[] waitSemaphores = null) {
+    VkResult presentOn(NuvkQueue queue, NuvkSemaphore[] waitSemaphores = null) {
+        VkSwapchainKHR handle_ = handle;
+        if (!handle_)
+            return VK_ERROR_OUT_OF_DATE_KHR;
+
         if (lastImageIdx < 0)
             return VK_ERROR_OUT_OF_DATE_KHR;
+
+        tmpSemaphores_.clear();
+        foreach(semaphore; waitSemaphores)
+            tmpSemaphores_ ~= semaphore.handle;
 
         VkResult result;
         auto presentInfo = VkPresentInfoKHR(
             waitSemaphoreCount: cast(uint)waitSemaphores.length,
-            pWaitSemaphores: waitSemaphores.ptr,
+            pWaitSemaphores: tmpSemaphores_.ptr,
             swapchainCount: 1,
             pSwapchains: &handle_,
             pResults: &result,

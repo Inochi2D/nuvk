@@ -52,10 +52,10 @@ struct VkSwapchainCreateInfoKHR {
     VkSharingMode imageSharingMode;
     uint queueFamilyIndexCount;
     const(uint)* pQueueFamilyIndices;
-    VkSurfaceTransformFlagsKHR preTransform;
-    VkCompositeAlphaFlagsKHR compositeAlpha;
-    VkPresentModeKHR presentMode;
-    VkBool32 clipped;
+    VkSurfaceTransformFlagsKHR preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+    VkCompositeAlphaFlagsKHR compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    VkPresentModeKHR presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+    VkBool32 clipped = false;
     VkSwapchainKHR oldSwapchain;
 }
 

@@ -196,14 +196,35 @@ public:
         Adds a struct to the chain.
     */
     void add(T)(T struct_) if (isVkChain!T) {
+        this.add(VkChainedStruct(
+            size: T.sizeof,
+            ptr: cast(VkBaseOutStructure*)&struct_,
+        ));
+    }
+
+    /**
+        Adds a chained struct to this struct.
+    */
+    void add(VkChainedStruct other) {
+        if (!other.ptr)
+            return;
+
+        // Replace
+        if (auto p = this.find(other.ptr.sType)) {
+            nu_memmove(p.ptr, other.ptr, other.size);
+            this.readjust();
+            return;
+        }
+
+        // Add
         size_t offset = data_.length;
-        data_ = data_.nu_resize(data_.length+T.sizeof);
+        data_ = data_.nu_resize(data_.length+other.size);
 
         chain_ = chain_.nu_resize(chain_.length+1);
-        chain_[$-1].size = T.sizeof;
+        chain_[$-1].size = other.size;
         chain_[$-1].ptr = cast(VkBaseOutStructure*)(data_.ptr+offset);
-
-        *(cast(T*)chain_[$-1].ptr) = struct_;
+        nu_memmove(data_.ptr+offset, other.ptr, other.size);
+        this.readjust();
     }
 
     /**
@@ -217,19 +238,12 @@ public:
             A new struct chain containing elements from both.
     */
     VkStructChain combined(ref VkStructChain other) {
-        VkStructChain new_;
-
-        // Copy over offsets; adjust the end by
-        // the data length.
-        new_.chain_ = nu_malloca!VkChainedStruct(chain_.length+other.chain_.length);
-        new_.chain_[0..chain_.length] = chain_[0..$];
-        new_.chain_[chain_.length..$] = other.chain_[0..$];
-        
-        // Then copy over the data, then readjust.
-        new_.data_ = nu_malloca!ubyte(data_.length + other.data_.length);
-        new_.data_[0..data_.length] = data_[0..$];
-        new_.data_[data_.length..$] = other.data_[0..$];
+        VkStructChain new_ = this.copy();
         new_.readjust();
+        foreach(struct_; other.chain) {
+            new_.add(struct_);
+        }
+
         return new_;
     }
 
@@ -247,7 +261,7 @@ public:
         chain_[0].ptr = cast(VkBaseOutStructure*)data_.ptr;
         chain_[0].ptr.pNext = cast(VkBaseOutStructure*)(data_.ptr+chain_[0].size);
         foreach(i; 1..chainCount) {
-            void* base = (cast(void*)chain_[i-1].ptr)+chain_[i].size;
+            void* base = (cast(void*)chain_[i-1].ptr)+chain_[i-1].size;
 
             chain_[i].ptr = cast(VkBaseOutStructure*)base;
             chain_[i].ptr.pNext = cast(VkBaseOutStructure*)(base+chain_[i].size);
@@ -261,7 +275,10 @@ public:
         Makes a copy of the struct chain.
     */
     VkStructChain copy() {
-        return VkStructChain(data_.nu_dup());
+        return VkStructChain(
+            data_.nu_dup(), 
+            chain_.nu_dup()
+        );
     }
 
     /**

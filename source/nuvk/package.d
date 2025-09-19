@@ -16,3 +16,4 @@ public import nuvk.buffer;
 public import nuvk.image;
 public import nuvk.queue;
 public import nuvk.surface;
+public import nuvk.sync;

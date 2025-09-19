@@ -10,6 +10,7 @@
         Luna Nielsen
 */
 module nuvk.physicaldevice;
+import nuvk.instance;
 import nuvk.device;
 import nuvk.core;
 import vulkan.khr_surface;
@@ -17,51 +18,73 @@ import vulkan.khr_swapchain;
 import vulkan.core;
 import numem;
 import nulib;
-import nuvk.instance;
 
 /**
-    A wrapped VkPhysicalDevice.
+    A physical device.
 */
-struct NuvkPhysicalDevice {
-public:
+class NuvkPhysicalDevice : VulkanObject!(VkPhysicalDevice, VK_OBJECT_TYPE_PHYSICAL_DEVICE) {
+private:
 @nogc:
-    VkPhysicalDevice ptr;
-    alias ptr this;
+    VkPhysicalDeviceFeatures2 features_;
+    VkPhysicalDeviceProperties2 deviceProps_;
+    VkPhysicalDeviceMemoryProperties2 memoryProps_;
+    VkQueueFamilyProperties2[] familyProps_;
+
+public:
 
     /**
-        Constructs a PhysicalDevice.
-
-        Params:
-            ptr = The pointer to the physical device.
+        The base family properties of the physical device.
     */
-    this(VkPhysicalDevice ptr) {
-        this.ptr = ptr;
+    final @property VkQueueFamilyProperties2[] queueFamilies() => familyProps_;
+
+    /**
+        The amount of queue families this device has.
+    */
+    final @property uint queueFamilyCount() {
+        uint pCount;
+        vkGetPhysicalDeviceQueueFamilyProperties2(handle, &pCount, null);
+        return pCount;
+    }
+
+    // Destructor
+    ~this() {
+        nu_freea(familyProps_);
+    }
+
+    /**
+        Constructs a new Physical Device.
+    */
+    this(VkPhysicalDevice handle) {
+        super(handle);
+
+        this.familyProps_ = nu_malloca!VkQueueFamilyProperties2(queueFamilyCount);
+        cast(void)this.getDeviceQueueFamilyProperties(familyProps_);
     }
 
     /**
         Gets the features of the device.
-
-        Returns:
-            VkPhysicalDeviceFeatures2 enumerating features
-            of the device.
+        
+        Params:
+            in_ = The input structure chain to fill.
     */
-    VkPhysicalDeviceFeatures2 getFeatures() {
-        VkPhysicalDeviceFeatures2 result_;
-        vkGetPhysicalDeviceFeatures2(ptr, &result_);
-        return result_;
+    void getFeatures(VkPhysicalDeviceFeatures2* in_) {
+        if (!in_)
+            return;
+
+        vkGetPhysicalDeviceFeatures2(handle, in_);
     }
 
     /**
         Gets the properties of the device.
-
-        Returns:
-            VkPhysicalDeviceProperties2 enumerating properties
-            of the device.
+        
+        Params:
+            in_ = The input structure chain to fill.
     */
-    VkPhysicalDeviceProperties2 getProperties() {
-        VkPhysicalDeviceProperties2 result_;
-        vkGetPhysicalDeviceProperties2(ptr, &result_);
-        return result_;
+    void getProperties(VkPhysicalDeviceProperties2* in_) {
+        if (!in_)
+            return;
+        
+        vkGetPhysicalDeviceProperties2(handle, in_);
     }
 
     /**
@@ -69,45 +92,52 @@ public:
 
         Params:
             format = The format to get properties about.
+            in_ = The input structure chain to fill.
         
         Returns:
             A VkFormatProperties describing the properties
             of the format.
     */
-    VkFormatProperties getFormatProperties(VkFormat format) {
-        VkFormatProperties props;
-        vkGetPhysicalDeviceFormatProperties(ptr, format, &props);
-        return props;
+    void getFormatProperties(VkFormat format, VkFormatProperties2* in_) {
+        if (!in_)
+            return;
+        
+        vkGetPhysicalDeviceFormatProperties2(handle, format, in_);
     }
 
     /**
         Gets the memory properties of the physical device.
         
+        Params:
+            in_ = The input structure chain to fill.
+
         Returns:
             A VkPhysicalDeviceMemoryProperties2 describing the 
             memory properties of the physical device.
     */
-    VkPhysicalDeviceMemoryProperties2 getMemoryProperties() {
-        VkPhysicalDeviceMemoryProperties2 props;
-        vkGetPhysicalDeviceMemoryProperties2(ptr, &props);
-        return props;
+    void getMemoryProperties(VkPhysicalDeviceMemoryProperties2* in_) {
+        if (!in_)
+            return;
+        
+        vkGetPhysicalDeviceMemoryProperties2(handle, in_);
     }
 
     /**
-        Gets the list of queue family properties for the physical
-        device.
+        Gets the base queue family properties.
+        
+        Params:
+            in_ = The input structure chains to fill.
         
         Returns:
-            A slice of VkQueueFamilyProperties2 describing the
-            different queues supported by the physical device.
+            The amount of queue families which were written.
     */
-    VkQueueFamilyProperties2[] getDeviceQueueFamilyProperties() {
-        uint pCount;
-        vkGetPhysicalDeviceQueueFamilyProperties2(ptr, &pCount, null);
+    uint getDeviceQueueFamilyProperties(ref VkQueueFamilyProperties2[] in_) {
+        import nulib.math : min;
 
-        VkQueueFamilyProperties2[] props = nu_malloca!VkQueueFamilyProperties2(pCount);
-        vkGetPhysicalDeviceQueueFamilyProperties2(ptr, &pCount, props.ptr);
-        return props;
+        uint pCount = cast(uint)min(in_.length, queueFamilyCount);
+        if (pCount > 0)
+            vkGetPhysicalDeviceQueueFamilyProperties2(handle, &pCount, in_.ptr);
+        return pCount;
     }
 
     /**
@@ -121,7 +151,7 @@ public:
     */
     NuvkDevice createDevice(VkDeviceCreateInfo createInfo) {
         VkDevice result_;
-        vkEnforce(vkCreateDevice(ptr, &createInfo, null, &result_));
+        vkEnforce(vkCreateDevice(handle, &createInfo, null, &result_));
         return nogc_new!NuvkDevice(result_, this, createInfo);
     }
 }
@@ -136,7 +166,7 @@ private:
     uint minimumVersion;
     VkStructChain requiredFeatures;
     VkStructChain optionalFeatures;
-    vector!(const(char)*) extensions;
+    weak_vector!(const(char)*) extensions;
     VkFlags queueTypes;
     VkSurfaceKHR surface;
 
@@ -146,7 +176,10 @@ public:
     ~this() {
         requiredFeatures.clear();
         optionalFeatures.clear();
-        nogc_delete(extensions);
+        foreach(str; extensions) {
+            nu_free(cast(void*)str);
+        }
+        extensions.clear();
     }
 
     /**
@@ -254,7 +287,6 @@ public:
     */
     PhysicalDeviceSelection select() {
         PhysicalDeviceSelection result;
-        auto physicalDevices = instance.getPhysicalDevices();
 
         // Just to ensure we can get them no matter what.
         VK_KHR_surface surfaceProcs;
@@ -262,36 +294,39 @@ public:
 
         if (surface) {
             queueTypes |= VK_QUEUE_GRAPHICS_BIT;
-            extensions ~= VK_KHR_SWAPCHAIN_EXTENSION_NAME;
+            extensions ~= nstring(VK_KHR_SWAPCHAIN_EXTENSION_NAME).take().ptr;
         }
 
         vector!VkDeviceQueueCreateInfo queuesToCreate;
         auto reqFeatures = requiredFeatures.copy();
         auto optFeatures = optionalFeatures.copy();
-        outer: foreach(physicalDevice; physicalDevices) {
+        outer: foreach(physicalDevice; instance.devices) {
             bool isSurfaceSupported = surface ? false : true;
             bool hasRequiredQueues = false;
             bool hasRequiredFeatures = false;
 
             // Skip devices which doesn't support the requested version.
-            VkPhysicalDeviceProperties2 props = physicalDevice.getProperties();
+            VkPhysicalDeviceProperties2 props;
+            physicalDevice.getProperties(&props);
             if (props.properties.apiVersion < minimumVersion)
                 continue;
                 
 
-            vkGetPhysicalDeviceFeatures2(physicalDevice, cast(VkPhysicalDeviceFeatures2*)reqFeatures.front);
-            vkGetPhysicalDeviceFeatures2(physicalDevice, cast(VkPhysicalDeviceFeatures2*)optFeatures.front);
+            physicalDevice.getFeatures(cast(VkPhysicalDeviceFeatures2*)reqFeatures.front);
+            physicalDevice.getFeatures(cast(VkPhysicalDeviceFeatures2*)optFeatures.front);
             
             hasRequiredFeatures = requiredFeatures.isFeaturesCompatible(reqFeatures);
 
             // Queues
             queuesToCreate.clear();
-            VkQueueFamilyProperties2[] queues = physicalDevice.getDeviceQueueFamilyProperties();
-            foreach(i, queue; queues) {
+            foreach(i, queue; physicalDevice.queueFamilies) {
                 if ((queue.queueFamilyProperties.queueFlags & queueTypes) > 0) {
+
+                    float priority = 1;
                     queuesToCreate ~= VkDeviceQueueCreateInfo(
                         queueFamilyIndex: cast(uint)i,
-                        queueCount: 1
+                        queueCount: 1,
+                        pQueuePriorities: &priority
                     );
                 }
             }
@@ -299,9 +334,9 @@ public:
 
             // Surface
             if (surface) {
-                foreach(qi; 0..queues.length) {
+                foreach(qi; 0..physicalDevice.queueFamilies.length) {
                     uint supported;
-                    surfaceProcs.vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, cast(uint)qi, surface, &supported);
+                    surfaceProcs.vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice.handle, cast(uint)qi, surface, &supported);
 
                     if (supported) {
                         isSurfaceSupported = true;
@@ -309,7 +344,6 @@ public:
                     }
                 }
             }
-            nu_freea(queues);
 
             if (isSurfaceSupported && hasRequiredQueues && hasRequiredFeatures) {
                 optionalFeatures.maskChain(optFeatures);
@@ -325,7 +359,6 @@ public:
 
         reqFeatures.clear();
         optFeatures.clear();
-        nu_freea(physicalDevices);
         return result;
     }
 }
@@ -378,9 +411,9 @@ public:
         // Free all the temporary data.
         nu_free(cast(void*)features);
         nu_freea(queuesToCreate);
+
         foreach(i; 0..enabledExtensions.length)
-            if (enabledExtensions[i])
-                nu_free(cast(void*)enabledExtensions[i]);
+            nu_free(cast(void*)enabledExtensions[i]);
         nu_freea(enabledExtensions);
         return device;
     }

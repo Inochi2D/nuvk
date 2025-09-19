@@ -19,18 +19,18 @@ import nulib;
 import nuvk.queue;
 import nuvk.buffer;
 import nuvk.image;
+import nuvk.sync;
 
 /**
     A vulkan device.
 */
 final
-class NuvkDevice : NuRefCounted {
+class NuvkDevice : VulkanObject!(VkDevice, VK_OBJECT_TYPE_DEVICE) {
 private:
 @nogc:
     VkPhysicalDeviceMemoryProperties2 memoryProps_;
     VkPhysicalDeviceProperties2 physicalDeviceProps_;
     NuvkPhysicalDevice physicalDevice_;
-    VkDevice handle_;
     vector!NuvkQueue queues_;
 
     // Helper that creates all of the allocated queues.
@@ -39,21 +39,16 @@ private:
 
         foreach(i, VkDeviceQueueCreateInfo queue; createInfo.pQueueCreateInfos[0..createInfo.queueCreateInfoCount]) {
             foreach(j; 0..queue.queueCount) {
-                vkGetDeviceQueue(handle_, queue.queueFamilyIndex, j, &pQueue);
+                vkGetDeviceQueue(handle, queue.queueFamilyIndex, j, &pQueue);
                 queues_ ~= nogc_new!NuvkQueue(this, pQueue, queue.queueFamilyIndex, j);
             }
         }
     }
+
 public:
-    alias handle this;
 
     /**
-        The internal VkDevice handle for this device.
-    */
-    @property VkDevice handle() nothrow => handle_;
-
-    /**
-        The internal VkDevice handle for this device.
+        The physical device associated with this device.
     */
     @property NuvkPhysicalDevice physicalDevice() nothrow => physicalDevice_;
 
@@ -74,23 +69,26 @@ public:
 
     /// Destructor
     ~this() {
+        cast(void)this.physicalDevice_.release();
         queues_.clear();
-        vkDestroyDevice(handle_, null);
+
+        vkDestroyDevice(handle, null);
     }
 
     /**
         Constructs a Device.
 
         Params:
-            ptr =               The pointer to the Device.
+            handle =            The Vulkan handle of the Device.
             physicalDevice =    The physical device associated with the device.
             createInfo =        The information the device was created with.
     */
-    this(VkDevice ptr, NuvkPhysicalDevice physicalDevice, VkDeviceCreateInfo createInfo) {
-        this.handle_ = ptr;
-        this.physicalDevice_ = physicalDevice;
-        this.physicalDeviceProps_ = physicalDevice.getProperties();
-        this.memoryProps_ = physicalDevice.getMemoryProperties();
+    this(VkDevice handle, NuvkPhysicalDevice physicalDevice, VkDeviceCreateInfo createInfo) {
+        super(handle);
+
+        this.physicalDevice_ = physicalDevice.retained();
+        this.physicalDevice_.getProperties(&physicalDeviceProps_);
+        this.physicalDevice_.getMemoryProperties(&memoryProps_);
         this.createQueues(createInfo);
     }
 
@@ -124,13 +122,49 @@ public:
     }
 
     /**
+        Creates a new fence.
+
+        Params:
+            flags  = Creation flags for the fence.
+
+        Returns:
+            The new fence.
+    */
+    NuvkFence createFence(VkFenceCreateFlags flags) {
+        return nogc_new!NuvkFence(this, flags);
+    }
+
+    /**
+        Creates a new semaphore.
+
+        Returns:
+            The new semaphore.
+    */
+    NuvkSemaphore createSemaphore() {
+        return nogc_new!NuvkSemaphore(this);
+    }
+
+    /**
+        Creates a new semaphore.
+
+        Params:
+            initialValue = Initial value of the timeline semaphore.
+
+        Returns:
+            The new semaphore.
+    */
+    NuvkTimelineSemaphore createTimelineSemaphore(uint initialValue) {
+        return nogc_new!NuvkTimelineSemaphore(this, initialValue);
+    }
+
+    /**
         Waits for the device to be idle.
 
         Returns:
             A $(D VkResult).
     */
     VkResult waitIdle() {
-        return vkDeviceWaitIdle(handle_);
+        return vkDeviceWaitIdle(handle);
     }
 
     /**
@@ -152,25 +186,30 @@ public:
         }
         return -1;
     }
+
+    /**
+        Loads procedures for the device.
+
+        Params:
+            procs = The structure to store the procedures pointers in.
+    */
+    void loadProcs(T)(ref T procs) {
+        handle.loadProcs!T(procs);
+    }
 }
 
 /**
     An object belonging to a device.
 */
 abstract
-class NuvkDeviceObject(T) : NuRefCounted {
+class NuvkDeviceObject(T, VkObjectType objectType) : VulkanObject!(T, objectType) {
 private:
 @nogc:
     NuvkDevice device_;
-    T handle_;
 
 public:
-    alias handle this;
 
-    /**
-        The native vulkan handle of the object.
-    */
-    @property T handle() => handle_;
+    ~this() { }
 
     /**
         The device which created this object.
@@ -180,8 +219,8 @@ public:
     /**
         A device object.
     */
-    this(NuvkDevice device, T ptr) {
+    this(NuvkDevice device, T handle) {
         this.device_ = device;
-        this.handle_ = ptr;
+        super(handle);
     }
 }

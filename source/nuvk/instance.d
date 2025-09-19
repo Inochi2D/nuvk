@@ -19,22 +19,37 @@ import nulib;
 /**
     A vulkan instance
 */
-class NuvkInstance : NuRefCounted {
+class NuvkInstance : VulkanObject!(VkInstance, VK_OBJECT_TYPE_INSTANCE) {
 private:
 @nogc:
-    VkInstance handle_;
+    VkPhysicalDevice[] deviceHandles_;
+    NuvkPhysicalDevice[] devices_;
+
+    void enumerateDevices() {
+        uint pCount;
+        vkEnumeratePhysicalDevices(handle, &pCount, null);
+
+        this.deviceHandles_ = nu_malloca!VkPhysicalDevice(pCount);
+        vkEnumeratePhysicalDevices(handle, &pCount, deviceHandles_.ptr);
+
+        this.devices_ = nu_malloca!NuvkPhysicalDevice(pCount);
+        foreach(i; 0..deviceHandles_.length) {
+            this.devices_[i] = nogc_new!NuvkPhysicalDevice(deviceHandles_[i]);
+        }
+    }
 
 public:
-    alias handle this;
 
     /**
-        Gets the handle of this instance.
+        The physical devices of the instance.
     */
-    final @property VkInstance handle() => handle_;
+    final @property NuvkPhysicalDevice[] devices() => devices_;
 
     /// Destructor
     ~this() {
-        vkDestroyInstance(handle_, null);
+        nu_freea(deviceHandles_);
+        nu_freea(devices_);
+        vkDestroyInstance(handle, null);
     }
 
     /**
@@ -44,22 +59,18 @@ public:
             ptr = The pointer to the instance.
     */
     this(VkInstance ptr) {
-        this.handle_ = ptr;
+        super(ptr);
+        this.enumerateDevices();
     }
 
     /**
-        Gets all of the physical devices for the given vulkan instance.
-        
-        Returns:
-            A slice of all of the instance's devices.
-    */
-    NuvkPhysicalDevice[] getPhysicalDevices() {
-        uint pCount;
-        vkEnumeratePhysicalDevices(handle_, &pCount, null);
+        Loads procedures for the instance.
 
-        NuvkPhysicalDevice[] devices = nu_malloca!NuvkPhysicalDevice(pCount);
-        vkEnumeratePhysicalDevices(handle_, &pCount, cast(VkPhysicalDevice*)devices.ptr);
-        return devices;
+        Params:
+            procs = The structure to store the procedures pointers in.
+    */
+    void loadProcs(T)(ref T procs) {
+        handle.loadProcs!T(procs);
     }
 }
 

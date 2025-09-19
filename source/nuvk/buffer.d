@@ -17,7 +17,7 @@ import numem;
     A Vulkan Buffer
 */
 final
-class NuvkBuffer : NuvkDeviceObject!VkBuffer {
+class NuvkBuffer : NuvkDeviceObject!(VkBuffer, VK_OBJECT_TYPE_BUFFER) {
 private:
 @nogc:
     VkDeviceMemory memory_;
@@ -111,7 +111,7 @@ public:
     A Vulkan buffer view.
 */
 final
-class NuvkBufferView : NuvkDeviceObject!VkBufferView {
+class NuvkBufferView : NuvkDeviceObject!(VkBufferView, VK_OBJECT_TYPE_BUFFER_VIEW) {
 private:
 @nogc:
     NuvkBuffer buffer_;

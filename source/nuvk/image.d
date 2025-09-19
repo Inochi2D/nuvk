@@ -17,7 +17,7 @@ import numem;
     A Vulkan Image
 */
 final
-class NuvkImage : NuvkDeviceObject!VkImage {
+class NuvkImage : NuvkDeviceObject!(VkImage, VK_OBJECT_TYPE_IMAGE) {
 private:
 @nogc:
     VkDeviceMemory memory_;
@@ -37,6 +37,16 @@ public:
     @property ulong alignment() => memRequirements_.alignment;
 
     /**
+        The type of the image.
+    */
+    final @property VkImageType imageType() => createInfo_.imageType;
+
+    /**
+        The format of the image.
+    */
+    final @property VkFormat format() => createInfo_.format;
+
+    /**
         Width of the image in pixels.
     */
     @property uint width() => createInfo_.extent.width;
@@ -50,6 +60,21 @@ public:
         Depth of the image in pixels.
     */
     @property uint depth() => createInfo_.extent.depth;
+
+    /**
+        Mipmapping levels of the image.
+    */
+    @property uint levels() => createInfo_.mipLevels;
+
+    /**
+        Array layers of the image.
+    */
+    @property uint layers() => createInfo_.arrayLayers;
+
+    /**
+        Sharing mode of the image.
+    */
+    @property VkSharingMode sharingMode() => createInfo_.sharingMode;
 
     /// Destructor
     ~this() {
@@ -88,8 +113,10 @@ public:
         Params:
             device      = The device which owns the image view
             ptr         = The pre-existing vulkan handle to use.
+            imageInfo   = Information about the image.
     */
-    this(NuvkDevice device, VkImage ptr) {
+    this(NuvkDevice device, VkImage ptr, VkImageCreateInfo imageInfo) {
+        this.createInfo_ = imageInfo;
         vkGetImageMemoryRequirements(device.handle, ptr, &memRequirements_);
         super(device, ptr);
     }
@@ -112,7 +139,7 @@ public:
     A Vulkan Image View
 */
 final
-class NuvkImageView : NuvkDeviceObject!VkImageView {
+class NuvkImageView : NuvkDeviceObject!(VkImageView, VK_OBJECT_TYPE_IMAGE_VIEW) {
 private:
 @nogc:
     NuvkImage image_;
@@ -123,7 +150,47 @@ public:
     /**
         The image this is a view of.
     */
-    @property NuvkImage image() => image_;
+    final @property NuvkImage image() => image_;
+
+    /**
+        The type of the image.
+    */
+    final @property VkImageType imageType() => image_.imageType;
+
+    /**
+        The format of the view.
+    */
+    final @property VkFormat format() => createInfo_.format;
+
+    /**
+        Width of the image in pixels.
+    */
+    @property uint width() => image_.width;
+
+    /**
+        Height of the image in pixels.
+    */
+    @property uint height() => image_.height;
+
+    /**
+        Depth of the image in pixels.
+    */
+    @property uint depth() => image_.depth;
+
+    /**
+        Mipmapping levels of the image.
+    */
+    @property uint levels() => image_.levels;
+
+    /**
+        Array layers of the image.
+    */
+    @property uint layers() => image_.layers;
+
+    /**
+        Sharing mode of the image.
+    */
+    @property VkSharingMode sharingMode() => image_.sharingMode;
 
     /// Destructor
     ~this() {
