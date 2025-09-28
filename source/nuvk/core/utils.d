@@ -10,6 +10,7 @@
         Luna Nielsen
 */
 module nuvk.core.utils;
+import nuvk.core.chain;
 import vulkan.eh;
 import vulkan;
 import numem;

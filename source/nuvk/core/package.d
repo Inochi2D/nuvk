@@ -11,5 +11,6 @@ module nuvk.core;
 
 public import nuvk.core.object;
 public import nuvk.core.utils;
-public import vulkan.eh;
+public import nuvk.core.chain;
 public import vulkan.loader;
+public import vulkan.eh;
