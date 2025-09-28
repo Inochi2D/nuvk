@@ -10,7 +10,7 @@
 */
 module vulkan.vk_video.codec_h264std;
 import vulkan.vk_video.common;
-import vulkan.khr_video_queue;
+import vulkan.khr.video_queue;
 import vulkan.core;
 
 extern (System) @nogc nothrow:

@@ -8,6 +8,7 @@
 */
 module vulkan.core;
 import numem.core.types : OpaqueHandle;
+import vulkan.loader;
 
 extern (System) @nogc nothrow:
 
@@ -5471,87 +5472,121 @@ struct VkPhysicalDeviceShaderDrawParametersFeatures {
 alias VkPhysicalDeviceShaderDrawParameterFeatures = VkPhysicalDeviceShaderDrawParametersFeatures;
 
 alias PFN_vkEnumerateInstanceVersion = VkResult function(uint* pApiVersion);
-alias PFN_vkBindBufferMemory2 = VkResult function(VkDevice device, uint bindInfoCount, const(
-        VkBindBufferMemoryInfo)* pBindInfos);
-alias PFN_vkBindImageMemory2 = VkResult function(VkDevice device, uint bindInfoCount, const(
-        VkBindImageMemoryInfo)* pBindInfos);
+alias PFN_vkBindBufferMemory2 = VkResult function(VkDevice device, uint bindInfoCount, const(VkBindBufferMemoryInfo)* pBindInfos);
+alias PFN_vkBindImageMemory2 = VkResult function(VkDevice device, uint bindInfoCount, const(VkBindImageMemoryInfo)* pBindInfos);
 alias PFN_vkGetDeviceGroupPeerMemoryFeatures = void function(VkDevice device, uint heapIndex, uint localDeviceIndex, uint remoteDeviceIndex, VkPeerMemoryFeatureFlags* pPeerMemoryFeatures);
 alias PFN_vkCmdSetDeviceMask = void function(VkCommandBuffer commandBuffer, uint deviceMask);
 alias PFN_vkCmdDispatchBase = void function(VkCommandBuffer commandBuffer, uint baseGroupX, uint baseGroupY, uint baseGroupZ, uint groupCountX, uint groupCountY, uint groupCountZ);
 alias PFN_vkEnumeratePhysicalDeviceGroups = VkResult function(VkInstance instance, uint* pPhysicalDeviceGroupCount, VkPhysicalDeviceGroupProperties* pPhysicalDeviceGroupProperties);
-alias PFN_vkGetImageMemoryRequirements2 = void function(VkDevice device, const(
-        VkImageMemoryRequirementsInfo2)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
-alias PFN_vkGetBufferMemoryRequirements2 = void function(VkDevice device, const(
-        VkBufferMemoryRequirementsInfo2)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
+alias PFN_vkGetImageMemoryRequirements2 = void function(VkDevice device, const(VkImageMemoryRequirementsInfo2)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
+alias PFN_vkGetBufferMemoryRequirements2 = void function(VkDevice device, const(VkBufferMemoryRequirementsInfo2)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
 alias PFN_vkGetImageSparseMemoryRequirements2 = void function(VkDevice device, const(VkImageSparseMemoryRequirementsInfo2)* pInfo, uint* pSparseMemoryRequirementCount, VkSparseImageMemoryRequirements2* pSparseMemoryRequirements);
-alias PFN_vkGetPhysicalDeviceFeatures2 = void function(
-    VkPhysicalDevice physicalDevice, VkPhysicalDeviceFeatures2* pFeatures);
-alias PFN_vkGetPhysicalDeviceProperties2 = void function(
-    VkPhysicalDevice physicalDevice, VkPhysicalDeviceProperties2* pProperties);
-alias PFN_vkGetPhysicalDeviceFormatProperties2 = void function(
-    VkPhysicalDevice physicalDevice, VkFormat format, VkFormatProperties2* pFormatProperties);
-alias PFN_vkGetPhysicalDeviceImageFormatProperties2 = VkResult function(VkPhysicalDevice physicalDevice, const(
-        VkPhysicalDeviceImageFormatInfo2)* pImageFormatInfo, VkImageFormatProperties2* pImageFormatProperties);
+alias PFN_vkGetPhysicalDeviceFeatures2 = void function(VkPhysicalDevice physicalDevice, VkPhysicalDeviceFeatures2* pFeatures);
+alias PFN_vkGetPhysicalDeviceProperties2 = void function(VkPhysicalDevice physicalDevice, VkPhysicalDeviceProperties2* pProperties);
+alias PFN_vkGetPhysicalDeviceFormatProperties2 = void function(VkPhysicalDevice physicalDevice, VkFormat format, VkFormatProperties2* pFormatProperties);
+alias PFN_vkGetPhysicalDeviceImageFormatProperties2 = VkResult function(VkPhysicalDevice physicalDevice, const(VkPhysicalDeviceImageFormatInfo2)* pImageFormatInfo, VkImageFormatProperties2* pImageFormatProperties);
 alias PFN_vkGetPhysicalDeviceQueueFamilyProperties2 = void function(VkPhysicalDevice physicalDevice, uint* pQueueFamilyPropertyCount, VkQueueFamilyProperties2* pQueueFamilyProperties);
-alias PFN_vkGetPhysicalDeviceMemoryProperties2 = void function(
-    VkPhysicalDevice physicalDevice, VkPhysicalDeviceMemoryProperties2* pMemoryProperties);
+alias PFN_vkGetPhysicalDeviceMemoryProperties2 = void function(VkPhysicalDevice physicalDevice, VkPhysicalDeviceMemoryProperties2* pMemoryProperties);
 alias PFN_vkGetPhysicalDeviceSparseImageFormatProperties2 = void function(VkPhysicalDevice physicalDevice, const(VkPhysicalDeviceSparseImageFormatInfo2)* pFormatInfo, uint* pPropertyCount, VkSparseImageFormatProperties2* pProperties);
 alias PFN_vkTrimCommandPool = void function(VkDevice device, VkCommandPool commandPool, VkCommandPoolTrimFlags flags);
 alias PFN_vkGetDeviceQueue2 = void function(VkDevice device, const(VkDeviceQueueInfo2)* pQueueInfo, VkQueue* pQueue);
-alias PFN_vkCreateSamplerYcbcrConversion = VkResult function(VkDevice device, const(VkSamplerYcbcrConversionCreateInfo)* pCreateInfo, const(
-        VkAllocationCallbacks)* pAllocator, VkSamplerYcbcrConversion* pYcbcrConversion);
-alias PFN_vkDestroySamplerYcbcrConversion = void function(VkDevice device, VkSamplerYcbcrConversion ycbcrConversion, const(
-        VkAllocationCallbacks)* pAllocator);
-alias PFN_vkCreateDescriptorUpdateTemplate = VkResult function(VkDevice device, const(VkDescriptorUpdateTemplateCreateInfo)* pCreateInfo, const(
-        VkAllocationCallbacks)* pAllocator, VkDescriptorUpdateTemplate* pDescriptorUpdateTemplate);
-alias PFN_vkDestroyDescriptorUpdateTemplate = void function(VkDevice device, VkDescriptorUpdateTemplate descriptorUpdateTemplate, const(
-        VkAllocationCallbacks)* pAllocator);
-alias PFN_vkUpdateDescriptorSetWithTemplate = void function(VkDevice device, VkDescriptorSet descriptorSet, VkDescriptorUpdateTemplate descriptorUpdateTemplate, const(
-        void)* pData);
+alias PFN_vkCreateSamplerYcbcrConversion = VkResult function(VkDevice device, const(VkSamplerYcbcrConversionCreateInfo)* pCreateInfo, const(VkAllocationCallbacks)* pAllocator, VkSamplerYcbcrConversion* pYcbcrConversion);
+alias PFN_vkDestroySamplerYcbcrConversion = void function(VkDevice device, VkSamplerYcbcrConversion ycbcrConversion, const(VkAllocationCallbacks)* pAllocator);
+alias PFN_vkCreateDescriptorUpdateTemplate = VkResult function(VkDevice device, const(VkDescriptorUpdateTemplateCreateInfo)* pCreateInfo, const(VkAllocationCallbacks)* pAllocator, VkDescriptorUpdateTemplate* pDescriptorUpdateTemplate);
+alias PFN_vkDestroyDescriptorUpdateTemplate = void function(VkDevice device, VkDescriptorUpdateTemplate descriptorUpdateTemplate, const(VkAllocationCallbacks)* pAllocator);
+alias PFN_vkUpdateDescriptorSetWithTemplate = void function(VkDevice device, VkDescriptorSet descriptorSet, VkDescriptorUpdateTemplate descriptorUpdateTemplate, const(void)* pData);
 alias PFN_vkGetPhysicalDeviceExternalBufferProperties = void function(VkPhysicalDevice physicalDevice, const(VkPhysicalDeviceExternalBufferInfo)* pExternalBufferInfo, VkExternalBufferProperties* pExternalBufferProperties);
-alias PFN_vkGetPhysicalDeviceExternalFenceProperties = void function(VkPhysicalDevice physicalDevice, const(
-        VkPhysicalDeviceExternalFenceInfo)* pExternalFenceInfo, VkExternalFenceProperties* pExternalFenceProperties);
+alias PFN_vkGetPhysicalDeviceExternalFenceProperties = void function(VkPhysicalDevice physicalDevice, const(VkPhysicalDeviceExternalFenceInfo)* pExternalFenceInfo, VkExternalFenceProperties* pExternalFenceProperties);
 alias PFN_vkGetPhysicalDeviceExternalSemaphoreProperties = void function(VkPhysicalDevice physicalDevice, const(VkPhysicalDeviceExternalSemaphoreInfo)* pExternalSemaphoreInfo, VkExternalSemaphoreProperties* pExternalSemaphoreProperties);
-alias PFN_vkGetDescriptorSetLayoutSupport = void function(VkDevice device, const(
-        VkDescriptorSetLayoutCreateInfo)* pCreateInfo, VkDescriptorSetLayoutSupport* pSupport);
+alias PFN_vkGetDescriptorSetLayoutSupport = void function(VkDevice device, const(VkDescriptorSetLayoutCreateInfo)* pCreateInfo, VkDescriptorSetLayoutSupport* pSupport);
 
-extern VkResult vkEnumerateInstanceVersion(uint* pApiVersion);
-extern VkResult vkBindBufferMemory2(VkDevice device, uint bindInfoCount, const(
-        VkBindBufferMemoryInfo)* pBindInfos);
-extern VkResult vkBindImageMemory2(VkDevice device, uint bindInfoCount, const(VkBindImageMemoryInfo)* pBindInfos);
-extern void vkGetDeviceGroupPeerMemoryFeatures(VkDevice device, uint heapIndex, uint localDeviceIndex, uint remoteDeviceIndex, VkPeerMemoryFeatureFlags* pPeerMemoryFeatures);
-extern void vkCmdSetDeviceMask(VkCommandBuffer commandBuffer, uint deviceMask);
-extern void vkCmdDispatchBase(VkCommandBuffer commandBuffer, uint baseGroupX, uint baseGroupY, uint baseGroupZ, uint groupCountX, uint groupCountY, uint groupCountZ);
-extern VkResult vkEnumeratePhysicalDeviceGroups(VkInstance instance, uint* pPhysicalDeviceGroupCount, VkPhysicalDeviceGroupProperties* pPhysicalDeviceGroupProperties);
-extern void vkGetImageMemoryRequirements2(VkDevice device, const(VkImageMemoryRequirementsInfo2)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
-extern void vkGetBufferMemoryRequirements2(VkDevice device, const(VkBufferMemoryRequirementsInfo2)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
-extern void vkGetImageSparseMemoryRequirements2(VkDevice device, const(VkImageSparseMemoryRequirementsInfo2)* pInfo, uint* pSparseMemoryRequirementCount, VkSparseImageMemoryRequirements2* pSparseMemoryRequirements);
-extern void vkGetPhysicalDeviceFeatures2(VkPhysicalDevice physicalDevice, VkPhysicalDeviceFeatures2* pFeatures);
-extern void vkGetPhysicalDeviceProperties2(VkPhysicalDevice physicalDevice, VkPhysicalDeviceProperties2* pProperties);
-extern void vkGetPhysicalDeviceFormatProperties2(VkPhysicalDevice physicalDevice, VkFormat format, VkFormatProperties2* pFormatProperties);
-extern VkResult vkGetPhysicalDeviceImageFormatProperties2(VkPhysicalDevice physicalDevice, const(
-        VkPhysicalDeviceImageFormatInfo2)* pImageFormatInfo, VkImageFormatProperties2* pImageFormatProperties);
-extern void vkGetPhysicalDeviceQueueFamilyProperties2(VkPhysicalDevice physicalDevice, uint* pQueueFamilyPropertyCount, VkQueueFamilyProperties2* pQueueFamilyProperties);
-extern void vkGetPhysicalDeviceMemoryProperties2(VkPhysicalDevice physicalDevice, VkPhysicalDeviceMemoryProperties2* pMemoryProperties);
-extern void vkGetPhysicalDeviceSparseImageFormatProperties2(VkPhysicalDevice physicalDevice, const(VkPhysicalDeviceSparseImageFormatInfo2)* pFormatInfo, uint* pPropertyCount, VkSparseImageFormatProperties2* pProperties);
-extern void vkTrimCommandPool(VkDevice device, VkCommandPool commandPool, VkCommandPoolTrimFlags flags);
-extern void vkGetDeviceQueue2(VkDevice device, const(VkDeviceQueueInfo2)* pQueueInfo, VkQueue* pQueue);
-extern VkResult vkCreateSamplerYcbcrConversion(VkDevice device, const(VkSamplerYcbcrConversionCreateInfo)* pCreateInfo, const(
-        VkAllocationCallbacks)* pAllocator, VkSamplerYcbcrConversion* pYcbcrConversion);
-extern void vkDestroySamplerYcbcrConversion(VkDevice device, VkSamplerYcbcrConversion ycbcrConversion, const(
-        VkAllocationCallbacks)* pAllocator);
-extern VkResult vkCreateDescriptorUpdateTemplate(VkDevice device, const(VkDescriptorUpdateTemplateCreateInfo)* pCreateInfo, const(
-        VkAllocationCallbacks)* pAllocator, VkDescriptorUpdateTemplate* pDescriptorUpdateTemplate);
-extern void vkDestroyDescriptorUpdateTemplate(VkDevice device, VkDescriptorUpdateTemplate descriptorUpdateTemplate, const(
-        VkAllocationCallbacks)* pAllocator);
-extern void vkUpdateDescriptorSetWithTemplate(VkDevice device, VkDescriptorSet descriptorSet, VkDescriptorUpdateTemplate descriptorUpdateTemplate, const(
-        void)* pData);
-extern void vkGetPhysicalDeviceExternalBufferProperties(VkPhysicalDevice physicalDevice, const(VkPhysicalDeviceExternalBufferInfo)* pExternalBufferInfo, VkExternalBufferProperties* pExternalBufferProperties);
-extern void vkGetPhysicalDeviceExternalFenceProperties(VkPhysicalDevice physicalDevice, const(
-        VkPhysicalDeviceExternalFenceInfo)* pExternalFenceInfo, VkExternalFenceProperties* pExternalFenceProperties);
-extern void vkGetPhysicalDeviceExternalSemaphoreProperties(VkPhysicalDevice physicalDevice, const(VkPhysicalDeviceExternalSemaphoreInfo)* pExternalSemaphoreInfo, VkExternalSemaphoreProperties* pExternalSemaphoreProperties);
-extern void vkGetDescriptorSetLayoutSupport(VkDevice device, const(VkDescriptorSetLayoutCreateInfo)* pCreateInfo, VkDescriptorSetLayoutSupport* pSupport);
 
+/**
+    Procedures from Vulkanb 1.2
+
+    See_Also:
+        $(D vulkan.nuvk.loader.loadProcs)
+*/
+struct Vulkan11 {
+    
+    @VkProcName("vkCmdDrawIndirectCount")
+    PFN_vkCmdDrawIndirectCount vkCmdDrawIndirectCount;
+    
+    @VkProcName("vkCmdDrawIndexedIndirectCount")
+    PFN_vkCmdDrawIndexedIndirectCount vkCmdDrawIndexedIndirectCount;
+    
+    @VkProcName("vkCreateRenderPass2")
+    PFN_vkCreateRenderPass2 vkCreateRenderPass2;
+    
+    @VkProcName("vkCmdBeginRenderPass2")
+    PFN_vkCmdBeginRenderPass2 vkCmdBeginRenderPass2;
+    
+    @VkProcName("vkCmdNextSubpass2")
+    PFN_vkCmdNextSubpass2 vkCmdNextSubpass2;
+    
+    @VkProcName("vkCmdEndRenderPass2")
+    PFN_vkCmdEndRenderPass2 vkCmdEndRenderPass2;
+    
+    @VkProcName("vkResetQueryPool")
+    PFN_vkResetQueryPool vkResetQueryPool;
+    
+    @VkProcName("vkGetSemaphoreCounterValue")
+    PFN_vkGetSemaphoreCounterValue vkGetSemaphoreCounterValue;
+    
+    @VkProcName("vkWaitSemaphores")
+    PFN_vkWaitSemaphores vkWaitSemaphores;
+    
+    @VkProcName("vkSignalSemaphore")
+    PFN_vkSignalSemaphore vkSignalSemaphore;
+    
+    @VkProcName("vkGetBufferDeviceAddress")
+    PFN_vkGetBufferDeviceAddress vkGetBufferDeviceAddress;
+    
+    @VkProcName("vkGetBufferOpaqueCaptureAddress")
+    PFN_vkGetBufferOpaqueCaptureAddress vkGetBufferOpaqueCaptureAddress;
+    
+    @VkProcName("vkGetDeviceMemoryOpaqueCaptureAddress")
+    PFN_vkGetDeviceMemoryOpaqueCaptureAddress vkGetDeviceMemoryOpaqueCaptureAddress;
+}
+
+version (VK_NO_PROTOTYPES) { } else version(VULKAN_1_1) {
+    extern VkResult vkEnumerateInstanceVersion(uint* pApiVersion);
+    extern VkResult vkBindBufferMemory2(VkDevice device, uint bindInfoCount, const(
+            VkBindBufferMemoryInfo)* pBindInfos);
+    extern VkResult vkBindImageMemory2(VkDevice device, uint bindInfoCount, const(VkBindImageMemoryInfo)* pBindInfos);
+    extern void vkGetDeviceGroupPeerMemoryFeatures(VkDevice device, uint heapIndex, uint localDeviceIndex, uint remoteDeviceIndex, VkPeerMemoryFeatureFlags* pPeerMemoryFeatures);
+    extern void vkCmdSetDeviceMask(VkCommandBuffer commandBuffer, uint deviceMask);
+    extern void vkCmdDispatchBase(VkCommandBuffer commandBuffer, uint baseGroupX, uint baseGroupY, uint baseGroupZ, uint groupCountX, uint groupCountY, uint groupCountZ);
+    extern VkResult vkEnumeratePhysicalDeviceGroups(VkInstance instance, uint* pPhysicalDeviceGroupCount, VkPhysicalDeviceGroupProperties* pPhysicalDeviceGroupProperties);
+    extern void vkGetImageMemoryRequirements2(VkDevice device, const(VkImageMemoryRequirementsInfo2)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
+    extern void vkGetBufferMemoryRequirements2(VkDevice device, const(VkBufferMemoryRequirementsInfo2)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
+    extern void vkGetImageSparseMemoryRequirements2(VkDevice device, const(VkImageSparseMemoryRequirementsInfo2)* pInfo, uint* pSparseMemoryRequirementCount, VkSparseImageMemoryRequirements2* pSparseMemoryRequirements);
+    extern void vkGetPhysicalDeviceFeatures2(VkPhysicalDevice physicalDevice, VkPhysicalDeviceFeatures2* pFeatures);
+    extern void vkGetPhysicalDeviceProperties2(VkPhysicalDevice physicalDevice, VkPhysicalDeviceProperties2* pProperties);
+    extern void vkGetPhysicalDeviceFormatProperties2(VkPhysicalDevice physicalDevice, VkFormat format, VkFormatProperties2* pFormatProperties);
+    extern VkResult vkGetPhysicalDeviceImageFormatProperties2(VkPhysicalDevice physicalDevice, const(
+            VkPhysicalDeviceImageFormatInfo2)* pImageFormatInfo, VkImageFormatProperties2* pImageFormatProperties);
+    extern void vkGetPhysicalDeviceQueueFamilyProperties2(VkPhysicalDevice physicalDevice, uint* pQueueFamilyPropertyCount, VkQueueFamilyProperties2* pQueueFamilyProperties);
+    extern void vkGetPhysicalDeviceMemoryProperties2(VkPhysicalDevice physicalDevice, VkPhysicalDeviceMemoryProperties2* pMemoryProperties);
+    extern void vkGetPhysicalDeviceSparseImageFormatProperties2(VkPhysicalDevice physicalDevice, const(VkPhysicalDeviceSparseImageFormatInfo2)* pFormatInfo, uint* pPropertyCount, VkSparseImageFormatProperties2* pProperties);
+    extern void vkTrimCommandPool(VkDevice device, VkCommandPool commandPool, VkCommandPoolTrimFlags flags);
+    extern void vkGetDeviceQueue2(VkDevice device, const(VkDeviceQueueInfo2)* pQueueInfo, VkQueue* pQueue);
+    extern VkResult vkCreateSamplerYcbcrConversion(VkDevice device, const(VkSamplerYcbcrConversionCreateInfo)* pCreateInfo, const(
+            VkAllocationCallbacks)* pAllocator, VkSamplerYcbcrConversion* pYcbcrConversion);
+    extern void vkDestroySamplerYcbcrConversion(VkDevice device, VkSamplerYcbcrConversion ycbcrConversion, const(
+            VkAllocationCallbacks)* pAllocator);
+    extern VkResult vkCreateDescriptorUpdateTemplate(VkDevice device, const(VkDescriptorUpdateTemplateCreateInfo)* pCreateInfo, const(
+            VkAllocationCallbacks)* pAllocator, VkDescriptorUpdateTemplate* pDescriptorUpdateTemplate);
+    extern void vkDestroyDescriptorUpdateTemplate(VkDevice device, VkDescriptorUpdateTemplate descriptorUpdateTemplate, const(
+            VkAllocationCallbacks)* pAllocator);
+    extern void vkUpdateDescriptorSetWithTemplate(VkDevice device, VkDescriptorSet descriptorSet, VkDescriptorUpdateTemplate descriptorUpdateTemplate, const(
+            void)* pData);
+    extern void vkGetPhysicalDeviceExternalBufferProperties(VkPhysicalDevice physicalDevice, const(VkPhysicalDeviceExternalBufferInfo)* pExternalBufferInfo, VkExternalBufferProperties* pExternalBufferProperties);
+    extern void vkGetPhysicalDeviceExternalFenceProperties(VkPhysicalDevice physicalDevice, const(
+            VkPhysicalDeviceExternalFenceInfo)* pExternalFenceInfo, VkExternalFenceProperties* pExternalFenceProperties);
+    extern void vkGetPhysicalDeviceExternalSemaphoreProperties(VkPhysicalDevice physicalDevice, const(VkPhysicalDeviceExternalSemaphoreInfo)* pExternalSemaphoreInfo, VkExternalSemaphoreProperties* pExternalSemaphoreProperties);
+    extern void vkGetDescriptorSetLayoutSupport(VkDevice device, const(VkDescriptorSetLayoutCreateInfo)* pCreateInfo, VkDescriptorSetLayoutSupport* pSupport);
+}
 /**
     Vulkan 1.2
 */
@@ -6216,43 +6251,86 @@ struct VkDeviceMemoryOpaqueCaptureAddressInfo {
 }
 
 alias PFN_vkCmdDrawIndirectCount = void function(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, VkBuffer countBuffer, VkDeviceSize countBufferOffset, uint maxDrawCount, uint stride);
-alias PFN_vkCmdDrawIndexedIndirectCount = void function(
-    VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, VkBuffer countBuffer, VkDeviceSize countBufferOffset, uint maxDrawCount, uint stride);
-alias PFN_vkCreateRenderPass2 = VkResult function(VkDevice device, const(VkRenderPassCreateInfo2)* pCreateInfo, const(
-        VkAllocationCallbacks)* pAllocator, VkRenderPass* pRenderPass);
-alias PFN_vkCmdBeginRenderPass2 = void function(VkCommandBuffer commandBuffer, const(
-        VkRenderPassBeginInfo)* pRenderPassBegin, const(VkSubpassBeginInfo)* pSubpassBeginInfo);
-alias PFN_vkCmdNextSubpass2 = void function(VkCommandBuffer commandBuffer, const(VkSubpassBeginInfo)* pSubpassBeginInfo, const(
-        VkSubpassEndInfo)* pSubpassEndInfo);
+alias PFN_vkCmdDrawIndexedIndirectCount = void function(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, VkBuffer countBuffer, VkDeviceSize countBufferOffset, uint maxDrawCount, uint stride);
+alias PFN_vkCreateRenderPass2 = VkResult function(VkDevice device, const(VkRenderPassCreateInfo2)* pCreateInfo, const(VkAllocationCallbacks)* pAllocator, VkRenderPass* pRenderPass);
+alias PFN_vkCmdBeginRenderPass2 = void function(VkCommandBuffer commandBuffer, const(VkRenderPassBeginInfo)* pRenderPassBegin, const(VkSubpassBeginInfo)* pSubpassBeginInfo);
+alias PFN_vkCmdNextSubpass2 = void function(VkCommandBuffer commandBuffer, const(VkSubpassBeginInfo)* pSubpassBeginInfo, const(VkSubpassEndInfo)* pSubpassEndInfo);
 alias PFN_vkCmdEndRenderPass2 = void function(VkCommandBuffer commandBuffer, const(VkSubpassEndInfo)* pSubpassEndInfo);
 alias PFN_vkResetQueryPool = void function(VkDevice device, VkQueryPool queryPool, uint firstQuery, uint queryCount);
 alias PFN_vkGetSemaphoreCounterValue = VkResult function(VkDevice device, VkSemaphore semaphore, ulong* pValue);
 alias PFN_vkWaitSemaphores = VkResult function(VkDevice device, const(VkSemaphoreWaitInfo)* pWaitInfo, ulong timeout);
 alias PFN_vkSignalSemaphore = VkResult function(VkDevice device, const(VkSemaphoreSignalInfo)* pSignalInfo);
-alias PFN_vkGetBufferDeviceAddress = VkDeviceAddress function(VkDevice device, const(
-        VkBufferDeviceAddressInfo)* pInfo);
-alias PFN_vkGetBufferOpaqueCaptureAddress = ulong function(VkDevice device, const(
-        VkBufferDeviceAddressInfo)* pInfo);
-alias PFN_vkGetDeviceMemoryOpaqueCaptureAddress = ulong function(VkDevice device, const(
-        VkDeviceMemoryOpaqueCaptureAddressInfo)* pInfo);
+alias PFN_vkGetBufferDeviceAddress = VkDeviceAddress function(VkDevice device, const(VkBufferDeviceAddressInfo)* pInfo);
+alias PFN_vkGetBufferOpaqueCaptureAddress = ulong function(VkDevice device, const(VkBufferDeviceAddressInfo)* pInfo);
+alias PFN_vkGetDeviceMemoryOpaqueCaptureAddress = ulong function(VkDevice device, const(VkDeviceMemoryOpaqueCaptureAddressInfo)* pInfo);
 
-extern void vkCmdDrawIndirectCount(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, VkBuffer countBuffer, VkDeviceSize countBufferOffset, uint maxDrawCount, uint stride);
-extern void vkCmdDrawIndexedIndirectCount(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, VkBuffer countBuffer, VkDeviceSize countBufferOffset, uint maxDrawCount, uint stride);
-extern VkResult vkCreateRenderPass2(VkDevice device, const(VkRenderPassCreateInfo2)* pCreateInfo, const(
-        VkAllocationCallbacks)* pAllocator, VkRenderPass* pRenderPass);
-extern void vkCmdBeginRenderPass2(VkCommandBuffer commandBuffer, const(VkRenderPassBeginInfo)* pRenderPassBegin, const(
-        VkSubpassBeginInfo)* pSubpassBeginInfo);
-extern void vkCmdNextSubpass2(VkCommandBuffer commandBuffer, const(VkSubpassBeginInfo)* pSubpassBeginInfo, const(
-        VkSubpassEndInfo)* pSubpassEndInfo);
-extern void vkCmdEndRenderPass2(VkCommandBuffer commandBuffer, const(VkSubpassEndInfo)* pSubpassEndInfo);
-extern void vkResetQueryPool(VkDevice device, VkQueryPool queryPool, uint firstQuery, uint queryCount);
-extern VkResult vkGetSemaphoreCounterValue(VkDevice device, VkSemaphore semaphore, ulong* pValue);
-extern VkResult vkWaitSemaphores(VkDevice device, const(VkSemaphoreWaitInfo)* pWaitInfo, ulong timeout);
-extern VkResult vkSignalSemaphore(VkDevice device, const(VkSemaphoreSignalInfo)* pSignalInfo);
-extern VkDeviceAddress vkGetBufferDeviceAddress(VkDevice device, const(VkBufferDeviceAddressInfo)* pInfo);
-extern ulong vkGetBufferOpaqueCaptureAddress(VkDevice device, const(VkBufferDeviceAddressInfo)* pInfo);
-extern ulong vkGetDeviceMemoryOpaqueCaptureAddress(VkDevice device, const(
-        VkDeviceMemoryOpaqueCaptureAddressInfo)* pInfo);
+/**
+    Procedures from Vulkanb 1.2
+
+    See_Also:
+        $(D vulkan.nuvk.loader.loadProcs)
+*/
+struct Vulkan12 {
+    
+    @VkProcName("vkCmdDrawIndirectCount")
+    PFN_vkCmdDrawIndirectCount vkCmdDrawIndirectCount;
+    
+    @VkProcName("vkCmdDrawIndexedIndirectCount")
+    PFN_vkCmdDrawIndexedIndirectCount vkCmdDrawIndexedIndirectCount;
+    
+    @VkProcName("vkCreateRenderPass2")
+    PFN_vkCreateRenderPass2 vkCreateRenderPass2;
+    
+    @VkProcName("vkCmdBeginRenderPass2")
+    PFN_vkCmdBeginRenderPass2 vkCmdBeginRenderPass2;
+    
+    @VkProcName("vkCmdNextSubpass2")
+    PFN_vkCmdNextSubpass2 vkCmdNextSubpass2;
+    
+    @VkProcName("vkCmdEndRenderPass2")
+    PFN_vkCmdEndRenderPass2 vkCmdEndRenderPass2;
+    
+    @VkProcName("vkResetQueryPool")
+    PFN_vkResetQueryPool vkResetQueryPool;
+    
+    @VkProcName("vkGetSemaphoreCounterValue")
+    PFN_vkGetSemaphoreCounterValue vkGetSemaphoreCounterValue;
+    
+    @VkProcName("vkWaitSemaphores")
+    PFN_vkWaitSemaphores vkWaitSemaphores;
+    
+    @VkProcName("vkSignalSemaphore")
+    PFN_vkSignalSemaphore vkSignalSemaphore;
+    
+    @VkProcName("vkGetBufferDeviceAddress")
+    PFN_vkGetBufferDeviceAddress vkGetBufferDeviceAddress;
+    
+    @VkProcName("vkGetBufferOpaqueCaptureAddress")
+    PFN_vkGetBufferOpaqueCaptureAddress vkGetBufferOpaqueCaptureAddress;
+    
+    @VkProcName("vkGetDeviceMemoryOpaqueCaptureAddress")
+    PFN_vkGetDeviceMemoryOpaqueCaptureAddress vkGetDeviceMemoryOpaqueCaptureAddress;
+}
+
+version (VK_NO_PROTOTYPES) { } else version(VULKAN_1_2) {
+    extern void vkCmdDrawIndirectCount(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, VkBuffer countBuffer, VkDeviceSize countBufferOffset, uint maxDrawCount, uint stride);
+    extern void vkCmdDrawIndexedIndirectCount(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, VkBuffer countBuffer, VkDeviceSize countBufferOffset, uint maxDrawCount, uint stride);
+    extern VkResult vkCreateRenderPass2(VkDevice device, const(VkRenderPassCreateInfo2)* pCreateInfo, const(
+            VkAllocationCallbacks)* pAllocator, VkRenderPass* pRenderPass);
+    extern void vkCmdBeginRenderPass2(VkCommandBuffer commandBuffer, const(VkRenderPassBeginInfo)* pRenderPassBegin, const(
+            VkSubpassBeginInfo)* pSubpassBeginInfo);
+    extern void vkCmdNextSubpass2(VkCommandBuffer commandBuffer, const(VkSubpassBeginInfo)* pSubpassBeginInfo, const(
+            VkSubpassEndInfo)* pSubpassEndInfo);
+    extern void vkCmdEndRenderPass2(VkCommandBuffer commandBuffer, const(VkSubpassEndInfo)* pSubpassEndInfo);
+    extern void vkResetQueryPool(VkDevice device, VkQueryPool queryPool, uint firstQuery, uint queryCount);
+    extern VkResult vkGetSemaphoreCounterValue(VkDevice device, VkSemaphore semaphore, ulong* pValue);
+    extern VkResult vkWaitSemaphores(VkDevice device, const(VkSemaphoreWaitInfo)* pWaitInfo, ulong timeout);
+    extern VkResult vkSignalSemaphore(VkDevice device, const(VkSemaphoreSignalInfo)* pSignalInfo);
+    extern VkDeviceAddress vkGetBufferDeviceAddress(VkDevice device, const(VkBufferDeviceAddressInfo)* pInfo);
+    extern ulong vkGetBufferOpaqueCaptureAddress(VkDevice device, const(VkBufferDeviceAddressInfo)* pInfo);
+    extern ulong vkGetDeviceMemoryOpaqueCaptureAddress(VkDevice device, const(
+            VkDeviceMemoryOpaqueCaptureAddressInfo)* pInfo);
+}
 
 /**
     Vulkan 1.3
@@ -7065,106 +7143,211 @@ struct VkDeviceImageMemoryRequirements {
 }
 
 alias PFN_vkGetPhysicalDeviceToolProperties = VkResult function(VkPhysicalDevice physicalDevice, uint* pToolCount, VkPhysicalDeviceToolProperties* pToolProperties);
-alias PFN_vkCreatePrivateDataSlot = VkResult function(VkDevice device, const(VkPrivateDataSlotCreateInfo)* pCreateInfo, const(
-        VkAllocationCallbacks)* pAllocator, VkPrivateDataSlot* pPrivateDataSlot);
-alias PFN_vkDestroyPrivateDataSlot = void function(VkDevice device, VkPrivateDataSlot privateDataSlot, const(
-        VkAllocationCallbacks)* pAllocator);
+alias PFN_vkCreatePrivateDataSlot = VkResult function(VkDevice device, const(VkPrivateDataSlotCreateInfo)* pCreateInfo, const(VkAllocationCallbacks)* pAllocator, VkPrivateDataSlot* pPrivateDataSlot);
+alias PFN_vkDestroyPrivateDataSlot = void function(VkDevice device, VkPrivateDataSlot privateDataSlot, const(VkAllocationCallbacks)* pAllocator);
 alias PFN_vkSetPrivateData = VkResult function(VkDevice device, VkObjectType objectType, ulong objectHandle, VkPrivateDataSlot privateDataSlot, ulong data);
 alias PFN_vkGetPrivateData = void function(VkDevice device, VkObjectType objectType, ulong objectHandle, VkPrivateDataSlot privateDataSlot, ulong* pData);
-alias PFN_vkCmdSetEvent2 = void function(VkCommandBuffer commandBuffer, VkEvent event, const(
-        VkDependencyInfo)* pDependencyInfo);
+alias PFN_vkCmdSetEvent2 = void function(VkCommandBuffer commandBuffer, VkEvent event, const(VkDependencyInfo)* pDependencyInfo);
 alias PFN_vkCmdResetEvent2 = void function(VkCommandBuffer commandBuffer, VkEvent event, VkPipelineStageFlags2 stageMask);
-alias PFN_vkCmdWaitEvents2 = void function(VkCommandBuffer commandBuffer, uint eventCount, const(
-        VkEvent)* pEvents, const(VkDependencyInfo)* pDependencyInfos);
-alias PFN_vkCmdPipelineBarrier2 = void function(VkCommandBuffer commandBuffer, const(
-        VkDependencyInfo)* pDependencyInfo);
+alias PFN_vkCmdWaitEvents2 = void function(VkCommandBuffer commandBuffer, uint eventCount, const(VkEvent)* pEvents, const(VkDependencyInfo)* pDependencyInfos);
+alias PFN_vkCmdPipelineBarrier2 = void function(VkCommandBuffer commandBuffer, const(VkDependencyInfo)* pDependencyInfo);
 alias PFN_vkCmdWriteTimestamp2 = void function(VkCommandBuffer commandBuffer, VkPipelineStageFlags2 stage, VkQueryPool queryPool, uint query);
 alias PFN_vkQueueSubmit2 = VkResult function(VkQueue queue, uint submitCount, const(VkSubmitInfo2)* pSubmits, VkFence fence);
 alias PFN_vkCmdCopyBuffer2 = void function(VkCommandBuffer commandBuffer, const(VkCopyBufferInfo2)* pCopyBufferInfo);
 alias PFN_vkCmdCopyImage2 = void function(VkCommandBuffer commandBuffer, const(VkCopyImageInfo2)* pCopyImageInfo);
-alias PFN_vkCmdCopyBufferToImage2 = void function(VkCommandBuffer commandBuffer, const(
-        VkCopyBufferToImageInfo2)* pCopyBufferToImageInfo);
-alias PFN_vkCmdCopyImageToBuffer2 = void function(VkCommandBuffer commandBuffer, const(
-        VkCopyImageToBufferInfo2)* pCopyImageToBufferInfo);
+alias PFN_vkCmdCopyBufferToImage2 = void function(VkCommandBuffer commandBuffer, const(VkCopyBufferToImageInfo2)* pCopyBufferToImageInfo);
+alias PFN_vkCmdCopyImageToBuffer2 = void function(VkCommandBuffer commandBuffer, const(VkCopyImageToBufferInfo2)* pCopyImageToBufferInfo);
 alias PFN_vkCmdBlitImage2 = void function(VkCommandBuffer commandBuffer, const(VkBlitImageInfo2)* pBlitImageInfo);
-alias PFN_vkCmdResolveImage2 = void function(VkCommandBuffer commandBuffer, const(
-        VkResolveImageInfo2)* pResolveImageInfo);
+alias PFN_vkCmdResolveImage2 = void function(VkCommandBuffer commandBuffer, const(VkResolveImageInfo2)* pResolveImageInfo);
 alias PFN_vkCmdBeginRendering = void function(VkCommandBuffer commandBuffer, const(VkRenderingInfo)* pRenderingInfo);
 alias PFN_vkCmdEndRendering = void function(VkCommandBuffer commandBuffer);
 alias PFN_vkCmdSetCullMode = void function(VkCommandBuffer commandBuffer, VkCullModeFlags cullMode);
 alias PFN_vkCmdSetFrontFace = void function(VkCommandBuffer commandBuffer, VkFrontFace frontFace);
 alias PFN_vkCmdSetPrimitiveTopology = void function(VkCommandBuffer commandBuffer, VkPrimitiveTopology primitiveTopology);
-alias PFN_vkCmdSetViewportWithCount = void function(VkCommandBuffer commandBuffer, uint viewportCount, const(
-        VkViewport)* pViewports);
-alias PFN_vkCmdSetScissorWithCount = void function(VkCommandBuffer commandBuffer, uint scissorCount, const(
-        VkRect2D)* pScissors);
-alias PFN_vkCmdBindVertexBuffers2 = void function(VkCommandBuffer commandBuffer, uint firstBinding, uint bindingCount, const(
-        VkBuffer)* pBuffers, const(VkDeviceSize)* pOffsets, const(VkDeviceSize)* pSizes, const(
-        VkDeviceSize)* pStrides);
+alias PFN_vkCmdSetViewportWithCount = void function(VkCommandBuffer commandBuffer, uint viewportCount, const(VkViewport)* pViewports);
+alias PFN_vkCmdSetScissorWithCount = void function(VkCommandBuffer commandBuffer, uint scissorCount, const(VkRect2D)* pScissors);
+alias PFN_vkCmdBindVertexBuffers2 = void function(VkCommandBuffer commandBuffer, uint firstBinding, uint bindingCount, const(VkBuffer)* pBuffers, const(VkDeviceSize)* pOffsets, const(VkDeviceSize)* pSizes, const(VkDeviceSize)* pStrides);
 alias PFN_vkCmdSetDepthTestEnable = void function(VkCommandBuffer commandBuffer, VkBool32 depthTestEnable);
 alias PFN_vkCmdSetDepthWriteEnable = void function(VkCommandBuffer commandBuffer, VkBool32 depthWriteEnable);
 alias PFN_vkCmdSetDepthCompareOp = void function(VkCommandBuffer commandBuffer, VkCompareOp depthCompareOp);
-alias PFN_vkCmdSetDepthBoundsTestEnable = void function(
-    VkCommandBuffer commandBuffer, VkBool32 depthBoundsTestEnable);
+alias PFN_vkCmdSetDepthBoundsTestEnable = void function(VkCommandBuffer commandBuffer, VkBool32 depthBoundsTestEnable);
 alias PFN_vkCmdSetStencilTestEnable = void function(VkCommandBuffer commandBuffer, VkBool32 stencilTestEnable);
 alias PFN_vkCmdSetStencilOp = void function(VkCommandBuffer commandBuffer, VkStencilFaceFlags faceMask, VkStencilOp failOp, VkStencilOp passOp, VkStencilOp depthFailOp, VkCompareOp compareOp);
-alias PFN_vkCmdSetRasterizerDiscardEnable = void function(
-    VkCommandBuffer commandBuffer, VkBool32 rasterizerDiscardEnable);
+alias PFN_vkCmdSetRasterizerDiscardEnable = void function(VkCommandBuffer commandBuffer, VkBool32 rasterizerDiscardEnable);
 alias PFN_vkCmdSetDepthBiasEnable = void function(VkCommandBuffer commandBuffer, VkBool32 depthBiasEnable);
-alias PFN_vkCmdSetPrimitiveRestartEnable = void function(
-    VkCommandBuffer commandBuffer, VkBool32 primitiveRestartEnable);
-alias PFN_vkGetDeviceBufferMemoryRequirements = void function(VkDevice device, const(
-        VkDeviceBufferMemoryRequirements)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
-alias PFN_vkGetDeviceImageMemoryRequirements = void function(VkDevice device, const(
-        VkDeviceImageMemoryRequirements)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
+alias PFN_vkCmdSetPrimitiveRestartEnable = void function(VkCommandBuffer commandBuffer, VkBool32 primitiveRestartEnable);
+alias PFN_vkGetDeviceBufferMemoryRequirements = void function(VkDevice device, const(VkDeviceBufferMemoryRequirements)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
+alias PFN_vkGetDeviceImageMemoryRequirements = void function(VkDevice device, const(VkDeviceImageMemoryRequirements)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
 alias PFN_vkGetDeviceImageSparseMemoryRequirements = void function(VkDevice device, const(VkDeviceImageMemoryRequirements)* pInfo, uint* pSparseMemoryRequirementCount, VkSparseImageMemoryRequirements2* pSparseMemoryRequirements);
 
-extern VkResult vkGetPhysicalDeviceToolProperties(VkPhysicalDevice physicalDevice, uint* pToolCount, VkPhysicalDeviceToolProperties* pToolProperties);
-extern VkResult vkCreatePrivateDataSlot(VkDevice device, const(VkPrivateDataSlotCreateInfo)* pCreateInfo, const(
-        VkAllocationCallbacks)* pAllocator, VkPrivateDataSlot* pPrivateDataSlot);
-extern void vkDestroyPrivateDataSlot(VkDevice device, VkPrivateDataSlot privateDataSlot, const(
-        VkAllocationCallbacks)* pAllocator);
-extern VkResult vkSetPrivateData(VkDevice device, VkObjectType objectType, ulong objectHandle, VkPrivateDataSlot privateDataSlot, ulong data);
-extern void vkGetPrivateData(VkDevice device, VkObjectType objectType, ulong objectHandle, VkPrivateDataSlot privateDataSlot, ulong* pData);
-extern void vkCmdSetEvent2(VkCommandBuffer commandBuffer, VkEvent event, const(VkDependencyInfo)* pDependencyInfo);
-extern void vkCmdResetEvent2(VkCommandBuffer commandBuffer, VkEvent event, VkPipelineStageFlags2 stageMask);
-extern void vkCmdWaitEvents2(VkCommandBuffer commandBuffer, uint eventCount, const(VkEvent)* pEvents, const(
-        VkDependencyInfo)* pDependencyInfos);
-extern void vkCmdPipelineBarrier2(VkCommandBuffer commandBuffer, const(VkDependencyInfo)* pDependencyInfo);
-extern void vkCmdWriteTimestamp2(VkCommandBuffer commandBuffer, VkPipelineStageFlags2 stage, VkQueryPool queryPool, uint query);
-extern VkResult vkQueueSubmit2(VkQueue queue, uint submitCount, const(VkSubmitInfo2)* pSubmits, VkFence fence);
-extern void vkCmdCopyBuffer2(VkCommandBuffer commandBuffer, const(VkCopyBufferInfo2)* pCopyBufferInfo);
-extern void vkCmdCopyImage2(VkCommandBuffer commandBuffer, const(VkCopyImageInfo2)* pCopyImageInfo);
-extern void vkCmdCopyBufferToImage2(VkCommandBuffer commandBuffer, const(VkCopyBufferToImageInfo2)* pCopyBufferToImageInfo);
-extern void vkCmdCopyImageToBuffer2(VkCommandBuffer commandBuffer, const(VkCopyImageToBufferInfo2)* pCopyImageToBufferInfo);
-extern void vkCmdBlitImage2(VkCommandBuffer commandBuffer, const(VkBlitImageInfo2)* pBlitImageInfo);
-extern void vkCmdResolveImage2(VkCommandBuffer commandBuffer, const(VkResolveImageInfo2)* pResolveImageInfo);
-extern void vkCmdBeginRendering(VkCommandBuffer commandBuffer, const(VkRenderingInfo)* pRenderingInfo);
-extern void vkCmdEndRendering(VkCommandBuffer commandBuffer);
-extern void vkCmdSetCullMode(VkCommandBuffer commandBuffer, VkCullModeFlags cullMode);
-extern void vkCmdSetFrontFace(VkCommandBuffer commandBuffer, VkFrontFace frontFace);
-extern void vkCmdSetPrimitiveTopology(VkCommandBuffer commandBuffer, VkPrimitiveTopology primitiveTopology);
-extern void vkCmdSetViewportWithCount(VkCommandBuffer commandBuffer, uint viewportCount, const(
-        VkViewport)* pViewports);
-extern void vkCmdSetScissorWithCount(VkCommandBuffer commandBuffer, uint scissorCount, const(
-        VkRect2D)* pScissors);
-extern void vkCmdBindVertexBuffers2(VkCommandBuffer commandBuffer, uint firstBinding, uint bindingCount, const(
-        VkBuffer)* pBuffers, const(VkDeviceSize)* pOffsets, const(VkDeviceSize)* pSizes, const(
-        VkDeviceSize)* pStrides);
-extern void vkCmdSetDepthTestEnable(VkCommandBuffer commandBuffer, VkBool32 depthTestEnable);
-extern void vkCmdSetDepthWriteEnable(VkCommandBuffer commandBuffer, VkBool32 depthWriteEnable);
-extern void vkCmdSetDepthCompareOp(VkCommandBuffer commandBuffer, VkCompareOp depthCompareOp);
-extern void vkCmdSetDepthBoundsTestEnable(VkCommandBuffer commandBuffer, VkBool32 depthBoundsTestEnable);
-extern void vkCmdSetStencilTestEnable(VkCommandBuffer commandBuffer, VkBool32 stencilTestEnable);
-extern void vkCmdSetStencilOp(VkCommandBuffer commandBuffer, VkStencilFaceFlags faceMask, VkStencilOp failOp, VkStencilOp passOp, VkStencilOp depthFailOp, VkCompareOp compareOp);
-extern void vkCmdSetRasterizerDiscardEnable(VkCommandBuffer commandBuffer, VkBool32 rasterizerDiscardEnable);
-extern void vkCmdSetDepthBiasEnable(VkCommandBuffer commandBuffer, VkBool32 depthBiasEnable);
-extern void vkCmdSetPrimitiveRestartEnable(VkCommandBuffer commandBuffer, VkBool32 primitiveRestartEnable);
-extern void vkGetDeviceBufferMemoryRequirements(VkDevice device, const(
-        VkDeviceBufferMemoryRequirements)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
-extern void vkGetDeviceImageMemoryRequirements(VkDevice device, const(
-        VkDeviceImageMemoryRequirements)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
-extern void vkGetDeviceImageSparseMemoryRequirements(VkDevice device, const(VkDeviceImageMemoryRequirements)* pInfo, uint* pSparseMemoryRequirementCount, VkSparseImageMemoryRequirements2* pSparseMemoryRequirements);
+/**
+    Procedures from Vulkanb 1.3
+
+    See_Also:
+        $(D vulkan.nuvk.loader.loadProcs)
+*/
+struct Vulkan13 {
+    
+    @VkProcName("vkGetPhysicalDeviceToolProperties")
+    PFN_vkGetPhysicalDeviceToolProperties vkGetPhysicalDeviceToolProperties;
+    
+    @VkProcName("vkCreatePrivateDataSlot")
+    PFN_vkCreatePrivateDataSlot vkCreatePrivateDataSlot;
+    
+    @VkProcName("vkDestroyPrivateDataSlot")
+    PFN_vkDestroyPrivateDataSlot vkDestroyPrivateDataSlot;
+    
+    @VkProcName("vkSetPrivateData")
+    PFN_vkSetPrivateData vkSetPrivateData;
+    
+    @VkProcName("vkGetPrivateData")
+    PFN_vkGetPrivateData vkGetPrivateData;
+    
+    @VkProcName("vkCmdSetEvent2")
+    PFN_vkCmdSetEvent2 vkCmdSetEvent2;
+    
+    @VkProcName("vkCmdResetEvent2")
+    PFN_vkCmdResetEvent2 vkCmdResetEvent2;
+    
+    @VkProcName("vkCmdWaitEvents2")
+    PFN_vkCmdWaitEvents2 vkCmdWaitEvents2;
+    
+    @VkProcName("vkCmdPipelineBarrier2")
+    PFN_vkCmdPipelineBarrier2 vkCmdPipelineBarrier2;
+    
+    @VkProcName("vkCmdWriteTimestamp2")
+    PFN_vkCmdWriteTimestamp2 vkCmdWriteTimestamp2;
+    
+    @VkProcName("vkQueueSubmit2")
+    PFN_vkQueueSubmit2 vkQueueSubmit2;
+    
+    @VkProcName("vkCmdCopyBuffer2")
+    PFN_vkCmdCopyBuffer2 vkCmdCopyBuffer2;
+    
+    @VkProcName("vkCmdCopyImage2")
+    PFN_vkCmdCopyImage2 vkCmdCopyImage2;
+    
+    @VkProcName("vkCmdCopyBufferToImage2")
+    PFN_vkCmdCopyBufferToImage2 vkCmdCopyBufferToImage2;
+    
+    @VkProcName("vkCmdCopyImageToBuffer2")
+    PFN_vkCmdCopyImageToBuffer2 vkCmdCopyImageToBuffer2;
+    
+    @VkProcName("vkCmdBlitImage2")
+    PFN_vkCmdBlitImage2 vkCmdBlitImage2;
+    
+    @VkProcName("vkCmdResolveImage2")
+    PFN_vkCmdResolveImage2 vkCmdResolveImage2;
+    
+    @VkProcName("vkCmdBeginRendering")
+    PFN_vkCmdBeginRendering vkCmdBeginRendering;
+    
+    @VkProcName("vkCmdEndRendering")
+    PFN_vkCmdEndRendering vkCmdEndRendering;
+    
+    @VkProcName("vkCmdSetCullMode")
+    PFN_vkCmdSetCullMode vkCmdSetCullMode;
+    
+    @VkProcName("vkCmdSetFrontFace")
+    PFN_vkCmdSetFrontFace vkCmdSetFrontFace;
+    
+    @VkProcName("vkCmdSetPrimitiveTopology")
+    PFN_vkCmdSetPrimitiveTopology vkCmdSetPrimitiveTopology;
+    
+    @VkProcName("vkCmdSetViewportWithCount")
+    PFN_vkCmdSetViewportWithCount vkCmdSetViewportWithCount;
+    
+    @VkProcName("vkCmdSetScissorWithCount")
+    PFN_vkCmdSetScissorWithCount vkCmdSetScissorWithCount;
+    
+    @VkProcName("vkCmdBindVertexBuffers2")
+    PFN_vkCmdBindVertexBuffers2 vkCmdBindVertexBuffers2;
+    
+    @VkProcName("vkCmdSetDepthTestEnable")
+    PFN_vkCmdSetDepthTestEnable vkCmdSetDepthTestEnable;
+    
+    @VkProcName("vkCmdSetDepthWriteEnable")
+    PFN_vkCmdSetDepthWriteEnable vkCmdSetDepthWriteEnable;
+    
+    @VkProcName("vkCmdSetDepthCompareOp")
+    PFN_vkCmdSetDepthCompareOp vkCmdSetDepthCompareOp;
+    
+    @VkProcName("vkCmdSetDepthBoundsTestEnable")
+    PFN_vkCmdSetDepthBoundsTestEnable vkCmdSetDepthBoundsTestEnable;
+    
+    @VkProcName("vkCmdSetStencilTestEnable")
+    PFN_vkCmdSetStencilTestEnable vkCmdSetStencilTestEnable;
+    
+    @VkProcName("vkCmdSetStencilOp")
+    PFN_vkCmdSetStencilOp vkCmdSetStencilOp;
+    
+    @VkProcName("vkCmdSetRasterizerDiscardEnable")
+    PFN_vkCmdSetRasterizerDiscardEnable vkCmdSetRasterizerDiscardEnable;
+    
+    @VkProcName("vkCmdSetDepthBiasEnable")
+    PFN_vkCmdSetDepthBiasEnable vkCmdSetDepthBiasEnable;
+    
+    @VkProcName("vkCmdSetPrimitiveRestartEnable")
+    PFN_vkCmdSetPrimitiveRestartEnable vkCmdSetPrimitiveRestartEnable;
+    
+    @VkProcName("vkGetDeviceBufferMemoryRequirements")
+    PFN_vkGetDeviceBufferMemoryRequirements vkGetDeviceBufferMemoryRequirements;
+    
+    @VkProcName("vkGetDeviceImageMemoryRequirements")
+    PFN_vkGetDeviceImageMemoryRequirements vkGetDeviceImageMemoryRequirements;
+    
+    @VkProcName("vkGetDeviceImageSparseMemoryRequirements")
+    PFN_vkGetDeviceImageSparseMemoryRequirements vkGetDeviceImageSparseMemoryRequirements;
+}
+
+version (VK_NO_PROTOTYPES) { } else version(VULKAN_1_3) {
+    extern VkResult vkGetPhysicalDeviceToolProperties(VkPhysicalDevice physicalDevice, uint* pToolCount, VkPhysicalDeviceToolProperties* pToolProperties);
+    extern VkResult vkCreatePrivateDataSlot(VkDevice device, const(VkPrivateDataSlotCreateInfo)* pCreateInfo, const(
+            VkAllocationCallbacks)* pAllocator, VkPrivateDataSlot* pPrivateDataSlot);
+    extern void vkDestroyPrivateDataSlot(VkDevice device, VkPrivateDataSlot privateDataSlot, const(
+            VkAllocationCallbacks)* pAllocator);
+    extern VkResult vkSetPrivateData(VkDevice device, VkObjectType objectType, ulong objectHandle, VkPrivateDataSlot privateDataSlot, ulong data);
+    extern void vkGetPrivateData(VkDevice device, VkObjectType objectType, ulong objectHandle, VkPrivateDataSlot privateDataSlot, ulong* pData);
+    extern void vkCmdSetEvent2(VkCommandBuffer commandBuffer, VkEvent event, const(VkDependencyInfo)* pDependencyInfo);
+    extern void vkCmdResetEvent2(VkCommandBuffer commandBuffer, VkEvent event, VkPipelineStageFlags2 stageMask);
+    extern void vkCmdWaitEvents2(VkCommandBuffer commandBuffer, uint eventCount, const(VkEvent)* pEvents, const(
+            VkDependencyInfo)* pDependencyInfos);
+    extern void vkCmdPipelineBarrier2(VkCommandBuffer commandBuffer, const(VkDependencyInfo)* pDependencyInfo);
+    extern void vkCmdWriteTimestamp2(VkCommandBuffer commandBuffer, VkPipelineStageFlags2 stage, VkQueryPool queryPool, uint query);
+    extern VkResult vkQueueSubmit2(VkQueue queue, uint submitCount, const(VkSubmitInfo2)* pSubmits, VkFence fence);
+    extern void vkCmdCopyBuffer2(VkCommandBuffer commandBuffer, const(VkCopyBufferInfo2)* pCopyBufferInfo);
+    extern void vkCmdCopyImage2(VkCommandBuffer commandBuffer, const(VkCopyImageInfo2)* pCopyImageInfo);
+    extern void vkCmdCopyBufferToImage2(VkCommandBuffer commandBuffer, const(VkCopyBufferToImageInfo2)* pCopyBufferToImageInfo);
+    extern void vkCmdCopyImageToBuffer2(VkCommandBuffer commandBuffer, const(VkCopyImageToBufferInfo2)* pCopyImageToBufferInfo);
+    extern void vkCmdBlitImage2(VkCommandBuffer commandBuffer, const(VkBlitImageInfo2)* pBlitImageInfo);
+    extern void vkCmdResolveImage2(VkCommandBuffer commandBuffer, const(VkResolveImageInfo2)* pResolveImageInfo);
+    extern void vkCmdBeginRendering(VkCommandBuffer commandBuffer, const(VkRenderingInfo)* pRenderingInfo);
+    extern void vkCmdEndRendering(VkCommandBuffer commandBuffer);
+    extern void vkCmdSetCullMode(VkCommandBuffer commandBuffer, VkCullModeFlags cullMode);
+    extern void vkCmdSetFrontFace(VkCommandBuffer commandBuffer, VkFrontFace frontFace);
+    extern void vkCmdSetPrimitiveTopology(VkCommandBuffer commandBuffer, VkPrimitiveTopology primitiveTopology);
+    extern void vkCmdSetViewportWithCount(VkCommandBuffer commandBuffer, uint viewportCount, const(
+            VkViewport)* pViewports);
+    extern void vkCmdSetScissorWithCount(VkCommandBuffer commandBuffer, uint scissorCount, const(
+            VkRect2D)* pScissors);
+    extern void vkCmdBindVertexBuffers2(VkCommandBuffer commandBuffer, uint firstBinding, uint bindingCount, const(
+            VkBuffer)* pBuffers, const(VkDeviceSize)* pOffsets, const(VkDeviceSize)* pSizes, const(
+            VkDeviceSize)* pStrides);
+    extern void vkCmdSetDepthTestEnable(VkCommandBuffer commandBuffer, VkBool32 depthTestEnable);
+    extern void vkCmdSetDepthWriteEnable(VkCommandBuffer commandBuffer, VkBool32 depthWriteEnable);
+    extern void vkCmdSetDepthCompareOp(VkCommandBuffer commandBuffer, VkCompareOp depthCompareOp);
+    extern void vkCmdSetDepthBoundsTestEnable(VkCommandBuffer commandBuffer, VkBool32 depthBoundsTestEnable);
+    extern void vkCmdSetStencilTestEnable(VkCommandBuffer commandBuffer, VkBool32 stencilTestEnable);
+    extern void vkCmdSetStencilOp(VkCommandBuffer commandBuffer, VkStencilFaceFlags faceMask, VkStencilOp failOp, VkStencilOp passOp, VkStencilOp depthFailOp, VkCompareOp compareOp);
+    extern void vkCmdSetRasterizerDiscardEnable(VkCommandBuffer commandBuffer, VkBool32 rasterizerDiscardEnable);
+    extern void vkCmdSetDepthBiasEnable(VkCommandBuffer commandBuffer, VkBool32 depthBiasEnable);
+    extern void vkCmdSetPrimitiveRestartEnable(VkCommandBuffer commandBuffer, VkBool32 primitiveRestartEnable);
+    extern void vkGetDeviceBufferMemoryRequirements(VkDevice device, const(
+            VkDeviceBufferMemoryRequirements)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
+    extern void vkGetDeviceImageMemoryRequirements(VkDevice device, const(
+            VkDeviceImageMemoryRequirements)* pInfo, VkMemoryRequirements2* pMemoryRequirements);
+    extern void vkGetDeviceImageSparseMemoryRequirements(VkDevice device, const(VkDeviceImageMemoryRequirements)* pInfo, uint* pSparseMemoryRequirementCount, VkSparseImageMemoryRequirements2* pSparseMemoryRequirements);
+}
 
 /**
     Vulkan 1.4

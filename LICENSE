@@ -2,7 +2,8 @@ NuVK is released under multiple licenses, all code written for nuvk itself
 is under the Boost license, code pulled in externally may have other licenses.
 
 ===========================================================================
-`vulkan.nuvk.*`:
+`vulkan.loader`:
+`vulkan.eh`:
 `nuvk.*`:
 `spirv.*`:
 
