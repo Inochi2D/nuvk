@@ -15,6 +15,7 @@ workingDirectory "out/"
 # Sub packages.
 subPackage "modules/spirv"
 subPackage "modules/vulkan"
+subPackage "modules/vulkan/generator"
 
 # Configs
 configuration "static" {
