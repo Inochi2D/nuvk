@@ -26,6 +26,9 @@ class VkRegistry {
 
     /** Registered enums. */
     VkEnumType[] enums;
+
+    /** Registered commands. */
+    VkCommand[] commands;
 }
 
 struct VkPlatform {
@@ -48,8 +51,9 @@ struct VkType {
 struct VkEnumType {
     VkType vktype;
     string comment;
+    bool bitmask;
     VkEnumMember[] members;
-    
+
     alias vktype this;
 
     // override string toString() const {
@@ -99,6 +103,25 @@ struct VkStructMember {
     string type;
     string name;
     string values;
+    string comment;
+    bool optional;
+}
+
+struct VkCommand {
+    VkType vktype;
+    string alias_;
+    VkCommandParam[] params;
+    string[] successes;
+    string[] errors;
+    string comment;
+
+    alias vktype this;
+}
+
+struct VkCommandParam {
+    string name;
+    string type;
+    bool optional;
     string comment;
 }
 

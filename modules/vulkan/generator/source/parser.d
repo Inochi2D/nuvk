@@ -2,7 +2,7 @@ module parser;
 
 import std.algorithm;
 import std.array;
-import std.conv : to, text;
+import std.conv : to, text, parse;
 import std.exception : enforce;
 import std.format : format;
 import std.traits;
@@ -49,7 +49,7 @@ class VkRegistryParser {
      * 
      * Returns: The registry containing all the information from our document.
      */
-    VkRegistry parse() {
+    VkRegistry parseDocument() {
         // Iterate root nodes of our document to interpret its contents.
         foreach (child; doc.root.childNodes.mapToNonNullElements) {
             parseElement(child);
@@ -73,8 +73,11 @@ class VkRegistryParser {
             case "enums":
                 return parseEnums(element);
 
+            case "commands":
+                return parseCommands(element);
+
             case "comment":
-                return logger.dbg(1, "<grey>%s</grey>", element.textContent.esc);
+                return logger.dbg(1, "<grey>%s</grey>", element.textContent);
 
             default:
                 break;
@@ -119,7 +122,7 @@ class VkRegistryParser {
 
                 default:
                     logger.dbg(1, "Skipping %s <yellow>%s</yellow>", category, name);
-                    logger.dbg(2, "%s", child.innerHTML.esc);
+                    logger.dbg(2, "%s", child.innerHTML);
                     break;
             }
         }
@@ -127,6 +130,14 @@ class VkRegistryParser {
 
     private void parseEnums(XmlElement element) {
         registry.enums ~= parseEnumType(element);
+    }
+
+    private void parseCommands(XmlElement root) {
+        assert(root.tagName == "commands");
+
+        foreach (child; root.childNodes.mapToNonNullElements) {
+            registry.commands ~= parseCommand(child);
+        }
     }
 
     private VkEnumType parseEnumType(XmlElement root) {
@@ -149,6 +160,10 @@ class VkRegistryParser {
             result.comment = comment_.idup;
         }
 
+        if (auto bitmask = root.getAttribute("bitmask")) {
+            result.bitmask = parse!bool(bitmask);
+        }
+
         foreach (child; root.childNodes.mapToNonNullElements) {
             if (child.tagName != "enum") {
                 continue;
@@ -157,7 +172,7 @@ class VkRegistryParser {
             VkEnumMember member;
 
             if (auto name_ = child.getAttribute("name")) {
-                member.name = result.name.idup;
+                member.name = name_.idup;
             }
 
             if (auto comment_ = child.getAttribute("comment")) {
@@ -166,12 +181,8 @@ class VkRegistryParser {
 
             if (auto value_ = child.getAttribute("value")) {
                 member.value = value_.idup;
-            }
-
-            if (auto bitpos_ = child.getAttribute("bitpos")) {
+            } else if (auto bitpos_ = child.getAttribute("bitpos")) {
                 member.value = (1 << bitpos_.to!ulong).text;
-                result.members ~= member;
-                continue;
             }
 
             result.members ~= member;
@@ -218,50 +229,106 @@ class VkRegistryParser {
                 member.values = values_.idup;
             }
 
+            if (auto optional = child.getAttribute("optional")) {
+                member.optional = parse!bool(optional);
+            }
+
             result.members ~= member;
         }
 
         return result;
     }
 
-	private string parseTypeString(string type) {
-		import std.algorithm.searching : startsWith;
-		import std.ascii : isAlphaNum, isWhite;
+    private VkCommand parseCommand(XmlElement element) {
+        VkCommand result;
 
-		string out_;
-		size_t i = 0;
+        if (auto alias_ = element.getAttribute("alias")) {
+            result.name = element.getAttribute("name").idup;
+            result.alias_ = alias_.idup;
+            return result;
+        }
 
-		while (i < type.length) {
-			string slice = type[i..$];
+        if (auto successes = element.getAttribute("successcodes")) {
+            result.successes = successes.idup.split(",");
+        }
 
-			if (slice.startsWith("const")) {
-				i += 6;
+        if (auto errors = element.getAttribute("errorcodes")) {
+            result.errors = errors.idup.split(",");
+        }
 
-				out_ ~= "const(";
-				size_t si = i;
-				while (isAlphaNum(type[i]) || type[i] == '_') {
-					if (i > type.length) {
-						break;
-					}
+        if (auto proto = element.firstChildByTagName("proto")) {
+            if (auto name = proto.firstChildByTagName("name")) {
+                result.name = name.textContent.idup;
+            }
+        }
 
-					i++;
-				}
+        if (auto comment = element.getAttribute("comment")) {
+            result.comment = comment.idup;
+        }
 
-				out_ ~= type[si..i] ~ ")";
-				continue;
-			}
+        foreach (child; element.childNodes.mapToNonNullElements.filter!(e => e.tagName == "param")) {
+            VkCommandParam param;
 
-			if (isWhite(type[i])) {
-				i++;
-				continue;
-			}
+            // if (auto optional = child.getAttribute("optional")) {
+            //     param.optional = optional.parse!bool;
+            // }
 
-			out_ ~= type[i];
-			i++;
-		}
+            if (auto name = child.firstChildByTagName("name")) {
+                param.name = name.textContent.idup;
+            }
 
-		return out_;
-	}
+            if (auto type = child.firstChildByTagName("type")) {
+                param.type = type.textContent.idup;
+            }
+
+            if (auto comment = child.getAttribute("comment")) {
+                param.comment = comment.idup;
+            }
+
+            result.params ~= param;
+        }
+
+        return result;
+    }
+
+    private string parseTypeString(string type) {
+        import std.algorithm.searching : startsWith;
+        import std.ascii : isAlphaNum, isWhite;
+
+        string out_;
+        size_t i = 0;
+
+        while (i < type.length) {
+            string slice = type[i..$];
+
+            if (slice.startsWith("const")) {
+                i += 6;
+
+                out_ ~= "const(";
+                size_t si = i;
+                while (isAlphaNum(type[i]) || type[i] == '_') {
+                    if (i > type.length) {
+                        break;
+                    }
+
+                    i++;
+                }
+
+                out_ ~= type[si..i] ~ ")";
+                continue;
+            }
+
+            if (isWhite(type[i])) {
+                i++;
+                continue;
+            }
+
+            out_ ~= type[i];
+            i++;
+        }
+
+        return out_;
+    }
 }
 
 
@@ -272,5 +339,5 @@ class VkRegistryParser {
  *   nodes = Any range of nodes, but presumably `XmlNode.ChildRange`.
  */
 private auto mapToNonNullElements(T)(T nodes) if (isIterable!T) {
-	return nodes.map!(e => cast(XmlElement) e).filter!(e => e !is null);
+    return nodes.map!(e => cast(XmlElement) e).filter!(e => e !is null);
 }

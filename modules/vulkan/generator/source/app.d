@@ -1,5 +1,6 @@
 module app;
 
+import std.stdio;
 import std.algorithm;
 import std.array;
 import std.conv : parse;
@@ -35,23 +36,23 @@ struct App {
     VkRegistry[] registries;
 
 
-	/** 
-	 * Construct our app instance.
-	 * 
-	 * Params:
-	 *   args = Command-line arguments, should be `args[1..$]` when taken from main.
-	 */
+    /** 
+     * Construct our app instance.
+     * 
+     * Params:
+     *   args = Command-line arguments, should be `args[1..$]` when taken from main.
+     */
     this(string[] args) {
         input = Input(args);
         logger = new Logger(input.verbose);
         registries = new VkRegistry[input.names.length];
     }
 
-	/** 
-	 * App entry point.
-	 * 
-	 * Returns: An error code, or 0 on success.
-	 */
+    /** 
+     * App entry point.
+     * 
+     * Returns: An error code, or 0 on success.
+     */
     int run() {
         foreach (i, url; parallel(input.names.map!toUrl)) {
             if (input.verbose) {
@@ -59,12 +60,12 @@ struct App {
             }
 
             try {
-				auto name = url.baseName(".xml");
+                auto name = url.baseName(".xml");
                 auto spec = cast(string) get(url);
                 auto parser = new VkRegistryParser(name, spec, logger);
-                registries[i] = parser.parse();
+                registries[i] = parser.parseDocument();
             } catch (Exception ex) {
-                logger.err(ex.msg);
+                logger.err("%s", ex.msg);
             }
         }
 
@@ -78,7 +79,20 @@ struct App {
                     listVendors();
                     break;
 
+                case "structs":
+                    listStructs();
+                    break;
+
+                case "enums":
+                    listEnums();
+                    break;
+
+                case "commands":
+                    listCommands();
+                    break;
+
                 default:
+                    logger.warn("<u>%s</u> is not listable", ls);
                     break;
             }
         }
@@ -88,7 +102,7 @@ struct App {
 
     private void listPlatforms() {
         foreach (i, registry; registries) {
-            logger.info("Registry <yellow>%s</yellow>", registry.name.baseName(".xml"));
+            logger.info("Registry <yellow>%s</yellow>", registry.name);
 
             const namepad = registry.platforms.map!(p => p.name.length).maxElement(0);
             const protpad = registry.platforms.map!(p => p.protect.length).maxElement(0);
@@ -111,7 +125,7 @@ struct App {
 
     private void listVendors() {
         foreach (i, registry; registries) {
-            logger.info("Registry <yellow>%s</yellow>", registry.name.baseName(".xml"));
+            logger.info("Registry <yellow>%s</yellow>", registry.name);
 
             const namepad = registry.vendors.map!(v => v.ext.length).maxElement(0);
             const authpad = registry.vendors.map!(v => v.author.length).maxElement(0);
@@ -124,6 +138,111 @@ struct App {
 
             if (registry.vendors.length == 0) {
                 logger.info("<grey>%s</grey>", "(no vendors)");
+            }
+
+            if (i + 1 < registries.length) {
+                logger.line();
+            }
+        }
+    }
+
+    private void listStructs() {
+        foreach (i, registry; registries) {
+            logger.info("Registry <yellow>%s</yellow>", registry.name);
+
+            foreach (struct_; registry.structs) {
+                const pipe = struct_.members.length > 0 ? "┏╸" : "╺╸";
+
+                if (struct_.extends.empty) {
+                    logger.info("%s<lgreen>%s</lgreen>", pipe, struct_.name);
+                } else {
+                    logger.info("%s<lgreen>%s</lgreen> : <lgreen>%s</lgreen>", pipe, struct_.name, struct_.extends);
+                }
+
+                const namepad = struct_.members.map!(m => m.name.length).maxElement(0);
+                const typepad = struct_.members.map!(m => m.type.length).maxElement(0);
+                foreach (mi, member; struct_.members) {
+                    const mpipe = mi + 1 == struct_.members.length ? "┗━━╸" : "┣━━╸";
+                    if (member.optional) {
+                        logger.info(
+                            "%s<grey>%-*s</grey>   <lgreen>%-*s</lgreen>   <grey>%s</grey>",
+                            mpipe, namepad, member.name, typepad, member.type, member.comment,
+                        );
+                    } else {
+                        logger.info(
+                            "%s<lgrey>%-*s</lgrey>   <lgreen>%-*s</lgreen>   <grey>%s</grey>",
+                            mpipe, namepad, member.name, typepad, member.type, member.comment,
+                        );
+                    }
+                }
+            }
+
+            if (registry.structs.length == 0) {
+                logger.info("<grey>%s</grey>", "(no structs)");
+            }
+
+            if (i + 1 < registries.length) {
+                logger.line();
+            }
+        }
+    }
+
+    private void listEnums() {
+        foreach (i, registry; registries) {
+            logger.info("Registry <yellow>%s</yellow>", registry.name);
+
+            foreach (enum_; registry.enums) {
+                const pipe = enum_.members.length > 0 ? "┏╸" : "╺╸";
+
+                logger.info("%s<lgreen>%s</lgreen>", pipe, enum_.name);
+
+                const namepad = enum_.members.map!(m => m.name.length).maxElement(0);
+                const valuepad = enum_.members.map!(m => m.value.length).maxElement(0);
+                foreach (mi, member; enum_.members) {
+                    const mpipe = mi + 1 == enum_.members.length ? "┗━━╸" : "┣━━╸";
+                    logger.info(
+                        "%s<lgrey>%-*s</lgrey>   <lgreen>%-*s</lgreen>   <grey>%s</grey>",
+                        mpipe, namepad, member.name, valuepad, member.value, member.comment,
+                    );
+                }
+            }
+
+            if (registry.enums.length == 0) {
+                logger.info("<grey>%s</grey>", "(no enums)");
+            }
+
+            if (i + 1 < registries.length) {
+                logger.line();
+            }
+        }
+    }
+
+    private void listCommands() {
+        foreach (i, registry; registries) {
+            logger.info("Registry <yellow>%s</yellow>", registry.name);
+
+            foreach (command; registry.commands) {
+                const pipe = command.params.length > 0 ? "┏╸" : "╺╸";
+
+                if (command.alias_.empty) {
+                    logger.info("%s<yellow>%s</yellow>", pipe, command.name);
+                } else {
+                    logger.info("%s<blue>%s</blue> -&gt; <yellow>%s</yellow>", pipe, command.name, command.alias_);
+                }
+
+                const namepad = command.params.map!(p => p.name.length).maxElement(0);
+                const typepad = command.params.map!(p => p.type.length).maxElement(0);
+                foreach (pi, param; command.params) {
+                    const ppipe = pi + 1 == command.params.length ? "┗━━╸" : "┣━━╸";
+                    logger.info(
+                        "%s<lgrey>%-*s</lgrey>   <lgreen>%-*s</lgreen>   <grey>%s</grey>",
+                        ppipe, namepad, param.name, typepad, param.type, param.comment,
+                    );
+                }
+            }
+
+            if (registry.commands.length == 0) {
+                logger.info("<grey>%s</grey>", "(no commands)");
             }
 
             if (i + 1 < registries.length) {
@@ -145,12 +264,12 @@ struct Input {
     int verbose = 0;
 
 
-	/** 
-	 * Parse our command-line input from the given arguments.
-	 * 
-	 * Params:
-	 *   args = Command-line arguments, should be `args[1..$]` when taken from main.
-	 */
+    /** 
+     * Parse our command-line input from the given arguments.
+     * 
+     * Params:
+     *   args = Command-line arguments, should be `args[1..$]` when taken from main.
+     */
     this(string[] args) {
         Expect expect;
 

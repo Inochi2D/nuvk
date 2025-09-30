@@ -2,11 +2,9 @@ name "vulkan-generator"
 description "Vulkan Bindings generator."
 authors "Luna the Foxgirl" "Mireille Arseneault"
 copyright "Copyright © 2025, Kitsunebi Games"
-license "Apache-2.0"
+license "BSL-1.0"
 
-// Build directory
 targetPath "out/"
 
-// Dependencies
+dependency "cosmicolor" version="~>0.1.1"
 dependency "yxml" version="~>0.1.7"
-dependency "console-colors" version="~>1.3.1"

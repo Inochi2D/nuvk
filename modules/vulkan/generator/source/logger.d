@@ -4,7 +4,7 @@ import std.stdio;
 
 import core.sync.mutex : Mutex;
 
-import consolecolors;
+import cosmicolor;
 
 
 /** 
@@ -37,9 +37,7 @@ class Logger {
      */
     void dbg(Args...)(int level, string fmt, Args args) {
         debug if (verbose >= level) {
-            mutex.lock();
             cwritefln("<grey>Debug</grey> " ~ fmt, args);
-            mutex.unlock();
         }
     }
 
@@ -51,9 +49,7 @@ class Logger {
      *   args = Arguments to stringify and format into our output.
      */
     void info(Args...)(string fmt, Args args) {
-        mutex.lock();
-        cwritefln("<lcyan>Info</lcyan> " ~ fmt, args);
-        mutex.unlock();
+        cwritefln(fmt, args);
     }
 
     /** 
@@ -64,9 +60,7 @@ class Logger {
      *   args = Arguments to stringify and format into our output.
      */
     void warn(Args...)(string fmt, Args args) {
-        mutex.lock();
-        cwritefln(stderr, "<yellow>Warning</yellow> " ~ fmt, args);
-        mutex.unlock();
+        stderr.cwritefln("<yellow>Warning</yellow> " ~ fmt, args);
     }
 
     /** 
@@ -76,27 +70,14 @@ class Logger {
      *   fmt = The format string to append to our prefix for logging.
      *   args = Arguments to stringify and format into our output.
      */
-    void err(Args...)(string fmt, Args args) {
-        mutex.lock();
-        cwritefln(stderr, "<red>Error</red> " ~ fmt, args);
-        mutex.unlock();
+    void err(A...)(string fmt, A args) {
+        stderr.cwritefln("<red>Error</red> " ~ fmt, args);
     }
 
     /** 
      * Log an empty line to the terminal. Always shown.
      */
     void line() {
-        mutex.lock();
-        cwritefln("");
-        mutex.unlock();
-    }
-}
-
-/** Make our color escaping function visible and easy to use. */
-enum esc = &escapeCCL;
-
-static this() {
-    version (Windows) {
-        enableConsoleUTF8();
+        writeln();
     }
 }
