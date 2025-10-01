@@ -5,6 +5,7 @@ copyright "Copyright © 2025, Kitsunebi Games"
 license "BSL-1.0"
 
 targetPath "out/"
+workingDirectory ".."
 
 dependency "cosmicolor" version="~>0.1.1"
 dependency "yxml" version="~>0.1.7"

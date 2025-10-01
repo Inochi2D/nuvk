@@ -91,6 +91,14 @@ struct App {
                     listCommands();
                     break;
 
+                case "features":
+                    listFeatures();
+                    break;
+
+                case "extensions":
+                    listExtensions();
+                    break;
+
                 default:
                     logger.warn("<u>%s</u> is not listable", ls);
                     break;
@@ -250,6 +258,42 @@ struct App {
             }
         }
     }
+
+	private void listFeatures() {
+        foreach (i, registry; registries) {
+            logger.info("Registry <yellow>%s</yellow>", registry.name);
+
+			foreach (feature; registry.features) {
+				logger.info("<lblue>%s</lblue>", feature.name);
+			}
+
+            if (registry.features.length == 0) {
+                logger.info("<grey>%s</grey>", "(no features)");
+            }
+
+            if (i + 1 < registries.length) {
+                logger.line();
+            }
+		}
+	}
+
+	private void listExtensions() {
+        foreach (i, registry; registries) {
+            logger.info("Registry <yellow>%s</yellow>", registry.name);
+
+			foreach (extension; registry.extensions) {
+				logger.info("<lblue>%s</lblue>", extension.name);
+			}
+
+            if (registry.extensions.length == 0) {
+                logger.info("<grey>%s</grey>", "(no extensions)");
+            }
+
+            if (i + 1 < registries.length) {
+                logger.line();
+            }
+		}
+	}
 }
 
 
