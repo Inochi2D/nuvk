@@ -7,5 +7,7 @@ license "BSL-1.0"
 targetPath "out/"
 workingDirectory ".."
 
-dependency "cosmicolor" version="~>0.1.1"
+stringImportPaths "text"
+
+dependency "cosmicolor" path="C:\\Users\\Mireille\\Source\\Dlang\\cosmicolor"
 dependency "yxml" version="~>0.1.7"

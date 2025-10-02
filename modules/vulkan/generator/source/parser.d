@@ -129,42 +129,103 @@ class VkRegistryParser {
     private void parseTypes(XmlElement element)
         in (element.tagName == "types")
     {
+        const(char)[] comment;
+
         foreach (child; element.childElements) {
-            const name = child.getAttribute("name");
+            if (child.tagName == "comment") {
+                comment = child.textContent;
+                logger.dbg(1, "<grey>// %s</grey>", comment);
+                continue;
+            }
+
             const category = child.getAttribute("category");
 
             switch (category.toVkTypeCategory) {
-                case VkTypeCategory.Struct:
-                    registry.structs ~= parseStructType(child);
+                case VkTypeCategory.Basetype:
+                    registry.basetypes ~= parseBasetypeType(child, comment.idup);
                     break;
 
-                case VkTypeCategory.None:
-                    parseNoneType(child);
+                case VkTypeCategory.Handle:
+                    registry.handles ~= parseHandleType(child, comment.idup);
+                    break;
+
+                case VkTypeCategory.Struct:
+                    registry.structs ~= parseStructType(child, comment.idup);
                     break;
 
                 default:
-                    logger.dbg(1, "Skipping %s <yellow>%s</yellow>", category, name);
-                    logger.dbg(2, "%s", child.innerHTML);
+                    parseSkippedType(child);
                     break;
+            }
+
+            if (child.tagName != "comment") {
+                comment = null;
             }
         }
     }
 
     /** 
+     * Parse <type category="basetype"> tags.
+     */
+    private VkBasetypeType parseBasetypeType(XmlElement element, string comment) {
+        VkBasetypeType result;
+
+        if (auto name = element.getAttribute("name")) {
+            result.name = name.idup;
+        } else if (auto name = element.firstChildByTagName("name")) {
+            result.name = name.textContent.idup;
+        }
+
+        if (auto type = element.firstChildByTagName("type")) {
+            result.type = type.textContent.idup;
+        }
+
+        return result;
+    }
+
+    /** 
+     * Parse <type category="handle"> tags.
+     */
+    private VkHandleType parseHandleType(XmlElement element, string comment) {
+        VkHandleType result;
+
+        if (comment) {
+            result.comment = comment;
+        }
+
+        if (auto alias_ = element.getAttribute("alias")) {
+            result.alias_ = alias_.idup;
+        }
+
+        if (auto name = element.getAttribute("name")) {
+            result.name = name.idup;
+        } else if (auto name = element.firstChildByTagName("name")) {
+            result.name = name.textContent.idup;
+        }
+
+        // SPECIAL CASE: Visually ungroup debug stuff from WSI.
+        if (result.name == "VkDebugReportCallbackEXT") {
+            result.comment = "Debug extensions";
+        }
+
+        return result;
+    }
+
+    /** 
      * Parse <type category="struct"> tags.
      */
-    private VkStructType parseStructType(XmlElement root) {
+    private VkStructType parseStructType(XmlElement element, string comment) {
         VkStructType result;
 
-        result.name = root.getAttribute("name").idup;
+        result.name = element.getAttribute("name").idup;
 
-        result.category = toVkTypeCategory(root.getAttribute("category").idup);
+        result.category = toVkTypeCategory(element.getAttribute("category").idup);
 
-        if (auto extends_ = root.getAttribute("structextends")) {
+        if (auto extends_ = element.getAttribute("structextends")) {
             result.extends = extends_.idup;
         }
 
-        foreach (child; root.childElements) {
+        foreach (child; element.childElements) {
             if (child.tagName != "member") {
                 continue;
             }
@@ -198,23 +259,24 @@ class VkRegistryParser {
     }
 
     /** 
-     * Parse <type> tags without a category attribute.
+     * Parse <type> tags that were skipped by our implementation.
      */
-    private void parseNoneType(XmlElement element) {
-        const(char)[] nameText;
-        // string typeText;
+    private void parseSkippedType(XmlElement element) {
+        const(char)[] name;
 
-        if (auto name = element.getAttribute("name")) {
-            nameText = name;
-        } else if (auto name = element.firstChildByTagName("name")) {
-            nameText = name.textContent;
+        if (auto n = element.getAttribute("name")) {
+            name = n;
+        } else if (auto n = element.firstChildByTagName("name")) {
+            name = n.textContent;
         }
 
-        // if (auto type = element.firstChildByTagName("type")) {
-        //     typeText = type.textContent.idup;
-        // }
-
-        logger.dbg(1, "Skipping type <yellow>%s</yellow>", nameText);
+        if (auto category = element.getAttribute("category")) {
+            logger.dbg(1, "Skipping %s <yellow>%s</yellow>", category, name);
+            logger.dbg(2, "%s", element.innerHTML);
+        } else {
+            logger.dbg(1, "Skipping <yellow>%s</yellow>", name);
+            logger.dbg(2, "%s", element.innerHTML);
+        }
     }
 
     /** 
