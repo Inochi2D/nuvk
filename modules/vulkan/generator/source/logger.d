@@ -37,7 +37,7 @@ class Logger {
      */
     void dbg(Args...)(int level, string fmt, Args args) {
         debug if (verbose >= level) {
-            cwritefln("<grey>Debug</grey> " ~ fmt, args);
+            stderr.cwritefln("<grey>Debug</grey> " ~ fmt, args);
         }
     }
 

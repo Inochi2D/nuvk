@@ -9,5 +9,6 @@ workingDirectory ".."
 
 stringImportPaths "text"
 
-dependency "cosmicolor" path="C:\\Users\\Mireille\\Source\\Dlang\\cosmicolor"
+dependency "cosmicolor" version="~>0.1.3"
 dependency "yxml" version="~>0.1.7"
+dependency "nulib" version="~>0.3.7"

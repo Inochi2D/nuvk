@@ -84,6 +84,10 @@ struct App {
                             listVendors(registry);
                             break;
 
+                        case "defines":
+                            listDefines(registry);
+                            break;
+
                         case "basetypes":
                             listBasetypes(registry);
                             break;
@@ -127,7 +131,7 @@ struct App {
         if (!input.dryrun) {
             foreach (i, registry; registries) {
 				string preamble = registry.name == "vk" ? import("vk_preamble.txt") : "";
-                auto emitter = new VkRegistryEmitter(registry, stdout);
+                auto emitter = new VkRegistryEmitter(registry, stdout, logger);
                 emitter.emit(preamble);
             }
         }
@@ -164,6 +168,20 @@ struct App {
             logger.info("<grey>%s</grey>", "(no vendors)");
         }
     }
+
+	private void listDefines(ref VkRegistry registry) {
+        foreach (define; registry.defines) {
+            if (define.funclike) {
+                logger.info("<lblue>%s</lblue>(...)", define.name);
+            } else {
+                logger.info("<lblue>%s</lblue>", define.name);
+            }
+        }
+
+        if (registry.defines.length == 0) {
+            logger.info("<grey>%s</grey>", "(no defines)");
+        }
+	}
 
     private void listBasetypes(ref VkRegistry registry) {
         foreach (basetype; registry.basetypes) {

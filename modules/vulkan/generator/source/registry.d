@@ -1,5 +1,7 @@
 module registry;
 
+import std.algorithm;
+import std.range;
 import std.typecons;
 
 
@@ -11,6 +13,9 @@ class VkRegistry {
 
     /** Registered vendors. */
     VkVendor[] vendors;
+
+	/** Registered defines */
+	VkDefineType[] defines;
 
 	/** Registered base types */
 	VkBasetypeType[] basetypes;
@@ -50,6 +55,31 @@ struct VkType {
     string name;
     VkTypeCategory category;
 	string comment;
+}
+
+struct VkDefineType {
+	VkType vktype;
+	string value;
+	bool critical;
+
+	alias vktype this;
+
+	@property bool funclike() => value.empty;
+	@property bool commented() => value.startsWith("//");
+}
+
+struct VkBasetypeType {
+	VkType vktype;
+	string type;
+
+	alias vktype this;
+}
+
+struct VkHandleType {
+    VkType vktype;
+	string alias_;
+
+    alias vktype this;
 }
 
 struct VkEnumType {
@@ -107,20 +137,6 @@ struct VkFeature {
 
 struct VkExtension {
 	string name;
-}
-
-struct VkBasetypeType {
-	VkType vktype;
-	string type;
-
-	alias vktype this;
-}
-
-struct VkHandleType {
-    VkType vktype;
-	string alias_;
-
-    alias vktype this;
 }
 
 enum VkTypeCategory {

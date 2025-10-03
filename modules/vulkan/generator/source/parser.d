@@ -9,8 +9,17 @@ import std.traits;
 
 import yxml;
 
+import util;
 import registry;
 import logger;
+import std.string;
+import phobos.sys.meta;
+
+
+/** 
+ * YXML uses this as a string type for @nogc reasons.
+ */
+alias xmlstring = const(char)[];
 
 
 /** 
@@ -129,7 +138,7 @@ class VkRegistryParser {
     private void parseTypes(XmlElement element)
         in (element.tagName == "types")
     {
-        const(char)[] comment;
+        xmlstring comment;
 
         foreach (child; element.childElements) {
             if (child.tagName == "comment") {
@@ -141,28 +150,60 @@ class VkRegistryParser {
             const category = child.getAttribute("category");
 
             switch (category.toVkTypeCategory) {
+                case VkTypeCategory.Define:
+                    registry.defines ~= parseDefineType(child, comment.consume.idup);
+                    break;
+
                 case VkTypeCategory.Basetype:
-                    registry.basetypes ~= parseBasetypeType(child, comment.idup);
+                    registry.basetypes ~= parseBasetypeType(child, comment.consume.idup);
                     break;
 
                 case VkTypeCategory.Handle:
-                    registry.handles ~= parseHandleType(child, comment.idup);
+                    registry.handles ~= parseHandleType(child, comment.consume.idup);
                     break;
 
                 case VkTypeCategory.Struct:
-                    registry.structs ~= parseStructType(child, comment.idup);
+                    registry.structs ~= parseStructType(child, comment.consume.idup);
                     break;
 
                 default:
+					comment.consume();
                     parseSkippedType(child);
                     break;
             }
-
-            if (child.tagName != "comment") {
-                comment = null;
-            }
         }
     }
+
+    /** 
+     * Parse <type category="basetype"> tags.
+     */
+	private VkDefineType parseDefineType(XmlElement element, string comment) {
+		VkDefineType result;
+
+        if (auto name = element.getAttribute("name")) {
+            result.name = name.idup;
+        } else if (auto name = element.firstChildByTagName("name")) {
+            result.name = name.textContent.idup;
+
+			auto line = element.firstChild.textContent.splitLines.back;
+			if (line.startsWith("//")) {
+				result.value = line.idup;
+			} else {
+				if (auto type = element.firstChildByTagName("type")) {
+					const content = type.textContent ~ type.nextSibling.textContent;
+					result.value = parseDefineString(content);
+				} else if (auto next = name.nextSibling()) {
+					result.value = next.textContent.strip.idup;
+				}
+			}
+        }
+
+		if (auto api = element.getAttribute("api")) {
+			result.critical = api == "vulkansc";
+		}
+
+		return result;
+	}
 
     /** 
      * Parse <type category="basetype"> tags.
@@ -237,7 +278,7 @@ class VkRegistryParser {
             }
 
             if (auto type_ = child.textContent) {
-                member.type = parseTypeString(cast(string)type_[0..$-member.name.length]);
+                member.type = parseTypeString(type_[0..$-member.name.length]);
             }
 
             if (auto comment_ = child.getAttribute("comment")) {
@@ -262,7 +303,7 @@ class VkRegistryParser {
      * Parse <type> tags that were skipped by our implementation.
      */
     private void parseSkippedType(XmlElement element) {
-        const(char)[] name;
+        xmlstring name;
 
         if (auto n = element.getAttribute("name")) {
             name = n;
@@ -428,22 +469,40 @@ class VkRegistryParser {
         }
     }
 
+	/** 
+	 * Utility for parsing a define string.
+	 * 
+	 * Params:
+	 *   define = A define in string form obtained from an XML document.
+	 * 
+	 * Returns: the D equivalent of the given define.
+	 */
+	private static string parseDefineString(xmlstring define) {
+		const commentStart = define.indexOf("//");
+
+		if (commentStart != -1) {
+			return define[0..commentStart].idup;
+		} else {
+			return define.idup;
+		}
+	}
+
     /** 
      * Utility for parsing a type string into D form.
      * 
      * Params:
      *   type = A type in string form as obtained from an XML document.
      * 
-     * Returns: The D equivalent of the given type.
+     * Returns: the D equivalent of the given type.
      */
-    private static string parseTypeString(string type) {
+    private static string parseTypeString(xmlstring type) {
         import std.algorithm.searching : startsWith;
         import std.ascii : isAlphaNum, isWhite;
 
         string result;
 
         for (size_t i = 0; i < type.length;) {
-            string slice = type[i..$];
+            auto slice = type[i..$];
 
             if (slice.startsWith("const")) {
                 i += 6;

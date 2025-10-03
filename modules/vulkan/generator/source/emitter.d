@@ -5,6 +5,9 @@ import std.stdio;
 import std.string;
 import std.traits;
 
+import nulib.collections.set;
+
+import logger;
 import registry;
 
 
@@ -16,6 +19,8 @@ class VkRegistryEmitter {
 
     private Emitter file;
 
+	private Logger logger;
+
 
     /** 
      * Construct an emitter from a registry and a file handle.
@@ -24,9 +29,10 @@ class VkRegistryEmitter {
      *   registry = Source of the generated file.
      *   file = File handle where the generated file will be emitted.
      */
-    this(VkRegistry registry, File file) {
+    this(VkRegistry registry, File file, Logger logger) {
         this.registry = registry;
         this.file = Emitter(file);
+		this.logger = logger;
     }
 
     /** 
@@ -43,7 +49,24 @@ class VkRegistryEmitter {
 		// Module name, imports, attributes.
         file.writeln("module vulkan.core;");
         file.writeln("import numem.core.types : OpaqueHandle;");
+        file.writeln("import vulkan.loader;");
 		file.writeln("extern (System) @nogc nothrow:");
+
+		// Defines
+		emitSection("Defines");
+
+		file.writeln("import vulkan.defines;");
+		foreach (define; registry.defines) {
+			if (define.critical || define.name.startsWith("VKSC")) {
+				logger.dbg(1, "skipping security-critical define <lblue>%s</lblue>", define.name);
+			} else if (bespoke.contains(define.name)) {
+				logger.dbg(1, "skipping define with bespoke impl. <lblue>%s</lblue>", define.name);
+			} else if (define.commented) {
+				logger.dbg(1, "ignoring commented out define <lblue>%s</lblue>", define.name);
+			} else {
+				emitEnum(define.name, define.value);
+			}
+		}
 
 		// Base types
 		emitSection("Base types");
@@ -51,8 +74,11 @@ class VkRegistryEmitter {
 		foreach (basetype; registry.basetypes) {
 			switch (basetype.type) {
 				case "uint32_t":
+					emitAlias(basetype.name, "uint");
+					break;
+
 				case "uint64_t":
-					emitAlias(basetype.name, basetype.type);
+					emitAlias(basetype.name, "ulong");
 					break;
 
 				default:
@@ -82,6 +108,10 @@ class VkRegistryEmitter {
 
 	private void emitAlias(string lhs, string rhs) {
 		file.writefln!"alias %s = %s;"(lhs, rhs);
+	}
+
+	private void emitEnum(string lhs, string rhs) {
+		file.writefln!"enum %s = %s;"(lhs, rhs);
 	}
 
 	private void emitSection(string label) {
@@ -160,4 +190,26 @@ package struct Emitter {
             file.writefln("%*s" ~ fmt, indentlvl * 4, "", args);
         }
     }
+}
+
+private set!string bespoke;
+
+static this() {
+	bespoke.insert("VK_MAKE_VERSION");
+	bespoke.insert("VK_VERSION_MAJOR");
+	bespoke.insert("VK_VERSION_MINOR");
+	bespoke.insert("VK_VERSION_PATCH");
+
+	bespoke.insert("VK_MAKE_API_VERSION");
+	bespoke.insert("VK_API_VERSION_VARIANT");
+	bespoke.insert("VK_API_VERSION_MAJOR");
+	bespoke.insert("VK_API_VERSION_MINOR");
+	bespoke.insert("VK_API_VERSION_PATCH");
+
+	bespoke.insert("VK_USE_64_BIT_PTR_DEFINES");
+
+	bespoke.insert("VK_NULL_HANDLE");
+
+	bespoke.insert("VK_DEFINE_HANDLE");
+	bespoke.insert("VK_DEFINE_NON_DISPATCHABLE_HANDLE");
 }
