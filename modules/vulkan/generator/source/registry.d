@@ -96,6 +96,12 @@ struct VkEnumType {
     OMap!(string, VkEnumMember) members;
 
     alias base this;
+
+    this(return scope typeof(this) other) {
+        foreach (i, ref field; other.tupleof) {
+            this.tupleof[i] = __rvalue(field);
+        }
+    }
 }
 
 struct VkEnumMember {
@@ -111,6 +117,12 @@ struct VkStructType {
     VkStructMember[] members;
 
     alias base this;
+
+    this(return scope typeof(this) other) {
+        foreach (i, ref field; other.tupleof) {
+            this.tupleof[i] = __rvalue(field);
+        }
+    }
 }
 
 struct VkStructMember {
@@ -128,6 +140,12 @@ struct VkCommand {
     string[] successes;
     string[] errors;
     string comment;
+
+    this(return scope typeof(this) other) {
+        foreach (i, ref field; other.tupleof) {
+            this.tupleof[i] = __rvalue(field);
+        }
+    }
 }
 
 struct VkCommandParam {

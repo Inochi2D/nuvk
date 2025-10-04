@@ -155,7 +155,7 @@ class VkRegistryParser {
                     break;
 
                 case VkTypeCategory.Enum:
-                    registry.enums[base.name] = parseEnumType(child, base);
+                    // registry.enums[base.name] = parseEnumType(child, base);
                     break;
 
                 case VkTypeCategory.Struct:
@@ -382,7 +382,7 @@ class VkRegistryParser {
             result.members[member.name] = member;
         }
 
-        registry.enums[result.name] = __rvalue(result);
+        registry.enums[result.name] = result;
     }
 
     /**

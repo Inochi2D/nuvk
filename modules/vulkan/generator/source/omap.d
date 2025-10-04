@@ -16,12 +16,20 @@ struct OMap(K, V) {
 	private K[size_t] keys;
 
 
-    @disable this(ref return scope inout(OMap) other) inout;
+    this(ref return scope inout(OMap) other) inout {
+        arr = other.arr[];
+        indices = cast(inout(size_t[K])) other.indices.dup;
+        keys = cast(inout(K[size_t])) other.keys.dup;
+    }
 
-    this(return scope inout(OMap) other) inout {
-        foreach (i, ref inout field; other.tupleof) {
-            this.tupleof[i] = __rvalue(field);
-        }
+    this(return scope OMap other) {
+        arr = other.arr;
+        indices = other.indices;
+        keys = other.keys;
+
+        other.arr = null;
+        other.indices = null;
+        other.keys = null;
     }
 
     ref inout(V) opIndex(TK)(TK key) inout
@@ -158,14 +166,42 @@ OMap!(K, V) omap(K, V)() {
     return OMap!(K, V).init;
 }
 
-@"Ordered hashmap works"
+@"Ordered hashmap basic usage works"
 unittest {
+    import std.format : format;
+
     auto map = omap!(string, int);
 
     map["key"] = 5;
-    assert(map.length == 1);
-    assert(map["key"] == 5);
+    assert(map.length == 1, format!"%s == %s"(map.length, 1));
+    assert(map["key"] == 5, format!"%s == %s"(map["key"], 5));
 
     map.clear();
-    assert(map.length == 0);
+    assert(map.length == 0, format!"%s == %s"(map.length, 0));
+}
+
+@"Ordered hashmap copy constructor works"
+unittest {
+    import std.format : format;
+
+    auto a = omap!(string, int);
+    a["key"] = 5;
+    auto b = a;
+    b["key2"] = 10;
+
+    assert(a.length == 1, format!"%s == %s"(a.length, 0));
+    assert(b.length == 2, format!"%s == %s"(b.length, 0));
+}
+
+@"Ordered hashmap move constructor works"
+unittest {
+    import std.format : format;
+
+    auto a = omap!(string, int);
+
+    a["key"] = 5;
+
+    auto b = __rvalue(a);
+    assert(a.length == 0, format!"%s == %s"(a.length, 0));
+    assert(b.length == 1, format!"%s == %s"(b.length, 1));
 }
