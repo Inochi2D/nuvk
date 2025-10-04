@@ -4,6 +4,8 @@ import std.algorithm;
 import std.range;
 import std.typecons;
 
+import omap;
+
 
 class VkRegistry {
     string name;
@@ -12,31 +14,37 @@ class VkRegistry {
     VkPlatform[] platforms;
 
     /** Registered vendors. */
-    VkVendor[] vendors;
+    OMap!(string, VkVendor) vendors;
 
-	/** Registered defines */
-	VkDefineType[] defines;
+    /** Registered constants. */
+    string[string] constants;
 
-	/** Registered base types */
-	VkBasetypeType[] basetypes;
+    /** Registered types. */
+    VkType[string] types;
+
+    /** Registered defines */
+    OMap!(string, VkDefineType) defines;
+
+    /** Registered base types */
+    OMap!(string, VkBasetypeType) basetypes;
 
     /** Registered handles. */
-    VkHandleType[] handles;
+    OMap!(string, VkHandleType) handles;
 
     /** Registered structs. */
-    VkStructType[] structs;
+    OMap!(string, VkStructType) structs;
 
     /** Registered enums. */
-    VkEnumType[] enums;
+    OMap!(string, VkEnumType) enums;
 
     /** Registered commands. */
-    VkCommand[] commands;
+    OMap!(string, VkCommand) commands;
 
-	/** Registered features */
-	VkFeature[] features;
+    /** Registered features */
+    VkFeature[] features;
 
-	/** Registered extensions */
-	VkExtension[] extensions;
+    /** Registered extensions */
+    OMap!(int, VkExtension) extensions;
 }
 
 struct VkPlatform {
@@ -54,55 +62,55 @@ struct VkVendor {
 struct VkType {
     string name;
     VkTypeCategory category;
-	string comment;
 }
 
 struct VkDefineType {
-	VkType vktype;
-	string value;
-	bool critical;
+    VkType base;
+    string value;
+    bool critical;
 
-	alias vktype this;
+    alias base this;
 
-	@property bool funclike() => value.empty;
-	@property bool commented() => value.startsWith("//");
+    @property bool funclike() => value.empty;
+    @property bool commented() => value.startsWith("//");
 }
 
 struct VkBasetypeType {
-	VkType vktype;
-	string type;
+    VkType base;
+    string type;
 
-	alias vktype this;
+    alias base this;
 }
 
 struct VkHandleType {
-    VkType vktype;
-	string alias_;
+    VkType base;
+    string alias_;
 
-    alias vktype this;
+    alias base this;
 }
 
 struct VkEnumType {
-    VkType vktype;
+    VkType base;
     string comment;
     bool bitmask;
-    VkEnumMember[] members;
+    OMap!(string, VkEnumMember) members;
 
-    alias vktype this;
+    alias base this;
 }
 
 struct VkEnumMember {
     string name;
+    string type;
     string value;
     string comment;
 }
 
 struct VkStructType {
-    VkType vktype;
+    VkType base;
     string extends;
     VkStructMember[] members;
 
-    alias vktype this;
+    alias base this;
 }
 
 struct VkStructMember {
@@ -114,14 +122,12 @@ struct VkStructMember {
 }
 
 struct VkCommand {
-    VkType vktype;
+    string name;
     string alias_;
     VkCommandParam[] params;
     string[] successes;
     string[] errors;
     string comment;
-
-    alias vktype this;
 }
 
 struct VkCommandParam {
@@ -132,53 +138,89 @@ struct VkCommandParam {
 }
 
 struct VkFeature {
-	string name;
+    string name;
+    string[] supported;
+    VkSection[] sections;
 }
 
 struct VkExtension {
-	string name;
+    string name;
+    int number;
+    string author;
+    VkExtensionType type;
+    string[] supported;
+    string promoted;
+
+    VkSection[] sections;
+}
+
+struct VkSection {
+    string name;
+    string depends;
+
+    string[] types;
+    string[] enums;
+    string[] commands;
 }
 
 enum VkTypeCategory {
-	None = 0,
+    None = 0,
 
-	Include,
-	Define,
-	Basetype,
-	Bitmask,
+    Include,
+    Define,
+    Basetype,
+    Bitmask,
 
-	Handle,
-	Enum,
-	FuncPtr,
-	Struct,
-	Union,
+    Handle,
+    Enum,
+    FuncPtr,
+    Struct,
+    Union,
+}
+
+enum VkExtensionType {
+    Instance,
+    Device,
 }
 
 VkTypeCategory toVkTypeCategory(Char)(in Char[] value) {
-	import std.format : format;
+    import std.format : format;
 
-	switch (value) {
-		case "include":
-			return VkTypeCategory.Include;
-		case "define":
-			return VkTypeCategory.Define;
-		case "basetype":
-			return VkTypeCategory.Basetype;
-		case "bitmask":
-			return VkTypeCategory.Bitmask;
-		case "handle":
-			return VkTypeCategory.Handle;
-		case "enum":
-			return VkTypeCategory.Enum;
-		case "funcpointer":
-			return VkTypeCategory.FuncPtr;
-		case "struct":
-			return VkTypeCategory.Struct;
-		case "union":
-			return VkTypeCategory.Union;
-		case "":
-			return VkTypeCategory.None;
-		default:
-			throw new Exception(format!"unknown category %s"(value));
-	}
+    switch (value) {
+        case "include":
+            return VkTypeCategory.Include;
+        case "define":
+            return VkTypeCategory.Define;
+        case "basetype":
+            return VkTypeCategory.Basetype;
+        case "bitmask":
+            return VkTypeCategory.Bitmask;
+        case "handle":
+            return VkTypeCategory.Handle;
+        case "enum":
+            return VkTypeCategory.Enum;
+        case "funcpointer":
+            return VkTypeCategory.FuncPtr;
+        case "struct":
+            return VkTypeCategory.Struct;
+        case "union":
+            return VkTypeCategory.Union;
+        case "":
+            return VkTypeCategory.None;
+        default:
+            throw new Exception(format!"unknown category %s"(value));
+    }
+}
+
+VkExtensionType toVkExtensionType(Char)(in Char[] value) {
+    import std.format : format;
+
+    switch (value) {
+        case "instance":
+            return VkExtensionType.Instance;
+        case "device":
+            return VkExtensionType.Device;
+        default:
+            throw new Exception(format!"unknown extension type %s"(value));
+    }
 }

@@ -71,7 +71,7 @@ struct App {
         }
 
         if (!input.list.empty) {
-            foreach (i, registry; registries) {
+            foreach (i, ref registry; registries) {
                 logger.info("Registry <yellow>%s</yellow>", registry.name);
 
                 foreach (ls; input.list) {
@@ -129,8 +129,8 @@ struct App {
         }
 
         if (!input.dryrun) {
-            foreach (i, registry; registries) {
-				string preamble = registry.name == "vk" ? import("vk_preamble.txt") : "";
+            foreach (i, ref registry; registries) {
+                string preamble = registry.name == "vk" ? import("vk_preamble.txt") : "";
                 auto emitter = new VkRegistryEmitter(registry, stdout, logger);
                 emitter.emit(preamble);
             }
@@ -142,7 +142,7 @@ struct App {
     private void listPlatforms(ref VkRegistry registry) {
         const namepad = registry.platforms.map!(p => p.name.length).maxElement(0);
         const protpad = registry.platforms.map!(p => p.protect.length).maxElement(0);
-        foreach (platform; registry.platforms) {
+        foreach (ref platform; registry.platforms) {
             logger.info(
                 "<yellow>%-*s</yellow>   <blue>%-*s</blue>   <grey>%s</grey>",
                 namepad, platform.name, protpad, platform.protect, platform.comment,
@@ -155,9 +155,9 @@ struct App {
     }
 
     private void listVendors(ref VkRegistry registry) {
-        const namepad = registry.vendors.map!(v => v.ext.length).maxElement(0);
-        const authpad = registry.vendors.map!(v => v.author.length).maxElement(0);
-        foreach (vendor; registry.vendors) {
+        const namepad = registry.vendors[].map!(v => v.ext.length).maxElement(0);
+        const authpad = registry.vendors[].map!(v => v.author.length).maxElement(0);
+        foreach (ref vendor; registry.vendors) {
             logger.info(
                 "<yellow>%-*s</yellow>   <grey>%-*s</grey>   <grey>%s</grey>",
                 namepad, vendor.ext, authpad, vendor.author, vendor.contact,
@@ -169,8 +169,8 @@ struct App {
         }
     }
 
-	private void listDefines(ref VkRegistry registry) {
-        foreach (define; registry.defines) {
+    private void listDefines(ref VkRegistry registry) {
+        foreach (ref define; registry.defines) {
             if (define.funclike) {
                 logger.info("<lblue>%s</lblue>(...)", define.name);
             } else {
@@ -181,10 +181,10 @@ struct App {
         if (registry.defines.length == 0) {
             logger.info("<grey>%s</grey>", "(no defines)");
         }
-	}
+    }
 
     private void listBasetypes(ref VkRegistry registry) {
-        foreach (basetype; registry.basetypes) {
+        foreach (ref basetype; registry.basetypes) {
             if (basetype.type.empty) {
                 logger.info("<lgreen>%s</lgreen>", basetype.name);
             } else {
@@ -198,11 +198,7 @@ struct App {
     }
 
     private void listHandles(ref VkRegistry registry) {
-        foreach (handle; registry.handles) {
-            if (handle.comment) {
-                logger.info("<grey>// %s</grey>", handle.comment);
-            }
-
+        foreach (ref handle; registry.handles) {
             if (handle.alias_.empty) {
                 logger.info("<lgreen>%s</lgreen>", handle.name);
             } else {
@@ -216,7 +212,7 @@ struct App {
     }
 
     private void listStructs(ref VkRegistry registry) {
-        foreach (struct_; registry.structs) {
+        foreach (ref struct_; registry.structs) {
             const pipe = struct_.members.length > 0 ? "┏╸" : "╺╸";
 
             if (struct_.extends.empty) {
@@ -227,7 +223,7 @@ struct App {
 
             const namepad = struct_.members.map!(m => m.name.length).maxElement(0);
             const typepad = struct_.members.map!(m => m.type.length).maxElement(0);
-            foreach (mi, member; struct_.members) {
+            foreach (mi, ref member; struct_.members) {
                 const mpipe = mi + 1 == struct_.members.length ? "┗━━╸" : "┣━━╸";
                 if (member.optional) {
                     logger.info(
@@ -249,14 +245,14 @@ struct App {
     }
 
     private void listEnums(ref VkRegistry registry) {
-        foreach (enum_; registry.enums) {
+        foreach (ref enum_; registry.enums) {
             const pipe = enum_.members.length > 0 ? "┏╸" : "╺╸";
 
             logger.info("%s<lgreen>%s</lgreen>", pipe, enum_.name);
 
-            const namepad = enum_.members.map!(m => m.name.length).maxElement(0);
-            const valuepad = enum_.members.map!(m => m.value.length).maxElement(0);
-            foreach (mi, member; enum_.members) {
+            const namepad = enum_.members[].map!(m => m.name.length).maxElement(0);
+            const valuepad = enum_.members[].map!(m => m.value.length).maxElement(0);
+            foreach (mi, ref member; enum_.members[]) {
                 const mpipe = mi + 1 == enum_.members.length ? "┗━━╸" : "┣━━╸";
                 logger.info(
                     "%s<lgrey>%-*s</lgrey>   <lgreen>%-*s</lgreen>   <grey>%s</grey>",
@@ -271,7 +267,7 @@ struct App {
     }
 
     private void listCommands(ref VkRegistry registry) {
-        foreach (command; registry.commands) {
+        foreach (ref command; registry.commands) {
             const pipe = command.params.length > 0 ? "┏╸" : "╺╸";
 
             if (command.alias_.empty) {
@@ -282,7 +278,7 @@ struct App {
 
             const namepad = command.params.map!(p => p.name.length).maxElement(0);
             const typepad = command.params.map!(p => p.type.length).maxElement(0);
-            foreach (pi, param; command.params) {
+            foreach (pi, ref param; command.params) {
                 const ppipe = pi + 1 == command.params.length ? "┗━━╸" : "┣━━╸";
                 logger.info(
                     "%s<lgrey>%-*s</lgrey>   <lgreen>%-*s</lgreen>   <grey>%s</grey>",
@@ -297,8 +293,9 @@ struct App {
     }
 
     private void listFeatures(ref VkRegistry registry) {
-        foreach (feature; registry.features) {
+        foreach (ref feature; registry.features) {
             logger.info("<lblue>%s</lblue>", feature.name);
+            listSections(registry, feature.sections);
         }
 
         if (registry.features.length == 0) {
@@ -307,12 +304,22 @@ struct App {
     }
 
     private void listExtensions(ref VkRegistry registry) {
-        foreach (extension; registry.extensions) {
-            logger.info("<lblue>%s</lblue>", extension.name);
+        bool supportedByVulkan(ref VkExtension ext) => ext.supported.empty || ext.supported.canFind("vulkan");
+
+        foreach (ref extension; registry.extensions[].filter!supportedByVulkan) {
+            logger.info("<yellow>%s</yellow> - %d", extension.name, extension.number);
+            listSections(registry, extension.sections);
         }
 
         if (registry.extensions.length == 0) {
             logger.info("<grey>%s</grey>", "(no extensions)");
+        }
+    }
+
+    private void listSections(ref VkRegistry registry, VkSection[] sections) {
+        foreach (ref section; sections) {
+            const pipe = section.enums.length > 0 ? "┏╸" : "╺╸";
+            logger.info("%s<grey>%s</grey>", pipe, section.name);
         }
     }
 }

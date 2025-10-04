@@ -6,14 +6,14 @@ import std.conv : to, text, parse;
 import std.exception : enforce;
 import std.format : format;
 import std.traits;
+import std.range;
+import std.string;
 
 import yxml;
 
 import util;
 import registry;
 import logger;
-import std.string;
-import phobos.sys.meta;
 
 
 /** 
@@ -124,11 +124,10 @@ class VkRegistryParser {
         in (element.tagName == "tags")
     {
         foreach (child; element.childElements) {
-            registry.vendors ~= VkVendor(
-                child.getAttribute("name").idup,
-                child.getAttribute("author").idup,
-                child.getAttribute("contact").idup,
-            );
+            auto name = child.getAttribute("name").idup;
+            auto author = child.getAttribute("author").idup;
+            auto contact = child.getAttribute("contact").idup;
+            registry.vendors[name] = VkVendor(name, author, contact);
         }
     }
 
@@ -138,84 +137,89 @@ class VkRegistryParser {
     private void parseTypes(XmlElement element)
         in (element.tagName == "types")
     {
-        xmlstring comment;
+        foreach (child; element.childElements.filter!(c => c.tagName == "type")) {
+            const base = parseTypeBase(child);
+            registry.types[base.name] = base;
 
-        foreach (child; element.childElements) {
-            if (child.tagName == "comment") {
-                comment = child.textContent;
-                logger.dbg(1, "<grey>// %s</grey>", comment);
-                continue;
-            }
-
-            const category = child.getAttribute("category");
-
-            switch (category.toVkTypeCategory) {
+            switch (base.category) {
                 case VkTypeCategory.Define:
-                    registry.defines ~= parseDefineType(child, comment.consume.idup);
+                    registry.defines[base.name] = parseDefineType(child, base);
                     break;
 
                 case VkTypeCategory.Basetype:
-                    registry.basetypes ~= parseBasetypeType(child, comment.consume.idup);
+                    registry.basetypes[base.name] = parseBasetypeType(child, base);
                     break;
 
                 case VkTypeCategory.Handle:
-                    registry.handles ~= parseHandleType(child, comment.consume.idup);
+                    registry.handles[base.name] = parseHandleType(child, base);
+                    break;
+
+                case VkTypeCategory.Enum:
+                    registry.enums[base.name] = parseEnumType(child, base);
                     break;
 
                 case VkTypeCategory.Struct:
-                    registry.structs ~= parseStructType(child, comment.consume.idup);
+                    registry.structs[base.name] = parseStructType(child, base);
                     break;
 
                 default:
-					comment.consume();
-                    parseSkippedType(child);
+                    parseSkippedType(child, base);
                     break;
             }
         }
     }
 
     /** 
-     * Parse <type category="basetype"> tags.
+     * Parse attributes common to all <type> tag variants.
      */
-	private VkDefineType parseDefineType(XmlElement element, string comment) {
-		VkDefineType result;
+    private VkType parseTypeBase(XmlElement element) {
+        VkType result;
 
         if (auto name = element.getAttribute("name")) {
             result.name = name.idup;
         } else if (auto name = element.firstChildByTagName("name")) {
             result.name = name.textContent.idup;
-
-			auto line = element.firstChild.textContent.splitLines.back;
-			if (line.startsWith("//")) {
-				result.value = line.idup;
-			} else {
-				if (auto type = element.firstChildByTagName("type")) {
-					const content = type.textContent ~ type.nextSibling.textContent;
-					result.value = parseDefineString(content);
-				} else if (auto next = name.nextSibling()) {
-					result.value = next.textContent.strip.idup;
-				}
-			}
         }
 
-		if (auto api = element.getAttribute("api")) {
-			result.critical = api == "vulkansc";
-		}
+        result.category = element.getAttribute("category").toVkTypeCategory;
 
-		return result;
-	}
+        return result;
+    }
 
     /** 
      * Parse <type category="basetype"> tags.
      */
-    private VkBasetypeType parseBasetypeType(XmlElement element, string comment) {
-        VkBasetypeType result;
+    private VkDefineType parseDefineType(XmlElement element, ref const(VkType) base) {
+        VkDefineType result;
+        result.base = base;
 
-        if (auto name = element.getAttribute("name")) {
-            result.name = name.idup;
-        } else if (auto name = element.firstChildByTagName("name")) {
-            result.name = name.textContent.idup;
+        if (auto name = element.firstChildByTagName("name")) {
+            auto line = element.firstChild.textContent.splitLines.back;
+            if (line.startsWith("//")) {
+                result.value = line.idup;
+            } else {
+                if (auto type = element.firstChildByTagName("type")) {
+                    const content = type.textContent ~ type.nextSibling.textContent;
+                    result.value = parseDefineString(content);
+                } else if (auto next = name.nextSibling()) {
+                    result.value = next.textContent.strip.idup;
+                }
+            }
         }
+
+        if (auto api = element.getAttribute("api")) {
+            result.critical = api == "vulkansc";
+        }
+
+        return result;
+    }
+
+    /** 
+     * Parse <type category="basetype"> tags.
+     */
+    private VkBasetypeType parseBasetypeType(XmlElement element, ref const(VkType) base) {
+        VkBasetypeType result;
+        result.base = base;
 
         if (auto type = element.firstChildByTagName("type")) {
             result.type = type.textContent.idup;
@@ -227,26 +231,26 @@ class VkRegistryParser {
     /** 
      * Parse <type category="handle"> tags.
      */
-    private VkHandleType parseHandleType(XmlElement element, string comment) {
+    private VkHandleType parseHandleType(XmlElement element, ref const(VkType) base) {
         VkHandleType result;
-
-        if (comment) {
-            result.comment = comment;
-        }
+        result.base = base;
 
         if (auto alias_ = element.getAttribute("alias")) {
             result.alias_ = alias_.idup;
         }
 
+        return result;
+    }
+
+    /**
+     * Parse <type category="enum"> tags.
+     */ 
+    private VkEnumType parseEnumType(XmlElement element, ref const(VkType) base) {
+        VkEnumType result;
+        result.base = base;
+
         if (auto name = element.getAttribute("name")) {
             result.name = name.idup;
-        } else if (auto name = element.firstChildByTagName("name")) {
-            result.name = name.textContent.idup;
-        }
-
-        // SPECIAL CASE: Visually ungroup debug stuff from WSI.
-        if (result.name == "VkDebugReportCallbackEXT") {
-            result.comment = "Debug extensions";
         }
 
         return result;
@@ -255,12 +259,9 @@ class VkRegistryParser {
     /** 
      * Parse <type category="struct"> tags.
      */
-    private VkStructType parseStructType(XmlElement element, string comment) {
+    private VkStructType parseStructType(XmlElement element, ref const(VkType) base) {
         VkStructType result;
-
-        result.name = element.getAttribute("name").idup;
-
-        result.category = toVkTypeCategory(element.getAttribute("category").idup);
+        result.base = base;
 
         if (auto extends_ = element.getAttribute("structextends")) {
             result.extends = extends_.idup;
@@ -277,16 +278,16 @@ class VkRegistryParser {
                 member.name = name_.textContent.idup;
             }
 
-            if (auto type_ = child.textContent) {
-                member.type = parseTypeString(type_[0..$-member.name.length]);
+            if (auto type = child.textContent) {
+                member.type = parseTypeString(type[0..$-member.name.length]);
             }
 
-            if (auto comment_ = child.getAttribute("comment")) {
-                member.comment = comment_.idup;
+            if (auto comment = child.getAttribute("comment")) {
+                member.comment = comment.idup;
             }
 
-            if (auto values_ = child.getAttribute("values")) {
-                member.values = values_.idup;
+            if (auto values = child.getAttribute("values")) {
+                member.values = values.idup;
             }
 
             if (auto optional = child.getAttribute("optional")) {
@@ -302,20 +303,12 @@ class VkRegistryParser {
     /** 
      * Parse <type> tags that were skipped by our implementation.
      */
-    private void parseSkippedType(XmlElement element) {
-        xmlstring name;
-
-        if (auto n = element.getAttribute("name")) {
-            name = n;
-        } else if (auto n = element.firstChildByTagName("name")) {
-            name = n.textContent;
-        }
-
+    private void parseSkippedType(XmlElement element, ref const(VkType) base) {
         if (auto category = element.getAttribute("category")) {
-            logger.dbg(1, "Skipping %s <yellow>%s</yellow>", category, name);
+            logger.dbg(1, "Skipping %s <yellow>%s</yellow>", category, base.name);
             logger.dbg(2, "%s", element.innerHTML);
         } else {
-            logger.dbg(1, "Skipping <yellow>%s</yellow>", name);
+            logger.dbg(1, "Skipping <yellow>%s</yellow>", base.name);
             logger.dbg(2, "%s", element.innerHTML);
         }
     }
@@ -327,52 +320,129 @@ class VkRegistryParser {
      *   any kind of parent tag unique to them and are instead listed directly
      *   as children of the <registry> tag. Why this was done boggles my mind.
      */
-    private void parseEnums(XmlElement element)
+    private void parseEnums(XmlElement element) {
+        final switch (element.getAttribute("type")) {
+            case "enum":
+                parseEnumEnums(element);
+                break;
+
+            case "bitmask":
+                parseBitmaskEnums(element);
+                break;
+
+            case "constants":
+                parseConstantsEnums(element);
+                break;
+        }
+    }
+
+    /** 
+     * Parse <enums type="enum"> root tags.
+     */
+    private void parseEnumEnums(XmlElement element)
         in (element.tagName == "enums")
     {
         VkEnumType result;
 
-        if (auto name_ = element.getAttribute("name")) {
-            result.name = name_.idup;
+        if (auto name = element.getAttribute("name")) {
+            result.name = name.idup;
         }
 
-        if (auto category_ = element.getAttribute("category")) {
-            result.category = toVkTypeCategory(category_.idup);
+        if (auto category = element.getAttribute("category")) {
+            result.category = toVkTypeCategory(category.idup);
         }
 
-        if (auto comment_ = element.getAttribute("comment")) {
-            result.comment = comment_.idup;
+        if (auto comment = element.getAttribute("comment")) {
+            result.comment = comment.idup;
         }
 
         if (auto bitmask = element.getAttribute("bitmask")) {
             result.bitmask = parse!bool(bitmask);
         }
 
-        foreach (child; element.childElements) {
-            if (child.tagName != "enum") {
-                continue;
-            }
-
+        foreach (child; element.childElements.filter!(e => e.tagName == "enum")) {
             VkEnumMember member;
 
-            if (auto name_ = child.getAttribute("name")) {
-                member.name = name_.idup;
+            if (auto cname = child.getAttribute("name")) {
+                member.name = cname.idup;
             }
 
-            if (auto comment_ = child.getAttribute("comment")) {
-                member.comment = comment_.idup;
+            if (auto comment = child.getAttribute("comment")) {
+                member.comment = comment.idup;
             }
 
-            if (auto value_ = child.getAttribute("value")) {
-                member.value = value_.idup;
+            if (auto value = child.getAttribute("value")) {
+                member.value = value.idup;
             } else if (auto bitpos_ = child.getAttribute("bitpos")) {
                 member.value = (1 << bitpos_.to!ulong).text;
             }
 
-            result.members ~= member;
+            registry.constants[member.name] = result.name;
+
+            result.members[member.name] = member;
         }
 
-        registry.enums ~= result;
+        registry.enums[result.name] = __rvalue(result);
+    }
+
+    /**
+     * Parse <enums type="bitmask"> root tags. 
+     */
+    private void parseBitmaskEnums(XmlElement element) {
+        VkEnumType result;
+
+        if (auto name = element.getAttribute("name")) {
+            result.name = name.idup;
+        }
+
+        foreach (child; element.childElements.filter!(e => e.tagName == "enum")) {
+            VkEnumMember member;
+
+            if (auto cname = child.getAttribute("name")) {
+                member.name = cname.idup;
+            }
+
+            if (auto comment = child.getAttribute("comment")) {
+                member.comment = comment.idup;
+            }
+
+            if (auto value = child.getAttribute("value")) {
+                member.value = value.idup;
+            } else if (auto bitpos_ = child.getAttribute("bitpos")) {
+                member.value = (1 << bitpos_.to!ulong).text;
+            }
+
+            registry.constants[member.name] = result.name;
+
+            result.members[member.name] = member;
+        }
+
+        registry.enums[result.name] = __rvalue(result);
+    }
+
+    /**
+     * Parse <enums type="constants"> root tags.
+     */
+    private void parseConstantsEnums(XmlElement element) {
+        VkEnumType result;
+
+        if (auto name = element.getAttribute("name")) {
+            result.name = name.idup;
+        }
+
+        foreach (child; element.childElements) {
+            VkEnumMember member;
+
+            member.name = child.getAttribute("name").idup;
+            member.type = parseTypeString(child.getAttribute("type"));
+            member.value = child.getAttribute("value").idup;
+
+            registry.constants[member.name] = result.name;
+
+            result.members[member.name] = member;
+        }
+
+        registry.enums[result.name] = __rvalue(result);
     }
 
     /** 
@@ -382,7 +452,8 @@ class VkRegistryParser {
         in (element.tagName == "commands")
     {
         foreach (child; element.childElements) {
-            registry.commands ~= parseCommand(child);
+            auto command = parseCommand(child);
+            registry.commands[command.name] = command;
         }
     }
 
@@ -451,9 +522,43 @@ class VkRegistryParser {
     private void parseFeature(XmlElement element)
         in (element.tagName == "feature")
     {
-        registry.features ~= VkFeature(
-            element.getAttribute("name").idup,
-        );
+        VkFeature result;
+
+        result.name = element.getAttribute("name").idup;
+
+        if (auto supported = element.getAttribute("api")) {
+            result.supported = supported.idup.split(",");
+        }
+
+        foreach (require; element.childElements) {
+            VkSection section;
+
+            section.name = require.getAttribute("comment").idup;
+
+            foreach (child; require.childElements) {
+                switch (child.tagName) {
+                    case "enum":
+                        parseSectionEnum(section, child);
+                        break;
+
+                    case "type":
+                        parseSectionType(section, child);
+                        break;
+
+                    case "command":
+                        parseSectionCommand(section, child);
+                        break;
+
+                    default:
+                        // parseSectionSkipped(section, child);
+                        break;
+                }
+            }
+
+            result.sections ~= section;
+        }
+
+        registry.features ~= result;
     }
 
     /** 
@@ -463,29 +568,132 @@ class VkRegistryParser {
         in (element.tagName == "extensions")
     {
         foreach (child; element.childElements) {
-            registry.extensions ~= VkExtension(
-                child.getAttribute("name").idup,
-            );
+            auto extension = parseExtension(child);
+            registry.extensions[extension.number] = extension;
         }
     }
 
-	/** 
-	 * Utility for parsing a define string.
-	 * 
-	 * Params:
-	 *   define = A define in string form obtained from an XML document.
-	 * 
-	 * Returns: the D equivalent of the given define.
-	 */
-	private static string parseDefineString(xmlstring define) {
-		const commentStart = define.indexOf("//");
+    /** 
+     * Parse an individual <extension> tag and return its value.
+     */
+    private VkExtension parseExtension(XmlElement element) {
+        VkExtension result;
 
-		if (commentStart != -1) {
-			return define[0..commentStart].idup;
-		} else {
-			return define.idup;
-		}
-	}
+        if (auto name = element.getAttribute("name")) {
+            result.name = name.idup;
+        }
+
+        if (auto number = element.getAttribute("number")) {
+            result.number = number.parse!int;
+        }
+
+        if (auto type = element.getAttribute("type")) {
+            result.type = type.toVkExtensionType;
+        }
+
+        if (auto author = element.getAttribute("author")) {
+            result.author = author.idup;
+        }
+
+        if (auto supported = element.getAttribute("supported")) {
+            result.supported = supported.idup.split(",");
+        }
+
+        if (auto promoted = element.getAttribute("promotedto")) {
+            result.promoted = promoted.idup;
+        }
+
+        foreach (require; element.childElements) {
+            VkSection section;
+
+            section.depends = require.getAttribute("depends").idup;
+            section.name = section.depends;
+
+            foreach (child; require.childElements) {
+                switch (child.tagName) {
+                    case "enum":
+                        parseSectionEnum(section, child);
+                        break;
+
+                    case "type":
+                        parseSectionType(section, child);
+                        break;
+
+                    case "command":
+                        parseSectionCommand(section, child);
+                        break;
+
+                    default:
+                        // parseSectionSkipped(section, child);
+                        break;
+                }
+            }
+
+            result.sections ~= section;
+        }
+
+        return result;
+    }
+
+    private void parseSectionEnum(ref VkSection section, XmlElement element) {
+        if (auto name = element.getAttribute("name")) {
+            if (name !in registry.constants) {
+                xmlstring enumname;
+                xmlstring enumvalue;
+
+                if (auto extends = element.getAttribute("extends")) {
+                    enumname = extends;
+                } else {
+                    enumname = "API Constants";
+                }
+
+                if (auto value = element.getAttribute("value")) {
+                    enumvalue = value;
+                } else if (auto bitpos = element.getAttribute("bitpos")) {
+                    enumvalue = (1 << bitpos.parse!int).to!string;
+                }
+
+                logger.dbg(1, "enum %s::%s = %s", enumname, name, enumvalue);
+
+                auto ref enum_ = registry.enums[enumname];
+
+                VkEnumMember member;
+                member.name = name.idup;
+                member.value = enumvalue.idup;
+
+                enum_.members[member.name] = member;
+                registry.constants[member.name] = enum_.name;
+            }
+        }
+
+        section.enums ~= element.getAttribute("name").idup;
+    }
+
+    private void parseSectionType(ref VkSection section, XmlElement element) {
+        section.types ~= element.getAttribute("name").idup;
+    }
+
+    private void parseSectionCommand(ref VkSection section, XmlElement element) {
+        section.commands ~= element.getAttribute("name").idup;
+    }
+
+    /** 
+     * Utility for parsing a define string.
+     * 
+     * Params:
+     *   define = A define in string form obtained from an XML document.
+     * 
+     * Returns: the D equivalent of the given define.
+     */
+    private static string parseDefineString(xmlstring define) {
+        const commentStart = define.indexOf("//");
+
+        if (commentStart != -1) {
+            return define[0..commentStart].idup;
+        } else {
+            return define.idup;
+        }
+    }
 
     /** 
      * Utility for parsing a type string into D form.
@@ -498,6 +706,41 @@ class VkRegistryParser {
     private static string parseTypeString(xmlstring type) {
         import std.algorithm.searching : startsWith;
         import std.ascii : isAlphaNum, isWhite;
+
+        switch (type) {
+            case "int8_t":
+                return byte.stringof;
+
+            case "uint8_t":
+                return ubyte.stringof;
+
+            case "int16_t":
+                return short.stringof;
+
+            case "uint16_t":
+                return ushort.stringof;
+
+            case "int32_t":
+                return int.stringof;
+
+            case "uint32_t":
+                return uint.stringof;
+
+            case "int64_t":
+                return long.stringof;
+
+            case "uint64_t":
+                return ulong.stringof;
+
+            case "float":
+                return float.stringof;
+
+            case "double":
+                return double.stringof;
+
+            default:
+                break;
+        }
 
         string result;
 
