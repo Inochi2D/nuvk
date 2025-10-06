@@ -6,10 +6,9 @@ import std.stdio;
 import std.string;
 import std.traits;
 
-import nulib.collections.set;
-
 import logger;
 import registry;
+import util : camelToScreaming;
 
 
 /** 
@@ -48,14 +47,15 @@ class VkRegistryEmitter {
         file.uncomment();
 
         // Module name, imports, attributes.
-        file.writeln("module vulkan.core;");
-        file.writeln("import numem.core.types : OpaqueHandle;");
+        file.writeln("module vulkan.core;\n");
+        file.writeln("import vulkan.defines;");
         file.writeln("import vulkan.loader;");
+        file.writeln("import numem.core.types : OpaqueHandle;\n");
         file.writeln("extern (System) @nogc nothrow:");
 
         // Emit every section of every feature.
-        foreach (ref feature; registry.features) {
-            file.writefln!"\n// %s\n"(feature.name);
+        foreach (ref feature; registry.features.filter!(f => "vulkan" in f)) {
+            file.writefln!"\n// %s"(feature.name);
             foreach (ref section; feature.sections) {
                 emitSection(section);
             }
@@ -63,8 +63,12 @@ class VkRegistryEmitter {
     }
 
     private void emitSection(ref VkSection section) {
-        // Section marker
-        file.writefln!"\n// %s\n"(section.name);
+        // Section marker.
+        if (!section.name.empty) {
+            file.writefln!"\n// %s"(section.name);
+        }
+
+        VkTypeCategory prevcategory = VkTypeCategory.None;
 
         foreach (name; section.enums) {
             if (auto const_ = name in registry.constants) {
@@ -72,17 +76,22 @@ class VkRegistryEmitter {
                 auto member = enum_.members[name];
 
                 if (member.type.empty) {
-                    emitEnum(member.name, member.value);
+                    emitMConst(member.name, member.value);
                 } else {
-                    emitEnum(member.type, member.name, member.value);
+                    emitMConst(member.type, member.name, member.value);
                 }
             } else {
                 logger.err("%s not found", name);
             }
+
+            prevcategory = VkTypeCategory.Define;
         }
 
-        foreach (i, type; section.types.map!(t => registry.types[t]).array) {
-            const last = i + 1 == section.types.length;
+        foreach (type; section.types.map!(t => registry.types[t]).array) {
+            if (prevcategory != type.category || isMultiline(prevcategory) || isMultiline(type.category)) {
+                file.writeln();
+            }
+
             switch (type.category) {
                 case VkTypeCategory.Define:
                     emitDefine(registry.defines[type.name]);
@@ -92,50 +101,73 @@ class VkRegistryEmitter {
                     emitBasetype(registry.basetypes[type.name]);
                     break;
 
+                case VkTypeCategory.Bitmask:
+                    emitBitmask(registry.bitmasks[type.name]);
+                    break;
+
                 case VkTypeCategory.Handle:
                     emitHandle(registry.handles[type.name]);
                     break;
 
+                case VkTypeCategory.Enum:
+                    emitEnum(registry.enums[type.name]);
+                    break;
+
+                case VkTypeCategory.FuncPtr:
+                    emitFuncPtr(registry.funcptrs[type.name]);
+                    break;
+
                 case VkTypeCategory.Struct:
-                    emitStruct(registry.structs[type.name], last);
+                    emitStruct(registry.structs[type.name]);
+                    break;
+
+                case VkTypeCategory.Union:
+                    emitUnion(registry.unions[type.name]);
                     break;
 
                 default:
-                    logger.dbg(1, "skipping type %s", type.name);
+                    file.writefln!"// -=[%s]=-"(type.name);
                     break;
             }
+
+            prevcategory = type.category;
         }
 
         foreach (command; section.commands.map!(c => registry.commands[c])) {
-            logger.dbg(1, "skipping command %s", command.name);
+            if (command.params.empty) {
+                file.writefln!"\n%s %s();"(command.type, command.name);
+            } else {
+                file.writefln!"\n%s %s("(command.type, command.name);
+                file.indent();
+                foreach (param; command.params) {
+                    file.writefln!"%s %s,"(param.type, param.name);
+                }
+                file.dedent();
+                file.writeln(");");
+            }
         }
     }
 
     private void emitDefine(ref VkDefineType define) {
-        if (define.critical || define.name.startsWith("VKSC")) {
-            logger.dbg(1, "skipping security-critical define <lblue>%s</lblue>", define.name);
-        } else if (bespoke.contains(define.name)) {
+        if (isBespoke(define.name)) {
             logger.dbg(1, "skipping define with bespoke impl. <lblue>%s</lblue>", define.name);
         } else if (define.commented) {
             logger.dbg(1, "ignoring commented out define <lblue>%s</lblue>", define.name);
         } else {
-            emitEnum(define.name, define.value);
+            emitMConst(define.name, define.value);
         }
     }
 
     private void emitBasetype(ref VkBasetypeType basetype) {
-        switch (basetype.type) {
-            case "uint32_t":
-                emitAlias(basetype.name, uint.stringof);
-                break;
+        emitAlias(basetype.name, basetype.type);
+    }
 
-            case "uint64_t":
-                emitAlias(basetype.name, ulong.stringof);
-                break;
-
-            default:
-                break;
-        }
+    private void emitBitmask(ref VkBitmaskType bitmask) {
+        file.writefln!"alias %s = %s;"(bitmask.name, bitmask.backing);
+        // if (bitmask.requires.empty) {
+        // } else {
+        //     file.writefln!"alias %s = BitFlags!%s;"(bitmask.name, bitmask.requires);
+        // }
     }
 
     private void emitHandle(ref VkHandleType handle) {
@@ -147,17 +179,77 @@ class VkRegistryEmitter {
         }
     }
 
-    private void emitStruct(ref VkStructType struct_, bool last) {
+    private void emitEnum(ref VkEnumType enum_) {
+        if (enum_.bitmask) {
+            emitBitmask(enum_);
+        } else if (enum_.members.empty) {
+            file.writefln!"enum %s {}"(enum_.name);
+        } else {
+            const prefix = enum_.name.camelToScreaming ~ "_";
+            file.writefln!"enum %s {"(enum_.name);
+            file.indent();
+            foreach (ref member; enum_.members) {
+                file.writefln!"%s = %s,"(member.shortName(prefix), member.value);
+            }
+            file.dedent();
+            file.writeln("}\n");
+            foreach (ref member; enum_.members) {
+                file.writefln!"enum %s = %s.%s;"(member.name, enum_.name, member.shortName(prefix));
+            }
+        }
+    }
+
+    private void emitBitmask(ref VkEnumType enum_) {
+        if (enum_.members.empty) {
+            file.writefln!"enum %s : %s {}"(enum_.name, enum_.backingType);
+        } else {
+            const prefix = enum_.name.camelToScreaming ~ "_";
+            file.writefln!"enum %s : %s {"(enum_.name, enum_.backingType);
+            file.indent();
+            foreach (ref member; enum_.members) {
+                file.writefln!"%s = %s,"(member.shortName(prefix), member.value);
+            }
+            file.dedent();
+            file.writeln("}\n");
+            foreach (ref member; enum_.members) {
+                file.writefln!"enum %s = %s.%s;"(member.name, enum_.name, member.shortName(prefix));
+            }
+        }
+    }
+
+    private void emitFuncPtr(ref VkFuncPtrType funcptr) {
+        file.writefln!"alias %s = %s"(funcptr.name, funcptr.value);
+    }
+
+    private void emitStruct(ref VkStructType struct_) {
         if (struct_.members.empty) {
             file.writefln!"struct %s {}"(struct_.name);
         } else {
             file.writefln!"struct %s {"(struct_.name);
             file.indent();
             foreach (ref member; struct_.members) {
+                if (member.values.length == 1) {
+                    file.writefln!"%s %s = %s;"(member.type, member.name, member.values[0]);
+                } else {
+                    file.writefln!"%s %s;"(member.type, member.name);
+                }
+            }
+            file.dedent();
+            file.writeln("}");
+        }
+    }
+
+    private void emitUnion(ref VkUnionType union_) {
+        if (union_.members.empty) {
+            file.writefln!"union %s {}"(union_.name);
+        } else {
+            file.writefln!"union %s {"(union_.name);
+            file.indent();
+            foreach (ref member; union_.members) {
                 file.writefln!"%s %s;"(member.type, member.name);
             }
             file.dedent();
-            file.writeln(last ? "}" : "}\n");
+            file.writeln("}");
         }
     }
 
@@ -165,11 +257,11 @@ class VkRegistryEmitter {
         file.writefln!"alias %s = %s;"(lhs, rhs);
     }
 
-    private void emitEnum(string name, string value) {
+    private void emitMConst(string name, string value) {
         file.writefln!"enum %s = %s;"(name, value);
     }
 
-    private void emitEnum(string type, string name, string value) {
+    private void emitMConst(string type, string name, string value) {
         file.writefln!"enum %s %s = %s;"(type, name, value);
     }
 }
@@ -247,24 +339,39 @@ package struct Emitter {
     }
 }
 
-private set!string bespoke;
+bool isMultiline(VkTypeCategory category) => multiline.get(category, false);
 
-static this() {
-    bespoke.insert("VK_MAKE_VERSION");
-    bespoke.insert("VK_VERSION_MAJOR");
-    bespoke.insert("VK_VERSION_MINOR");
-    bespoke.insert("VK_VERSION_PATCH");
+private const bool[VkTypeCategory] multiline = [
+    VkTypeCategory.Include: false,
+    VkTypeCategory.Define: false,
+    VkTypeCategory.Basetype: false,
+    VkTypeCategory.Bitmask: false,
+    VkTypeCategory.Handle: false,
+    VkTypeCategory.Enum: true,
+    VkTypeCategory.FuncPtr: true,
+    VkTypeCategory.Struct: true,
+    VkTypeCategory.Union: true,
+];
 
-    bespoke.insert("VK_MAKE_API_VERSION");
-    bespoke.insert("VK_API_VERSION_VARIANT");
-    bespoke.insert("VK_API_VERSION_MAJOR");
-    bespoke.insert("VK_API_VERSION_MINOR");
-    bespoke.insert("VK_API_VERSION_PATCH");
+bool isBespoke(string name) => bespoke.get(name, false);
 
-    bespoke.insert("VK_USE_64_BIT_PTR_DEFINES");
+private const bool[string] bespoke = [
+    "VK_MAKE_VERSION": true,
+    "VK_VERSION_MAJOR": true,
+    "VK_VERSION_MINOR": true,
+    "VK_VERSION_PATCH": true,
 
-    bespoke.insert("VK_NULL_HANDLE");
+    "VK_MAKE_API_VERSION": true,
+    "VK_API_VERSION_VARIANT": true,
+    "VK_API_VERSION_MAJOR": true,
+    "VK_API_VERSION_MINOR": true,
+    "VK_API_VERSION_PATCH": true,
 
-    bespoke.insert("VK_DEFINE_HANDLE");
-    bespoke.insert("VK_DEFINE_NON_DISPATCHABLE_HANDLE");
-}
+    "VK_USE_64_BIT_PTR_DEFINES": true,
+
+    "VK_NULL_HANDLE": true,
+
+    "VK_DEFINE_HANDLE": true,
+    "VK_DEFINE_NON_DISPATCHABLE_HANDLE": true,
+    
+];

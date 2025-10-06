@@ -57,7 +57,7 @@ struct App {
     int run() {
         foreach (i, url; parallel(input.names.map!toUrl)) {
             if (input.verbose) {
-                logger.dbg(1, "Fetching <orange>%s</orange>...", url);
+                logger.dbg(1, "fetching <orange>%s</orange>...", url);
             }
 
             try {
@@ -96,12 +96,16 @@ struct App {
                             listHandles(registry);
                             break;
 
-                        case "structs":
-                            listStructs(registry);
-                            break;
-
                         case "enums":
                             listEnums(registry);
+                            break;
+
+                        case "funcptrs":
+                            listFuncPtrs(registry);
+                            break;
+
+                        case "structs":
+                            listStructs(registry);
                             break;
 
                         case "commands":
@@ -211,6 +215,34 @@ struct App {
         }
     }
 
+    private void listEnums(ref VkRegistry registry) {
+        foreach (ref enum_; registry.enums) {
+            const pipe = enum_.members.length > 0 ? "┏╸" : "╺╸";
+
+            logger.info("%s<lgreen>%s</lgreen>", pipe, enum_.name);
+
+            const namepad = enum_.members[].map!(m => m.name.length).maxElement(0);
+            const valuepad = enum_.members[].map!(m => m.value.length).maxElement(0);
+            foreach (mi, ref member; enum_.members[]) {
+                const mpipe = mi + 1 == enum_.members.length ? "┗━━╸" : "┣━━╸";
+                logger.info(
+                    "%s<lgrey>%-*s</lgrey>   <lgreen>%-*s</lgreen>   <grey>%s</grey>",
+                    mpipe, namepad, member.name, valuepad, member.value, member.comment,
+                );
+            }
+        }
+
+        if (registry.enums.length == 0) {
+            logger.info("<grey>%s</grey>", "(no enums)");
+        }
+    }
+
+    private void listFuncPtrs(ref VkRegistry registry) {
+        foreach (ref funcptr; registry.funcptrs) {
+            logger.info("<lgreen>%s</lgreen> = %s", funcptr.name, funcptr.value);
+        }
+    }
+
     private void listStructs(ref VkRegistry registry) {
         foreach (ref struct_; registry.structs) {
             const pipe = struct_.members.length > 0 ? "┏╸" : "╺╸";
@@ -244,34 +276,12 @@ struct App {
         }
     }
 
-    private void listEnums(ref VkRegistry registry) {
-        foreach (ref enum_; registry.enums) {
-            const pipe = enum_.members.length > 0 ? "┏╸" : "╺╸";
-
-            logger.info("%s<lgreen>%s</lgreen>", pipe, enum_.name);
-
-            const namepad = enum_.members[].map!(m => m.name.length).maxElement(0);
-            const valuepad = enum_.members[].map!(m => m.value.length).maxElement(0);
-            foreach (mi, ref member; enum_.members[]) {
-                const mpipe = mi + 1 == enum_.members.length ? "┗━━╸" : "┣━━╸";
-                logger.info(
-                    "%s<lgrey>%-*s</lgrey>   <lgreen>%-*s</lgreen>   <grey>%s</grey>",
-                    mpipe, namepad, member.name, valuepad, member.value, member.comment,
-                );
-            }
-        }
-
-        if (registry.enums.length == 0) {
-            logger.info("<grey>%s</grey>", "(no enums)");
-        }
-    }
-
     private void listCommands(ref VkRegistry registry) {
         foreach (ref command; registry.commands) {
             const pipe = command.params.length > 0 ? "┏╸" : "╺╸";
 
             if (command.alias_.empty) {
-                logger.info("%s<yellow>%s</yellow>", pipe, command.name);
+                logger.info("%s<yellow>%s</yellow> -&gt; <lgreen>%s</lgreen>", pipe, command.name, command.type);
             } else {
                 logger.info("%s<lblue>%s</lblue> = <yellow>%s</yellow>", pipe, command.name, command.alias_);
             }

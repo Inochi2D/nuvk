@@ -16,3 +16,33 @@ T consume(T)(ref T var, T value = T.init) {
 	var = value;
 	return prev;
 }
+
+/** 
+ * Convert a name from camel-case to screaming-snake-case.
+ * 
+ * Params:
+ *   name = A name in camel-case.
+ * 
+ * Returns: the same name but in screaming-snake-case.
+ */
+string camelToScreaming(string name) {
+    import std.ascii;
+
+    string result;
+
+    foreach (i, c; name) {
+        if (i > 0 && c.isUpper) {
+            result ~= "_" ~ c.toUpper;
+        } else {
+            result ~= c.toUpper;
+        }
+    }
+
+    return result;
+}
+
+///
+@"camel to screaming works"
+unittest {
+    assert(camelToScreaming("VkResult"), "VK_RESULT");
+}

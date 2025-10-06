@@ -28,14 +28,23 @@ class VkRegistry {
     /** Registered base types */
     OMap!(string, VkBasetypeType) basetypes;
 
+    /** Registered bitmasks */
+    OMap!(string, VkBitmaskType) bitmasks;
+
     /** Registered handles. */
     OMap!(string, VkHandleType) handles;
+
+    /** Registered enums. */
+    OMap!(string, VkEnumType) enums;
 
     /** Registered structs. */
     OMap!(string, VkStructType) structs;
 
-    /** Registered enums. */
-    OMap!(string, VkEnumType) enums;
+    /** Registered unions. */
+    OMap!(string, VkUnionType) unions;
+
+    /** Registered function pointers. */
+    OMap!(string, VkFuncPtrType) funcptrs;
 
     /** Registered commands. */
     OMap!(string, VkCommand) commands;
@@ -67,7 +76,7 @@ struct VkType {
 struct VkDefineType {
     VkType base;
     string value;
-    bool critical;
+    string[] api;
 
     alias base this;
 
@@ -78,6 +87,14 @@ struct VkDefineType {
 struct VkBasetypeType {
     VkType base;
     string type;
+
+    alias base this;
+}
+
+struct VkBitmaskType {
+    VkType base;
+    string requires;
+    string backing;
 
     alias base this;
 }
@@ -93,6 +110,7 @@ struct VkEnumType {
     VkType base;
     string comment;
     bool bitmask;
+    VkBitWidth width = VkBitWidth.U32;
     OMap!(string, VkEnumMember) members;
 
     alias base this;
@@ -102,6 +120,15 @@ struct VkEnumType {
             this.tupleof[i] = __rvalue(field);
         }
     }
+
+    @property string backingType() {
+        final switch (width) {
+            case VkBitWidth.U32:
+                return "uint";
+            case VkBitWidth.U64:
+                return "ulong";
+        }
+    }
 }
 
 struct VkEnumMember {
@@ -109,6 +136,22 @@ struct VkEnumMember {
     string type;
     string value;
     string comment;
+
+    string shortName(string prefix) {
+        import std.ascii : isDigit;
+
+        enum suffix = "FLAG_BITS_";
+
+        if (prefix.endsWith(suffix)) {
+            prefix = prefix[0 .. $ - suffix.length];
+        }
+
+        if (name.startsWith(prefix) && !name[prefix.length].isDigit) {
+            return name[prefix.length .. $];
+        } else {
+            return name;
+        }
+    }
 }
 
 struct VkStructType {
@@ -126,16 +169,37 @@ struct VkStructType {
 }
 
 struct VkStructMember {
-    string type;
     string name;
-    string values;
+    string type;
+    string[] values;
+    bool optional = false;
+
     string comment;
-    bool optional;
+}
+
+struct VkUnionType {
+    VkType base;
+    VkUnionMember[] members;
+
+    alias base this;
+}
+
+struct VkUnionMember {
+    string name;
+    string type;
+}
+
+struct VkFuncPtrType {
+    VkType base;
+    string value;
+
+    alias base this;
 }
 
 struct VkCommand {
     string name;
     string alias_;
+    string type;
     VkCommandParam[] params;
     string[] successes;
     string[] errors;
@@ -157,8 +221,12 @@ struct VkCommandParam {
 
 struct VkFeature {
     string name;
-    string[] supported;
+    string[] api;
     VkSection[] sections;
+
+    bool opBinaryRight(string op : "in")(string name) const {
+        return api.any!(api => api == name);
+    }
 }
 
 struct VkExtension {
@@ -179,6 +247,8 @@ struct VkSection {
     string[] types;
     string[] enums;
     string[] commands;
+
+    @property bool empty() => types.empty && enums.empty && commands.empty;
 }
 
 enum VkTypeCategory {
@@ -199,6 +269,11 @@ enum VkTypeCategory {
 enum VkExtensionType {
     Instance,
     Device,
+}
+
+enum VkBitWidth {
+    U32,
+    U64,
 }
 
 VkTypeCategory toVkTypeCategory(Char)(in Char[] value) {

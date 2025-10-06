@@ -11,15 +11,14 @@ stringImportPaths "text"
 
 dependency "cosmicolor" version="~>0.1.3"
 dependency "yxml" version="~>0.1.7"
-dependency "nulib" version="~>0.3.7"
 
 configuration "application" {
-	targetType "executable"
-	mainSourceFile "source/app.d"
+    targetType "executable"
+    mainSourceFile "source/app.d"
 }
 
 configuration "unittest" {
-	targetType "autodetect"
+    targetType "autodetect"
 
-	dependency "silly" version="~>1.2.0-dev.2"
+    dependency "silly" version="~>1.2.0-dev.2"
 }
