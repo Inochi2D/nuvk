@@ -301,6 +301,8 @@ class VkRegistryParser {
      * Parse <type category="funcpointer"> tags.
      */
     private VkFuncPtrType parseFuncPtrType(XmlElement element, ref const(VkType) base) {
+        import std.ascii : isAlphaNum;
+
         VkFuncPtrType result;
         result.base = base;
 
@@ -310,11 +312,31 @@ class VkRegistryParser {
 
         auto text = element.textContent;
         text = text.replaceFirst("typedef ", "");
-        text = text.replaceFirst(regex(`\(VKAPI_PTR\s*\*\s*\w+\)`), "function");
+        text = text.replaceFirst(regex(` \(VKAPI_PTR\s*\*\s*\w+\)`), "");
         text = text.replaceFirst("(void)", "()");
-        // Push closing parens to next line, except for parameterless functions.
-        text = text.replaceFirst(regex(`(?<!\()\);`), ",\n);");
-        result.value = text.idup;
+
+        auto paropenIndex = text.indexOf("(");
+        assert(paropenIndex != -1, "did not find opening parenthesis");
+        result.type = parseTypeString(text[0 .. paropenIndex]);
+        text = text[paropenIndex + 1 .. $ - ");".length];
+
+        auto types = element.getChildrenByTagName("type");
+        auto lines = text.split(",").map!(t => t.strip);
+
+        foreach (line, type; zip(lines, types)) {
+            VkParam param;
+
+            size_t nameLength = 0;
+            while (line[$ - nameLength - 1].isAlphaNum) {
+                nameLength += 1;
+            }
+            param.name = line[$ - nameLength .. $].idup;
+
+            auto whole = line[0 .. $ - nameLength].strip;
+            param.type = parseTypeString(type.textContent, whole);
+
+            result.params ~= __rvalue(param);
+        }
 
         return result;
     }
@@ -658,7 +680,7 @@ class VkRegistryParser {
                 continue;
             }
 
-            VkCommandParam param;
+            VkParam param;
 
             if (auto name = child.firstChildByTagName("name")) {
                 param.name = name.textContent.idup;

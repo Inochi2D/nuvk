@@ -126,6 +126,7 @@ class VkRegistryEmitter {
                     break;
 
                 default:
+                    logger.dbg(1, "emitting %s type %s", type.category, type.name);
                     file.writefln!"// -=[%s]=-"(type.name);
                     break;
             }
@@ -135,9 +136,11 @@ class VkRegistryEmitter {
 
         foreach (command; section.commands.map!(c => registry.commands[c])) {
             if (command.params.empty) {
-                file.writefln!"\n%s %s();"(command.type, command.name);
+                file.writeln();
+                file.writefln!"extern %s %s();"(command.type, command.name);
             } else {
-                file.writefln!"\n%s %s("(command.type, command.name);
+                file.writeln();
+                file.writefln!"extern %s %s("(command.type, command.name);
                 file.indent();
                 foreach (param; command.params) {
                     file.writefln!"%s %s,"(param.type, param.name);
@@ -218,7 +221,20 @@ class VkRegistryEmitter {
     }
 
     private void emitFuncPtr(ref VkFuncPtrType funcptr) {
-        file.writefln!"alias %s = %s"(funcptr.name, funcptr.value);
+        if (funcptr.params.empty) {
+            file.writefln!"alias %s = %s function();"(funcptr.name, funcptr.type);
+        } else {
+            file.writefln!"alias %s = %s function("(funcptr.name, funcptr.type);
+            file.indent();
+            foreach (ref param; funcptr.params) {
+                file.writefln!"%s %s,"(param.type, param.name);
+            }
+            file.dedent();
+            file.writeln(");");
+        }
+
+        // file.writefln!"alias %s = %s"(funcptr.name, funcptr.value);
+        // file.writefln!"// -=[%s]=-"(funcptr.name);
     }
 
     private void emitStruct(ref VkStructType struct_) {

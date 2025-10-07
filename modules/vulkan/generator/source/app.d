@@ -92,6 +92,10 @@ struct App {
                             listBasetypes(registry);
                             break;
 
+                        case "bitmasks":
+                            listBitmasks(registry);
+                            break;
+
                         case "handles":
                             listHandles(registry);
                             break;
@@ -106,6 +110,10 @@ struct App {
 
                         case "structs":
                             listStructs(registry);
+                            break;
+
+                        case "unions":
+                            listUnions(registry);
                             break;
 
                         case "commands":
@@ -201,6 +209,20 @@ struct App {
         }
     }
 
+    private void listBitmasks(ref VkRegistry registry) {
+        foreach (ref bitmask; registry.bitmasks) {
+            if (bitmask.requires.empty) {
+                logger.info("<lgreen>%s</lgreen> : <lblue>%s</lblue>", bitmask.name, bitmask.backing);
+            } else {
+                logger.info("<lgreen>%s</lgreen> : <lgreen>%s</lgreen>", bitmask.name, bitmask.requires);
+            }
+        }
+
+        if (registry.basetypes.length == 0) {
+            logger.info("<grey>%s</grey>", "(no bitmasks)");
+        }
+    }
+
     private void listHandles(ref VkRegistry registry) {
         foreach (ref handle; registry.handles) {
             if (handle.alias_.empty) {
@@ -239,7 +261,17 @@ struct App {
 
     private void listFuncPtrs(ref VkRegistry registry) {
         foreach (ref funcptr; registry.funcptrs) {
-            logger.info("<lgreen>%s</lgreen> = %s", funcptr.name, funcptr.value);
+            const pipe = funcptr.params.length > 0 ? "┏╸" : "╺╸";
+            logger.info("%s<lgreen>%s</lgreen> -&gt; <lgreen>%s</lgreen>", pipe, funcptr.name, funcptr.type);
+
+            const namepad = funcptr.params.map!(p => p.name.length).maxElement(0);
+            foreach (pi, ref param; funcptr.params) {
+                const ppipe = pi + 1 == funcptr.params.length ? "┗━━╸" : "┣━━╸";
+                logger.info(
+                    "%s<lgrey>%-*s</lgrey>   <lgreen>%s</lgreen>",
+                    ppipe, namepad, param.name, param.type,
+                );
+            }
         }
     }
 
@@ -273,6 +305,28 @@ struct App {
 
         if (registry.structs.length == 0) {
             logger.info("<grey>%s</grey>", "(no structs)");
+        }
+    }
+
+    private void listUnions(ref VkRegistry registry) {
+        foreach (ref union_; registry.unions) {
+            const pipe = union_.members.length > 0 ? "┏╸" : "╺╸";
+
+            logger.info("%s<lgreen>%s</lgreen>", pipe, union_.name);
+
+            const namepad = union_.members.map!(m => m.name.length).maxElement(0);
+            const typepad = union_.members.map!(m => m.type.length).maxElement(0);
+            foreach (mi, ref member; union_.members) {
+                const mpipe = mi + 1 == union_.members.length ? "┗━━╸" : "┣━━╸";
+                logger.info(
+                    "%s<lgrey>%-*s</lgrey>   <lgreen>%-*s</lgreen>   <grey>%s</grey>",
+                    mpipe, namepad, member.name, typepad, member.type, member.comment,
+                );
+            }
+        }
+
+        if (registry.unions.length == 0) {
+            logger.info("<grey>%s</grey>", "(no unions)");
         }
     }
 

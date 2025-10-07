@@ -37,14 +37,14 @@ class VkRegistry {
     /** Registered enums. */
     OMap!(string, VkEnumType) enums;
 
+    /** Registered function pointers. */
+    OMap!(string, VkFuncPtrType) funcptrs;
+
     /** Registered structs. */
     OMap!(string, VkStructType) structs;
 
     /** Registered unions. */
     OMap!(string, VkUnionType) unions;
-
-    /** Registered function pointers. */
-    OMap!(string, VkFuncPtrType) funcptrs;
 
     /** Registered commands. */
     OMap!(string, VkCommand) commands;
@@ -187,11 +187,13 @@ struct VkUnionType {
 struct VkUnionMember {
     string name;
     string type;
+    string comment;
 }
 
 struct VkFuncPtrType {
     VkType base;
-    string value;
+    string type;
+    VkParam[] params;
 
     alias base this;
 }
@@ -200,7 +202,7 @@ struct VkCommand {
     string name;
     string alias_;
     string type;
-    VkCommandParam[] params;
+    VkParam[] params;
     string[] successes;
     string[] errors;
     string comment;
@@ -212,7 +214,7 @@ struct VkCommand {
     }
 }
 
-struct VkCommandParam {
+struct VkParam {
     string name;
     string type;
     bool optional;
