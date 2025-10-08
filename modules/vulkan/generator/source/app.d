@@ -382,7 +382,7 @@ struct App {
 
     private void listSections(ref VkRegistry registry, VkSection[] sections) {
         foreach (ref section; sections) {
-            const pipe = section.enums.length > 0 ? "┏╸" : "╺╸";
+            const pipe = section.mconsts.length > 0 ? "┏╸" : "╺╸";
             logger.info("%s<grey>%s</grey>", pipe, section.name);
         }
     }
@@ -518,7 +518,6 @@ struct Input {
         List,
     }
 }
-
 
 /** 
  * Coerces a name to a Vulkan spec URL, if it isn't one already.

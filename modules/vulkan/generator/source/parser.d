@@ -353,7 +353,7 @@ class VkRegistryParser {
         }
 
         foreach (XmlElement child; element.childElements) {
-            if (child.tagName != "member") {
+            if (child.tagName != "member" || child.getAttribute("api") == "vulkansc") {
                 if (child.tagName == "comment") {
                     logger.dbg(2, "comment <grey>%s</grey>", child.textContent);
                 } else {
@@ -446,7 +446,7 @@ class VkRegistryParser {
         if (auto category = element.getAttribute("category")) {
             logger.dbg(1, "skipped %s type <yellow>%s</yellow>", category, base.name);
         } else {
-            logger.dbg(1, "skipped type <yellow>%s</yellow>", base.name);
+            logger.dbg(1, "skipped uncategorized type <yellow>%s</yellow>", base.name);
         }
     }
 
@@ -523,12 +523,11 @@ class VkRegistryParser {
                 member.value = (1 << bitpos_.to!ulong).text;
             }
 
-            registry.constants[member.name] = result.name;
-
+            registry.globals[member.name] = result.name;
             result.members[member.name] = member;
         }
 
-        registry.enums[result.name] = result;
+        registry.enums[result.name] = __rvalue(result);
     }
 
     /**
@@ -571,6 +570,10 @@ class VkRegistryParser {
                 member.name = cname.idup;
             }
 
+            if (auto alias_ = child.getAttribute("alias")) {
+                member.alias_ = alias_.idup;
+            }
+
             if (auto comment = child.getAttribute("comment")) {
                 member.comment = comment.idup;
             }
@@ -581,7 +584,7 @@ class VkRegistryParser {
                 member.value = (1 << bitpos_.to!ulong).text;
             }
 
-            registry.constants[member.name] = result.name;
+            registry.globals[member.name] = result.name;
             result.members[member.name] = member;
         }
 
@@ -613,8 +616,8 @@ class VkRegistryParser {
                 member.type = parseTypeString(type, type);
             }
 
-            registry.constants[member.name] = result.name;
-            result.members[member.name] = member;
+            registry.globals[member.name] = result.name;
+            result.members[member.name] = __rvalue(member);
         }
 
         registry.enums[result.name] = __rvalue(result);
@@ -674,7 +677,7 @@ class VkRegistryParser {
 
         foreach (child; element.childElements) {
             if (child.tagName != "param") {
-                if (child.tagName != "proto") {
+                if (child.tagName != "proto" && child.tagName != "implicitexternsyncparams") {
                     logger.dbg(1, "skipping non-param tag <lblue>%s</lblue> in command <yellow>%s</yellow>", child.tagName, result.name);
                 }
                 continue;
@@ -724,21 +727,25 @@ class VkRegistryParser {
             result.api = api.idup.split(",");
         }
 
-        foreach (require; element.childElements) {
-            if (require.tagName != "require") {
-                if (require.tagName == "comment") {
-                    logger.dbg(2, "comment <grey>%s</grey>", require.textContent);
+        if (auto depends = element.getAttribute("depends")) {
+            result.depends = depends.idup;
+        }
+
+        foreach (sectiontag; element.childElements) {
+            if (sectiontag.tagName != "require") {
+                if (sectiontag.tagName == "comment") {
+                    logger.dbg(2, "comment <grey>%s</grey>", sectiontag.textContent);
                 } else {
-                    logger.dbg(1, "skipping non-require tag <lblue>%s</lblue> in feature <yellow>%s</yellow>", require.tagName, result.name);
+                    logger.dbg(1, "skipping non-require tag <lblue>%s</lblue> in feature <yellow>%s</yellow>", sectiontag.tagName, result.name);
                 }
                 continue;
             }
 
             VkSection section;
 
-            section.name = require.getAttribute("comment").idup;
+            section.name = sectiontag.getAttribute("comment").idup;
 
-            foreach (child; require.childElements) {
+            foreach (child; sectiontag.childElements) {
                 switch (child.tagName) {
                     case "enum":
                         parseSectionEnum(section, child);
@@ -750,6 +757,10 @@ class VkRegistryParser {
 
                     case "command":
                         parseSectionCommand(section, child);
+                        break;
+
+                    case "feature":
+                        logger.dbg(2, "feature <yellow>%s</yellow>", child.getAttribute("name"));
                         break;
 
                     case "comment":
@@ -810,22 +821,22 @@ class VkRegistryParser {
             result.promoted = promoted.idup;
         }
 
-        foreach (require; element.childElements) {
-            if (require.tagName != "require") {
-                if (require.tagName == "comment") {
-                    logger.dbg(2, "comment <grey>%s</grey>", require.textContent);
+        foreach (sectiontag; element.childElements) {
+            if (sectiontag.tagName != "require") {
+                if (sectiontag.tagName == "comment") {
+                    logger.dbg(2, "comment <grey>%s</grey>", sectiontag.textContent);
                 } else {
-                    logger.dbg(1, "skipping non-require tag <lblue>%s</lblue> in extension <yellow>%s</yellow>", require.tagName, result.name);
+                    logger.dbg(1, "skipping non-require tag <lblue>%s</lblue> in extension <yellow>%s</yellow>", sectiontag.tagName, result.name);
                 }
                 continue;
             }
 
             VkSection section;
 
-            section.depends = require.getAttribute("depends").idup;
+            section.depends = sectiontag.getAttribute("depends").idup;
             section.name = section.depends;
 
-            foreach (child; require.childElements) {
+            foreach (child; sectiontag.childElements) {
                 switch (child.tagName) {
                     case "enum":
                         parseSectionEnum(section, child, result.number);
@@ -837,6 +848,10 @@ class VkRegistryParser {
 
                     case "command":
                         parseSectionCommand(section, child);
+                        break;
+
+                    case "feature":
+                        logger.dbg(2, "feature <yellow>%s</yellow>", child.getAttribute("name"));
                         break;
 
                     case "comment":
@@ -855,44 +870,57 @@ class VkRegistryParser {
         return result;
     }
 
+    /**
+     * Parse <enum> tags in sections, which aren't actually enumerants.
+     * 
+     * <enum name="somename"> is for API constants and nothing else.
+     * <enum value="somevalue" ...> is for declaring manifest constants.
+     * <enum extends="enumname" ...> is for extending existing enums.
+     * <enum alias="somename" ...> is for aliasing some other enum member.
+     */
     private void parseSectionEnum(ref VkSection section, XmlElement element, int ext = 0) {
         if (auto name = element.getAttribute("name")) {
-            if (name !in registry.constants) {
-                VkEnumMember member;
-                member.name = name.idup;
+            VkEnumMember member;
+            member.name = name.idup;
 
-                xmlstring enumname = "API Constants";
+            if (auto extnumber = element.getAttribute("extnumber")) {
+                ext = extnumber.parse!int;
+            }
 
-                if (auto alias_ = element.getAttribute("alias")) {
-                    member.value = alias_.idup;
-                } else if (auto value = element.getAttribute("value")) {
-                    member.value = value.idup;
-                } else if (auto bitpos = element.getAttribute("bitpos")) {
-                    member.value = (1 << bitpos.parse!int).to!string;
-                } else if (auto extends = element.getAttribute("extends")) {
-                    enumname = extends;
-
-                    auto extnumberStr = element.getAttribute("extnumber");
-                    auto offsetStr = element.getAttribute("offset");
-
-                    auto extnumber = (extnumberStr.empty ? ext : extnumberStr.parse!int) - 1;
-                    auto offset = offsetStr.parse!int;
-
-                    if (element.getAttribute("dir") == "-") {
-                        member.value = format!"-1%.6d%.3d"(extnumber, offset);
-                    } else {
-                        member.value = format!"1%.6d%.3d"(extnumber, offset);
-                    }
+            if (auto value = element.getAttribute("value")) {
+                member.value = value.idup;
+            } else if (auto bitpos = element.getAttribute("bitpos")) {
+                member.value = (1 << bitpos.parse!int).to!string;
+            } else if (auto offset = element.getAttribute("offset")) {
+                if (element.getAttribute("dir") == "-") {
+                    member.value = format!"-1%.6d%.3d"(ext - 1, offset.parse!int);
+                } else {
+                    member.value = format!"1%.6d%.3d"(ext - 1, offset.parse!int);
                 }
+            } else if (auto alias_ = element.getAttribute("alias")) {
+                member.alias_ = alias_.idup;
+            }
 
-                auto ref enum_ = registry.enums[enumname];
-
+            if (auto extends = element.getAttribute("extends")) {
+                auto ref enum_ = registry.enums[extends];
                 enum_.members[member.name] = member;
-                registry.constants[member.name] = enum_.name;
+                registry.globals[member.name] = enum_.name;
+            } else {
+                if (member.value.empty) {
+                    if (member.alias_.empty) {
+                        if (auto constant = member.name in registry.constants.members) {
+                            section.mconsts ~= *constant;
+                        } else {
+                            logger.dbg(1, "skipping manifest constant alias <yellow>%s</yellow>", member.name);
+                        }
+                    } else {
+                        section.mconsts ~= member;
+                    }
+                } else {
+                    section.mconsts ~= member;
+                }
             }
         }
-
-        section.enums ~= element.getAttribute("name").idup;
     }
 
     private void parseSectionType(ref VkSection section, XmlElement element) {

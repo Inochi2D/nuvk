@@ -7,6 +7,9 @@ import std.typecons;
 import omap;
 
 
+/** 
+ * Stores information from vk.xml in a structured format.
+ */
 class VkRegistry {
     string name;
 
@@ -15,12 +18,6 @@ class VkRegistry {
 
     /** Registered vendors. */
     OMap!(string, VkVendor) vendors;
-
-    /** Registered constants. */
-    string[string] constants;
-
-    /** Registered types. */
-    VkType[string] types;
 
     /** Registered defines */
     OMap!(string, VkDefineType) defines;
@@ -54,25 +51,46 @@ class VkRegistry {
 
     /** Registered extensions */
     OMap!(int, VkExtension) extensions;
+
+    /** Map globals to their enums. */
+    string[string] globals;
+
+    /** Map types to their categories. */
+    VkType[string] types;
+
+    /** Special enum which isn't really an enum. */
+    @property ref const(VkEnumType) constants() => enums["API Constants"];
 }
 
+/** 
+ * Information about a platform which supports Vulkan.
+ */
 struct VkPlatform {
     string name;
     string comment;
     string protect;
 }
 
+/** 
+ * Information about a Vulkan driver author/vendor.
+ */
 struct VkVendor {
     string ext;
     string author;
     string contact;
 }
 
+/** 
+ * Information shared between all Vulkan types.
+ */
 struct VkType {
     string name;
     VkTypeCategory category;
 }
 
+/** 
+ * Information about a "define" (just a C macro, really).
+ */
 struct VkDefineType {
     VkType base;
     string value;
@@ -84,6 +102,9 @@ struct VkDefineType {
     @property bool commented() => value.startsWith("//");
 }
 
+/** 
+ * Information about a base type. Usually just special platform-specific types.
+ */
 struct VkBasetypeType {
     VkType base;
     string type;
@@ -91,6 +112,9 @@ struct VkBasetypeType {
     alias base this;
 }
 
+/** 
+ * Information about a bitmask type. Bitmasks store flags from FlagBits enums.
+ */
 struct VkBitmaskType {
     VkType base;
     string requires;
@@ -99,6 +123,9 @@ struct VkBitmaskType {
     alias base this;
 }
 
+/** 
+ * Information about a handle type. Handles are opaque pointers to Vulkan resources.
+ */
 struct VkHandleType {
     VkType base;
     string alias_;
@@ -106,6 +133,9 @@ struct VkHandleType {
     alias base this;
 }
 
+/** 
+ * Information about an enum type.
+ */
 struct VkEnumType {
     VkType base;
     string comment;
@@ -131,13 +161,21 @@ struct VkEnumType {
     }
 }
 
+/** 
+ * Information about a particular enum type member.
+ */
 struct VkEnumMember {
     string name;
     string type;
     string value;
+    string alias_;
     string comment;
 
-    string shortName(string prefix) {
+    string shortName(string prefix) => shortName(prefix, name);
+
+    string shortAlias(string prefix) => shortName(prefix, alias_);
+
+    string shortName(string prefix, string name) {
         import std.ascii : isDigit;
 
         enum suffix = "FLAG_BITS_";
@@ -154,6 +192,9 @@ struct VkEnumMember {
     }
 }
 
+/** 
+ * Information about a struct type.
+ */
 struct VkStructType {
     VkType base;
     string extends;
@@ -168,6 +209,9 @@ struct VkStructType {
     }
 }
 
+/** 
+ * Information about a particular struct type member.
+ */
 struct VkStructMember {
     string name;
     string type;
@@ -175,8 +219,26 @@ struct VkStructMember {
     bool optional = false;
 
     string comment;
+
+    /** 
+     * Dodge collisions with D keywords.
+     * 
+     * Returns: our name suffixed with an underscore, if it's a keyword.
+     */
+    @property string safename() const {
+        switch (name) {
+            case "module":
+            case "version":
+                return name ~ "_";
+            default:
+                return name;
+        }
+    }
 }
 
+/** 
+ * Information about a union type.
+ */
 struct VkUnionType {
     VkType base;
     VkUnionMember[] members;
@@ -184,12 +246,33 @@ struct VkUnionType {
     alias base this;
 }
 
+/** 
+ * Information about a particular union type member.
+ */
 struct VkUnionMember {
     string name;
     string type;
     string comment;
+
+    /** 
+     * Dodge collisions with D keywords.
+     * 
+     * Returns: our name suffixed with an underscore, if it's a keyword.
+     */
+    @property string safename() const {
+        switch (name) {
+            case "module":
+            case "version":
+                return name ~ "_";
+            default:
+                return name;
+        }
+    }
 }
 
+/** 
+ * Information about a function pointer type. Also basically just C code.
+ */
 struct VkFuncPtrType {
     VkType base;
     string type;
@@ -198,6 +281,9 @@ struct VkFuncPtrType {
     alias base this;
 }
 
+/** 
+ * Information about a Vulkan command.
+ */
 struct VkCommand {
     string name;
     string alias_;
@@ -214,6 +300,9 @@ struct VkCommand {
     }
 }
 
+/** 
+ * Information about a particular Vulkan command parameter.
+ */
 struct VkParam {
     string name;
     string type;
@@ -221,9 +310,13 @@ struct VkParam {
     string comment;
 }
 
+/** 
+ * Information about a Vulkan feature. Usually just standard versions.
+ */
 struct VkFeature {
     string name;
     string[] api;
+    string depends;
     VkSection[] sections;
 
     bool opBinaryRight(string op : "in")(string name) const {
@@ -231,6 +324,9 @@ struct VkFeature {
     }
 }
 
+/** 
+ * Information about a Vulkan extension.
+ */
 struct VkExtension {
     string name;
     int number;
@@ -242,17 +338,23 @@ struct VkExtension {
     VkSection[] sections;
 }
 
+/** 
+ * Information about a particular section of either a feature or an extension.
+ */
 struct VkSection {
     string name;
     string depends;
 
     string[] types;
-    string[] enums;
+    VkEnumMember[] mconsts;
     string[] commands;
 
-    @property bool empty() => types.empty && enums.empty && commands.empty;
+    @property bool empty() => types.empty && mconsts.empty && commands.empty;
 }
 
+/** 
+ * All possible Vulkan types.
+ */
 enum VkTypeCategory {
     None = 0,
 
@@ -268,11 +370,17 @@ enum VkTypeCategory {
     Union,
 }
 
+/** 
+ * Whether a given extension is an instance extension or a device extension.
+ */
 enum VkExtensionType {
     Instance,
     Device,
 }
 
+/** 
+ * Used by bitmasks to track their backing type.
+ */
 enum VkBitWidth {
     U32,
     U64,
@@ -281,7 +389,7 @@ enum VkBitWidth {
 VkTypeCategory toVkTypeCategory(Char)(in Char[] value) {
     import std.format : format;
 
-    switch (value) {
+    final switch (value) {
         case "include":
             return VkTypeCategory.Include;
         case "define":
@@ -302,20 +410,16 @@ VkTypeCategory toVkTypeCategory(Char)(in Char[] value) {
             return VkTypeCategory.Union;
         case "":
             return VkTypeCategory.None;
-        default:
-            throw new Exception(format!"unknown category %s"(value));
     }
 }
 
 VkExtensionType toVkExtensionType(Char)(in Char[] value) {
     import std.format : format;
 
-    switch (value) {
+    final switch (value) {
         case "instance":
             return VkExtensionType.Instance;
         case "device":
             return VkExtensionType.Device;
-        default:
-            throw new Exception(format!"unknown extension type %s"(value));
     }
 }

@@ -2,13 +2,14 @@ module emitter;
 
 import std.algorithm;
 import std.array;
+import std.range;
 import std.stdio;
 import std.string;
 import std.traits;
 
+import util : camelToScreaming;
 import logger;
 import registry;
-import util : camelToScreaming;
 
 
 /** 
@@ -47,44 +48,59 @@ class VkRegistryEmitter {
         file.uncomment();
 
         // Module name, imports, attributes.
-        file.writeln("module vulkan.core;\n");
+        file.writeln("module vulkan.core;");
+        file.writeln();
         file.writeln("import vulkan.defines;");
         file.writeln("import vulkan.loader;");
-        file.writeln("import numem.core.types : OpaqueHandle;\n");
+        file.writeln("import numem.core.types : OpaqueHandle;");
+        file.writeln();
         file.writeln("extern (System) @nogc nothrow:");
 
+        // Collect features that are part of the normal Vulkan core.
+        auto coreFeatures = registry.features.filter!(f => "vulkan" in f).array;
+
+        // Emit version number preamble.
+        file.writeln();
+        file.writefln!"version = %s;"(coreFeatures.front.name);
+        foreach_reverse (ref feature; coreFeatures.filter!(f => !f.depends.empty).array) {
+            file.writeln();
+            file.writefln!"version (%s) {"(feature.name);
+            file.indent();
+            file.writefln!"version = %s;"(feature.depends);
+            file.dedent();
+            file.writeln("}");
+        }
+
         // Emit every section of every feature.
-        foreach (ref feature; registry.features.filter!(f => "vulkan" in f)) {
-            file.writefln!"\n// %s"(feature.name);
-            foreach (ref section; feature.sections) {
-                emitSection(section);
+        foreach (ref feature; coreFeatures) {
+            file.writeln();
+            file.writefln!"// %s"(feature.name);
+            foreach (ref section; feature.sections.filter!(s => !s.empty)) {
+                emitSection(section, feature.name);
             }
         }
     }
 
-    private void emitSection(ref VkSection section) {
+    private void emitSection(ref VkSection section, string version_) {
         // Section marker.
         if (!section.name.empty) {
-            file.writefln!"\n// %s"(section.name);
+            file.writeln();
+            file.writefln!"// %s"(section.name);
         }
 
         VkTypeCategory prevcategory = VkTypeCategory.None;
 
-        foreach (name; section.enums) {
-            if (auto const_ = name in registry.constants) {
-                auto ref enum_ = registry.enums[*const_];
-                auto member = enum_.members[name];
-
-                if (member.type.empty) {
-                    emitMConst(member.name, member.value);
-                } else {
-                    emitMConst(member.type, member.name, member.value);
-                }
-            } else {
-                logger.err("%s not found", name);
-            }
-
+        if (section.mconsts.length > 0) {
             prevcategory = VkTypeCategory.Define;
+            file.writeln();
+        }
+
+        foreach (ref mconst; section.mconsts) {
+            if (mconst.type.empty) {
+                emitMConst(mconst.name, mconst.value);
+            } else {
+                emitMConst(mconst.type, mconst.name, mconst.value);
+            }
         }
 
         foreach (type; section.types.map!(t => registry.types[t]).array) {
@@ -134,20 +150,34 @@ class VkRegistryEmitter {
             prevcategory = type.category;
         }
 
-        foreach (command; section.commands.map!(c => registry.commands[c])) {
-            if (command.params.empty) {
+        if (!section.commands.empty) {
+            if (prevcategory) {
                 file.writeln();
-                file.writefln!"extern %s %s();"(command.type, command.name);
-            } else {
-                file.writeln();
-                file.writefln!"extern %s %s("(command.type, command.name);
-                file.indent();
-                foreach (param; command.params) {
-                    file.writefln!"%s %s,"(param.type, param.name);
-                }
-                file.dedent();
-                file.writeln(");");
             }
+
+            file.writefln!"version (%s) {"(version_);
+            file.indent();
+
+            foreach (i, command; section.commands.map!(c => registry.commands[c]).array) {
+                if (i > 0) {
+                    file.writeln();
+                }
+
+                if (command.params.empty) {
+                    file.writefln!"extern %s %s();"(command.type, command.name);
+                } else {
+                    file.writefln!"extern %s %s("(command.type, command.name);
+                    file.indent();
+                    foreach (param; command.params) {
+                        file.writefln!"%s %s,"(param.type, param.name);
+                    }
+                    file.dedent();
+                    file.writeln(");");
+                }
+            }
+
+            file.dedent();
+            file.writeln("}");
         }
     }
 
@@ -167,10 +197,6 @@ class VkRegistryEmitter {
 
     private void emitBitmask(ref VkBitmaskType bitmask) {
         file.writefln!"alias %s = %s;"(bitmask.name, bitmask.backing);
-        // if (bitmask.requires.empty) {
-        // } else {
-        //     file.writefln!"alias %s = BitFlags!%s;"(bitmask.name, bitmask.requires);
-        // }
     }
 
     private void emitHandle(ref VkHandleType handle) {
@@ -183,7 +209,9 @@ class VkRegistryEmitter {
     }
 
     private void emitEnum(ref VkEnumType enum_) {
-        if (enum_.bitmask) {
+        if (enum_.members.empty) {
+            return;
+        } else if (enum_.bitmask) {
             emitBitmask(enum_);
         } else if (enum_.members.empty) {
             file.writefln!"enum %s {}"(enum_.name);
@@ -192,12 +220,22 @@ class VkRegistryEmitter {
             file.writefln!"enum %s {"(enum_.name);
             file.indent();
             foreach (ref member; enum_.members) {
-                file.writefln!"%s = %s,"(member.shortName(prefix), member.value);
+                if (member.alias_.empty) {
+                    file.writefln!"%s = %s,"(member.shortName(prefix), member.value);
+                } else {
+                    file.writefln!"%s = %s,"(member.shortName(prefix), member.shortAlias(prefix));
+                }
             }
             file.dedent();
-            file.writeln("}\n");
+            file.writeln("}");
+            file.writeln();
+
             foreach (ref member; enum_.members) {
-                file.writefln!"enum %s = %s.%s;"(member.name, enum_.name, member.shortName(prefix));
+                if (member.alias_.empty) {
+                    file.writefln!"enum %s = %s.%s;"(member.name, enum_.name, member.shortName(prefix));
+                } else {
+                    file.writefln!"enum %s = %s;"(member.name, member.alias_);
+                }
             }
         }
     }
@@ -210,12 +248,22 @@ class VkRegistryEmitter {
             file.writefln!"enum %s : %s {"(enum_.name, enum_.backingType);
             file.indent();
             foreach (ref member; enum_.members) {
-                file.writefln!"%s = %s,"(member.shortName(prefix), member.value);
+                if (member.alias_.empty) {
+                    file.writefln!"%s = %s,"(member.shortName(prefix), member.value);
+                } else {
+                    file.writefln!"%s = %s,"(member.shortName(prefix), member.shortAlias(prefix));
+                }
             }
             file.dedent();
-            file.writeln("}\n");
+            file.writeln("}");
+            file.writeln();
+
             foreach (ref member; enum_.members) {
-                file.writefln!"enum %s = %s.%s;"(member.name, enum_.name, member.shortName(prefix));
+                if (member.alias_.empty) {
+                    file.writefln!"enum %s = %s.%s;"(member.name, enum_.name, member.shortName(prefix));
+                } else {
+                    file.writefln!"enum %s = %s;"(member.name, member.alias_);
+                }
             }
         }
     }
@@ -232,9 +280,6 @@ class VkRegistryEmitter {
             file.dedent();
             file.writeln(");");
         }
-
-        // file.writefln!"alias %s = %s"(funcptr.name, funcptr.value);
-        // file.writefln!"// -=[%s]=-"(funcptr.name);
     }
 
     private void emitStruct(ref VkStructType struct_) {
@@ -245,9 +290,9 @@ class VkRegistryEmitter {
             file.indent();
             foreach (ref member; struct_.members) {
                 if (member.values.length == 1) {
-                    file.writefln!"%s %s = %s;"(member.type, member.name, member.values[0]);
+                    file.writefln!"%s %s = %s;"(member.type, member.safename, member.values[0]);
                 } else {
-                    file.writefln!"%s %s;"(member.type, member.name);
+                    file.writefln!"%s %s;"(member.type, member.safename);
                 }
             }
             file.dedent();
@@ -262,7 +307,7 @@ class VkRegistryEmitter {
             file.writefln!"union %s {"(union_.name);
             file.indent();
             foreach (ref member; union_.members) {
-                file.writefln!"%s %s;"(member.type, member.name);
+                file.writefln!"%s %s;"(member.type, member.safename);
             }
             file.dedent();
             file.writeln("}");
@@ -355,6 +400,16 @@ package struct Emitter {
     }
 }
 
+/** 
+ * Whether a given type category takes multiple lines when emitted.
+ * 
+ * This function is used to track spacing emitted between declarations.
+ * 
+ * Params:
+ *   category = A Vulkan type category.
+ * 
+ * Returns: true if the type category is multiline, false otherwise.
+ */
 bool isMultiline(VkTypeCategory category) => multiline.get(category, false);
 
 private const bool[VkTypeCategory] multiline = [
@@ -369,6 +424,14 @@ private const bool[VkTypeCategory] multiline = [
     VkTypeCategory.Union: true,
 ];
 
+/** 
+ * Whether the given symbol has a bespoke implementation and should be skipped.
+ * 
+ * Params:
+ *   name = A symbol name which has a bespoke implementation.
+ * 
+ * Returns: true when a symbol should be ignored, false otherwise.
+ */
 bool isBespoke(string name) => bespoke.get(name, false);
 
 private const bool[string] bespoke = [
@@ -389,5 +452,4 @@ private const bool[string] bespoke = [
 
     "VK_DEFINE_HANDLE": true,
     "VK_DEFINE_NON_DISPATCHABLE_HANDLE": true,
-    
 ];
