@@ -1,4 +1,4 @@
-module cli;
+module util.cli;
 
 import std.algorithm.searching;
 import std.typecons : Nullable;

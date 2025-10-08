@@ -4,7 +4,7 @@ import std.algorithm;
 import std.range;
 import std.typecons;
 
-import omap;
+import util.omap;
 
 
 /** 

@@ -10,8 +10,7 @@ import std.parallelism;
 import std.path;
 import std.range;
 
-import cli;
-import logger;
+import util;
 import registry;
 import parser;
 import emitter;

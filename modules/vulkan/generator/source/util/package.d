@@ -1,5 +1,9 @@
 module util;
 
+public import util.cli;
+public import util.omap;
+public import util.logger;
+
 
 /** 
  * "Consumes" the value of the first parameter by replacing it with a given

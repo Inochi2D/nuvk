@@ -1,8 +1,6 @@
-module logger;
+module util.logger;
 
 import std.stdio;
-
-import core.sync.mutex : Mutex;
 
 import cosmicolor;
 
@@ -11,8 +9,6 @@ import cosmicolor;
  * Stateful, thread-safe logger class.
  */
 class Logger {
-    private Mutex mutex;
-
     private int verbose;
 
 
@@ -23,7 +19,6 @@ class Logger {
      *   verbose = Verbosity level as obtained from command-line arguments.
      */
     this(int verbose) {
-        mutex = new Mutex();
         this.verbose = verbose;
     }
 

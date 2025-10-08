@@ -1,4 +1,4 @@
-module omap;
+module util.omap;
 
 import core.exception;
 
