@@ -12,10 +12,26 @@ import registry;
 
 
 /** 
+ * Emit Vulkan core from our registry to our file.
+ */
+void emitCore(ref VkRegistry registry, File file, Logger logger) {
+    auto emitter = new VkRegistryEmitter(registry, file, logger);
+    emitter.emitCore();
+}
+
+/** 
+ * Emit Vulkan extensions from our registry to our file.
+ */
+void emitExt(ref VkRegistry registry, string ext, File file, Logger logger) {
+    auto emitter = new VkRegistryEmitter(registry, file, logger);
+    emitter.emitExt(ext);
+}
+
+/** 
  * Emits generated D files from a registry.
  */
 class VkRegistryEmitter {
-    private VkRegistry registry;
+    private VkRegistry* registry;
 
     private Emitter file;
 
@@ -29,18 +45,17 @@ class VkRegistryEmitter {
      *   registry = Source of the generated file.
      *   file = File handle where the generated file will be emitted.
      */
-    this(VkRegistry registry, File file, Logger logger) {
-        this.registry = registry;
+    this(ref VkRegistry registry, File file, Logger logger) {
+        this.registry = &registry;
         this.file = Emitter(file);
         this.logger = logger;
     }
 
-    /** 
-     * Emit our registry to our file.
-     */
-    void emit(string preamble) {
+    void emitCore() {
         // Write preamble comment.
         file.comment();
+        file.writeln("Vulkan Core");
+        file.writeln();
         foreach (line; preamble.splitLines) {
             file.writeln(line);
         }
@@ -49,38 +64,137 @@ class VkRegistryEmitter {
         // Module name, imports, attributes.
         file.writeln("module vulkan.core;");
         file.writeln();
+        file.writeln("import numem.core.types : OpaqueHandle;");
         file.writeln("import vulkan.defines;");
         file.writeln("import vulkan.loader;");
-        file.writeln("import numem.core.types : OpaqueHandle;");
         file.writeln();
         file.writeln("extern (System) @nogc nothrow:");
 
         // Collect features that are part of the normal Vulkan core.
-        auto coreFeatures = registry.features.filter!(f => "vulkan" in f).array;
+        auto features = registry.features.filter!(f => "vulkan" in f).array;
 
         // Emit version number preamble.
-        file.writeln();
-        file.writefln!"version = %s;"(coreFeatures.front.name);
-        foreach_reverse (ref feature; coreFeatures.filter!(f => !f.depends.empty).array) {
+        foreach_reverse (ref feature; features) {
+            if (feature.depends.empty || feature.depends == "VK_VERSION_1_0") {
+                continue;
+            }
+
             file.writeln();
-            file.writefln!"version (%s) {"(feature.name);
-            file.indent();
+            file.openf!"version (%s) {"(feature.name);
             file.writefln!"version = %s;"(feature.depends);
-            file.dedent();
-            file.writeln("}");
+            file.close("}");
+        }
+
+        // Emit version number constants.
+        foreach (ref feature; features.filter!(f => !f.depends.empty)) {
+            file.writeln();
+            file.openf!"version (%s) {"(feature.name);
+            file.writefln!"package enum %s = true;"(feature.name);
+            file.clopen("} else {");
+            file.writefln!"package enum %s = false;"(feature.name);
+            file.close("}");
         }
 
         // Emit every section of every feature.
-        foreach (ref feature; coreFeatures) {
+        foreach (ref feature; features) {
             file.writeln();
             file.writefln!"// %s"(feature.name);
             foreach (ref section; feature.sections.filter!(s => !s.empty)) {
-                emitSection(section, feature.name);
+                emitCoreSection(section, feature);
             }
         }
     }
 
-    private void emitSection(ref VkSection section, string version_) {
+    void emitExt(string ext) {
+        // Write preamble comment.
+        file.comment();
+        file.writeln(ext);
+        file.writeln();
+        foreach (line; preamble.splitLines) {
+            file.writeln(line);
+        }
+        file.uncomment();
+
+        // Find extension.
+        auto extension = registry.extensions[ext];
+
+        // Module name, imports, attributes.
+        file.writefln!"module vulkan.%s.%s;"(extension.author.toLower, extension.shortName);
+        file.writeln();
+        file.writeln("import numem.core.types : OpaqueHandle;");
+        file.writeln("import vulkan.loader;");
+        file.writeln("import vulkan.core;");
+        file.writeln();
+        file.writeln("extern (System) @nogc nothrow:");
+
+        // Emit every section of our extension.
+        foreach (ref section; extension.sections.filter!(s => !s.empty)) {
+            emitExtSection(section, extension);
+        }
+    }
+
+    private void emitCoreSection(ref VkSection section, ref VkFeature feature) {
+        auto prevcategory = emitSection(section);
+
+        if (!section.commands.empty) {
+            if (prevcategory) {
+                file.writeln();
+            }
+
+            file.openf!"version (%s) {"(feature.name);
+            foreach (i, command; section.commands.map!(c => registry.commands[c]).array) {
+                if (i > 0) {
+                    file.writeln();
+                }
+
+                if (command.params.empty) {
+                    file.writefln!"extern %s %s();"(command.type, command.name);
+                } else {
+                    file.openf!"extern %s %s("(command.type, command.name);
+                    foreach (param; command.params) {
+                        file.writefln!"%s %s,"(param.type, param.name);
+                    }
+                    file.close(");");
+                }
+            }
+            file.close("}");
+        }
+    }
+
+    private void emitExtSection(ref VkSection section, ref VkExtension ext) {
+        auto prevcategory = emitSection(section);
+
+        if (!section.commands.empty) {
+            auto commands = section.commands.map!(c => registry.commands[c]).array;
+            auto funcptrs = commands.map!(c => c.funcptr).array;
+
+            if (prevcategory) {
+                file.writeln();
+            }
+
+            foreach (i, ref funcptr; funcptrs) {
+                if (i > 0) {
+                    file.writeln();
+                }
+
+                emitFuncPtr(funcptr);
+            }
+
+            file.writeln();
+            file.openf!"struct %s {"(ext.shortName.snakeToCamel ~ "Commands");
+            foreach (i, ref command, ref funcptr; lockstep(commands, funcptrs)) {
+                if (i > 0) {
+                    file.writeln();
+                }
+
+                file.writefln!"@VkProcName(\"%s\")"(command.name);
+                file.writefln!"%s %s;"(funcptr.name, command.name);
+            }
+            file.close("}");
+        }
+    }
+
+    private VkTypeCategory emitSection(ref VkSection section) {
         // Section marker.
         if (!section.name.empty) {
             file.writeln();
@@ -149,35 +263,7 @@ class VkRegistryEmitter {
             prevcategory = type.category;
         }
 
-        if (!section.commands.empty) {
-            if (prevcategory) {
-                file.writeln();
-            }
-
-            file.writefln!"version (%s) {"(version_);
-            file.indent();
-
-            foreach (i, command; section.commands.map!(c => registry.commands[c]).array) {
-                if (i > 0) {
-                    file.writeln();
-                }
-
-                if (command.params.empty) {
-                    file.writefln!"extern %s %s();"(command.type, command.name);
-                } else {
-                    file.writefln!"extern %s %s("(command.type, command.name);
-                    file.indent();
-                    foreach (param; command.params) {
-                        file.writefln!"%s %s,"(param.type, param.name);
-                    }
-                    file.dedent();
-                    file.writeln(");");
-                }
-            }
-
-            file.dedent();
-            file.writeln("}");
-        }
+        return prevcategory;
     }
 
     private void emitDefine(ref VkDefineType define) {
@@ -216,8 +302,7 @@ class VkRegistryEmitter {
             file.writefln!"enum %s {}"(enum_.name);
         } else {
             const prefix = enum_.name.camelToScreaming ~ "_";
-            file.writefln!"enum %s {"(enum_.name);
-            file.indent();
+            file.openf!"enum %s {"(enum_.name);
             foreach (ref member; enum_.members) {
                 if (member.alias_.empty) {
                     file.writefln!"%s = %s,"(member.shortName(prefix), member.value);
@@ -225,8 +310,7 @@ class VkRegistryEmitter {
                     file.writefln!"%s = %s,"(member.shortName(prefix), member.shortAlias(prefix));
                 }
             }
-            file.dedent();
-            file.writeln("}");
+            file.close("}");
             file.writeln();
 
             foreach (ref member; enum_.members) {
@@ -244,8 +328,7 @@ class VkRegistryEmitter {
             file.writefln!"enum %s : %s {}"(enum_.name, enum_.backingType);
         } else {
             const prefix = enum_.name.camelToScreaming ~ "_";
-            file.writefln!"enum %s : %s {"(enum_.name, enum_.backingType);
-            file.indent();
+            file.openf!"enum %s : %s {"(enum_.name, enum_.backingType);
             foreach (ref member; enum_.members) {
                 if (member.alias_.empty) {
                     file.writefln!"%s = %s,"(member.shortName(prefix), member.value);
@@ -253,8 +336,7 @@ class VkRegistryEmitter {
                     file.writefln!"%s = %s,"(member.shortName(prefix), member.shortAlias(prefix));
                 }
             }
-            file.dedent();
-            file.writeln("}");
+            file.close("}");
             file.writeln();
 
             foreach (ref member; enum_.members) {
@@ -271,13 +353,11 @@ class VkRegistryEmitter {
         if (funcptr.params.empty) {
             file.writefln!"alias %s = %s function();"(funcptr.name, funcptr.type);
         } else {
-            file.writefln!"alias %s = %s function("(funcptr.name, funcptr.type);
-            file.indent();
+            file.openf!"alias %s = %s function("(funcptr.name, funcptr.type);
             foreach (ref param; funcptr.params) {
                 file.writefln!"%s %s,"(param.type, param.name);
             }
-            file.dedent();
-            file.writeln(");");
+            file.close(");");
         }
     }
 
@@ -285,8 +365,7 @@ class VkRegistryEmitter {
         if (struct_.members.empty) {
             file.writefln!"struct %s {}"(struct_.name);
         } else {
-            file.writefln!"struct %s {"(struct_.name);
-            file.indent();
+            file.openf!"struct %s {"(struct_.name);
             foreach (ref member; struct_.members) {
                 if (member.values.length == 1) {
                     file.writefln!"%s %s = %s;"(member.type, member.safename, member.values[0]);
@@ -294,8 +373,7 @@ class VkRegistryEmitter {
                     file.writefln!"%s %s;"(member.type, member.safename);
                 }
             }
-            file.dedent();
-            file.writeln("}");
+            file.close("}");
         }
     }
 
@@ -303,13 +381,11 @@ class VkRegistryEmitter {
         if (union_.members.empty) {
             file.writefln!"union %s {}"(union_.name);
         } else {
-            file.writefln!"union %s {"(union_.name);
-            file.indent();
+            file.openf!"union %s {"(union_.name);
             foreach (ref member; union_.members) {
                 file.writefln!"%s %s;"(member.type, member.safename);
             }
-            file.dedent();
-            file.writeln("}");
+            file.close("}");
         }
     }
 
@@ -342,6 +418,38 @@ package struct Emitter {
         this.file = file;
         indentlvl = 0;
         commentlvl = 0;
+    }
+
+    void open(A...)(A args) {
+        writeln(args);
+        indent();
+    }
+
+    void openf(alias fmt, A...)(A args) {
+        writefln!fmt(args);
+        indent();
+    }
+
+    void close(A...)(A args) {
+        dedent();
+        writeln(args);
+    }
+
+    void closef(alias fmt, A...)(A args) {
+        dedent();
+        writeln!fmt(args);
+    }
+
+    void clopen(A...)(A args) {
+        dedent();
+        writeln(args);
+        indent();
+    }
+
+    void clopenf(alias fmt, A...)(A args) {
+        dedent();
+        writeln!fmt(args);
+        indent();
     }
 
     void indent() {
@@ -398,6 +506,8 @@ package struct Emitter {
         }
     }
 }
+
+private string preamble = import("vk_preamble.txt");
 
 /** 
  * Whether a given type category takes multiple lines when emitted.

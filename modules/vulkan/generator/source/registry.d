@@ -2,6 +2,7 @@ module registry;
 
 import std.algorithm;
 import std.range;
+import std.string;
 import std.typecons;
 
 import util.omap;
@@ -11,8 +12,6 @@ import util.omap;
  * Stores information from vk.xml in a structured format.
  */
 class VkRegistry {
-    string name;
-
     /** Registered platforms. */
     VkPlatform[] platforms;
 
@@ -50,7 +49,7 @@ class VkRegistry {
     VkFeature[] features;
 
     /** Registered extensions */
-    OMap!(int, VkExtension) extensions;
+    OMap!(string, VkExtension) extensions;
 
     /** Map globals to their enums. */
     string[string] globals;
@@ -298,6 +297,16 @@ struct VkCommand {
             this.tupleof[i] = __rvalue(field);
         }
     }
+
+    @property VkFuncPtrType funcptr() const {
+        VkFuncPtrType result;
+
+        result.name = "PFN_" ~ name;
+        result.type = type;
+        result.params = params.dup;
+
+        return result;
+    }
 }
 
 /** 
@@ -317,6 +326,8 @@ struct VkFeature {
     string name;
     string[] api;
     string depends;
+    int major;
+    int minor;
     VkSection[] sections;
 
     bool opBinaryRight(string op : "in")(string name) const {
@@ -334,8 +345,13 @@ struct VkExtension {
     VkExtensionType type;
     string[] supported;
     string promoted;
-
+    VkDepends depends;
     VkSection[] sections;
+
+    @property string shortName() const {
+        const offset = "VK_".length + author.length + 1;
+        return name[offset .. $];
+    }
 }
 
 /** 
@@ -350,6 +366,34 @@ struct VkSection {
     string[] commands;
 
     @property bool empty() => types.empty && mconsts.empty && commands.empty;
+}
+
+/** 
+ * Generalizes a depends expression into an AST.
+ */
+class VkDepends {
+    bool isOp;
+
+    union {
+        string name;
+        Op op;
+    }
+
+    this(string name) {
+        isOp = false;
+        this.name = name;
+    }
+
+    this(char operator, VkDepends lhs, VkDepends rhs) {
+        isOp = true;
+        op = Op(operator, lhs, rhs);
+    }
+
+    struct Op {
+        char operator;
+        VkDepends lhs;
+        VkDepends rhs;
+    }
 }
 
 /** 

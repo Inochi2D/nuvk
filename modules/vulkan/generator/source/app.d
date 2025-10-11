@@ -4,7 +4,7 @@ import std.stdio;
 import std.algorithm;
 import std.array;
 import std.conv : parse;
-import std.net.curl;
+import curl = std.net.curl;
 import std.array : array;
 import std.parallelism;
 import std.path;
@@ -33,7 +33,9 @@ struct App {
 
     Logger logger;
 
-    VkRegistry[] registries;
+    VkRegistry vulkan;
+
+    VkRegistry video;
 
 
     /** 
@@ -45,7 +47,6 @@ struct App {
     this(string[] args) {
         input = Input(args);
         logger = new Logger(input.verbose);
-        registries = new VkRegistry[input.names.length];
     }
 
     /** 
@@ -54,96 +55,98 @@ struct App {
      * Returns: An error code, or 0 on success.
      */
     int run() {
-        foreach (i, url; parallel(input.names.map!toUrl)) {
+        auto registries = new VkRegistry[2];
+        foreach (i, url; parallel(input.sources)) {
             if (input.verbose) {
-                logger.dbg(1, "fetching <orange>%s</orange>...", url);
+                auto name = url.baseName(".xml");
+                logger.dbg(1, "fetching <yellow>%s</yellow> from <orange>%s</orange>", name, url);
             }
 
             try {
-                auto name = url.baseName(".xml");
-                auto spec = cast(string) get(url);
-                auto parser = new VkRegistryParser(name, spec, logger);
+                auto spec = cast(string) curl.get(url);
+                auto parser = new VkRegistryParser(spec, logger);
                 registries[i] = parser.parseDocument();
             } catch (Exception ex) {
                 logger.err("%s", ex.msg);
             }
         }
 
+        vulkan = registries[0];
+        video = registries[1];
+
         if (!input.list.empty) {
-            foreach (i, ref registry; registries) {
-                logger.info("Registry <yellow>%s</yellow>", registry.name);
+            foreach (ls; input.list) {
+                switch (ls) {
+                    case "platforms":
+                        listPlatforms(vulkan);
+                        break;
 
-                foreach (ls; input.list) {
-                    switch (ls) {
-                        case "platforms":
-                            listPlatforms(registry);
-                            break;
+                    case "vendors":
+                        listVendors(vulkan);
+                        break;
 
-                        case "vendors":
-                            listVendors(registry);
-                            break;
+                    case "defines":
+                        listDefines(vulkan);
+                        break;
 
-                        case "defines":
-                            listDefines(registry);
-                            break;
+                    case "basetypes":
+                        listBasetypes(vulkan);
+                        break;
 
-                        case "basetypes":
-                            listBasetypes(registry);
-                            break;
+                    case "bitmasks":
+                        listBitmasks(vulkan);
+                        break;
 
-                        case "bitmasks":
-                            listBitmasks(registry);
-                            break;
+                    case "handles":
+                        listHandles(vulkan);
+                        break;
 
-                        case "handles":
-                            listHandles(registry);
-                            break;
+                    case "enums":
+                        listEnums(vulkan);
+                        break;
 
-                        case "enums":
-                            listEnums(registry);
-                            break;
+                    case "funcptrs":
+                        listFuncPtrs(vulkan);
+                        break;
 
-                        case "funcptrs":
-                            listFuncPtrs(registry);
-                            break;
+                    case "structs":
+                        listStructs(vulkan);
+                        break;
 
-                        case "structs":
-                            listStructs(registry);
-                            break;
+                    case "unions":
+                        listUnions(vulkan);
+                        break;
 
-                        case "unions":
-                            listUnions(registry);
-                            break;
+                    case "commands":
+                        listCommands(vulkan);
+                        break;
 
-                        case "commands":
-                            listCommands(registry);
-                            break;
+                    case "features":
+                        listFeatures(vulkan);
+                        break;
 
-                        case "features":
-                            listFeatures(registry);
-                            break;
+                    case "extensions":
+                        listExtensions(vulkan);
+                        break;
 
-                        case "extensions":
-                            listExtensions(registry);
-                            break;
-
-                        default:
-                            logger.warn("<u>%s</u> is not listable", ls);
-                            break;
-                    }
-                }
-
-                if (i + 1 < registries.length) {
-                    logger.line();
+                    default:
+                        logger.warn("<u>%s</u> is not listable", ls);
+                        break;
                 }
             }
         }
 
         if (!input.dryrun) {
-            foreach (i, ref registry; registries) {
-                string preamble = registry.name == "vk" ? import("vk_preamble.txt") : "";
-                auto emitter = new VkRegistryEmitter(registry, stdout, logger);
-                emitter.emit(preamble);
+            foreach (name; input.names) {
+                switch (name) {
+                    case "core":
+                        emitCore(vulkan, stdout, logger);
+                        break;
+
+                    default:
+                        emitExt(vulkan, name, stdout, logger);
+                        break;
+                }
             }
         }
 
@@ -392,9 +395,13 @@ struct App {
  * Command-line input.
  */
 struct Input {
+    string[] list;
+
     string[] names;
 
-    string[] list;
+    string vk;
+
+    string video;
 
     bool dryrun = false;
 
@@ -433,31 +440,54 @@ struct Input {
         }
 
         if (names.empty) {
-            names ~= ["vk", "video"];
+            names = ["core"];
+        }
+
+        if (vk.empty) {
+            vk = toUrl("vk");
+        }
+
+        if (video.empty) {
+            video = toUrl("video");
         }
     }
 
+    /** 
+     * List of source XML files to parse.
+     */
+    @property string[] sources() const => [vk, video];
+
     private Expect handleLong(ArgKey key, ArgValue value) {
         switch (key.get) {
-            case "verbose":
-                return handleVerbose(value);
+            case "vk":
+                return handleVkArg(value);
+
+            case "video":
+                return handleVideoArg(value);
 
             case "list":
-                return handleList(value);
+                return handleListArg(value);
 
             case "dry-run":
-                return handleDryRun(value);
+                return handleDryRunArg(value);
+
+            case "verbose":
+                return handleVerboseArg(value);
 
             default:
-                return Expect.Name;
+                return Expect.Arg;
         }
     }
 
     private Expect handleShort(ArgKey key, ArgValue value) {
         foreach (c; key.get) {
             switch (c) {
+                case 'r':
+                    handleDryRunArg(value);
+                    break;
+
                 case 'v':
-                    handleVerbose(value);
+                    handleVerboseArg(value);
                     break;
 
                 default:
@@ -465,12 +495,12 @@ struct Input {
             }
         }
 
-        return Expect.Name;
+        return Expect.Arg;
     }
 
     private Expect handleValue(Expect expect, ArgValue value) {
         switch (expect) {
-            case Expect.Name:
+            case Expect.Arg:
                 names ~= value.get;
                 return expect;
 
@@ -479,11 +509,44 @@ struct Input {
                 return expect;
 
             default:
-                return Expect.Name;
+                return Expect.Arg;
         }
     }
 
-    private Expect handleVerbose(ArgValue value) {
+    private Expect handleVkArg(ArgValue value) {
+        if (value.isNull) {
+            return Expect.Vk;
+        } else {
+            vk = value.get;
+            return Expect.Arg;
+        }
+    }
+
+    private Expect handleVideoArg(ArgValue value) {
+        if (value.isNull) {
+            return Expect.Video;
+        } else {
+            video = value.get;
+            return Expect.Arg;
+        }
+    }
+
+    private Expect handleListArg(ArgValue value) {
+        dryrun = true;
+        if (value.isNull) {
+            return Expect.List;
+        } else {
+            list ~= value.get.split(",");
+            return Expect.Arg;
+        }
+    }
+
+    private Expect handleDryRunArg(ArgValue value) {
+        dryrun = value.isNull ? true : value.get.parse!bool;
+        return Expect.Arg;
+    }
+
+    private Expect handleVerboseArg(ArgValue value) {
         if (value.isNull) {
             verbose += 1;
         } else if (value.get == "true") {
@@ -494,26 +557,14 @@ struct Input {
             verbose = value.get.parse!int;
         }
 
-        return Expect.Name;
-    }
-
-    private Expect handleList(ArgValue value) {
-        dryrun = true;
-        if (value.isNull) {
-            return Expect.List;
-        } else {
-            list ~= value.get.split(",");
-            return Expect.Name;
-        }
-    }
-
-    private Expect handleDryRun(ArgValue value) {
-        dryrun = value.isNull ? true : value.get.parse!bool;
-        return Expect.Name;
+        return Expect.Arg;
     }
 
     private enum Expect {
-        Name,
+        Arg = 0,
+
+        Vk,
+        Video,
         List,
     }
 }

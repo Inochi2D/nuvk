@@ -46,6 +46,21 @@ struct OMap(K, V) {
 		return arr[];
 	}
 
+    auto opOpAssign(string op : "~")(ref OMap other) {
+        import std.conv : to;
+
+        const length = arr.length;
+        arr ~= other.arr;
+
+        foreach (k, i; other.indices) {
+            assert(k !in indices, k.to!string);
+            indices[k] = i + length;
+            keys[i + length] = k;
+        }
+
+        return this;
+    }
+
     ref V opIndexAssign(TK)(V value, TK key)
         if (isTransInsertKey!(TK, K))
     {
@@ -122,7 +137,12 @@ struct OMap(K, V) {
 
 
     invariant() {
-        assert(arr.length == indices.length && arr.length == keys.length);
+        import std.format : format;
+
+        assert(
+            arr.length == indices.length && arr.length == keys.length,
+            format!"arr: %s idx: %s keys: %s"(arr.length, indices.length, keys.length),
+        );
     }
 }
 

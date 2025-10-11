@@ -31,14 +31,12 @@ class VkRegistryParser {
      * Constructs an empty registry from the given text into an XML document.
      * 
      * Params:
-     *   name = The name of this registry.
      *   xml = The XML text to parse into our contents.
      *   logger = The logger to use for informing users of progress/problems.
      */
-    this(string name, string xml, Logger logger) {
+    this(string xml, Logger logger) {
         // Initialize our Vulkan registry.
         registry = new VkRegistry;
-        registry.name = name;
 
         // Parse text into an XML document and assert that this succeeds.
         enforce(doc.parse(xml), doc.errorMessage.dup);
@@ -785,7 +783,7 @@ class VkRegistryParser {
     {
         foreach (child; element.childElements) {
             auto extension = parseExtension(child);
-            registry.extensions[extension.number] = extension;
+            registry.extensions[extension.name] = __rvalue(extension);
         }
     }
 
@@ -805,6 +803,10 @@ class VkRegistryParser {
 
         if (auto type = element.getAttribute("type")) {
             result.type = type.toVkExtensionType;
+        }
+
+        if (auto depends = element.getAttribute("depends")) {
+            result.depends = parseDependsString(depends);
         }
 
         if (auto author = element.getAttribute("author")) {
@@ -832,7 +834,6 @@ class VkRegistryParser {
             VkSection section;
 
             section.depends = sectiontag.getAttribute("depends").idup;
-            section.name = section.depends;
 
             foreach (child; sectiontag.childElements) {
                 switch (child.tagName) {
@@ -929,6 +930,23 @@ class VkRegistryParser {
         section.commands ~= element.getAttribute("name").idup;
     }
 
+    private static VkDepends parseDependsString(xmlstring depends) {
+        return VkDependsParser(depends).matchAny();
+    }
+
+    @"parsing depends string works"
+    unittest {
+        auto depends = "((VK_KHR_get_physical_device_properties2,VK_VERSION_1_1)+VK_KHR_depth_stencil_resolve),VK_VERSION_1_2";
+        auto result = parseDependsString(depends);
+
+        assert(result.isOp);
+        assert(result.op.operator == ',');
+        assert(result.op.lhs.isOp);
+        assert(result.op.lhs.op.operator == '+');
+        assert(!result.op.rhs.isOp);
+        assert(result.op.rhs.name == "VK_VERSION_1_2");
+    }
+
     /** 
      * Utility for parsing a C literal into D form.
      * 
@@ -1020,6 +1038,115 @@ class VkRegistryParser {
         }
 
         return result;
+    }
+}
+
+/** 
+ * 
+ */
+struct VkDependsParser {
+    xmlstring[] tokens;
+
+    this(xmlstring depends) {
+        while (!depends.empty) {
+            if (depends.startsWith("(")) {
+                tokens ~= depends[0 .. 1];
+                depends = depends[1 .. $];
+            } else if (depends.startsWith(")")) {
+                tokens ~= depends[0 .. 1];
+                depends = depends[1 .. $];
+            } else if (depends.startsWith("+")) {
+                tokens ~= depends[0 .. 1];
+                depends = depends[1 .. $];
+            } else if (depends.startsWith(",")) {
+                tokens ~= depends[0 .. 1];
+                depends = depends[1 .. $];
+            } else if (auto match = depends.matchFirst(regex(`^[a-zA-Z0-9_]+`))) {
+                tokens ~= match.front;
+                depends = depends[match.front.length .. $];
+            } else {
+                assert(false, depends);
+            }
+        }
+    }
+
+    VkDepends matchAny() {
+        if (auto result = matchOr()) {
+            return result;
+        } else if (auto result = matchAnd()) {
+            return result;
+        } else if (auto result = matchName()) {
+            return result;
+        } else {
+            return null;
+        }
+    }
+
+    VkDepends matchParensOrName() {
+        if (auto result = matchParens()) {
+            return result;
+        } else if (auto result = matchName()) {
+            return result;
+        } else {
+            return null;
+        }
+    }
+
+    VkDepends matchParensOrAny() {
+        if (auto result = matchParens()) {
+            return result;
+        } else if (auto result = matchAny()) {
+            return result;
+        } else {
+            return null;
+        }
+    }
+
+    VkDepends matchName() {
+        if (tokens.front.length > 1) {
+            auto name = tokens.front;
+            tokens = tokens[1 .. $];
+            return new VkDepends(name.idup);
+        } else {
+            return null;
+        }
+    }
+
+    VkDepends matchAnd() => matchOp('+');
+
+    VkDepends matchOr() => matchOp(',');
+
+    VkDepends matchOp(char op) {
+        auto checkpoint = tokens;
+
+        if (auto lhs = matchParensOrName()) {
+            if (tokens.front == [op]) {
+                tokens = tokens[1 .. $];
+                if (auto rhs = matchParensOrName()) {
+                    return new VkDepends(op, lhs, rhs);
+                }
+            }
+        }
+
+        tokens = checkpoint;
+        return null;
+    }
+
+    VkDepends matchParens() {
+        auto checkpoint = tokens;
+
+        if (tokens.front == "(") {
+            tokens = tokens[1 .. $];
+            if (auto result = matchAny()) {
+                if (tokens.front == ")") {
+                    tokens = tokens[1 .. $];
+                    return result;
+                }
+            }
+        }
+
+        tokens = checkpoint;
+        return null;
     }
 }
 

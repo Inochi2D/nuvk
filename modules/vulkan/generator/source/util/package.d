@@ -50,3 +50,32 @@ string camelToScreaming(string name) {
 unittest {
     assert(camelToScreaming("VkResult"), "VK_RESULT");
 }
+
+/** 
+ * Convert a name from snake-case to camel-case.
+ * 
+ * Params:
+ *   name = A name in snake-case.
+ * 
+ * Returns: the same name but in camel-case.
+ */
+string snakeToCamel(string name) {
+    import std.algorithm;
+    import std.string;
+
+    return name.split("_").map!capitalize.join();
+}
+
+/** 
+ * Capitalize the first letter of a string.
+ * 
+ * Params:
+ *   str = The string to capitalize
+ * 
+ * Returns: the given string with its first letter capitalized.
+ */
+string capitalize(string str) {
+    import std.string;
+
+    return str[0 .. 1].toUpper ~ str[1 .. $];
+}
