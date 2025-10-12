@@ -181,7 +181,7 @@ class VkRegistryEmitter {
             }
 
             file.writeln();
-            file.openf!"struct %s {"(ext.shortName.snakeToCamel ~ "Commands");
+            file.openf!"struct %s {"(format!"%s%sCommands"(ext.author, ext.shortName.snakeToCamel));
             foreach (i, ref command, ref funcptr; lockstep(commands, funcptrs)) {
                 if (i > 0) {
                     file.writeln();
