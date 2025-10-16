@@ -12,6 +12,7 @@
 module vulkan.nv.shader_atomic_float16_vector;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

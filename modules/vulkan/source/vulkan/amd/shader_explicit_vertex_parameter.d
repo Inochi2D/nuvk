@@ -12,6 +12,7 @@
 module vulkan.amd.shader_explicit_vertex_parameter;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

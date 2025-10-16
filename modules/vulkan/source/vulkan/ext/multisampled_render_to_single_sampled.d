@@ -12,6 +12,7 @@
 module vulkan.ext.multisampled_render_to_single_sampled;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

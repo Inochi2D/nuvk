@@ -12,6 +12,7 @@
 module vulkan.amd.shader_info;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 
@@ -58,7 +59,7 @@ struct VkShaderStatisticsInfoAMD {
     uint numPhysicalSgprs;
     uint numAvailableVgprs;
     uint numAvailableSgprs;
-    uint computeWorkGroupSize;
+    uint[3] computeWorkGroupSize;
 }
 
 alias PFN_vkGetShaderInfoAMD = VkResult function(

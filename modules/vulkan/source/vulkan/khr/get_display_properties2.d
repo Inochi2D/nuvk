@@ -12,6 +12,7 @@
 module vulkan.khr.get_display_properties2;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

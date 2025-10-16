@@ -12,6 +12,7 @@
 module vulkan.amd.shader_fragment_mask;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

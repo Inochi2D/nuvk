@@ -12,6 +12,7 @@
 module vulkan.khr.separate_depth_stencil_layouts;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

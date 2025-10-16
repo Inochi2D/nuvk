@@ -12,6 +12,7 @@
 module vulkan.khr.shader_float16_int8;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

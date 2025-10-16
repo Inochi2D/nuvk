@@ -11,6 +11,7 @@
 module vulkan.video.h264std_encode;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 import vulkan.video.h264std;
@@ -36,38 +37,42 @@ struct StdVideoEncodeH264WeightTable {
     ubyte chroma_log2_weight_denom;
     byte[STD_VIDEO_H264_MAX_NUM_LIST_REF] luma_weight_l0;
     byte[STD_VIDEO_H264_MAX_NUM_LIST_REF] luma_offset_l0;
-    byte[STD_VIDEO_H264_MAX_NUM_LIST_REF] chroma_weight_l0;
-    byte[STD_VIDEO_H264_MAX_NUM_LIST_REF] chroma_offset_l0;
+    byte[STD_VIDEO_H264_MAX_NUM_LIST_REF][STD_VIDEO_H264_MAX_CHROMA_PLANES] chroma_weight_l0;
+    byte[STD_VIDEO_H264_MAX_NUM_LIST_REF][STD_VIDEO_H264_MAX_CHROMA_PLANES] chroma_offset_l0;
     byte[STD_VIDEO_H264_MAX_NUM_LIST_REF] luma_weight_l1;
     byte[STD_VIDEO_H264_MAX_NUM_LIST_REF] luma_offset_l1;
-    byte[STD_VIDEO_H264_MAX_NUM_LIST_REF] chroma_weight_l1;
-    byte[STD_VIDEO_H264_MAX_NUM_LIST_REF] chroma_offset_l1;
+    byte[STD_VIDEO_H264_MAX_NUM_LIST_REF][STD_VIDEO_H264_MAX_CHROMA_PLANES] chroma_weight_l1;
+    byte[STD_VIDEO_H264_MAX_NUM_LIST_REF][STD_VIDEO_H264_MAX_CHROMA_PLANES] chroma_offset_l1;
 }
 
 struct StdVideoEncodeH264SliceHeaderFlags {
-    uint direct_spatial_mv_pred_flag;
-    uint num_ref_idx_active_override_flag;
-    uint reserved;
+    uint direct_spatial_mv_pred_flag:1;
+    uint num_ref_idx_active_override_flag:1;
+    uint reserved:30;
+    mixin DMD20473;
 }
 
 struct StdVideoEncodeH264PictureInfoFlags {
-    uint IdrPicFlag;
-    uint is_reference;
-    uint no_output_of_prior_pics_flag;
-    uint long_term_reference_flag;
-    uint adaptive_ref_pic_marking_mode_flag;
-    uint reserved;
+    uint IdrPicFlag:1;
+    uint is_reference:1;
+    uint no_output_of_prior_pics_flag:1;
+    uint long_term_reference_flag:1;
+    uint adaptive_ref_pic_marking_mode_flag:1;
+    uint reserved:27;
+    mixin DMD20473;
 }
 
 struct StdVideoEncodeH264ReferenceInfoFlags {
-    uint used_for_long_term_reference;
-    uint reserved;
+    uint used_for_long_term_reference:1;
+    uint reserved:31;
+    mixin DMD20473;
 }
 
 struct StdVideoEncodeH264ReferenceListsInfoFlags {
-    uint ref_pic_list_modification_flag_l0;
-    uint ref_pic_list_modification_flag_l1;
-    uint reserved;
+    uint ref_pic_list_modification_flag_l0:1;
+    uint ref_pic_list_modification_flag_l1:1;
+    uint reserved:30;
+    mixin DMD20473;
 }
 
 struct StdVideoEncodeH264RefListModEntry {
@@ -88,12 +93,12 @@ struct StdVideoEncodeH264ReferenceListsInfo {
     StdVideoEncodeH264ReferenceListsInfoFlags flags;
     ubyte num_ref_idx_l0_active_minus1;
     ubyte num_ref_idx_l1_active_minus1;
-    ubyte RefPicList0;
-    ubyte RefPicList1;
+    ubyte[STD_VIDEO_H264_MAX_NUM_LIST_REF] RefPicList0;
+    ubyte[STD_VIDEO_H264_MAX_NUM_LIST_REF] RefPicList1;
     ubyte refList0ModOpCount;
     ubyte refList1ModOpCount;
     ubyte refPicMarkingOpCount;
-    ubyte reserved1;
+    ubyte[7] reserved1;
     const(StdVideoEncodeH264RefListModEntry)* pRefList0ModOperations;
     const(StdVideoEncodeH264RefListModEntry)* pRefList1ModOperations;
     const(StdVideoEncodeH264RefPicMarkingEntry)* pRefPicMarkingOperations;
@@ -108,7 +113,7 @@ struct StdVideoEncodeH264PictureInfo {
     uint frame_num;
     int PicOrderCnt;
     ubyte temporal_id;
-    ubyte reserved1;
+    ubyte[3] reserved1;
     const(StdVideoEncodeH264ReferenceListsInfo)* pRefLists;
 }
 

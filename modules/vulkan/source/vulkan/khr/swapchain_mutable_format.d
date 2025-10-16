@@ -12,6 +12,7 @@
 module vulkan.khr.swapchain_mutable_format;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

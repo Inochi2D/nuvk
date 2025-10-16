@@ -12,6 +12,7 @@
 module vulkan.ext.device_memory_report;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

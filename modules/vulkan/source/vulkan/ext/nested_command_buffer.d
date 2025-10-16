@@ -12,6 +12,7 @@
 module vulkan.ext.nested_command_buffer;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

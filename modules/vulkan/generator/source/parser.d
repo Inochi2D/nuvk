@@ -390,12 +390,18 @@ class VkRegistryParser {
                 }
 
                 if (auto type = child.firstChildByTagName("type")) {
-                    auto whole = child.textContent[0 .. $ - postNameLength];
-                    member.type = parseTypeString(type.textContent, whole);
-
-                    if (auto length = child.firstChildByTagName("enum")) {
-                        member.type = format!"%s[%s]"(member.type, length.textContent);
+                    size_t commentLength = 0;
+                    if (auto comment = child.firstChildByTagName("comment")) {
+                        commentLength = comment.textContent.length;
                     }
+
+                    auto postfix = child.textContent[$ - postNameLength + member.name.length .. $ - commentLength];
+                    auto whole = child.textContent[0 .. $ - postNameLength] ~ postfix;
+                    member.type = parseTypeString(type.textContent, whole, &member.width);
+
+                    // if (auto length = child.firstChildByTagName("enum")) {
+                    //     member.type = format!"%s[%s]"(member.type, length.textContent);
+                    // }
                 }
             }
 
@@ -451,12 +457,18 @@ class VkRegistryParser {
                 }
 
                 if (auto type = child.firstChildByTagName("type")) {
-                    auto whole = child.textContent[0 .. $ - postNameLength];
+                    size_t commentLength = 0;
+                    if (auto comment = child.firstChildByTagName("comment")) {
+                        commentLength = comment.textContent.length;
+                    }
+
+                    auto postfix = child.textContent[$ - postNameLength + member.name.length .. $ - commentLength];
+                    auto whole = child.textContent[0 .. $ - postNameLength] ~ postfix;
                     member.type = parseTypeString(type.textContent, whole);
 
-                    if (auto length = child.firstChildByTagName("enum")) {
-                        member.type = format!"%s[%s]"(member.type, length.textContent);
-                    }
+                    // if (auto length = child.firstChildByTagName("enum")) {
+                    //     member.type = format!"%s[%s]"(member.type, length.textContent);
+                    // }
                 }
             }
 
@@ -1057,8 +1069,8 @@ class VkRegistryParser {
      * 
      * Returns: the D equivalent of the given type.
      */
-    private static string parseTypeString(xmlstring name) {
-        return parseTypeString(name, name);
+    private static string parseTypeString(xmlstring name, uint* width = null) {
+        return parseTypeString(name, name, width);
     }
 
     /** 
@@ -1070,7 +1082,9 @@ class VkRegistryParser {
      * 
      * Returns: the D equivalent of the given type.
      */
-    private static string parseTypeString(xmlstring name, xmlstring whole) {
+    private static string parseTypeString(xmlstring name, xmlstring whole, uint* width = null) {
+        import std.ascii;
+
         string result = typemap.get(name, name).idup;
         xmlstring pre;
         xmlstring post;
@@ -1091,9 +1105,27 @@ class VkRegistryParser {
         }
 
         while (!post.empty) {
-            if (post.startsWith("const")) {
+            if (post.startsWith("[]")) {
+                result = format!"%s*"(result);
+                post = post["[]".length .. $].strip;
+            } else if (post.startsWith("const")) {
                 result = format!"const(%s)"(result);
                 post = post["const".length .. $].strip;
+            } else if (post.startsWith(":")) {
+                post = post[1 .. $].strip;
+                int length = 0;
+                while (length < post.length && post[length].isDigit) {
+                    length += 1;
+                }
+                auto size = post[0 .. length];
+                if (width !is null) {
+                    if (length > 0) {
+                        *width = size.parse!int;
+                    } else {
+                        assert(false, whole);
+                    }
+                }
+                post = post[length .. $].strip;
             } else {
                 result ~= post[0];
                 post = post[1 .. $].strip;

@@ -11,6 +11,7 @@
 module vulkan.video.vp9std_decode;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 import vulkan.video.vp9std;
@@ -24,15 +25,16 @@ enum VK_STD_VULKAN_VIDEO_CODEC_VP9_DECODE_EXTENSION_NAME = "VK_STD_vulkan_video_
 enum VK_STD_VULKAN_VIDEO_CODEC_VP9_DECODE_API_VERSION_1_0_0 = VK_MAKE_VIDEO_STD_VERSION(1, 0, 0);
 
 struct StdVideoDecodeVP9PictureInfoFlags {
-    uint error_resilient_mode;
-    uint intra_only;
-    uint allow_high_precision_mv;
-    uint refresh_frame_context;
-    uint frame_parallel_decoding_mode;
-    uint segmentation_enabled;
-    uint show_frame;
-    uint UsePrevFrameMvs;
-    uint reserved;
+    uint error_resilient_mode:1;
+    uint intra_only:1;
+    uint allow_high_precision_mv:1;
+    uint refresh_frame_context:1;
+    uint frame_parallel_decoding_mode:1;
+    uint segmentation_enabled:1;
+    uint show_frame:1;
+    uint UsePrevFrameMvs:1;
+    uint reserved:24;
+    mixin DMD20473;
 }
 
 struct StdVideoDecodeVP9PictureInfo {
@@ -50,7 +52,7 @@ struct StdVideoDecodeVP9PictureInfo {
     byte delta_q_uv_ac;
     ubyte tile_cols_log2;
     ubyte tile_rows_log2;
-    ushort reserved1;
+    ushort[3] reserved1;
     const(StdVideoVP9ColorConfig)* pColorConfig;
     const(StdVideoVP9LoopFilter)* pLoopFilter;
     const(StdVideoVP9Segmentation)* pSegmentation;

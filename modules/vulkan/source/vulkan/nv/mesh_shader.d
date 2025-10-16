@@ -12,6 +12,7 @@
 module vulkan.nv.mesh_shader;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 
@@ -55,11 +56,11 @@ struct VkPhysicalDeviceMeshShaderPropertiesNV {
     void* pNext;
     uint maxDrawMeshTasksCount;
     uint maxTaskWorkGroupInvocations;
-    uint maxTaskWorkGroupSize;
+    uint[3] maxTaskWorkGroupSize;
     uint maxTaskTotalMemorySize;
     uint maxTaskOutputCount;
     uint maxMeshWorkGroupInvocations;
-    uint maxMeshWorkGroupSize;
+    uint[3] maxMeshWorkGroupSize;
     uint maxMeshTotalMemorySize;
     uint maxMeshOutputVertices;
     uint maxMeshOutputPrimitives;

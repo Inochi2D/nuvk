@@ -12,6 +12,7 @@
 module vulkan.lunarg.direct_driver_loading;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

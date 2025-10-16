@@ -15,6 +15,7 @@
 module vulkan.ext.metal_objects;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.platforms.metal;

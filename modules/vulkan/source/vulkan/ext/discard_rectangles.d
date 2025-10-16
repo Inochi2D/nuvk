@@ -12,6 +12,7 @@
 module vulkan.ext.discard_rectangles;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

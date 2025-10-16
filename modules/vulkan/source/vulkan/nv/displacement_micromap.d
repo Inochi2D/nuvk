@@ -15,6 +15,7 @@
 module vulkan.nv.displacement_micromap;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.nv.cluster_acceleration_structure;

@@ -12,6 +12,7 @@
 module vulkan.qcom.rotated_copy_commands;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.khr.surface;

@@ -12,6 +12,7 @@
 module vulkan.img.relaxed_line_rasterization;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

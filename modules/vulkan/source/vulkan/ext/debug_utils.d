@@ -12,6 +12,7 @@
 module vulkan.ext.debug_utils;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 
@@ -74,7 +75,7 @@ struct VkDebugUtilsLabelEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT;
     const(void)* pNext;
     const(char)* pLabelName;
-    float color;
+    float[4] color;
 }
 
 enum VkDebugUtilsMessageSeverityFlagBitsEXT : uint {

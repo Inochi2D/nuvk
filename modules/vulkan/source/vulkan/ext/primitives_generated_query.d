@@ -12,6 +12,7 @@
 module vulkan.ext.primitives_generated_query;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

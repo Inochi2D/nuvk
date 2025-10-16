@@ -15,6 +15,7 @@
 module vulkan.nv.external_memory_win32;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.khr.external_memory_win32;

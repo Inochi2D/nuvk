@@ -12,6 +12,7 @@
 module vulkan.ext.tooling_info;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

@@ -12,6 +12,7 @@
 module vulkan.ext.present_mode_fifo_latest_ready;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.khr.present_mode_fifo_latest_ready;

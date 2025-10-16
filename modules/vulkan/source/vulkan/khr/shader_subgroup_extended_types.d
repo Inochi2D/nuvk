@@ -12,6 +12,7 @@
 module vulkan.khr.shader_subgroup_extended_types;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

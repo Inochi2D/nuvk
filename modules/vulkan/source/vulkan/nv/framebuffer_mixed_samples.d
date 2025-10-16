@@ -12,6 +12,7 @@
 module vulkan.nv.framebuffer_mixed_samples;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.amd.mixed_attachment_samples;

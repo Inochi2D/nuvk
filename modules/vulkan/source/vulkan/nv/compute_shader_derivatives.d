@@ -12,6 +12,7 @@
 module vulkan.nv.compute_shader_derivatives;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.khr.compute_shader_derivatives;

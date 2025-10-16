@@ -12,6 +12,7 @@
 module vulkan.nv.extended_sparse_address_space;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

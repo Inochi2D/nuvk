@@ -85,6 +85,7 @@ class VkRegistryEmitter {
         file.writeln("module vulkan.core;");
         file.writeln();
         file.writeln("import numem.core.types : OpaqueHandle;");
+        file.writeln("import vulkan.patches;");
         file.writeln("import vulkan.loader;");
         file.writeln();
         file.writeln("public import vulkan.defines;");
@@ -146,6 +147,7 @@ class VkRegistryEmitter {
 
         file.writeln();
         file.writeln("import numem.core.types : OpaqueHandle;");
+        file.writeln("import vulkan.patches;");
         file.writeln("import vulkan.loader;");
         file.writeln("import vulkan.core;");
 
@@ -266,6 +268,7 @@ class VkRegistryEmitter {
         file.writefln!"module vulkan.video.common;";
         file.writeln();
         file.writeln("import numem.core.types : OpaqueHandle;");
+        file.writeln("import vulkan.patches;");
         file.writeln("import vulkan.loader;");
         file.writeln();
         file.writeln("public import vulkan.video.defines;");
@@ -310,6 +313,7 @@ class VkRegistryEmitter {
         }
         file.writeln();
         file.writeln("import numem.core.types : OpaqueHandle;");
+        file.writeln("import vulkan.patches;");
         file.writeln("import vulkan.loader;");
         file.writeln("import vulkan.video.common;");
         if (ext.name.endsWith("_encode")) {
@@ -676,6 +680,10 @@ class VkRegistryEmitter {
     }
 
     private void emitStruct(const ref VkStructType struct_) {
+        if (struct_.name.isBespoke) {
+            return;
+        }
+
         if (!struct_.alias_.empty) {
             emitAlias(struct_.name, struct_.alias_);
         } else if (struct_.members.empty) {
@@ -694,17 +702,32 @@ class VkRegistryEmitter {
 
                 emitDeprecation(member.isDeprecated, member.deprecated_);
 
-                if (member.values.length == 1) {
-                    file.writefln!"%s %s = %s;"(type, member.safename, member.values[0]);
+                if (member.width > 0) {
+                    if (member.values.length == 1) {
+                        file.writefln!"%s %s:%s = %s;"(type, member.safename, member.width, member.values[0]);
+                    } else {
+                        file.writefln!"%s %s:%s;"(type, member.safename, member.width);
+                    }
                 } else {
-                    file.writefln!"%s %s;"(type, member.safename);
+                    if (member.values.length == 1) {
+                        file.writefln!"%s %s = %s;"(type, member.safename, member.values[0]);
+                    } else {
+                        file.writefln!"%s %s;"(type, member.safename);
+                    }
                 }
+            }
+            if (struct_.hasBitfields) {
+                file.writeln("mixin DMD20473;");
             }
             file.close("}");
         }
     }
 
     private void emitUnion(const ref VkUnionType union_) {
+        if (union_.name.isBespoke) {
+            return;
+        }
+
         if (union_.members.empty) {
             file.writefln!"union %s {}"(union_.name);
         } else {

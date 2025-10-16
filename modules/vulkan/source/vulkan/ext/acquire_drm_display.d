@@ -12,6 +12,7 @@
 module vulkan.ext.acquire_drm_display;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

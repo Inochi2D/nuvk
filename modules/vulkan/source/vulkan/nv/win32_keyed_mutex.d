@@ -15,6 +15,7 @@
 module vulkan.nv.win32_keyed_mutex;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.khr.win32_keyed_mutex;

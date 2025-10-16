@@ -11,6 +11,7 @@
 module vulkan.video.av1std_decode;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 import vulkan.video.av1std;
@@ -24,36 +25,37 @@ enum VK_STD_VULKAN_VIDEO_CODEC_AV1_DECODE_EXTENSION_NAME = "VK_STD_vulkan_video_
 enum VK_STD_VULKAN_VIDEO_CODEC_AV1_DECODE_API_VERSION_1_0_0 = VK_MAKE_VIDEO_STD_VERSION(1, 0, 0);
 
 struct StdVideoDecodeAV1PictureInfoFlags {
-    uint error_resilient_mode;
-    uint disable_cdf_update;
-    uint use_superres;
-    uint render_and_frame_size_different;
-    uint allow_screen_content_tools;
-    uint is_filter_switchable;
-    uint force_integer_mv;
-    uint frame_size_override_flag;
-    uint buffer_removal_time_present_flag;
-    uint allow_intrabc;
-    uint frame_refs_short_signaling;
-    uint allow_high_precision_mv;
-    uint is_motion_mode_switchable;
-    uint use_ref_frame_mvs;
-    uint disable_frame_end_update_cdf;
-    uint allow_warped_motion;
-    uint reduced_tx_set;
-    uint reference_select;
-    uint skip_mode_present;
-    uint delta_q_present;
-    uint delta_lf_present;
-    uint delta_lf_multi;
-    uint segmentation_enabled;
-    uint segmentation_update_map;
-    uint segmentation_temporal_update;
-    uint segmentation_update_data;
-    uint UsesLr;
-    uint usesChromaLr;
-    uint apply_grain;
-    uint reserved;
+    uint error_resilient_mode:1;
+    uint disable_cdf_update:1;
+    uint use_superres:1;
+    uint render_and_frame_size_different:1;
+    uint allow_screen_content_tools:1;
+    uint is_filter_switchable:1;
+    uint force_integer_mv:1;
+    uint frame_size_override_flag:1;
+    uint buffer_removal_time_present_flag:1;
+    uint allow_intrabc:1;
+    uint frame_refs_short_signaling:1;
+    uint allow_high_precision_mv:1;
+    uint is_motion_mode_switchable:1;
+    uint use_ref_frame_mvs:1;
+    uint disable_frame_end_update_cdf:1;
+    uint allow_warped_motion:1;
+    uint reduced_tx_set:1;
+    uint reference_select:1;
+    uint skip_mode_present:1;
+    uint delta_q_present:1;
+    uint delta_lf_present:1;
+    uint delta_lf_multi:1;
+    uint segmentation_enabled:1;
+    uint segmentation_update_map:1;
+    uint segmentation_temporal_update:1;
+    uint segmentation_update_data:1;
+    uint UsesLr:1;
+    uint usesChromaLr:1;
+    uint apply_grain:1;
+    uint reserved:3;
+    mixin DMD20473;
 }
 
 struct StdVideoDecodeAV1PictureInfo {
@@ -70,7 +72,7 @@ struct StdVideoDecodeAV1PictureInfo {
     ubyte delta_lf_res;
     ubyte[STD_VIDEO_AV1_SKIP_MODE_FRAMES] SkipModeFrame;
     ubyte coded_denom;
-    ubyte reserved2;
+    ubyte[3] reserved2;
     ubyte[STD_VIDEO_AV1_NUM_REF_FRAMES] OrderHints;
     uint[STD_VIDEO_AV1_NUM_REF_FRAMES] expectedFrameId;
     const(StdVideoAV1TileInfo)* pTileInfo;
@@ -84,9 +86,10 @@ struct StdVideoDecodeAV1PictureInfo {
 }
 
 struct StdVideoDecodeAV1ReferenceInfoFlags {
-    uint disable_frame_end_update_cdf;
-    uint segmentation_enabled;
-    uint reserved;
+    uint disable_frame_end_update_cdf:1;
+    uint segmentation_enabled:1;
+    uint reserved:30;
+    mixin DMD20473;
 }
 
 struct StdVideoDecodeAV1ReferenceInfo {

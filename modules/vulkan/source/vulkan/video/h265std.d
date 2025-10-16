@@ -11,6 +11,7 @@
 module vulkan.video.h265std;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 
@@ -186,13 +187,14 @@ struct StdVideoH265SubLayerHrdParameters {
 }
 
 struct StdVideoH265HrdFlags {
-    uint nal_hrd_parameters_present_flag;
-    uint vcl_hrd_parameters_present_flag;
-    uint sub_pic_hrd_params_present_flag;
-    uint sub_pic_cpb_params_in_pic_timing_sei_flag;
-    uint fixed_pic_rate_general_flag;
-    uint fixed_pic_rate_within_cvs_flag;
-    uint low_delay_hrd_flag;
+    uint nal_hrd_parameters_present_flag:1;
+    uint vcl_hrd_parameters_present_flag:1;
+    uint sub_pic_hrd_params_present_flag:1;
+    uint sub_pic_cpb_params_in_pic_timing_sei_flag:1;
+    uint fixed_pic_rate_general_flag:8;
+    uint fixed_pic_rate_within_cvs_flag:8;
+    uint low_delay_hrd_flag:8;
+    mixin DMD20473;
 }
 
 struct StdVideoH265HrdParameters {
@@ -208,24 +210,26 @@ struct StdVideoH265HrdParameters {
     ubyte dpb_output_delay_length_minus1;
     ubyte[STD_VIDEO_H265_SUBLAYERS_LIST_SIZE] cpb_cnt_minus1;
     ushort[STD_VIDEO_H265_SUBLAYERS_LIST_SIZE] elemental_duration_in_tc_minus1;
-    ushort reserved;
+    ushort[3] reserved;
     const(StdVideoH265SubLayerHrdParameters)* pSubLayerHrdParametersNal;
     const(StdVideoH265SubLayerHrdParameters)* pSubLayerHrdParametersVcl;
 }
 
 struct StdVideoH265VpsFlags {
-    uint vps_temporal_id_nesting_flag;
-    uint vps_sub_layer_ordering_info_present_flag;
-    uint vps_timing_info_present_flag;
-    uint vps_poc_proportional_to_timing_flag;
+    uint vps_temporal_id_nesting_flag:1;
+    uint vps_sub_layer_ordering_info_present_flag:1;
+    uint vps_timing_info_present_flag:1;
+    uint vps_poc_proportional_to_timing_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH265ProfileTierLevelFlags {
-    uint general_tier_flag;
-    uint general_progressive_source_flag;
-    uint general_interlaced_source_flag;
-    uint general_non_packed_constraint_flag;
-    uint general_frame_only_constraint_flag;
+    uint general_tier_flag:1;
+    uint general_progressive_source_flag:1;
+    uint general_interlaced_source_flag:1;
+    uint general_non_packed_constraint_flag:1;
+    uint general_frame_only_constraint_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH265ProfileTierLevel {
@@ -250,33 +254,34 @@ struct StdVideoH265VideoParameterSet {
 }
 
 struct StdVideoH265ScalingLists {
-    ubyte[STD_VIDEO_H265_SCALING_LIST_4X4_NUM_LISTS] ScalingList4x4;
-    ubyte[STD_VIDEO_H265_SCALING_LIST_8X8_NUM_LISTS] ScalingList8x8;
-    ubyte[STD_VIDEO_H265_SCALING_LIST_16X16_NUM_LISTS] ScalingList16x16;
-    ubyte[STD_VIDEO_H265_SCALING_LIST_32X32_NUM_LISTS] ScalingList32x32;
+    ubyte[STD_VIDEO_H265_SCALING_LIST_4X4_NUM_LISTS][STD_VIDEO_H265_SCALING_LIST_4X4_NUM_ELEMENTS] ScalingList4x4;
+    ubyte[STD_VIDEO_H265_SCALING_LIST_8X8_NUM_LISTS][STD_VIDEO_H265_SCALING_LIST_8X8_NUM_ELEMENTS] ScalingList8x8;
+    ubyte[STD_VIDEO_H265_SCALING_LIST_16X16_NUM_LISTS][STD_VIDEO_H265_SCALING_LIST_16X16_NUM_ELEMENTS] ScalingList16x16;
+    ubyte[STD_VIDEO_H265_SCALING_LIST_32X32_NUM_LISTS][STD_VIDEO_H265_SCALING_LIST_32X32_NUM_ELEMENTS] ScalingList32x32;
     ubyte[STD_VIDEO_H265_SCALING_LIST_16X16_NUM_LISTS] ScalingListDCCoef16x16;
     ubyte[STD_VIDEO_H265_SCALING_LIST_32X32_NUM_LISTS] ScalingListDCCoef32x32;
 }
 
 struct StdVideoH265SpsVuiFlags {
-    uint aspect_ratio_info_present_flag;
-    uint overscan_info_present_flag;
-    uint overscan_appropriate_flag;
-    uint video_signal_type_present_flag;
-    uint video_full_range_flag;
-    uint colour_description_present_flag;
-    uint chroma_loc_info_present_flag;
-    uint neutral_chroma_indication_flag;
-    uint field_seq_flag;
-    uint frame_field_info_present_flag;
-    uint default_display_window_flag;
-    uint vui_timing_info_present_flag;
-    uint vui_poc_proportional_to_timing_flag;
-    uint vui_hrd_parameters_present_flag;
-    uint bitstream_restriction_flag;
-    uint tiles_fixed_structure_flag;
-    uint motion_vectors_over_pic_boundaries_flag;
-    uint restricted_ref_pic_lists_flag;
+    uint aspect_ratio_info_present_flag:1;
+    uint overscan_info_present_flag:1;
+    uint overscan_appropriate_flag:1;
+    uint video_signal_type_present_flag:1;
+    uint video_full_range_flag:1;
+    uint colour_description_present_flag:1;
+    uint chroma_loc_info_present_flag:1;
+    uint neutral_chroma_indication_flag:1;
+    uint field_seq_flag:1;
+    uint frame_field_info_present_flag:1;
+    uint default_display_window_flag:1;
+    uint vui_timing_info_present_flag:1;
+    uint vui_poc_proportional_to_timing_flag:1;
+    uint vui_hrd_parameters_present_flag:1;
+    uint bitstream_restriction_flag:1;
+    uint tiles_fixed_structure_flag:1;
+    uint motion_vectors_over_pic_boundaries_flag:1;
+    uint restricted_ref_pic_lists_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH265SequenceParameterSetVui {
@@ -309,45 +314,47 @@ struct StdVideoH265SequenceParameterSetVui {
 }
 
 struct StdVideoH265PredictorPaletteEntries {
-    ushort[STD_VIDEO_H265_PREDICTOR_PALETTE_COMPONENTS_LIST_SIZE] PredictorPaletteEntries;
+    ushort[STD_VIDEO_H265_PREDICTOR_PALETTE_COMPONENTS_LIST_SIZE][STD_VIDEO_H265_PREDICTOR_PALETTE_COMP_ENTRIES_LIST_SIZE] PredictorPaletteEntries;
 }
 
 struct StdVideoH265SpsFlags {
-    uint sps_temporal_id_nesting_flag;
-    uint separate_colour_plane_flag;
-    uint conformance_window_flag;
-    uint sps_sub_layer_ordering_info_present_flag;
-    uint scaling_list_enabled_flag;
-    uint sps_scaling_list_data_present_flag;
-    uint amp_enabled_flag;
-    uint sample_adaptive_offset_enabled_flag;
-    uint pcm_enabled_flag;
-    uint pcm_loop_filter_disabled_flag;
-    uint long_term_ref_pics_present_flag;
-    uint sps_temporal_mvp_enabled_flag;
-    uint strong_intra_smoothing_enabled_flag;
-    uint vui_parameters_present_flag;
-    uint sps_extension_present_flag;
-    uint sps_range_extension_flag;
-    uint transform_skip_rotation_enabled_flag;
-    uint transform_skip_context_enabled_flag;
-    uint implicit_rdpcm_enabled_flag;
-    uint explicit_rdpcm_enabled_flag;
-    uint extended_precision_processing_flag;
-    uint intra_smoothing_disabled_flag;
-    uint high_precision_offsets_enabled_flag;
-    uint persistent_rice_adaptation_enabled_flag;
-    uint cabac_bypass_alignment_enabled_flag;
-    uint sps_scc_extension_flag;
-    uint sps_curr_pic_ref_enabled_flag;
-    uint palette_mode_enabled_flag;
-    uint sps_palette_predictor_initializers_present_flag;
-    uint intra_boundary_filtering_disabled_flag;
+    uint sps_temporal_id_nesting_flag:1;
+    uint separate_colour_plane_flag:1;
+    uint conformance_window_flag:1;
+    uint sps_sub_layer_ordering_info_present_flag:1;
+    uint scaling_list_enabled_flag:1;
+    uint sps_scaling_list_data_present_flag:1;
+    uint amp_enabled_flag:1;
+    uint sample_adaptive_offset_enabled_flag:1;
+    uint pcm_enabled_flag:1;
+    uint pcm_loop_filter_disabled_flag:1;
+    uint long_term_ref_pics_present_flag:1;
+    uint sps_temporal_mvp_enabled_flag:1;
+    uint strong_intra_smoothing_enabled_flag:1;
+    uint vui_parameters_present_flag:1;
+    uint sps_extension_present_flag:1;
+    uint sps_range_extension_flag:1;
+    uint transform_skip_rotation_enabled_flag:1;
+    uint transform_skip_context_enabled_flag:1;
+    uint implicit_rdpcm_enabled_flag:1;
+    uint explicit_rdpcm_enabled_flag:1;
+    uint extended_precision_processing_flag:1;
+    uint intra_smoothing_disabled_flag:1;
+    uint high_precision_offsets_enabled_flag:1;
+    uint persistent_rice_adaptation_enabled_flag:1;
+    uint cabac_bypass_alignment_enabled_flag:1;
+    uint sps_scc_extension_flag:1;
+    uint sps_curr_pic_ref_enabled_flag:1;
+    uint palette_mode_enabled_flag:1;
+    uint sps_palette_predictor_initializers_present_flag:1;
+    uint intra_boundary_filtering_disabled_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH265ShortTermRefPicSetFlags {
-    uint inter_ref_pic_set_prediction_flag;
-    uint delta_rps_sign;
+    uint inter_ref_pic_set_prediction_flag:1;
+    uint delta_rps_sign:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH265ShortTermRefPicSet {
@@ -415,37 +422,38 @@ struct StdVideoH265SequenceParameterSet {
 }
 
 struct StdVideoH265PpsFlags {
-    uint dependent_slice_segments_enabled_flag;
-    uint output_flag_present_flag;
-    uint sign_data_hiding_enabled_flag;
-    uint cabac_init_present_flag;
-    uint constrained_intra_pred_flag;
-    uint transform_skip_enabled_flag;
-    uint cu_qp_delta_enabled_flag;
-    uint pps_slice_chroma_qp_offsets_present_flag;
-    uint weighted_pred_flag;
-    uint weighted_bipred_flag;
-    uint transquant_bypass_enabled_flag;
-    uint tiles_enabled_flag;
-    uint entropy_coding_sync_enabled_flag;
-    uint uniform_spacing_flag;
-    uint loop_filter_across_tiles_enabled_flag;
-    uint pps_loop_filter_across_slices_enabled_flag;
-    uint deblocking_filter_control_present_flag;
-    uint deblocking_filter_override_enabled_flag;
-    uint pps_deblocking_filter_disabled_flag;
-    uint pps_scaling_list_data_present_flag;
-    uint lists_modification_present_flag;
-    uint slice_segment_header_extension_present_flag;
-    uint pps_extension_present_flag;
-    uint cross_component_prediction_enabled_flag;
-    uint chroma_qp_offset_list_enabled_flag;
-    uint pps_curr_pic_ref_enabled_flag;
-    uint residual_adaptive_colour_transform_enabled_flag;
-    uint pps_slice_act_qp_offsets_present_flag;
-    uint pps_palette_predictor_initializers_present_flag;
-    uint monochrome_palette_flag;
-    uint pps_range_extension_flag;
+    uint dependent_slice_segments_enabled_flag:1;
+    uint output_flag_present_flag:1;
+    uint sign_data_hiding_enabled_flag:1;
+    uint cabac_init_present_flag:1;
+    uint constrained_intra_pred_flag:1;
+    uint transform_skip_enabled_flag:1;
+    uint cu_qp_delta_enabled_flag:1;
+    uint pps_slice_chroma_qp_offsets_present_flag:1;
+    uint weighted_pred_flag:1;
+    uint weighted_bipred_flag:1;
+    uint transquant_bypass_enabled_flag:1;
+    uint tiles_enabled_flag:1;
+    uint entropy_coding_sync_enabled_flag:1;
+    uint uniform_spacing_flag:1;
+    uint loop_filter_across_tiles_enabled_flag:1;
+    uint pps_loop_filter_across_slices_enabled_flag:1;
+    uint deblocking_filter_control_present_flag:1;
+    uint deblocking_filter_override_enabled_flag:1;
+    uint pps_deblocking_filter_disabled_flag:1;
+    uint pps_scaling_list_data_present_flag:1;
+    uint lists_modification_present_flag:1;
+    uint slice_segment_header_extension_present_flag:1;
+    uint pps_extension_present_flag:1;
+    uint cross_component_prediction_enabled_flag:1;
+    uint chroma_qp_offset_list_enabled_flag:1;
+    uint pps_curr_pic_ref_enabled_flag:1;
+    uint residual_adaptive_colour_transform_enabled_flag:1;
+    uint pps_slice_act_qp_offsets_present_flag:1;
+    uint pps_palette_predictor_initializers_present_flag:1;
+    uint monochrome_palette_flag:1;
+    uint pps_range_extension_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH265PictureParameterSet {

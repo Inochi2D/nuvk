@@ -11,6 +11,7 @@
 module vulkan.video.av1std;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 
@@ -311,11 +312,12 @@ enum STD_VIDEO_AV1_CHROMA_SAMPLE_POSITION_RESERVED = StdVideoAV1ChromaSamplePosi
 enum STD_VIDEO_AV1_CHROMA_SAMPLE_POSITION_INVALID = StdVideoAV1ChromaSamplePosition.STD_VIDEO_AV1_CHROMA_SAMPLE_POSITION_INVALID;
 
 struct StdVideoAV1ColorConfigFlags {
-    uint mono_chrome;
-    uint color_range;
-    uint separate_uv_delta_q;
-    uint color_description_present_flag;
-    uint reserved;
+    uint mono_chrome:1;
+    uint color_range:1;
+    uint separate_uv_delta_q:1;
+    uint color_description_present_flag:1;
+    uint reserved:28;
+    mixin DMD20473;
 }
 
 struct StdVideoAV1ColorConfig {
@@ -331,8 +333,9 @@ struct StdVideoAV1ColorConfig {
 }
 
 struct StdVideoAV1TimingInfoFlags {
-    uint equal_picture_interval;
-    uint reserved;
+    uint equal_picture_interval:1;
+    uint reserved:31;
+    mixin DMD20473;
 }
 
 struct StdVideoAV1TimingInfo {
@@ -343,9 +346,10 @@ struct StdVideoAV1TimingInfo {
 }
 
 struct StdVideoAV1LoopFilterFlags {
-    uint loop_filter_delta_enabled;
-    uint loop_filter_delta_update;
-    uint reserved;
+    uint loop_filter_delta_enabled:1;
+    uint loop_filter_delta_update:1;
+    uint reserved:30;
+    mixin DMD20473;
 }
 
 struct StdVideoAV1LoopFilter {
@@ -359,9 +363,10 @@ struct StdVideoAV1LoopFilter {
 }
 
 struct StdVideoAV1QuantizationFlags {
-    uint using_qmatrix;
-    uint diff_uv_delta;
-    uint reserved;
+    uint using_qmatrix:1;
+    uint diff_uv_delta:1;
+    uint reserved:30;
+    mixin DMD20473;
 }
 
 struct StdVideoAV1Quantization {
@@ -379,12 +384,13 @@ struct StdVideoAV1Quantization {
 
 struct StdVideoAV1Segmentation {
     ubyte[STD_VIDEO_AV1_MAX_SEGMENTS] FeatureEnabled;
-    short[STD_VIDEO_AV1_MAX_SEGMENTS] FeatureData;
+    short[STD_VIDEO_AV1_MAX_SEGMENTS][STD_VIDEO_AV1_SEG_LVL_MAX] FeatureData;
 }
 
 struct StdVideoAV1TileInfoFlags {
-    uint uniform_tile_spacing_flag;
-    uint reserved;
+    uint uniform_tile_spacing_flag:1;
+    uint reserved:31;
+    mixin DMD20473;
 }
 
 struct StdVideoAV1TileInfo {
@@ -393,7 +399,7 @@ struct StdVideoAV1TileInfo {
     ubyte TileRows;
     ushort context_update_tile_id;
     ubyte tile_size_bytes_minus_1;
-    ubyte reserved1;
+    ubyte[7] reserved1;
     const(ushort)* pMiColStarts;
     const(ushort)* pMiRowStarts;
     const(ushort)* pWidthInSbsMinus1;
@@ -416,15 +422,16 @@ struct StdVideoAV1LoopRestoration {
 
 struct StdVideoAV1GlobalMotion {
     ubyte[STD_VIDEO_AV1_NUM_REF_FRAMES] GmType;
-    int[STD_VIDEO_AV1_NUM_REF_FRAMES] gm_params;
+    int[STD_VIDEO_AV1_NUM_REF_FRAMES][STD_VIDEO_AV1_GLOBAL_MOTION_PARAMS] gm_params;
 }
 
 struct StdVideoAV1FilmGrainFlags {
-    uint chroma_scaling_from_luma;
-    uint overlap_flag;
-    uint clip_to_restricted_range;
-    uint update_grain;
-    uint reserved;
+    uint chroma_scaling_from_luma:1;
+    uint overlap_flag:1;
+    uint clip_to_restricted_range:1;
+    uint update_grain:1;
+    uint reserved:28;
+    mixin DMD20473;
 }
 
 struct StdVideoAV1FilmGrain {
@@ -456,26 +463,27 @@ struct StdVideoAV1FilmGrain {
 }
 
 struct StdVideoAV1SequenceHeaderFlags {
-    uint still_picture;
-    uint reduced_still_picture_header;
-    uint use_128x128_superblock;
-    uint enable_filter_intra;
-    uint enable_intra_edge_filter;
-    uint enable_interintra_compound;
-    uint enable_masked_compound;
-    uint enable_warped_motion;
-    uint enable_dual_filter;
-    uint enable_order_hint;
-    uint enable_jnt_comp;
-    uint enable_ref_frame_mvs;
-    uint frame_id_numbers_present_flag;
-    uint enable_superres;
-    uint enable_cdef;
-    uint enable_restoration;
-    uint film_grain_params_present;
-    uint timing_info_present_flag;
-    uint initial_display_delay_present_flag;
-    uint reserved;
+    uint still_picture:1;
+    uint reduced_still_picture_header:1;
+    uint use_128x128_superblock:1;
+    uint enable_filter_intra:1;
+    uint enable_intra_edge_filter:1;
+    uint enable_interintra_compound:1;
+    uint enable_masked_compound:1;
+    uint enable_warped_motion:1;
+    uint enable_dual_filter:1;
+    uint enable_order_hint:1;
+    uint enable_jnt_comp:1;
+    uint enable_ref_frame_mvs:1;
+    uint frame_id_numbers_present_flag:1;
+    uint enable_superres:1;
+    uint enable_cdef:1;
+    uint enable_restoration:1;
+    uint film_grain_params_present:1;
+    uint timing_info_present_flag:1;
+    uint initial_display_delay_present_flag:1;
+    uint reserved:13;
+    mixin DMD20473;
 }
 
 struct StdVideoAV1SequenceHeader {
@@ -490,7 +498,7 @@ struct StdVideoAV1SequenceHeader {
     ubyte order_hint_bits_minus_1;
     ubyte seq_force_integer_mv;
     ubyte seq_force_screen_content_tools;
-    ubyte reserved1;
+    ubyte[5] reserved1;
     const(StdVideoAV1ColorConfig)* pColorConfig;
     const(StdVideoAV1TimingInfo)* pTimingInfo;
 }

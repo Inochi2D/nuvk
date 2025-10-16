@@ -12,6 +12,7 @@
 module vulkan.arm.rasterization_order_attachment_access;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.ext.rasterization_order_attachment_access;

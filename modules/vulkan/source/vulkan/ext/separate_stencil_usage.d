@@ -12,6 +12,7 @@
 module vulkan.ext.separate_stencil_usage;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

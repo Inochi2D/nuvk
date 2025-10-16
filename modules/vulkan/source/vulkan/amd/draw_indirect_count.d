@@ -12,6 +12,7 @@
 module vulkan.amd.draw_indirect_count;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.khr.draw_indirect_count;

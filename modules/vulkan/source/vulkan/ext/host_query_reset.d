@@ -12,6 +12,7 @@
 module vulkan.ext.host_query_reset;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

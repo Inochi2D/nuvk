@@ -12,6 +12,7 @@
 module vulkan.khr.acceleration_structure;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 
@@ -142,7 +143,7 @@ struct VkAccelerationStructureGeometryTrianglesDataKHR {
 }
 
 struct VkTransformMatrixKHR {
-    float matrix;
+    float[3][4] matrix;
 }
 
 struct VkAccelerationStructureBuildGeometryInfoKHR {
@@ -178,11 +179,12 @@ struct VkAccelerationStructureGeometryAabbsDataKHR {
 
 struct VkAccelerationStructureInstanceKHR {
     VkTransformMatrixKHR transform;
-    uint instanceCustomIndex;
-    uint mask;
-    uint instanceShaderBindingTableRecordOffset;
-    VkFlags flags;
+    uint instanceCustomIndex:24;
+    uint mask:8;
+    uint instanceShaderBindingTableRecordOffset:24;
+    VkFlags flags:8;
     ulong accelerationStructureReference;
+    mixin DMD20473;
 }
 
 struct VkAccelerationStructureGeometryInstancesDataKHR {

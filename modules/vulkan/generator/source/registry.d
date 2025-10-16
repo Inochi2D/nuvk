@@ -209,6 +209,16 @@ struct VkStructType {
     VkStructMember[] members;
 
     alias base this;
+
+    @property bool hasBitfields() const {
+        foreach (ref member; members) {
+            if (member.width > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 
 /** 
@@ -220,6 +230,7 @@ struct VkStructMember {
     string[] values;
     bool optional = false;
     string deprecated_;
+    uint width;
 
     string comment;
 

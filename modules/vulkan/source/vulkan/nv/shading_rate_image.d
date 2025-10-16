@@ -12,6 +12,7 @@
 module vulkan.nv.shading_rate_image;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

@@ -12,6 +12,7 @@
 module vulkan.ext.image_drm_format_modifier;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

@@ -12,6 +12,7 @@
 module vulkan.sec.pipeline_cache_incremental_mode;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

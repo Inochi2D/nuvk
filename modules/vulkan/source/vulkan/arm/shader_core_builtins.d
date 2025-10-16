@@ -12,6 +12,7 @@
 module vulkan.arm.shader_core_builtins;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

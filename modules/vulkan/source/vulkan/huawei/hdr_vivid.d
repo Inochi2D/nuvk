@@ -12,6 +12,7 @@
 module vulkan.huawei.hdr_vivid;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

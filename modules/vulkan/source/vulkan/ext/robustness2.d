@@ -12,6 +12,7 @@
 module vulkan.ext.robustness2;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.khr.robustness2;

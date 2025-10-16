@@ -12,6 +12,7 @@
 module vulkan.khr.device_group_creation;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

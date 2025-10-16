@@ -12,6 +12,7 @@
 module vulkan.ext.debug_marker;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.ext.debug_utils;
@@ -166,7 +167,7 @@ struct VkDebugMarkerMarkerInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT;
     const(void)* pNext;
     const(char)* pMarkerName;
-    float color;
+    float[4] color;
 }
 
 alias PFN_vkDebugMarkerSetObjectTagEXT = VkResult function(

@@ -12,6 +12,7 @@
 module vulkan.ext.extended_dynamic_state3;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

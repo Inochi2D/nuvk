@@ -12,6 +12,7 @@
 module vulkan.qcom.filter_cubic_clamp;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

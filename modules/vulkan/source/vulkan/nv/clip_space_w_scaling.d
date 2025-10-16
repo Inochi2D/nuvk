@@ -12,6 +12,7 @@
 module vulkan.nv.clip_space_w_scaling;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

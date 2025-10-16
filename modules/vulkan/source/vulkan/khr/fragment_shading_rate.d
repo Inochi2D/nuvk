@@ -12,6 +12,7 @@
 module vulkan.khr.fragment_shading_rate;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 
@@ -68,7 +69,7 @@ struct VkPipelineFragmentShadingRateStateCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_FRAGMENT_SHADING_RATE_STATE_CREATE_INFO_KHR;
     const(void)* pNext;
     VkExtent2D fragmentSize;
-    VkFragmentShadingRateCombinerOpKHR combinerOps;
+    VkFragmentShadingRateCombinerOpKHR[2] combinerOps;
 }
 
 struct VkPhysicalDeviceFragmentShadingRateFeaturesKHR {

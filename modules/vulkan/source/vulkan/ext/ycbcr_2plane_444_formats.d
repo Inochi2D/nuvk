@@ -12,6 +12,7 @@
 module vulkan.ext.ycbcr_2plane_444_formats;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

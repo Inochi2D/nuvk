@@ -12,6 +12,7 @@
 module vulkan.ext.dynamic_rendering_unused_attachments;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

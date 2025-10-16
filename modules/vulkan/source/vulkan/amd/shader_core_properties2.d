@@ -12,6 +12,7 @@
 module vulkan.amd.shader_core_properties2;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

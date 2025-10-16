@@ -12,6 +12,7 @@
 module vulkan.khr.dynamic_rendering_local_read;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

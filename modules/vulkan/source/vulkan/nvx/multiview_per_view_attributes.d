@@ -12,6 +12,7 @@
 module vulkan.nvx.multiview_per_view_attributes;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

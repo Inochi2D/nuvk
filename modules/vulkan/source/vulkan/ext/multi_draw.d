@@ -12,6 +12,7 @@
 module vulkan.ext.multi_draw;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

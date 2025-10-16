@@ -11,6 +11,7 @@
 module vulkan.video.h265std_encode;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 import vulkan.video.h265std;
@@ -36,28 +37,29 @@ struct StdVideoEncodeH265WeightTable {
     byte delta_chroma_log2_weight_denom;
     byte[STD_VIDEO_H265_MAX_NUM_LIST_REF] delta_luma_weight_l0;
     byte[STD_VIDEO_H265_MAX_NUM_LIST_REF] luma_offset_l0;
-    byte[STD_VIDEO_H265_MAX_NUM_LIST_REF] delta_chroma_weight_l0;
-    byte[STD_VIDEO_H265_MAX_NUM_LIST_REF] delta_chroma_offset_l0;
+    byte[STD_VIDEO_H265_MAX_NUM_LIST_REF][STD_VIDEO_H265_MAX_CHROMA_PLANES] delta_chroma_weight_l0;
+    byte[STD_VIDEO_H265_MAX_NUM_LIST_REF][STD_VIDEO_H265_MAX_CHROMA_PLANES] delta_chroma_offset_l0;
     byte[STD_VIDEO_H265_MAX_NUM_LIST_REF] delta_luma_weight_l1;
     byte[STD_VIDEO_H265_MAX_NUM_LIST_REF] luma_offset_l1;
-    byte[STD_VIDEO_H265_MAX_NUM_LIST_REF] delta_chroma_weight_l1;
-    byte[STD_VIDEO_H265_MAX_NUM_LIST_REF] delta_chroma_offset_l1;
+    byte[STD_VIDEO_H265_MAX_NUM_LIST_REF][STD_VIDEO_H265_MAX_CHROMA_PLANES] delta_chroma_weight_l1;
+    byte[STD_VIDEO_H265_MAX_NUM_LIST_REF][STD_VIDEO_H265_MAX_CHROMA_PLANES] delta_chroma_offset_l1;
 }
 
 struct StdVideoEncodeH265SliceSegmentHeaderFlags {
-    uint first_slice_segment_in_pic_flag;
-    uint dependent_slice_segment_flag;
-    uint slice_sao_luma_flag;
-    uint slice_sao_chroma_flag;
-    uint num_ref_idx_active_override_flag;
-    uint mvd_l1_zero_flag;
-    uint cabac_init_flag;
-    uint cu_chroma_qp_offset_enabled_flag;
-    uint deblocking_filter_override_flag;
-    uint slice_deblocking_filter_disabled_flag;
-    uint collocated_from_l0_flag;
-    uint slice_loop_filter_across_slices_enabled_flag;
-    uint reserved;
+    uint first_slice_segment_in_pic_flag:1;
+    uint dependent_slice_segment_flag:1;
+    uint slice_sao_luma_flag:1;
+    uint slice_sao_chroma_flag:1;
+    uint num_ref_idx_active_override_flag:1;
+    uint mvd_l1_zero_flag:1;
+    uint cabac_init_flag:1;
+    uint cu_chroma_qp_offset_enabled_flag:1;
+    uint deblocking_filter_override_flag:1;
+    uint slice_deblocking_filter_disabled_flag:1;
+    uint collocated_from_l0_flag:1;
+    uint slice_loop_filter_across_slices_enabled_flag:1;
+    uint reserved:20;
+    mixin DMD20473;
 }
 
 struct StdVideoEncodeH265SliceSegmentHeader {
@@ -79,32 +81,34 @@ struct StdVideoEncodeH265SliceSegmentHeader {
 }
 
 struct StdVideoEncodeH265ReferenceListsInfoFlags {
-    uint ref_pic_list_modification_flag_l0;
-    uint ref_pic_list_modification_flag_l1;
-    uint reserved;
+    uint ref_pic_list_modification_flag_l0:1;
+    uint ref_pic_list_modification_flag_l1:1;
+    uint reserved:30;
+    mixin DMD20473;
 }
 
 struct StdVideoEncodeH265ReferenceListsInfo {
     StdVideoEncodeH265ReferenceListsInfoFlags flags;
     ubyte num_ref_idx_l0_active_minus1;
     ubyte num_ref_idx_l1_active_minus1;
-    ubyte RefPicList0;
-    ubyte RefPicList1;
-    ubyte list_entry_l0;
-    ubyte list_entry_l1;
+    ubyte[STD_VIDEO_H265_MAX_NUM_LIST_REF] RefPicList0;
+    ubyte[STD_VIDEO_H265_MAX_NUM_LIST_REF] RefPicList1;
+    ubyte[STD_VIDEO_H265_MAX_NUM_LIST_REF] list_entry_l0;
+    ubyte[STD_VIDEO_H265_MAX_NUM_LIST_REF] list_entry_l1;
 }
 
 struct StdVideoEncodeH265PictureInfoFlags {
-    uint is_reference;
-    uint IrapPicFlag;
-    uint used_for_long_term_reference;
-    uint discardable_flag;
-    uint cross_layer_bla_flag;
-    uint pic_output_flag;
-    uint no_output_of_prior_pics_flag;
-    uint short_term_ref_pic_set_sps_flag;
-    uint slice_temporal_mvp_enabled_flag;
-    uint reserved;
+    uint is_reference:1;
+    uint IrapPicFlag:1;
+    uint used_for_long_term_reference:1;
+    uint discardable_flag:1;
+    uint cross_layer_bla_flag:1;
+    uint pic_output_flag:1;
+    uint no_output_of_prior_pics_flag:1;
+    uint short_term_ref_pic_set_sps_flag:1;
+    uint slice_temporal_mvp_enabled_flag:1;
+    uint reserved:23;
+    mixin DMD20473;
 }
 
 struct StdVideoEncodeH265LongTermRefPics {
@@ -126,16 +130,17 @@ struct StdVideoEncodeH265PictureInfo {
     ubyte short_term_ref_pic_set_idx;
     int PicOrderCntVal;
     ubyte TemporalId;
-    ubyte reserved1;
+    ubyte[7] reserved1;
     const(StdVideoEncodeH265ReferenceListsInfo)* pRefLists;
     const(StdVideoH265ShortTermRefPicSet)* pShortTermRefPicSet;
     const(StdVideoEncodeH265LongTermRefPics)* pLongTermRefPics;
 }
 
 struct StdVideoEncodeH265ReferenceInfoFlags {
-    uint used_for_long_term_reference;
-    uint unused_for_reference;
-    uint reserved;
+    uint used_for_long_term_reference:1;
+    uint unused_for_reference:1;
+    uint reserved:30;
+    mixin DMD20473;
 }
 
 struct StdVideoEncodeH265ReferenceInfo {

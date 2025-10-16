@@ -12,6 +12,7 @@
 module vulkan.ext.sample_locations;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 
@@ -85,7 +86,7 @@ struct VkPhysicalDeviceSampleLocationsPropertiesEXT {
     void* pNext;
     VkFlags sampleLocationSampleCounts;
     VkExtent2D maxSampleLocationGridSize;
-    float sampleLocationCoordinateRange;
+    float[2] sampleLocationCoordinateRange;
     uint sampleLocationSubPixelBits;
     VkBool32 variableSampleLocations;
 }

@@ -12,6 +12,7 @@
 module vulkan.khr.external_semaphore_capabilities;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

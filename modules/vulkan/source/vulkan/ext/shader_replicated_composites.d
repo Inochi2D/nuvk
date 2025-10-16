@@ -12,6 +12,7 @@
 module vulkan.ext.shader_replicated_composites;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

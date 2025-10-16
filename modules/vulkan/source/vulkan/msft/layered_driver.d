@@ -12,6 +12,7 @@
 module vulkan.msft.layered_driver;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

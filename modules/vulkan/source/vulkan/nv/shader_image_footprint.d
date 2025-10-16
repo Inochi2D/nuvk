@@ -12,6 +12,7 @@
 module vulkan.nv.shader_image_footprint;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

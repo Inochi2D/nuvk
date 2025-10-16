@@ -15,6 +15,7 @@
 module vulkan.amdx.shader_enqueue;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 
@@ -79,7 +80,7 @@ struct VkPhysicalDeviceShaderEnqueuePropertiesAMDX {
     uint maxExecutionGraphShaderPayloadSize;
     uint maxExecutionGraphShaderPayloadCount;
     uint executionGraphDispatchAddressAlignment;
-    uint maxExecutionGraphWorkgroupCount;
+    uint[3] maxExecutionGraphWorkgroupCount;
     uint maxExecutionGraphWorkgroups;
 }
 

@@ -12,6 +12,7 @@
 module vulkan.ext.astc_decode_mode;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

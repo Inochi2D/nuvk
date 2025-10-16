@@ -11,6 +11,7 @@
 module vulkan.video.h264std;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 
@@ -269,18 +270,19 @@ enum STD_VIDEO_H264_NON_VCL_NALU_TYPE_PRECODED = StdVideoH264NonVclNaluType.PREC
 enum STD_VIDEO_H264_NON_VCL_NALU_TYPE_INVALID = StdVideoH264NonVclNaluType.INVALID;
 
 struct StdVideoH264SpsVuiFlags {
-    uint aspect_ratio_info_present_flag;
-    uint overscan_info_present_flag;
-    uint overscan_appropriate_flag;
-    uint video_signal_type_present_flag;
-    uint video_full_range_flag;
-    uint color_description_present_flag;
-    uint chroma_loc_info_present_flag;
-    uint timing_info_present_flag;
-    uint fixed_frame_rate_flag;
-    uint bitstream_restriction_flag;
-    uint nal_hrd_parameters_present_flag;
-    uint vcl_hrd_parameters_present_flag;
+    uint aspect_ratio_info_present_flag:1;
+    uint overscan_info_present_flag:1;
+    uint overscan_appropriate_flag:1;
+    uint video_signal_type_present_flag:1;
+    uint video_full_range_flag:1;
+    uint color_description_present_flag:1;
+    uint chroma_loc_info_present_flag:1;
+    uint timing_info_present_flag:1;
+    uint fixed_frame_rate_flag:1;
+    uint bitstream_restriction_flag:1;
+    uint nal_hrd_parameters_present_flag:1;
+    uint vcl_hrd_parameters_present_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH264HrdParameters {
@@ -317,29 +319,30 @@ struct StdVideoH264SequenceParameterSetVui {
 }
 
 struct StdVideoH264SpsFlags {
-    uint constraint_set0_flag;
-    uint constraint_set1_flag;
-    uint constraint_set2_flag;
-    uint constraint_set3_flag;
-    uint constraint_set4_flag;
-    uint constraint_set5_flag;
-    uint direct_8x8_inference_flag;
-    uint mb_adaptive_frame_field_flag;
-    uint frame_mbs_only_flag;
-    uint delta_pic_order_always_zero_flag;
-    uint separate_colour_plane_flag;
-    uint gaps_in_frame_num_value_allowed_flag;
-    uint qpprime_y_zero_transform_bypass_flag;
-    uint frame_cropping_flag;
-    uint seq_scaling_matrix_present_flag;
-    uint vui_parameters_present_flag;
+    uint constraint_set0_flag:1;
+    uint constraint_set1_flag:1;
+    uint constraint_set2_flag:1;
+    uint constraint_set3_flag:1;
+    uint constraint_set4_flag:1;
+    uint constraint_set5_flag:1;
+    uint direct_8x8_inference_flag:1;
+    uint mb_adaptive_frame_field_flag:1;
+    uint frame_mbs_only_flag:1;
+    uint delta_pic_order_always_zero_flag:1;
+    uint separate_colour_plane_flag:1;
+    uint gaps_in_frame_num_value_allowed_flag:1;
+    uint qpprime_y_zero_transform_bypass_flag:1;
+    uint frame_cropping_flag:1;
+    uint seq_scaling_matrix_present_flag:1;
+    uint vui_parameters_present_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH264ScalingLists {
     ushort scaling_list_present_mask;
     ushort use_default_scaling_matrix_mask;
-    ubyte[STD_VIDEO_H264_SCALING_LIST_4X4_NUM_LISTS] ScalingList4x4;
-    ubyte[STD_VIDEO_H264_SCALING_LIST_8X8_NUM_LISTS] ScalingList8x8;
+    ubyte[STD_VIDEO_H264_SCALING_LIST_4X4_NUM_LISTS][STD_VIDEO_H264_SCALING_LIST_4X4_NUM_ELEMENTS] ScalingList4x4;
+    ubyte[STD_VIDEO_H264_SCALING_LIST_8X8_NUM_LISTS][STD_VIDEO_H264_SCALING_LIST_8X8_NUM_ELEMENTS] ScalingList8x8;
 }
 
 struct StdVideoH264SequenceParameterSet {
@@ -371,14 +374,15 @@ struct StdVideoH264SequenceParameterSet {
 }
 
 struct StdVideoH264PpsFlags {
-    uint transform_8x8_mode_flag;
-    uint redundant_pic_cnt_present_flag;
-    uint constrained_intra_pred_flag;
-    uint deblocking_filter_control_present_flag;
-    uint weighted_pred_flag;
-    uint bottom_field_pic_order_in_frame_present_flag;
-    uint entropy_coding_mode_flag;
-    uint pic_scaling_matrix_present_flag;
+    uint transform_8x8_mode_flag:1;
+    uint redundant_pic_cnt_present_flag:1;
+    uint constrained_intra_pred_flag:1;
+    uint deblocking_filter_control_present_flag:1;
+    uint weighted_pred_flag:1;
+    uint bottom_field_pic_order_in_frame_present_flag:1;
+    uint entropy_coding_mode_flag:1;
+    uint pic_scaling_matrix_present_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH264PictureParameterSet {

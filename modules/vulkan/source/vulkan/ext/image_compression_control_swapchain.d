@@ -12,6 +12,7 @@
 module vulkan.ext.image_compression_control_swapchain;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

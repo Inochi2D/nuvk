@@ -12,6 +12,7 @@
 module vulkan.ext.image_2d_view_of_3d;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 
