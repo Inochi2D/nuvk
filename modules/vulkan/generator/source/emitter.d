@@ -676,6 +676,10 @@ class VkRegistryEmitter {
     }
 
     private void emitStruct(const ref VkStructType struct_) {
+        if (struct_.name.isBespoke) {
+            return;
+        }
+
         if (!struct_.alias_.empty) {
             emitAlias(struct_.name, struct_.alias_);
         } else if (struct_.members.empty) {
@@ -694,10 +698,18 @@ class VkRegistryEmitter {
 
                 emitDeprecation(member.isDeprecated, member.deprecated_);
 
-                if (member.values.length == 1) {
-                    file.writefln!"%s %s = %s;"(type, member.safename, member.values[0]);
+                if (member.width > 0) {
+                    if (member.values.length == 1) {
+                        file.writefln!"%s %s:%s = %s;"(type, member.safename, member.width, member.values[0]);
+                    } else {
+                        file.writefln!"%s %s:%s;"(type, member.safename, member.width);
+                    }
                 } else {
-                    file.writefln!"%s %s;"(type, member.safename);
+                    if (member.values.length == 1) {
+                        file.writefln!"%s %s = %s;"(type, member.safename, member.values[0]);
+                    } else {
+                        file.writefln!"%s %s;"(type, member.safename);
+                    }
                 }
             }
             file.close("}");
@@ -705,6 +717,10 @@ class VkRegistryEmitter {
     }
 
     private void emitUnion(const ref VkUnionType union_) {
+        if (union_.name.isBespoke) {
+            return;
+        }
+
         if (union_.members.empty) {
             file.writefln!"union %s {}"(union_.name);
         } else {
@@ -979,4 +995,12 @@ private const bool[string] bespoke = [
     "ANativeWindow": true,
 
     "OHNativeWindow": true,
+
+    // bitfield jail
+    "VkAccelerationStructureInstanceKHR": true,
+    "VkAccelerationStructureSRTMotionInstanceNV": true,
+    "VkAccelerationStructureMatrixMotionInstanceNV": true,
+    "VkAccelerationStructureMotionInstanceDataNV": true,
+    "VkAccelerationStructureMotionInstanceNV": true,
+    "VkAccelerationStructureInstanceNV": true,
 ];

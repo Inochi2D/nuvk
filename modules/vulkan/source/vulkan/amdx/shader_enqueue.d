@@ -79,7 +79,7 @@ struct VkPhysicalDeviceShaderEnqueuePropertiesAMDX {
     uint maxExecutionGraphShaderPayloadSize;
     uint maxExecutionGraphShaderPayloadCount;
     uint executionGraphDispatchAddressAlignment;
-    uint maxExecutionGraphWorkgroupCount;
+    uint[3] maxExecutionGraphWorkgroupCount;
     uint maxExecutionGraphWorkgroups;
 }
 

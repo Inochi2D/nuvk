@@ -54,7 +54,7 @@ struct VkPipelineFragmentShadingRateEnumStateCreateInfoNV {
     const(void)* pNext;
     VkFragmentShadingRateTypeNV shadingRateType;
     VkFragmentShadingRateNV shadingRate;
-    VkFragmentShadingRateCombinerOpKHR combinerOps;
+    VkFragmentShadingRateCombinerOpKHR[2] combinerOps;
 }
 
 enum VkFragmentShadingRateNV {

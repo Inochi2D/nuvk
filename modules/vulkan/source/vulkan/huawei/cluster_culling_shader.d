@@ -50,8 +50,8 @@ struct VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI {
 struct VkPhysicalDeviceClusterCullingShaderPropertiesHUAWEI {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_PROPERTIES_HUAWEI;
     void* pNext;
-    uint maxWorkGroupCount;
-    uint maxWorkGroupSize;
+    uint[3] maxWorkGroupCount;
+    uint[3] maxWorkGroupSize;
     uint maxOutputClusterCount;
     VkDeviceSize indirectBufferOffsetAlignment;
 }

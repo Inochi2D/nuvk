@@ -92,7 +92,7 @@ enum VK_PARTITIONED_ACCELERATION_STRUCTURE_INSTANCE_FLAG_ENABLE_EXPLICIT_BOUNDIN
 
 struct VkPartitionedAccelerationStructureWriteInstanceDataNV {
     VkTransformMatrixKHR transform;
-    float explicitAABB;
+    float[6] explicitAABB;
     uint instanceID;
     uint instanceMask;
     uint instanceContributionToHitGroupIndex;
@@ -110,7 +110,7 @@ struct VkPartitionedAccelerationStructureUpdateInstanceDataNV {
 
 struct VkPartitionedAccelerationStructureWritePartitionTranslationDataNV {
     uint partitionIndex;
-    float partitionTranslation;
+    float[3] partitionTranslation;
 }
 
 struct VkWriteDescriptorSetPartitionedAccelerationStructureNV {

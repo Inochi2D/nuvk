@@ -220,6 +220,7 @@ struct VkStructMember {
     string[] values;
     bool optional = false;
     string deprecated_;
+    uint width;
 
     string comment;
 

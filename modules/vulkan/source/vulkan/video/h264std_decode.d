@@ -35,12 +35,12 @@ enum STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_BOTTOM = StdVideoDecodeH264FieldOrd
 enum STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_INVALID = StdVideoDecodeH264FieldOrderCount.INVALID;
 
 struct StdVideoDecodeH264PictureInfoFlags {
-    uint field_pic_flag;
-    uint is_intra;
-    uint IdrPicFlag;
-    uint bottom_field_flag;
-    uint is_reference;
-    uint complementary_field_pair;
+    uint field_pic_flag:1;
+    uint is_intra:1;
+    uint IdrPicFlag:1;
+    uint bottom_field_flag:1;
+    uint is_reference:1;
+    uint complementary_field_pair:1;
 }
 
 struct StdVideoDecodeH264PictureInfo {
@@ -55,10 +55,10 @@ struct StdVideoDecodeH264PictureInfo {
 }
 
 struct StdVideoDecodeH264ReferenceInfoFlags {
-    uint top_field_flag;
-    uint bottom_field_flag;
-    uint used_for_long_term_reference;
-    uint is_non_existing;
+    uint top_field_flag:1;
+    uint bottom_field_flag:1;
+    uint used_for_long_term_reference:1;
+    uint is_non_existing:1;
 }
 
 struct StdVideoDecodeH264ReferenceInfo {

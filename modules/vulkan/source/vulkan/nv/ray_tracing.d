@@ -226,7 +226,6 @@ alias VkTransformMatrixNV = VkTransformMatrixKHR;
 
 alias VkAabbPositionsNV = VkAabbPositionsKHR;
 
-alias VkAccelerationStructureInstanceNV = VkAccelerationStructureInstanceKHR;
 
 alias PFN_vkCreateAccelerationStructureNV = VkResult function(
     VkDevice device,

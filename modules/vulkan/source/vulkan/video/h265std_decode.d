@@ -25,10 +25,10 @@ enum STD_VIDEO_DECODE_H265_REF_PIC_SET_LIST_SIZE = 8;
 enum VK_STD_VULKAN_VIDEO_CODEC_H265_DECODE_API_VERSION_1_0_0 = VK_MAKE_VIDEO_STD_VERSION(1, 0, 0);
 
 struct StdVideoDecodeH265PictureInfoFlags {
-    uint IrapPicFlag;
-    uint IdrPicFlag;
-    uint IsReference;
-    uint short_term_ref_pic_set_sps_flag;
+    uint IrapPicFlag:1;
+    uint IdrPicFlag:1;
+    uint IsReference:1;
+    uint short_term_ref_pic_set_sps_flag:1;
 }
 
 struct StdVideoDecodeH265PictureInfo {
@@ -46,8 +46,8 @@ struct StdVideoDecodeH265PictureInfo {
 }
 
 struct StdVideoDecodeH265ReferenceInfoFlags {
-    uint used_for_long_term_reference;
-    uint unused_for_reference;
+    uint used_for_long_term_reference:1;
+    uint unused_for_reference:1;
 }
 
 struct StdVideoDecodeH265ReferenceInfo {

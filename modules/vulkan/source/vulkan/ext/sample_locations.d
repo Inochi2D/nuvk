@@ -85,7 +85,7 @@ struct VkPhysicalDeviceSampleLocationsPropertiesEXT {
     void* pNext;
     VkFlags sampleLocationSampleCounts;
     VkExtent2D maxSampleLocationGridSize;
-    float sampleLocationCoordinateRange;
+    float[2] sampleLocationCoordinateRange;
     uint sampleLocationSubPixelBits;
     VkBool32 variableSampleLocations;
 }

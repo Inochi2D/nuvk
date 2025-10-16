@@ -55,11 +55,11 @@ struct VkPhysicalDeviceMeshShaderPropertiesNV {
     void* pNext;
     uint maxDrawMeshTasksCount;
     uint maxTaskWorkGroupInvocations;
-    uint maxTaskWorkGroupSize;
+    uint[3] maxTaskWorkGroupSize;
     uint maxTaskTotalMemorySize;
     uint maxTaskOutputCount;
     uint maxMeshWorkGroupInvocations;
-    uint maxMeshWorkGroupSize;
+    uint[3] maxMeshWorkGroupSize;
     uint maxMeshTotalMemorySize;
     uint maxMeshOutputVertices;
     uint maxMeshOutputPrimitives;

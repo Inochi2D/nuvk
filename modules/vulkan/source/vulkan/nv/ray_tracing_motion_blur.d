@@ -42,37 +42,9 @@ struct VkAccelerationStructureMotionInfoNV {
     VkFlags flags;
 }
 
-struct VkAccelerationStructureMotionInstanceNV {
-    VkAccelerationStructureMotionInstanceTypeNV type;
-    VkFlags flags;
-    VkAccelerationStructureMotionInstanceDataNV data;
-}
 
-union VkAccelerationStructureMotionInstanceDataNV {
-    VkAccelerationStructureInstanceKHR staticInstance;
-    VkAccelerationStructureMatrixMotionInstanceNV matrixMotionInstance;
-    VkAccelerationStructureSRTMotionInstanceNV srtMotionInstance;
-}
 
-struct VkAccelerationStructureMatrixMotionInstanceNV {
-    VkTransformMatrixKHR transformT0;
-    VkTransformMatrixKHR transformT1;
-    uint instanceCustomIndex;
-    uint mask;
-    uint instanceShaderBindingTableRecordOffset;
-    VkFlags flags;
-    ulong accelerationStructureReference;
-}
 
-struct VkAccelerationStructureSRTMotionInstanceNV {
-    VkSRTDataNV transformT0;
-    VkSRTDataNV transformT1;
-    uint instanceCustomIndex;
-    uint mask;
-    uint instanceShaderBindingTableRecordOffset;
-    VkFlags flags;
-    ulong accelerationStructureReference;
-}
 
 struct VkSRTDataNV {
     float sx;

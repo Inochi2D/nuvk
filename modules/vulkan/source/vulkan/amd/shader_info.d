@@ -58,7 +58,7 @@ struct VkShaderStatisticsInfoAMD {
     uint numPhysicalSgprs;
     uint numAvailableVgprs;
     uint numAvailableSgprs;
-    uint computeWorkGroupSize;
+    uint[3] computeWorkGroupSize;
 }
 
 alias PFN_vkGetShaderInfoAMD = VkResult function(

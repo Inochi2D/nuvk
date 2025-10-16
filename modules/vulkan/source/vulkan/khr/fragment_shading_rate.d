@@ -68,7 +68,7 @@ struct VkPipelineFragmentShadingRateStateCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_FRAGMENT_SHADING_RATE_STATE_CREATE_INFO_KHR;
     const(void)* pNext;
     VkExtent2D fragmentSize;
-    VkFragmentShadingRateCombinerOpKHR combinerOps;
+    VkFragmentShadingRateCombinerOpKHR[2] combinerOps;
 }
 
 struct VkPhysicalDeviceFragmentShadingRateFeaturesKHR {

@@ -122,9 +122,9 @@ struct VkStridedDeviceAddressNV {
 }
 
 struct VkClusterAccelerationStructureGeometryIndexAndGeometryFlagsNV {
-    uint geometryIndex;
-    uint reserved;
-    uint geometryFlags;
+    uint geometryIndex:24;
+    uint reserved:5;
+    uint geometryFlags:3;
 }
 
 alias VkClusterAccelerationStructureClusterFlagsNV = VkFlags;
@@ -180,11 +180,11 @@ struct VkClusterAccelerationStructureBuildClustersBottomLevelInfoNV {
 struct VkClusterAccelerationStructureBuildTriangleClusterInfoNV {
     uint clusterID;
     VkFlags clusterFlags;
-    uint triangleCount;
-    uint vertexCount;
-    uint positionTruncateBitCount;
-    uint indexType;
-    uint opacityMicromapIndexType;
+    uint triangleCount:9;
+    uint vertexCount:9;
+    uint positionTruncateBitCount:6;
+    uint indexType:4;
+    uint opacityMicromapIndexType:4;
     VkClusterAccelerationStructureGeometryIndexAndGeometryFlagsNV baseGeometryIndexAndGeometryFlags;
     ushort indexBufferStride;
     ushort vertexBufferStride;
@@ -200,11 +200,11 @@ struct VkClusterAccelerationStructureBuildTriangleClusterInfoNV {
 struct VkClusterAccelerationStructureBuildTriangleClusterTemplateInfoNV {
     uint clusterID;
     VkFlags clusterFlags;
-    uint triangleCount;
-    uint vertexCount;
-    uint positionTruncateBitCount;
-    uint indexType;
-    uint opacityMicromapIndexType;
+    uint triangleCount:9;
+    uint vertexCount:9;
+    uint positionTruncateBitCount:6;
+    uint indexType:4;
+    uint opacityMicromapIndexType:4;
     VkClusterAccelerationStructureGeometryIndexAndGeometryFlagsNV baseGeometryIndexAndGeometryFlags;
     ushort indexBufferStride;
     ushort vertexBufferStride;
@@ -220,8 +220,8 @@ struct VkClusterAccelerationStructureBuildTriangleClusterTemplateInfoNV {
 
 struct VkClusterAccelerationStructureInstantiateClusterInfoNV {
     uint clusterIdOffset;
-    uint geometryIndexOffset;
-    uint reserved;
+    uint geometryIndexOffset:24;
+    uint reserved:8;
     VkDeviceAddress clusterTemplateAddress;
     VkStridedDeviceAddressNV vertexBuffer;
 }

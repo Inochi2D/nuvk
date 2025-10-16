@@ -4433,9 +4433,9 @@ struct VkPhysicalDeviceLimits {
     uint maxFragmentDualSrcAttachments;
     uint maxFragmentCombinedOutputResources;
     uint maxComputeSharedMemorySize;
-    uint maxComputeWorkGroupCount;
+    uint[3] maxComputeWorkGroupCount;
     uint maxComputeWorkGroupInvocations;
-    uint maxComputeWorkGroupSize;
+    uint[3] maxComputeWorkGroupSize;
     uint subPixelPrecisionBits;
     uint subTexelPrecisionBits;
     uint mipmapPrecisionBits;
@@ -4444,8 +4444,8 @@ struct VkPhysicalDeviceLimits {
     float maxSamplerLodBias;
     float maxSamplerAnisotropy;
     uint maxViewports;
-    uint maxViewportDimensions;
-    float viewportBoundsRange;
+    uint[2] maxViewportDimensions;
+    float[2] viewportBoundsRange;
     uint viewportSubPixelBits;
     size_t minMemoryMapAlignment;
     VkDeviceSize minTexelBufferOffsetAlignment;
@@ -4478,8 +4478,8 @@ struct VkPhysicalDeviceLimits {
     uint maxCullDistances;
     uint maxCombinedClipAndCullDistances;
     uint discreteQueuePriorities;
-    float pointSizeRange;
-    float lineWidthRange;
+    float[2] pointSizeRange;
+    float[2] lineWidthRange;
     float pointSizeGranularity;
     float lineWidthGranularity;
     VkBool32 strictLines;
@@ -6317,7 +6317,7 @@ struct VkPipelineColorBlendStateCreateInfo {
     VkLogicOp logicOp;
     uint attachmentCount;
     const(VkPipelineColorBlendAttachmentState)* pAttachments;
-    float blendConstants;
+    float[4] blendConstants;
 }
 
 enum VkPipelineCreateFlagBits : uint {
@@ -7600,9 +7600,9 @@ struct VkClearAttachment {
 }
 
 union VkClearColorValue {
-    float float32;
-    int int32;
-    uint uint32;
+    float[4] float32;
+    int[4] int32;
+    uint[4] uint32;
 }
 
 struct VkClearDepthStencilValue {
@@ -7623,9 +7623,9 @@ union VkClearValue {
 
 struct VkImageBlit {
     VkImageSubresourceLayers srcSubresource;
-    VkOffset3D srcOffsets;
+    VkOffset3D[2] srcOffsets;
     VkImageSubresourceLayers dstSubresource;
-    VkOffset3D dstOffsets;
+    VkOffset3D[2] dstOffsets;
 }
 
 struct VkImageCopy {
@@ -10877,9 +10877,9 @@ struct VkImageBlit2 {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMAGE_BLIT_2;
     const(void)* pNext;
     VkImageSubresourceLayers srcSubresource;
-    VkOffset3D srcOffsets;
+    VkOffset3D[2] srcOffsets;
     VkImageSubresourceLayers dstSubresource;
-    VkOffset3D dstOffsets;
+    VkOffset3D[2] dstOffsets;
 }
 
 struct VkBufferImageCopy2 {

@@ -142,7 +142,7 @@ struct VkAccelerationStructureGeometryTrianglesDataKHR {
 }
 
 struct VkTransformMatrixKHR {
-    float matrix;
+    float[3][4] matrix;
 }
 
 struct VkAccelerationStructureBuildGeometryInfoKHR {
@@ -176,14 +176,6 @@ struct VkAccelerationStructureGeometryAabbsDataKHR {
     VkDeviceSize stride;
 }
 
-struct VkAccelerationStructureInstanceKHR {
-    VkTransformMatrixKHR transform;
-    uint instanceCustomIndex;
-    uint mask;
-    uint instanceShaderBindingTableRecordOffset;
-    VkFlags flags;
-    ulong accelerationStructureReference;
-}
 
 struct VkAccelerationStructureGeometryInstancesDataKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR;
