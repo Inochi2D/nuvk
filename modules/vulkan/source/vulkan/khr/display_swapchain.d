@@ -48,7 +48,6 @@ alias PFN_vkCreateSharedSwapchainsKHR = VkResult function(
     VkDevice device,
     uint swapchainCount,
     const(VkSwapchainCreateInfoKHR)* pCreateInfos,
-    const(VkSwapchainCreateInfoKHR)* pCreateInfos,
     const(VkAllocationCallbacks)* pAllocator,
     VkSwapchainKHR* pSwapchains,
 );

@@ -126,7 +126,6 @@ struct VkPresentInfoKHR {
 alias PFN_vkCreateSwapchainKHR = VkResult function(
     VkDevice device,
     const(VkSwapchainCreateInfoKHR)* pCreateInfo,
-    const(VkSwapchainCreateInfoKHR)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
     VkSwapchainKHR* pSwapchain,
 );

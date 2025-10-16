@@ -96,5 +96,5 @@ enum VK_FRAGMENT_SHADING_RATE_TYPE_ENUMS_NV = VkFragmentShadingRateTypeNV.VK_FRA
 alias PFN_vkCmdSetFragmentShadingRateEnumNV = void function(
     VkCommandBuffer commandBuffer,
     VkFragmentShadingRateNV shadingRate,
-    const(VkFragmentShadingRateCombinerOpKHR) combinerOps,
+    const(VkFragmentShadingRateCombinerOpKHR)[2] combinerOps,
 );

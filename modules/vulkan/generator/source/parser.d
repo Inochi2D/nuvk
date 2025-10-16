@@ -15,6 +15,7 @@ import yxml;
 import util;
 import parsers;
 import registry;
+import std.file;
 
 
 /** 
@@ -727,6 +728,12 @@ class VkRegistryParser {
                 continue;
             }
 
+            if (auto api = child.getAttribute("api")) {
+                if (api == "vulkansc") {
+                    continue;
+                }
+            }
+
             VkParam param;
 
             if (auto name = child.firstChildByTagName("name")) {
@@ -738,7 +745,8 @@ class VkRegistryParser {
                 }
 
                 if (auto type = child.firstChildByTagName("type")) {
-                    auto whole = child.textContent[0 .. $ - postNameLength];
+                    auto postfix = child.textContent[$ - postNameLength + param.name.length .. $];
+                    auto whole = child.textContent[0 .. $ - postNameLength] ~ postfix;
                     param.type = parseTypeString(type.textContent, whole);
                 }
             }
@@ -880,7 +888,6 @@ class VkRegistryParser {
 
         if (auto platform = element.getAttribute("platform")) {
             result.platform = platform.idup;
-
         }
 
         // GGP is Stadia, a now defunct cloud gaming platform. Unsupported.

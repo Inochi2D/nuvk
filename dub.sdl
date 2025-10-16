@@ -12,6 +12,8 @@ dependency ":vulkan" version="*"
 targetPath "out/"
 workingDirectory "out/"
 
+versions "VK_VERSION_1_4"
+
 # Sub packages.
 subPackage "modules/spirv"
 subPackage "modules/vulkan"
@@ -19,9 +21,9 @@ subPackage "modules/vulkan/generator"
 
 # Configs
 configuration "static" {
-	targetType "staticLibrary"
+    targetType "staticLibrary"
 }
 
 configuration "dynamic" {
-	targetType "dynamicLibrary"
+    targetType "dynamicLibrary"
 }

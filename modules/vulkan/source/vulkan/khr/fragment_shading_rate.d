@@ -117,7 +117,7 @@ alias PFN_vkGetPhysicalDeviceFragmentShadingRatesKHR = VkResult function(
 alias PFN_vkCmdSetFragmentShadingRateKHR = void function(
     VkCommandBuffer commandBuffer,
     const(VkExtent2D)* pFragmentSize,
-    const(VkFragmentShadingRateCombinerOpKHR) combinerOps,
+    const(VkFragmentShadingRateCombinerOpKHR)[2] combinerOps,
 );
 
 version (VK_VERSION_1_3) {} else {

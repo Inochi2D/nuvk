@@ -354,7 +354,7 @@ public:
         this.validateLayers();
         this.validateExtensions();
 
-        vkEnforce(vkCreateInstance(&createInfo, null, instance));
+        vkEnforce(vkCreateInstance(&createInfo, null, &instance));
         this.freeSelf();
         return nogc_new!NuvkInstance(instance);
     }

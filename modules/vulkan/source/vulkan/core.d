@@ -7740,7 +7740,7 @@ extern void vkCmdSetDepthBias(
 
 extern void vkCmdSetBlendConstants(
     VkCommandBuffer commandBuffer,
-    const(float) blendConstants,
+    const(float)[4] blendConstants,
 );
 
 extern void vkCmdSetDepthBounds(
