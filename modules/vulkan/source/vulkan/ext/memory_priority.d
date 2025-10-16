@@ -1,5 +1,5 @@
 /**
- * VK_EXT_memory_priority
+ * VK_EXT_memory_priority (Device)
  * 
  * Author:
  *     Multivendor

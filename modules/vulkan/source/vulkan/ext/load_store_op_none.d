@@ -1,5 +1,5 @@
 /**
- * VK_EXT_load_store_op_none
+ * VK_EXT_load_store_op_none (Device)
  * 
  * Author:
  *     Multivendor

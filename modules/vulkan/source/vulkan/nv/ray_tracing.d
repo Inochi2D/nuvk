@@ -1,5 +1,5 @@
 /**
- * VK_NV_ray_tracing
+ * VK_NV_ray_tracing (Device)
  * 
  * Author:
  *     NVIDIA Corporation

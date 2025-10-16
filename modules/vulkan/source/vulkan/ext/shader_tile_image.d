@@ -1,5 +1,5 @@
 /**
- * VK_EXT_shader_tile_image
+ * VK_EXT_shader_tile_image (Device)
  * 
  * Author:
  *     Multivendor

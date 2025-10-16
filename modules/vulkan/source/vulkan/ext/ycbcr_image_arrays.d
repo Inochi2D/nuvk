@@ -1,5 +1,5 @@
 /**
- * VK_EXT_ycbcr_image_arrays
+ * VK_EXT_ycbcr_image_arrays (Device)
  * 
  * Author:
  *     Multivendor

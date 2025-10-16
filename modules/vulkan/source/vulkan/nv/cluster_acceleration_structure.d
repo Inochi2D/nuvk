@@ -1,5 +1,5 @@
 /**
- * VK_NV_cluster_acceleration_structure
+ * VK_NV_cluster_acceleration_structure (Device)
  * 
  * Author:
  *     NVIDIA Corporation

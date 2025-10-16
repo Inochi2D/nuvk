@@ -1,5 +1,5 @@
 /**
- * VK_AMDX_dense_geometry_format
+ * VK_AMDX_dense_geometry_format (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

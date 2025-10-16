@@ -1,5 +1,5 @@
 /**
- * VK_NV_shader_atomic_float16_vector
+ * VK_NV_shader_atomic_float16_vector (Device)
  * 
  * Author:
  *     NVIDIA Corporation

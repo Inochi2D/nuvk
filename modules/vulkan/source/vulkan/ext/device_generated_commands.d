@@ -1,5 +1,5 @@
 /**
- * VK_EXT_device_generated_commands
+ * VK_EXT_device_generated_commands (Device)
  * 
  * Author:
  *     Multivendor

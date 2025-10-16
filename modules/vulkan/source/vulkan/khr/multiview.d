@@ -1,5 +1,5 @@
 /**
- * VK_KHR_multiview
+ * VK_KHR_multiview (Device)
  * 
  * Author:
  *     Khronos

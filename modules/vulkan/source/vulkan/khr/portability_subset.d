@@ -1,5 +1,5 @@
 /**
- * VK_KHR_portability_subset
+ * VK_KHR_portability_subset (Device)
  * 
  * Author:
  *     Khronos

@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_atomic_int64
+ * VK_KHR_shader_atomic_int64 (Device)
  * 
  * Author:
  *     Khronos

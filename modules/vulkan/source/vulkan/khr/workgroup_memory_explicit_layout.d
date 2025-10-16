@@ -1,5 +1,5 @@
 /**
- * VK_KHR_workgroup_memory_explicit_layout
+ * VK_KHR_workgroup_memory_explicit_layout (Device)
  * 
  * Author:
  *     Khronos

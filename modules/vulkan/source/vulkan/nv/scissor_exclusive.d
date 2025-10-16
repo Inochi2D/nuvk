@@ -1,5 +1,5 @@
 /**
- * VK_NV_scissor_exclusive
+ * VK_NV_scissor_exclusive (Device)
  * 
  * Author:
  *     NVIDIA Corporation

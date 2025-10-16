@@ -1,5 +1,5 @@
 /**
- * VK_NV_shader_image_footprint
+ * VK_NV_shader_image_footprint (Device)
  * 
  * Author:
  *     NVIDIA Corporation

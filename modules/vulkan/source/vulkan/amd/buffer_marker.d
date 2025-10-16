@@ -1,5 +1,5 @@
 /**
- * VK_AMD_buffer_marker
+ * VK_AMD_buffer_marker (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

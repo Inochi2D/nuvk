@@ -1,5 +1,5 @@
 /**
- * VK_QCOM_filter_cubic_clamp
+ * VK_QCOM_filter_cubic_clamp (Device)
  * 
  * Author:
  *     Qualcomm Technologies, Inc.

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_pipeline_creation_cache_control
+ * VK_EXT_pipeline_creation_cache_control (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

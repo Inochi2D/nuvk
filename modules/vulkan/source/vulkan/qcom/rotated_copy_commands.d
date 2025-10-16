@@ -1,5 +1,5 @@
 /**
- * VK_QCOM_rotated_copy_commands
+ * VK_QCOM_rotated_copy_commands (Device)
  * 
  * Author:
  *     Qualcomm Technologies, Inc.

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_extended_dynamic_state
+ * VK_EXT_extended_dynamic_state (Device)
  * 
  * Author:
  *     Multivendor

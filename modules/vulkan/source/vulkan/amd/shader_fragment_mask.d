@@ -1,5 +1,5 @@
 /**
- * VK_AMD_shader_fragment_mask
+ * VK_AMD_shader_fragment_mask (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

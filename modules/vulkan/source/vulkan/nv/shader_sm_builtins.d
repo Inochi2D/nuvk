@@ -1,5 +1,5 @@
 /**
- * VK_NV_shader_sm_builtins
+ * VK_NV_shader_sm_builtins (Device)
  * 
  * Author:
  *     NVIDIA Corporation

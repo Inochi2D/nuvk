@@ -1,5 +1,5 @@
 /**
- * VK_EXT_display_surface_counter
+ * VK_EXT_display_surface_counter (Instance)
  * 
  * Author:
  *     NVIDIA Corporation

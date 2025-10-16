@@ -1,5 +1,5 @@
 /**
- * VK_ARM_rasterization_order_attachment_access
+ * VK_ARM_rasterization_order_attachment_access (Device)
  * 
  * Author:
  *     ARM Limited

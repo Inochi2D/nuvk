@@ -1,5 +1,5 @@
 /**
- * VK_KHR_get_display_properties2
+ * VK_KHR_get_display_properties2 (Instance)
  * 
  * Author:
  *     Khronos

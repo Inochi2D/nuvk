@@ -1,5 +1,5 @@
 /**
- * VK_GOOGLE_surfaceless_query
+ * VK_GOOGLE_surfaceless_query (Instance)
  * 
  * Author:
  *     Google LLC

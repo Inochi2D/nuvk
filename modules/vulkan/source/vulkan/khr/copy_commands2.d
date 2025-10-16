@@ -1,5 +1,5 @@
 /**
- * VK_KHR_copy_commands2
+ * VK_KHR_copy_commands2 (Device)
  * 
  * Author:
  *     Khronos

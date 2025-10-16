@@ -1,5 +1,5 @@
 /**
- * VK_EXT_image_compression_control_swapchain
+ * VK_EXT_image_compression_control_swapchain (Device)
  * 
  * Author:
  *     Multivendor

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_buffer_device_address
+ * VK_EXT_buffer_device_address (Device)
  * 
  * Author:
  *     NVIDIA Corporation

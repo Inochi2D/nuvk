@@ -1,5 +1,5 @@
 /**
- * VK_EXT_queue_family_foreign
+ * VK_EXT_queue_family_foreign (Device)
  * 
  * Author:
  *     Multivendor

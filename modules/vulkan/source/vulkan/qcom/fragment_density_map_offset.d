@@ -1,5 +1,5 @@
 /**
- * VK_QCOM_fragment_density_map_offset
+ * VK_QCOM_fragment_density_map_offset (Device)
  * 
  * Author:
  *     Qualcomm Technologies, Inc.

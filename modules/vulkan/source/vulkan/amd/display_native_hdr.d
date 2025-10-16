@@ -1,5 +1,5 @@
 /**
- * VK_AMD_display_native_hdr
+ * VK_AMD_display_native_hdr (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

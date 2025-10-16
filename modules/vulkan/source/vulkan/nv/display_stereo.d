@@ -1,5 +1,5 @@
 /**
- * VK_NV_display_stereo
+ * VK_NV_display_stereo (Instance)
  * 
  * Author:
  *     NVIDIA Corporation

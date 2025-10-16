@@ -1,5 +1,5 @@
 /**
- * VK_EXT_map_memory_placed
+ * VK_EXT_map_memory_placed (Device)
  * 
  * Author:
  *     Multivendor

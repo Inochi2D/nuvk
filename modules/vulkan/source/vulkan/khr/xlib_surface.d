@@ -1,5 +1,5 @@
 /**
- * VK_KHR_xlib_surface
+ * VK_KHR_xlib_surface (Instance)
  * 
  * Author:
  *     Khronos

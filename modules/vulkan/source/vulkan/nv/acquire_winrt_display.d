@@ -1,5 +1,5 @@
 /**
- * VK_NV_acquire_winrt_display
+ * VK_NV_acquire_winrt_display (Device)
  * 
  * Author:
  *     NVIDIA Corporation

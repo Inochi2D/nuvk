@@ -1,5 +1,5 @@
 /**
- * VK_EXT_private_data
+ * VK_EXT_private_data (Device)
  * 
  * Author:
  *     NVIDIA Corporation

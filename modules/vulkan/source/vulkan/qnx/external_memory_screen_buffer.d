@@ -1,5 +1,5 @@
 /**
- * VK_QNX_external_memory_screen_buffer
+ * VK_QNX_external_memory_screen_buffer (Device)
  * 
  * Author:
  *     BlackBerry Limited

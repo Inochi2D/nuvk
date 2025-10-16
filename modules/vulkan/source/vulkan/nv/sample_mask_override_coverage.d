@@ -1,5 +1,5 @@
 /**
- * VK_NV_sample_mask_override_coverage
+ * VK_NV_sample_mask_override_coverage (Device)
  * 
  * Author:
  *     NVIDIA Corporation

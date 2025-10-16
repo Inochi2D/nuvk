@@ -1,5 +1,5 @@
 /**
- * VK_KHR_draw_indirect_count
+ * VK_KHR_draw_indirect_count (Device)
  * 
  * Author:
  *     Khronos

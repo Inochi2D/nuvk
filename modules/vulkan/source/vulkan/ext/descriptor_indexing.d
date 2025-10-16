@@ -1,5 +1,5 @@
 /**
- * VK_EXT_descriptor_indexing
+ * VK_EXT_descriptor_indexing (Device)
  * 
  * Author:
  *     NVIDIA Corporation

@@ -1,5 +1,5 @@
 /**
- * VK_KHR_timeline_semaphore
+ * VK_KHR_timeline_semaphore (Device)
  * 
  * Author:
  *     Khronos

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_post_depth_coverage
+ * VK_EXT_post_depth_coverage (Device)
  * 
  * Author:
  *     NVIDIA Corporation

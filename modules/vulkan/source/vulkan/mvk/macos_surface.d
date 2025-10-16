@@ -1,5 +1,5 @@
 /**
- * VK_MVK_macos_surface
+ * VK_MVK_macos_surface (Instance)
  * 
  * Author:
  *     The Brenwill Workshop Ltd.

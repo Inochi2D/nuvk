@@ -1,5 +1,5 @@
 /**
- * VK_KHR_display
+ * VK_KHR_display (Instance)
  * 
  * Author:
  *     Khronos

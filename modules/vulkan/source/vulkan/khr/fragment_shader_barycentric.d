@@ -1,5 +1,5 @@
 /**
- * VK_KHR_fragment_shader_barycentric
+ * VK_KHR_fragment_shader_barycentric (Device)
  * 
  * Author:
  *     Khronos

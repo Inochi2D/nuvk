@@ -1,5 +1,5 @@
 /**
- * VK_ARM_format_pack
+ * VK_ARM_format_pack (Device)
  * 
  * Author:
  *     ARM Limited

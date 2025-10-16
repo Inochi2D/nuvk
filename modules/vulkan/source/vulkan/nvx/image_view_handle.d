@@ -1,5 +1,5 @@
 /**
- * VK_NVX_image_view_handle
+ * VK_NVX_image_view_handle (Device)
  * 
  * Author:
  *     NVIDIA Corporation

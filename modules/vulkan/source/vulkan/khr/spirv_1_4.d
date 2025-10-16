@@ -1,5 +1,5 @@
 /**
- * VK_KHR_spirv_1_4
+ * VK_KHR_spirv_1_4 (Device)
  * 
  * Author:
  *     Khronos

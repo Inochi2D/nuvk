@@ -1,5 +1,5 @@
 /**
- * VK_EXT_direct_mode_display
+ * VK_EXT_direct_mode_display (Instance)
  * 
  * Author:
  *     NVIDIA Corporation

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_validation_flags
+ * VK_EXT_validation_flags (Instance)
  * 
  * Author:
  *     Google LLC

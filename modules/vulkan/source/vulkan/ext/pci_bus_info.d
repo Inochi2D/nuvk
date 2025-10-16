@@ -1,5 +1,5 @@
 /**
- * VK_EXT_pci_bus_info
+ * VK_EXT_pci_bus_info (Device)
  * 
  * Author:
  *     Multivendor

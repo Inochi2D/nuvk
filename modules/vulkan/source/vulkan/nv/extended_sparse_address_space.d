@@ -1,5 +1,5 @@
 /**
- * VK_NV_extended_sparse_address_space
+ * VK_NV_extended_sparse_address_space (Device)
  * 
  * Author:
  *     NVIDIA Corporation

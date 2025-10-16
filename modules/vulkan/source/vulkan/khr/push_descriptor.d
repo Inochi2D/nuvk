@@ -1,5 +1,5 @@
 /**
- * VK_KHR_push_descriptor
+ * VK_KHR_push_descriptor (Device)
  * 
  * Author:
  *     Khronos

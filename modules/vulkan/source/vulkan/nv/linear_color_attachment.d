@@ -1,5 +1,5 @@
 /**
- * VK_NV_linear_color_attachment
+ * VK_NV_linear_color_attachment (Device)
  * 
  * Author:
  *     NVIDIA

@@ -1,5 +1,5 @@
 /**
- * VK_NV_inherited_viewport_scissor
+ * VK_NV_inherited_viewport_scissor (Device)
  * 
  * Author:
  *     NVIDIA Corporation

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_descriptor_buffer
+ * VK_EXT_descriptor_buffer (Device)
  * 
  * Author:
  *     Multivendor

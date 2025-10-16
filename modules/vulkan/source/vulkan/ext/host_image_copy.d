@@ -1,5 +1,5 @@
 /**
- * VK_EXT_host_image_copy
+ * VK_EXT_host_image_copy (Device)
  * 
  * Author:
  *     Multivendor

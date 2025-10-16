@@ -1,5 +1,5 @@
 /**
- * VK_EXT_present_mode_fifo_latest_ready
+ * VK_EXT_present_mode_fifo_latest_ready (Device)
  * 
  * Author:
  *     Multivendor

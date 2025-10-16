@@ -1,5 +1,5 @@
 /**
- * VK_KHR_performance_query
+ * VK_KHR_performance_query (Device)
  * 
  * Author:
  *     Khronos

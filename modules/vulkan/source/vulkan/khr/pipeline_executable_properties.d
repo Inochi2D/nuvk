@@ -1,5 +1,5 @@
 /**
- * VK_KHR_pipeline_executable_properties
+ * VK_KHR_pipeline_executable_properties (Device)
  * 
  * Author:
  *     Khronos

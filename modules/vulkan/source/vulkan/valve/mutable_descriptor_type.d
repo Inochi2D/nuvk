@@ -1,5 +1,5 @@
 /**
- * VK_VALVE_mutable_descriptor_type
+ * VK_VALVE_mutable_descriptor_type (Device)
  * 
  * Author:
  *     Valve Corporation

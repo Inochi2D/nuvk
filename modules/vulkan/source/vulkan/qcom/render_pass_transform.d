@@ -1,5 +1,5 @@
 /**
- * VK_QCOM_render_pass_transform
+ * VK_QCOM_render_pass_transform (Device)
  * 
  * Author:
  *     Qualcomm Technologies, Inc.

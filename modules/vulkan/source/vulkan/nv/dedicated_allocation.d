@@ -1,5 +1,5 @@
 /**
- * VK_NV_dedicated_allocation
+ * VK_NV_dedicated_allocation (Device)
  * 
  * Author:
  *     NVIDIA Corporation

@@ -1,5 +1,5 @@
 /**
- * VK_NV_device_diagnostic_checkpoints
+ * VK_NV_device_diagnostic_checkpoints (Device)
  * 
  * Author:
  *     NVIDIA

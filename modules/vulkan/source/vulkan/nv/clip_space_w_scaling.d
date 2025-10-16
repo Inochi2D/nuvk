@@ -1,5 +1,5 @@
 /**
- * VK_NV_clip_space_w_scaling
+ * VK_NV_clip_space_w_scaling (Device)
  * 
  * Author:
  *     NVIDIA Corporation

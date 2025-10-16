@@ -1,5 +1,5 @@
 /**
- * VK_KHR_video_decode_av1
+ * VK_KHR_video_decode_av1 (Device)
  * 
  * Author:
  *     Khronos

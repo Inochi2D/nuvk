@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_clock
+ * VK_KHR_shader_clock (Device)
  * 
  * Author:
  *     Khronos

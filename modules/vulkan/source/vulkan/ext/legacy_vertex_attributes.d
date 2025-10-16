@@ -1,5 +1,5 @@
 /**
- * VK_EXT_legacy_vertex_attributes
+ * VK_EXT_legacy_vertex_attributes (Device)
  * 
  * Author:
  *     Multivendor

@@ -1,5 +1,5 @@
 /**
- * VK_NV_external_memory_win32
+ * VK_NV_external_memory_win32 (Device)
  * 
  * Author:
  *     NVIDIA Corporation

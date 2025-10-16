@@ -1,5 +1,5 @@
 /**
- * VK_KHR_calibrated_timestamps
+ * VK_KHR_calibrated_timestamps (Device)
  * 
  * Author:
  *     Khronos

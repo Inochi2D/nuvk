@@ -1,5 +1,5 @@
 /**
- * VK_EXT_shader_replicated_composites
+ * VK_EXT_shader_replicated_composites (Device)
  * 
  * Author:
  *     Multivendor

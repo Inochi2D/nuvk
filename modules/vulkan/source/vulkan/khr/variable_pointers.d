@@ -1,5 +1,5 @@
 /**
- * VK_KHR_variable_pointers
+ * VK_KHR_variable_pointers (Device)
  * 
  * Author:
  *     Khronos

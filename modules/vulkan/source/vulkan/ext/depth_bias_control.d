@@ -1,5 +1,5 @@
 /**
- * VK_EXT_depth_bias_control
+ * VK_EXT_depth_bias_control (Device)
  * 
  * Author:
  *     Multivendor

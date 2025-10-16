@@ -1,5 +1,5 @@
 /**
- * VK_NV_cuda_kernel_launch
+ * VK_NV_cuda_kernel_launch (Device)
  * 
  * Author:
  *     NVIDIA Corporation

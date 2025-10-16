@@ -1,5 +1,5 @@
 /**
- * VK_NVX_multiview_per_view_attributes
+ * VK_NVX_multiview_per_view_attributes (Device)
  * 
  * Author:
  *     NVIDIA Corporation

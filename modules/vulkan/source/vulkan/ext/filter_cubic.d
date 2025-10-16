@@ -1,5 +1,5 @@
 /**
- * VK_EXT_filter_cubic
+ * VK_EXT_filter_cubic (Device)
  * 
  * Author:
  *     Qualcomm Technologies, Inc.

@@ -1,5 +1,5 @@
 /**
- * VK_KHR_line_rasterization
+ * VK_KHR_line_rasterization (Device)
  * 
  * Author:
  *     Khronos

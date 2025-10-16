@@ -1,5 +1,5 @@
 /**
- * VK_KHR_video_encode_quantization_map
+ * VK_KHR_video_encode_quantization_map (Device)
  * 
  * Author:
  *     Khronos

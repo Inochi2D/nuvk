@@ -4603,71 +4603,69 @@ enum VK_SYSTEM_ALLOCATION_SCOPE_CACHE = VkSystemAllocationScope.CACHE;
 enum VK_SYSTEM_ALLOCATION_SCOPE_DEVICE = VkSystemAllocationScope.DEVICE;
 enum VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE = VkSystemAllocationScope.INSTANCE;
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateInstance(
-        const(VkInstanceCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkInstance* pInstance,
-    );
-    
-    extern void vkDestroyInstance(
-        VkInstance instance,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-    
-    extern VkResult vkEnumeratePhysicalDevices(
-        VkInstance instance,
-        uint* pPhysicalDeviceCount,
-        VkPhysicalDevice* pPhysicalDevices,
-    );
-    
-    extern void vkGetPhysicalDeviceFeatures(
-        VkPhysicalDevice physicalDevice,
-        VkPhysicalDeviceFeatures* pFeatures,
-    );
-    
-    extern void vkGetPhysicalDeviceFormatProperties(
-        VkPhysicalDevice physicalDevice,
-        VkFormat format,
-        VkFormatProperties* pFormatProperties,
-    );
-    
-    extern VkResult vkGetPhysicalDeviceImageFormatProperties(
-        VkPhysicalDevice physicalDevice,
-        VkFormat format,
-        VkImageType type,
-        VkImageTiling tiling,
-        VkImageUsageFlags usage,
-        VkImageCreateFlags flags,
-        VkImageFormatProperties* pImageFormatProperties,
-    );
-    
-    extern void vkGetPhysicalDeviceProperties(
-        VkPhysicalDevice physicalDevice,
-        VkPhysicalDeviceProperties* pProperties,
-    );
-    
-    extern void vkGetPhysicalDeviceQueueFamilyProperties(
-        VkPhysicalDevice physicalDevice,
-        uint* pQueueFamilyPropertyCount,
-        VkQueueFamilyProperties* pQueueFamilyProperties,
-    );
-    
-    extern void vkGetPhysicalDeviceMemoryProperties(
-        VkPhysicalDevice physicalDevice,
-        VkPhysicalDeviceMemoryProperties* pMemoryProperties,
-    );
-    
-    extern PFN_vkVoidFunction vkGetInstanceProcAddr(
-        VkInstance instance,
-        const(char)* pName,
-    );
-    
-    extern PFN_vkVoidFunction vkGetDeviceProcAddr(
-        VkDevice device,
-        const(char)* pName,
-    );
-}
+extern VkResult vkCreateInstance(
+    const(VkInstanceCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkInstance* pInstance,
+);
+
+extern void vkDestroyInstance(
+    VkInstance instance,
+    const(VkAllocationCallbacks)* pAllocator,
+);
+
+extern VkResult vkEnumeratePhysicalDevices(
+    VkInstance instance,
+    uint* pPhysicalDeviceCount,
+    VkPhysicalDevice* pPhysicalDevices,
+);
+
+extern void vkGetPhysicalDeviceFeatures(
+    VkPhysicalDevice physicalDevice,
+    VkPhysicalDeviceFeatures* pFeatures,
+);
+
+extern void vkGetPhysicalDeviceFormatProperties(
+    VkPhysicalDevice physicalDevice,
+    VkFormat format,
+    VkFormatProperties* pFormatProperties,
+);
+
+extern VkResult vkGetPhysicalDeviceImageFormatProperties(
+    VkPhysicalDevice physicalDevice,
+    VkFormat format,
+    VkImageType type,
+    VkImageTiling tiling,
+    VkImageUsageFlags usage,
+    VkImageCreateFlags flags,
+    VkImageFormatProperties* pImageFormatProperties,
+);
+
+extern void vkGetPhysicalDeviceProperties(
+    VkPhysicalDevice physicalDevice,
+    VkPhysicalDeviceProperties* pProperties,
+);
+
+extern void vkGetPhysicalDeviceQueueFamilyProperties(
+    VkPhysicalDevice physicalDevice,
+    uint* pQueueFamilyPropertyCount,
+    VkQueueFamilyProperties* pQueueFamilyProperties,
+);
+
+extern void vkGetPhysicalDeviceMemoryProperties(
+    VkPhysicalDevice physicalDevice,
+    VkPhysicalDeviceMemoryProperties* pMemoryProperties,
+);
+
+extern PFN_vkVoidFunction vkGetInstanceProcAddr(
+    VkInstance instance,
+    const(char)* pName,
+);
+
+extern PFN_vkVoidFunction vkGetDeviceProcAddr(
+    VkDevice device,
+    const(char)* pName,
+);
 
 // Device commands
 
@@ -4701,19 +4699,17 @@ struct VkDeviceQueueCreateInfo {
     const(float)* pQueuePriorities;
 }
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateDevice(
-        VkPhysicalDevice physicalDevice,
-        const(VkDeviceCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkDevice* pDevice,
-    );
-    
-    extern void vkDestroyDevice(
-        VkDevice device,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-}
+extern VkResult vkCreateDevice(
+    VkPhysicalDevice physicalDevice,
+    const(VkDeviceCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkDevice* pDevice,
+);
+
+extern void vkDestroyDevice(
+    VkDevice device,
+    const(VkAllocationCallbacks)* pAllocator,
+);
 
 // Extension discovery commands
 
@@ -4722,20 +4718,18 @@ struct VkExtensionProperties {
     uint specVersion;
 }
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkEnumerateInstanceExtensionProperties(
-        const(char)* pLayerName,
-        uint* pPropertyCount,
-        VkExtensionProperties* pProperties,
-    );
-    
-    extern VkResult vkEnumerateDeviceExtensionProperties(
-        VkPhysicalDevice physicalDevice,
-        const(char)* pLayerName,
-        uint* pPropertyCount,
-        VkExtensionProperties* pProperties,
-    );
-}
+extern VkResult vkEnumerateInstanceExtensionProperties(
+    const(char)* pLayerName,
+    uint* pPropertyCount,
+    VkExtensionProperties* pProperties,
+);
+
+extern VkResult vkEnumerateDeviceExtensionProperties(
+    VkPhysicalDevice physicalDevice,
+    const(char)* pLayerName,
+    uint* pPropertyCount,
+    VkExtensionProperties* pProperties,
+);
 
 // Layer discovery commands
 
@@ -4746,18 +4740,16 @@ struct VkLayerProperties {
     char[VK_MAX_DESCRIPTION_SIZE] description;
 }
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkEnumerateInstanceLayerProperties(
-        uint* pPropertyCount,
-        VkLayerProperties* pProperties,
-    );
-    
-    extern VkResult vkEnumerateDeviceLayerProperties(
-        VkPhysicalDevice physicalDevice,
-        uint* pPropertyCount,
-        VkLayerProperties* pProperties,
-    );
-}
+extern VkResult vkEnumerateInstanceLayerProperties(
+    uint* pPropertyCount,
+    VkLayerProperties* pProperties,
+);
+
+extern VkResult vkEnumerateDeviceLayerProperties(
+    VkPhysicalDevice physicalDevice,
+    uint* pPropertyCount,
+    VkLayerProperties* pProperties,
+);
 
 // Queue commands
 
@@ -4849,29 +4841,27 @@ struct VkSubmitInfo {
     const(VkSemaphore)* pSignalSemaphores;
 }
 
-version (VK_VERSION_1_0) {
-    extern void vkGetDeviceQueue(
-        VkDevice device,
-        uint queueFamilyIndex,
-        uint queueIndex,
-        VkQueue* pQueue,
-    );
-    
-    extern VkResult vkQueueSubmit(
-        VkQueue queue,
-        uint submitCount,
-        const(VkSubmitInfo)* pSubmits,
-        VkFence fence,
-    );
-    
-    extern VkResult vkQueueWaitIdle(
-        VkQueue queue,
-    );
-    
-    extern VkResult vkDeviceWaitIdle(
-        VkDevice device,
-    );
-}
+extern void vkGetDeviceQueue(
+    VkDevice device,
+    uint queueFamilyIndex,
+    uint queueIndex,
+    VkQueue* pQueue,
+);
+
+extern VkResult vkQueueSubmit(
+    VkQueue queue,
+    uint submitCount,
+    const(VkSubmitInfo)* pSubmits,
+    VkFence fence,
+);
+
+extern VkResult vkQueueWaitIdle(
+    VkQueue queue,
+);
+
+extern VkResult vkDeviceWaitIdle(
+    VkDevice device,
+);
 
 // Memory commands
 
@@ -4898,52 +4888,50 @@ enum VK_MEMORY_MAP_PLACED_BIT_EXT = VkMemoryMapFlagBits.PLACED_BIT_EXT;
 
 alias VkMemoryMapFlags = VkFlags;
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkAllocateMemory(
-        VkDevice device,
-        const(VkMemoryAllocateInfo)* pAllocateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkDeviceMemory* pMemory,
-    );
-    
-    extern void vkFreeMemory(
-        VkDevice device,
-        VkDeviceMemory memory,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-    
-    extern VkResult vkMapMemory(
-        VkDevice device,
-        VkDeviceMemory memory,
-        VkDeviceSize offset,
-        VkDeviceSize size,
-        VkMemoryMapFlags flags,
-        void** ppData,
-    );
-    
-    extern void vkUnmapMemory(
-        VkDevice device,
-        VkDeviceMemory memory,
-    );
-    
-    extern VkResult vkFlushMappedMemoryRanges(
-        VkDevice device,
-        uint memoryRangeCount,
-        const(VkMappedMemoryRange)* pMemoryRanges,
-    );
-    
-    extern VkResult vkInvalidateMappedMemoryRanges(
-        VkDevice device,
-        uint memoryRangeCount,
-        const(VkMappedMemoryRange)* pMemoryRanges,
-    );
-    
-    extern void vkGetDeviceMemoryCommitment(
-        VkDevice device,
-        VkDeviceMemory memory,
-        VkDeviceSize* pCommittedMemoryInBytes,
-    );
-}
+extern VkResult vkAllocateMemory(
+    VkDevice device,
+    const(VkMemoryAllocateInfo)* pAllocateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkDeviceMemory* pMemory,
+);
+
+extern void vkFreeMemory(
+    VkDevice device,
+    VkDeviceMemory memory,
+    const(VkAllocationCallbacks)* pAllocator,
+);
+
+extern VkResult vkMapMemory(
+    VkDevice device,
+    VkDeviceMemory memory,
+    VkDeviceSize offset,
+    VkDeviceSize size,
+    VkMemoryMapFlags flags,
+    void** ppData,
+);
+
+extern void vkUnmapMemory(
+    VkDevice device,
+    VkDeviceMemory memory,
+);
+
+extern VkResult vkFlushMappedMemoryRanges(
+    VkDevice device,
+    uint memoryRangeCount,
+    const(VkMappedMemoryRange)* pMemoryRanges,
+);
+
+extern VkResult vkInvalidateMappedMemoryRanges(
+    VkDevice device,
+    uint memoryRangeCount,
+    const(VkMappedMemoryRange)* pMemoryRanges,
+);
+
+extern void vkGetDeviceMemoryCommitment(
+    VkDevice device,
+    VkDeviceMemory memory,
+    VkDeviceSize* pCommittedMemoryInBytes,
+);
 
 // Memory management API commands
 
@@ -4955,33 +4943,31 @@ struct VkMemoryRequirements {
     uint memoryTypeBits;
 }
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkBindBufferMemory(
-        VkDevice device,
-        VkBuffer buffer,
-        VkDeviceMemory memory,
-        VkDeviceSize memoryOffset,
-    );
-    
-    extern VkResult vkBindImageMemory(
-        VkDevice device,
-        VkImage image,
-        VkDeviceMemory memory,
-        VkDeviceSize memoryOffset,
-    );
-    
-    extern void vkGetBufferMemoryRequirements(
-        VkDevice device,
-        VkBuffer buffer,
-        VkMemoryRequirements* pMemoryRequirements,
-    );
-    
-    extern void vkGetImageMemoryRequirements(
-        VkDevice device,
-        VkImage image,
-        VkMemoryRequirements* pMemoryRequirements,
-    );
-}
+extern VkResult vkBindBufferMemory(
+    VkDevice device,
+    VkBuffer buffer,
+    VkDeviceMemory memory,
+    VkDeviceSize memoryOffset,
+);
+
+extern VkResult vkBindImageMemory(
+    VkDevice device,
+    VkImage image,
+    VkDeviceMemory memory,
+    VkDeviceSize memoryOffset,
+);
+
+extern void vkGetBufferMemoryRequirements(
+    VkDevice device,
+    VkBuffer buffer,
+    VkMemoryRequirements* pMemoryRequirements,
+);
+
+extern void vkGetImageMemoryRequirements(
+    VkDevice device,
+    VkImage image,
+    VkMemoryRequirements* pMemoryRequirements,
+);
 
 // Sparse resource memory management API commands
 
@@ -5113,32 +5099,30 @@ enum VK_SPARSE_MEMORY_BIND_METADATA_BIT = VkSparseMemoryBindFlagBits.METADATA_BI
 
 alias VkSparseMemoryBindFlags = VkFlags;
 
-version (VK_VERSION_1_0) {
-    extern void vkGetImageSparseMemoryRequirements(
-        VkDevice device,
-        VkImage image,
-        uint* pSparseMemoryRequirementCount,
-        VkSparseImageMemoryRequirements* pSparseMemoryRequirements,
-    );
-    
-    extern void vkGetPhysicalDeviceSparseImageFormatProperties(
-        VkPhysicalDevice physicalDevice,
-        VkFormat format,
-        VkImageType type,
-        VkSampleCountFlagBits samples,
-        VkImageUsageFlags usage,
-        VkImageTiling tiling,
-        uint* pPropertyCount,
-        VkSparseImageFormatProperties* pProperties,
-    );
-    
-    extern VkResult vkQueueBindSparse(
-        VkQueue queue,
-        uint bindInfoCount,
-        const(VkBindSparseInfo)* pBindInfo,
-        VkFence fence,
-    );
-}
+extern void vkGetImageSparseMemoryRequirements(
+    VkDevice device,
+    VkImage image,
+    uint* pSparseMemoryRequirementCount,
+    VkSparseImageMemoryRequirements* pSparseMemoryRequirements,
+);
+
+extern void vkGetPhysicalDeviceSparseImageFormatProperties(
+    VkPhysicalDevice physicalDevice,
+    VkFormat format,
+    VkImageType type,
+    VkSampleCountFlagBits samples,
+    VkImageUsageFlags usage,
+    VkImageTiling tiling,
+    uint* pPropertyCount,
+    VkSparseImageFormatProperties* pProperties,
+);
+
+extern VkResult vkQueueBindSparse(
+    VkQueue queue,
+    uint bindInfoCount,
+    const(VkBindSparseInfo)* pBindInfo,
+    VkFence fence,
+);
 
 // Fence commands
 
@@ -5158,39 +5142,37 @@ struct VkFenceCreateInfo {
     VkFlags flags;
 }
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateFence(
-        VkDevice device,
-        const(VkFenceCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkFence* pFence,
-    );
-    
-    extern void vkDestroyFence(
-        VkDevice device,
-        VkFence fence,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-    
-    extern VkResult vkResetFences(
-        VkDevice device,
-        uint fenceCount,
-        const(VkFence)* pFences,
-    );
-    
-    extern VkResult vkGetFenceStatus(
-        VkDevice device,
-        VkFence fence,
-    );
-    
-    extern VkResult vkWaitForFences(
-        VkDevice device,
-        uint fenceCount,
-        const(VkFence)* pFences,
-        VkBool32 waitAll,
-        ulong timeout,
-    );
-}
+extern VkResult vkCreateFence(
+    VkDevice device,
+    const(VkFenceCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkFence* pFence,
+);
+
+extern void vkDestroyFence(
+    VkDevice device,
+    VkFence fence,
+    const(VkAllocationCallbacks)* pAllocator,
+);
+
+extern VkResult vkResetFences(
+    VkDevice device,
+    uint fenceCount,
+    const(VkFence)* pFences,
+);
+
+extern VkResult vkGetFenceStatus(
+    VkDevice device,
+    VkFence fence,
+);
+
+extern VkResult vkWaitForFences(
+    VkDevice device,
+    uint fenceCount,
+    const(VkFence)* pFences,
+    VkBool32 waitAll,
+    ulong timeout,
+);
 
 // Queue semaphore commands
 
@@ -5204,20 +5186,18 @@ struct VkSemaphoreCreateInfo {
     VkFlags flags;
 }
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateSemaphore(
-        VkDevice device,
-        const(VkSemaphoreCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkSemaphore* pSemaphore,
-    );
-    
-    extern void vkDestroySemaphore(
-        VkDevice device,
-        VkSemaphore semaphore,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-}
+extern VkResult vkCreateSemaphore(
+    VkDevice device,
+    const(VkSemaphoreCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkSemaphore* pSemaphore,
+);
+
+extern void vkDestroySemaphore(
+    VkDevice device,
+    VkSemaphore semaphore,
+    const(VkAllocationCallbacks)* pAllocator,
+);
 
 // Event commands
 
@@ -5239,35 +5219,33 @@ struct VkEventCreateInfo {
     VkFlags flags;
 }
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateEvent(
-        VkDevice device,
-        const(VkEventCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkEvent* pEvent,
-    );
-    
-    extern void vkDestroyEvent(
-        VkDevice device,
-        VkEvent event,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-    
-    extern VkResult vkGetEventStatus(
-        VkDevice device,
-        VkEvent event,
-    );
-    
-    extern VkResult vkSetEvent(
-        VkDevice device,
-        VkEvent event,
-    );
-    
-    extern VkResult vkResetEvent(
-        VkDevice device,
-        VkEvent event,
-    );
-}
+extern VkResult vkCreateEvent(
+    VkDevice device,
+    const(VkEventCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkEvent* pEvent,
+);
+
+extern void vkDestroyEvent(
+    VkDevice device,
+    VkEvent event,
+    const(VkAllocationCallbacks)* pAllocator,
+);
+
+extern VkResult vkGetEventStatus(
+    VkDevice device,
+    VkEvent event,
+);
+
+extern VkResult vkSetEvent(
+    VkDevice device,
+    VkEvent event,
+);
+
+extern VkResult vkResetEvent(
+    VkDevice device,
+    VkEvent event,
+);
 
 // Query commands
 
@@ -5378,31 +5356,29 @@ enum VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SIZE_KHR = VkQueryType.ACCELERATION_ST
 enum VK_QUERY_TYPE_MICROMAP_SERIALIZATION_SIZE_EXT = VkQueryType.MICROMAP_SERIALIZATION_SIZE_EXT;
 enum VK_QUERY_TYPE_MICROMAP_COMPACTED_SIZE_EXT = VkQueryType.MICROMAP_COMPACTED_SIZE_EXT;
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateQueryPool(
-        VkDevice device,
-        const(VkQueryPoolCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkQueryPool* pQueryPool,
-    );
-    
-    extern void vkDestroyQueryPool(
-        VkDevice device,
-        VkQueryPool queryPool,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-    
-    extern VkResult vkGetQueryPoolResults(
-        VkDevice device,
-        VkQueryPool queryPool,
-        uint firstQuery,
-        uint queryCount,
-        size_t dataSize,
-        void* pData,
-        VkDeviceSize stride,
-        VkQueryResultFlags flags,
-    );
-}
+extern VkResult vkCreateQueryPool(
+    VkDevice device,
+    const(VkQueryPoolCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkQueryPool* pQueryPool,
+);
+
+extern void vkDestroyQueryPool(
+    VkDevice device,
+    VkQueryPool queryPool,
+    const(VkAllocationCallbacks)* pAllocator,
+);
+
+extern VkResult vkGetQueryPoolResults(
+    VkDevice device,
+    VkQueryPool queryPool,
+    uint firstQuery,
+    uint queryCount,
+    size_t dataSize,
+    void* pData,
+    VkDeviceSize stride,
+    VkQueryResultFlags flags,
+);
 
 // Buffer commands
 
@@ -5521,20 +5497,18 @@ enum VkSharingMode {
 enum VK_SHARING_MODE_EXCLUSIVE = VkSharingMode.EXCLUSIVE;
 enum VK_SHARING_MODE_CONCURRENT = VkSharingMode.CONCURRENT;
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateBuffer(
-        VkDevice device,
-        const(VkBufferCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkBuffer* pBuffer,
-    );
-    
-    extern void vkDestroyBuffer(
-        VkDevice device,
-        VkBuffer buffer,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-}
+extern VkResult vkCreateBuffer(
+    VkDevice device,
+    const(VkBufferCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkBuffer* pBuffer,
+);
+
+extern void vkDestroyBuffer(
+    VkDevice device,
+    VkBuffer buffer,
+    const(VkAllocationCallbacks)* pAllocator,
+);
 
 // Buffer view commands
 
@@ -5552,20 +5526,18 @@ struct VkBufferViewCreateInfo {
     VkDeviceSize range;
 }
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateBufferView(
-        VkDevice device,
-        const(VkBufferViewCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkBufferView* pView,
-    );
-    
-    extern void vkDestroyBufferView(
-        VkDevice device,
-        VkBufferView bufferView,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-}
+extern VkResult vkCreateBufferView(
+    VkDevice device,
+    const(VkBufferViewCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkBufferView* pView,
+);
+
+extern void vkDestroyBufferView(
+    VkDevice device,
+    VkBufferView bufferView,
+    const(VkAllocationCallbacks)* pAllocator,
+);
 
 // Image commands
 
@@ -5685,27 +5657,25 @@ struct VkSubresourceLayout {
     VkDeviceSize depthPitch;
 }
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateImage(
-        VkDevice device,
-        const(VkImageCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkImage* pImage,
-    );
-    
-    extern void vkDestroyImage(
-        VkDevice device,
-        VkImage image,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-    
-    extern void vkGetImageSubresourceLayout(
-        VkDevice device,
-        VkImage image,
-        const(VkImageSubresource)* pSubresource,
-        VkSubresourceLayout* pLayout,
-    );
-}
+extern VkResult vkCreateImage(
+    VkDevice device,
+    const(VkImageCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkImage* pImage,
+);
+
+extern void vkDestroyImage(
+    VkDevice device,
+    VkImage image,
+    const(VkAllocationCallbacks)* pAllocator,
+);
+
+extern void vkGetImageSubresourceLayout(
+    VkDevice device,
+    VkImage image,
+    const(VkImageSubresource)* pSubresource,
+    VkSubresourceLayout* pLayout,
+);
 
 // Image view commands
 
@@ -5785,20 +5755,18 @@ enum VK_IMAGE_VIEW_TYPE_1D_ARRAY = VkImageViewType.VK_IMAGE_VIEW_TYPE_1D_ARRAY;
 enum VK_IMAGE_VIEW_TYPE_2D_ARRAY = VkImageViewType.VK_IMAGE_VIEW_TYPE_2D_ARRAY;
 enum VK_IMAGE_VIEW_TYPE_CUBE_ARRAY = VkImageViewType.CUBE_ARRAY;
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateImageView(
-        VkDevice device,
-        const(VkImageViewCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkImageView* pView,
-    );
-    
-    extern void vkDestroyImageView(
-        VkDevice device,
-        VkImageView imageView,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-}
+extern VkResult vkCreateImageView(
+    VkDevice device,
+    const(VkImageViewCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkImageView* pView,
+);
+
+extern void vkDestroyImageView(
+    VkDevice device,
+    VkImageView imageView,
+    const(VkAllocationCallbacks)* pAllocator,
+);
 
 // Shader commands
 
@@ -5814,20 +5782,18 @@ struct VkShaderModuleCreateInfo {
     const(uint)* pCode;
 }
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateShaderModule(
-        VkDevice device,
-        const(VkShaderModuleCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkShaderModule* pShaderModule,
-    );
-    
-    extern void vkDestroyShaderModule(
-        VkDevice device,
-        VkShaderModule shaderModule,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-}
+extern VkResult vkCreateShaderModule(
+    VkDevice device,
+    const(VkShaderModuleCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkShaderModule* pShaderModule,
+);
+
+extern void vkDestroyShaderModule(
+    VkDevice device,
+    VkShaderModule shaderModule,
+    const(VkAllocationCallbacks)* pAllocator,
+);
 
 // Pipeline Cache commands
 
@@ -5843,34 +5809,32 @@ struct VkPipelineCacheCreateInfo {
     const(void)* pInitialData;
 }
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreatePipelineCache(
-        VkDevice device,
-        const(VkPipelineCacheCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkPipelineCache* pPipelineCache,
-    );
-    
-    extern void vkDestroyPipelineCache(
-        VkDevice device,
-        VkPipelineCache pipelineCache,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-    
-    extern VkResult vkGetPipelineCacheData(
-        VkDevice device,
-        VkPipelineCache pipelineCache,
-        size_t* pDataSize,
-        void* pData,
-    );
-    
-    extern VkResult vkMergePipelineCaches(
-        VkDevice device,
-        VkPipelineCache dstCache,
-        uint srcCacheCount,
-        const(VkPipelineCache)* pSrcCaches,
-    );
-}
+extern VkResult vkCreatePipelineCache(
+    VkDevice device,
+    const(VkPipelineCacheCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkPipelineCache* pPipelineCache,
+);
+
+extern void vkDestroyPipelineCache(
+    VkDevice device,
+    VkPipelineCache pipelineCache,
+    const(VkAllocationCallbacks)* pAllocator,
+);
+
+extern VkResult vkGetPipelineCacheData(
+    VkDevice device,
+    VkPipelineCache pipelineCache,
+    size_t* pDataSize,
+    void* pData,
+);
+
+extern VkResult vkMergePipelineCaches(
+    VkDevice device,
+    VkPipelineCache dstCache,
+    uint srcCacheCount,
+    const(VkPipelineCache)* pSrcCaches,
+);
 
 // Pipeline commands
 
@@ -6749,31 +6713,29 @@ struct VkViewport {
     float maxDepth;
 }
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateGraphicsPipelines(
-        VkDevice device,
-        VkPipelineCache pipelineCache,
-        uint createInfoCount,
-        const(VkGraphicsPipelineCreateInfo)* pCreateInfos,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkPipeline* pPipelines,
-    );
-    
-    extern VkResult vkCreateComputePipelines(
-        VkDevice device,
-        VkPipelineCache pipelineCache,
-        uint createInfoCount,
-        const(VkComputePipelineCreateInfo)* pCreateInfos,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkPipeline* pPipelines,
-    );
-    
-    extern void vkDestroyPipeline(
-        VkDevice device,
-        VkPipeline pipeline,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-}
+extern VkResult vkCreateGraphicsPipelines(
+    VkDevice device,
+    VkPipelineCache pipelineCache,
+    uint createInfoCount,
+    const(VkGraphicsPipelineCreateInfo)* pCreateInfos,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkPipeline* pPipelines,
+);
+
+extern VkResult vkCreateComputePipelines(
+    VkDevice device,
+    VkPipelineCache pipelineCache,
+    uint createInfoCount,
+    const(VkComputePipelineCreateInfo)* pCreateInfos,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkPipeline* pPipelines,
+);
+
+extern void vkDestroyPipeline(
+    VkDevice device,
+    VkPipeline pipeline,
+    const(VkAllocationCallbacks)* pAllocator,
+);
 
 // Pipeline layout commands
 
@@ -6795,20 +6757,18 @@ struct VkPushConstantRange {
     uint size;
 }
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreatePipelineLayout(
-        VkDevice device,
-        const(VkPipelineLayoutCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkPipelineLayout* pPipelineLayout,
-    );
-    
-    extern void vkDestroyPipelineLayout(
-        VkDevice device,
-        VkPipelineLayout pipelineLayout,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-}
+extern VkResult vkCreatePipelineLayout(
+    VkDevice device,
+    const(VkPipelineLayoutCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkPipelineLayout* pPipelineLayout,
+);
+
+extern void vkDestroyPipelineLayout(
+    VkDevice device,
+    VkPipelineLayout pipelineLayout,
+    const(VkAllocationCallbacks)* pAllocator,
+);
 
 // Sampler commands
 
@@ -6908,20 +6868,18 @@ enum VkSamplerMipmapMode {
 enum VK_SAMPLER_MIPMAP_MODE_NEAREST = VkSamplerMipmapMode.NEAREST;
 enum VK_SAMPLER_MIPMAP_MODE_LINEAR = VkSamplerMipmapMode.LINEAR;
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateSampler(
-        VkDevice device,
-        const(VkSamplerCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkSampler* pSampler,
-    );
-    
-    extern void vkDestroySampler(
-        VkDevice device,
-        VkSampler sampler,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-}
+extern VkResult vkCreateSampler(
+    VkDevice device,
+    const(VkSamplerCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkSampler* pSampler,
+);
+
+extern void vkDestroySampler(
+    VkDevice device,
+    VkSampler sampler,
+    const(VkAllocationCallbacks)* pAllocator,
+);
 
 // Descriptor set commands
 
@@ -7102,60 +7060,58 @@ struct VkWriteDescriptorSet {
     const(VkBufferView)* pTexelBufferView;
 }
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateDescriptorSetLayout(
-        VkDevice device,
-        const(VkDescriptorSetLayoutCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkDescriptorSetLayout* pSetLayout,
-    );
-    
-    extern void vkDestroyDescriptorSetLayout(
-        VkDevice device,
-        VkDescriptorSetLayout descriptorSetLayout,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-    
-    extern VkResult vkCreateDescriptorPool(
-        VkDevice device,
-        const(VkDescriptorPoolCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkDescriptorPool* pDescriptorPool,
-    );
-    
-    extern void vkDestroyDescriptorPool(
-        VkDevice device,
-        VkDescriptorPool descriptorPool,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-    
-    extern VkResult vkResetDescriptorPool(
-        VkDevice device,
-        VkDescriptorPool descriptorPool,
-        VkDescriptorPoolResetFlags flags,
-    );
-    
-    extern VkResult vkAllocateDescriptorSets(
-        VkDevice device,
-        const(VkDescriptorSetAllocateInfo)* pAllocateInfo,
-        VkDescriptorSet* pDescriptorSets,
-    );
-    
-    extern VkResult vkFreeDescriptorSets(
-        VkDevice device,
-        VkDescriptorPool descriptorPool,
-        uint descriptorSetCount,
-        const(VkDescriptorSet)* pDescriptorSets,
-    );
-    
-    extern void vkUpdateDescriptorSets(
-        VkDevice device,
-        uint descriptorWriteCount,
-        const(VkWriteDescriptorSet)* pDescriptorWrites,
-        uint descriptorCopyCount,
-        const(VkCopyDescriptorSet)* pDescriptorCopies,
-    );
-}
+extern VkResult vkCreateDescriptorSetLayout(
+    VkDevice device,
+    const(VkDescriptorSetLayoutCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkDescriptorSetLayout* pSetLayout,
+);
+
+extern void vkDestroyDescriptorSetLayout(
+    VkDevice device,
+    VkDescriptorSetLayout descriptorSetLayout,
+    const(VkAllocationCallbacks)* pAllocator,
+);
+
+extern VkResult vkCreateDescriptorPool(
+    VkDevice device,
+    const(VkDescriptorPoolCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkDescriptorPool* pDescriptorPool,
+);
+
+extern void vkDestroyDescriptorPool(
+    VkDevice device,
+    VkDescriptorPool descriptorPool,
+    const(VkAllocationCallbacks)* pAllocator,
+);
+
+extern VkResult vkResetDescriptorPool(
+    VkDevice device,
+    VkDescriptorPool descriptorPool,
+    VkDescriptorPoolResetFlags flags,
+);
+
+extern VkResult vkAllocateDescriptorSets(
+    VkDevice device,
+    const(VkDescriptorSetAllocateInfo)* pAllocateInfo,
+    VkDescriptorSet* pDescriptorSets,
+);
+
+extern VkResult vkFreeDescriptorSets(
+    VkDevice device,
+    VkDescriptorPool descriptorPool,
+    uint descriptorSetCount,
+    const(VkDescriptorSet)* pDescriptorSets,
+);
+
+extern void vkUpdateDescriptorSets(
+    VkDevice device,
+    uint descriptorWriteCount,
+    const(VkWriteDescriptorSet)* pDescriptorWrites,
+    uint descriptorCopyCount,
+    const(VkCopyDescriptorSet)* pDescriptorCopies,
+);
 
 // Pass commands
 
@@ -7443,39 +7399,37 @@ enum VK_SUBPASS_DESCRIPTION_ENABLE_LEGACY_DITHERING_BIT_EXT = VkSubpassDescripti
 
 alias VkSubpassDescriptionFlags = VkFlags;
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateFramebuffer(
-        VkDevice device,
-        const(VkFramebufferCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkFramebuffer* pFramebuffer,
-    );
-    
-    extern void vkDestroyFramebuffer(
-        VkDevice device,
-        VkFramebuffer framebuffer,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-    
-    extern VkResult vkCreateRenderPass(
-        VkDevice device,
-        const(VkRenderPassCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkRenderPass* pRenderPass,
-    );
-    
-    extern void vkDestroyRenderPass(
-        VkDevice device,
-        VkRenderPass renderPass,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-    
-    extern void vkGetRenderAreaGranularity(
-        VkDevice device,
-        VkRenderPass renderPass,
-        VkExtent2D* pGranularity,
-    );
-}
+extern VkResult vkCreateFramebuffer(
+    VkDevice device,
+    const(VkFramebufferCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkFramebuffer* pFramebuffer,
+);
+
+extern void vkDestroyFramebuffer(
+    VkDevice device,
+    VkFramebuffer framebuffer,
+    const(VkAllocationCallbacks)* pAllocator,
+);
+
+extern VkResult vkCreateRenderPass(
+    VkDevice device,
+    const(VkRenderPassCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkRenderPass* pRenderPass,
+);
+
+extern void vkDestroyRenderPass(
+    VkDevice device,
+    VkRenderPass renderPass,
+    const(VkAllocationCallbacks)* pAllocator,
+);
+
+extern void vkGetRenderAreaGranularity(
+    VkDevice device,
+    VkRenderPass renderPass,
+    VkExtent2D* pGranularity,
+);
 
 // Command pool commands
 
@@ -7510,26 +7464,24 @@ enum VK_COMMAND_POOL_RESET_RESERVED_1_BIT_COREAVI = VkCommandPoolResetFlagBits.R
 
 alias VkCommandPoolResetFlags = VkFlags;
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkCreateCommandPool(
-        VkDevice device,
-        const(VkCommandPoolCreateInfo)* pCreateInfo,
-        const(VkAllocationCallbacks)* pAllocator,
-        VkCommandPool* pCommandPool,
-    );
-    
-    extern void vkDestroyCommandPool(
-        VkDevice device,
-        VkCommandPool commandPool,
-        const(VkAllocationCallbacks)* pAllocator,
-    );
-    
-    extern VkResult vkResetCommandPool(
-        VkDevice device,
-        VkCommandPool commandPool,
-        VkCommandPoolResetFlags flags,
-    );
-}
+extern VkResult vkCreateCommandPool(
+    VkDevice device,
+    const(VkCommandPoolCreateInfo)* pCreateInfo,
+    const(VkAllocationCallbacks)* pAllocator,
+    VkCommandPool* pCommandPool,
+);
+
+extern void vkDestroyCommandPool(
+    VkDevice device,
+    VkCommandPool commandPool,
+    const(VkAllocationCallbacks)* pAllocator,
+);
+
+extern VkResult vkResetCommandPool(
+    VkDevice device,
+    VkCommandPool commandPool,
+    VkCommandPoolResetFlags flags,
+);
 
 // Command buffer commands
 
@@ -7597,34 +7549,32 @@ enum VK_QUERY_CONTROL_PRECISE_BIT = VkQueryControlFlagBits.PRECISE_BIT;
 
 alias VkQueryControlFlags = VkFlags;
 
-version (VK_VERSION_1_0) {
-    extern VkResult vkAllocateCommandBuffers(
-        VkDevice device,
-        const(VkCommandBufferAllocateInfo)* pAllocateInfo,
-        VkCommandBuffer* pCommandBuffers,
-    );
-    
-    extern void vkFreeCommandBuffers(
-        VkDevice device,
-        VkCommandPool commandPool,
-        uint commandBufferCount,
-        const(VkCommandBuffer)* pCommandBuffers,
-    );
-    
-    extern VkResult vkBeginCommandBuffer(
-        VkCommandBuffer commandBuffer,
-        const(VkCommandBufferBeginInfo)* pBeginInfo,
-    );
-    
-    extern VkResult vkEndCommandBuffer(
-        VkCommandBuffer commandBuffer,
-    );
-    
-    extern VkResult vkResetCommandBuffer(
-        VkCommandBuffer commandBuffer,
-        VkCommandBufferResetFlags flags,
-    );
-}
+extern VkResult vkAllocateCommandBuffers(
+    VkDevice device,
+    const(VkCommandBufferAllocateInfo)* pAllocateInfo,
+    VkCommandBuffer* pCommandBuffers,
+);
+
+extern void vkFreeCommandBuffers(
+    VkDevice device,
+    VkCommandPool commandPool,
+    uint commandBufferCount,
+    const(VkCommandBuffer)* pCommandBuffers,
+);
+
+extern VkResult vkBeginCommandBuffer(
+    VkCommandBuffer commandBuffer,
+    const(VkCommandBufferBeginInfo)* pBeginInfo,
+);
+
+extern VkResult vkEndCommandBuffer(
+    VkCommandBuffer commandBuffer,
+);
+
+extern VkResult vkResetCommandBuffer(
+    VkCommandBuffer commandBuffer,
+    VkCommandBufferResetFlags flags,
+);
 
 // Command buffer building commands
 
@@ -7756,346 +7706,344 @@ enum VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS = VkSubpassContents.SECONDARY
 enum VK_SUBPASS_CONTENTS_INLINE_AND_SECONDARY_COMMAND_BUFFERS_EXT = VK_SUBPASS_CONTENTS_INLINE_AND_SECONDARY_COMMAND_BUFFERS_KHR;
 enum VK_SUBPASS_CONTENTS_INLINE_AND_SECONDARY_COMMAND_BUFFERS_KHR = VkSubpassContents.INLINE_AND_SECONDARY_COMMAND_BUFFERS_KHR;
 
-version (VK_VERSION_1_0) {
-    extern void vkCmdBindPipeline(
-        VkCommandBuffer commandBuffer,
-        VkPipelineBindPoint pipelineBindPoint,
-        VkPipeline pipeline,
-    );
-    
-    extern void vkCmdSetViewport(
-        VkCommandBuffer commandBuffer,
-        uint firstViewport,
-        uint viewportCount,
-        const(VkViewport)* pViewports,
-    );
-    
-    extern void vkCmdSetScissor(
-        VkCommandBuffer commandBuffer,
-        uint firstScissor,
-        uint scissorCount,
-        const(VkRect2D)* pScissors,
-    );
-    
-    extern void vkCmdSetLineWidth(
-        VkCommandBuffer commandBuffer,
-        float lineWidth,
-    );
-    
-    extern void vkCmdSetDepthBias(
-        VkCommandBuffer commandBuffer,
-        float depthBiasConstantFactor,
-        float depthBiasClamp,
-        float depthBiasSlopeFactor,
-    );
-    
-    extern void vkCmdSetBlendConstants(
-        VkCommandBuffer commandBuffer,
-        const(float) blendConstants,
-    );
-    
-    extern void vkCmdSetDepthBounds(
-        VkCommandBuffer commandBuffer,
-        float minDepthBounds,
-        float maxDepthBounds,
-    );
-    
-    extern void vkCmdSetStencilCompareMask(
-        VkCommandBuffer commandBuffer,
-        VkStencilFaceFlags faceMask,
-        uint compareMask,
-    );
-    
-    extern void vkCmdSetStencilWriteMask(
-        VkCommandBuffer commandBuffer,
-        VkStencilFaceFlags faceMask,
-        uint writeMask,
-    );
-    
-    extern void vkCmdSetStencilReference(
-        VkCommandBuffer commandBuffer,
-        VkStencilFaceFlags faceMask,
-        uint reference,
-    );
-    
-    extern void vkCmdBindDescriptorSets(
-        VkCommandBuffer commandBuffer,
-        VkPipelineBindPoint pipelineBindPoint,
-        VkPipelineLayout layout,
-        uint firstSet,
-        uint descriptorSetCount,
-        const(VkDescriptorSet)* pDescriptorSets,
-        uint dynamicOffsetCount,
-        const(uint)* pDynamicOffsets,
-    );
-    
-    extern void vkCmdBindIndexBuffer(
-        VkCommandBuffer commandBuffer,
-        VkBuffer buffer,
-        VkDeviceSize offset,
-        VkIndexType indexType,
-    );
-    
-    extern void vkCmdBindVertexBuffers(
-        VkCommandBuffer commandBuffer,
-        uint firstBinding,
-        uint bindingCount,
-        const(VkBuffer)* pBuffers,
-        const(VkDeviceSize)* pOffsets,
-    );
-    
-    extern void vkCmdDraw(
-        VkCommandBuffer commandBuffer,
-        uint vertexCount,
-        uint instanceCount,
-        uint firstVertex,
-        uint firstInstance,
-    );
-    
-    extern void vkCmdDrawIndexed(
-        VkCommandBuffer commandBuffer,
-        uint indexCount,
-        uint instanceCount,
-        uint firstIndex,
-        int vertexOffset,
-        uint firstInstance,
-    );
-    
-    extern void vkCmdDrawIndirect(
-        VkCommandBuffer commandBuffer,
-        VkBuffer buffer,
-        VkDeviceSize offset,
-        uint drawCount,
-        uint stride,
-    );
-    
-    extern void vkCmdDrawIndexedIndirect(
-        VkCommandBuffer commandBuffer,
-        VkBuffer buffer,
-        VkDeviceSize offset,
-        uint drawCount,
-        uint stride,
-    );
-    
-    extern void vkCmdDispatch(
-        VkCommandBuffer commandBuffer,
-        uint groupCountX,
-        uint groupCountY,
-        uint groupCountZ,
-    );
-    
-    extern void vkCmdDispatchIndirect(
-        VkCommandBuffer commandBuffer,
-        VkBuffer buffer,
-        VkDeviceSize offset,
-    );
-    
-    extern void vkCmdCopyBuffer(
-        VkCommandBuffer commandBuffer,
-        VkBuffer srcBuffer,
-        VkBuffer dstBuffer,
-        uint regionCount,
-        const(VkBufferCopy)* pRegions,
-    );
-    
-    extern void vkCmdCopyImage(
-        VkCommandBuffer commandBuffer,
-        VkImage srcImage,
-        VkImageLayout srcImageLayout,
-        VkImage dstImage,
-        VkImageLayout dstImageLayout,
-        uint regionCount,
-        const(VkImageCopy)* pRegions,
-    );
-    
-    extern void vkCmdBlitImage(
-        VkCommandBuffer commandBuffer,
-        VkImage srcImage,
-        VkImageLayout srcImageLayout,
-        VkImage dstImage,
-        VkImageLayout dstImageLayout,
-        uint regionCount,
-        const(VkImageBlit)* pRegions,
-        VkFilter filter,
-    );
-    
-    extern void vkCmdCopyBufferToImage(
-        VkCommandBuffer commandBuffer,
-        VkBuffer srcBuffer,
-        VkImage dstImage,
-        VkImageLayout dstImageLayout,
-        uint regionCount,
-        const(VkBufferImageCopy)* pRegions,
-    );
-    
-    extern void vkCmdCopyImageToBuffer(
-        VkCommandBuffer commandBuffer,
-        VkImage srcImage,
-        VkImageLayout srcImageLayout,
-        VkBuffer dstBuffer,
-        uint regionCount,
-        const(VkBufferImageCopy)* pRegions,
-    );
-    
-    extern void vkCmdUpdateBuffer(
-        VkCommandBuffer commandBuffer,
-        VkBuffer dstBuffer,
-        VkDeviceSize dstOffset,
-        VkDeviceSize dataSize,
-        const(void)* pData,
-    );
-    
-    extern void vkCmdFillBuffer(
-        VkCommandBuffer commandBuffer,
-        VkBuffer dstBuffer,
-        VkDeviceSize dstOffset,
-        VkDeviceSize size,
-        uint data,
-    );
-    
-    extern void vkCmdClearColorImage(
-        VkCommandBuffer commandBuffer,
-        VkImage image,
-        VkImageLayout imageLayout,
-        const(VkClearColorValue)* pColor,
-        uint rangeCount,
-        const(VkImageSubresourceRange)* pRanges,
-    );
-    
-    extern void vkCmdClearDepthStencilImage(
-        VkCommandBuffer commandBuffer,
-        VkImage image,
-        VkImageLayout imageLayout,
-        const(VkClearDepthStencilValue)* pDepthStencil,
-        uint rangeCount,
-        const(VkImageSubresourceRange)* pRanges,
-    );
-    
-    extern void vkCmdClearAttachments(
-        VkCommandBuffer commandBuffer,
-        uint attachmentCount,
-        const(VkClearAttachment)* pAttachments,
-        uint rectCount,
-        const(VkClearRect)* pRects,
-    );
-    
-    extern void vkCmdResolveImage(
-        VkCommandBuffer commandBuffer,
-        VkImage srcImage,
-        VkImageLayout srcImageLayout,
-        VkImage dstImage,
-        VkImageLayout dstImageLayout,
-        uint regionCount,
-        const(VkImageResolve)* pRegions,
-    );
-    
-    extern void vkCmdSetEvent(
-        VkCommandBuffer commandBuffer,
-        VkEvent event,
-        VkPipelineStageFlags stageMask,
-    );
-    
-    extern void vkCmdResetEvent(
-        VkCommandBuffer commandBuffer,
-        VkEvent event,
-        VkPipelineStageFlags stageMask,
-    );
-    
-    extern void vkCmdWaitEvents(
-        VkCommandBuffer commandBuffer,
-        uint eventCount,
-        const(VkEvent)* pEvents,
-        VkPipelineStageFlags srcStageMask,
-        VkPipelineStageFlags dstStageMask,
-        uint memoryBarrierCount,
-        const(VkMemoryBarrier)* pMemoryBarriers,
-        uint bufferMemoryBarrierCount,
-        const(VkBufferMemoryBarrier)* pBufferMemoryBarriers,
-        uint imageMemoryBarrierCount,
-        const(VkImageMemoryBarrier)* pImageMemoryBarriers,
-    );
-    
-    extern void vkCmdPipelineBarrier(
-        VkCommandBuffer commandBuffer,
-        VkPipelineStageFlags srcStageMask,
-        VkPipelineStageFlags dstStageMask,
-        VkDependencyFlags dependencyFlags,
-        uint memoryBarrierCount,
-        const(VkMemoryBarrier)* pMemoryBarriers,
-        uint bufferMemoryBarrierCount,
-        const(VkBufferMemoryBarrier)* pBufferMemoryBarriers,
-        uint imageMemoryBarrierCount,
-        const(VkImageMemoryBarrier)* pImageMemoryBarriers,
-    );
-    
-    extern void vkCmdBeginQuery(
-        VkCommandBuffer commandBuffer,
-        VkQueryPool queryPool,
-        uint query,
-        VkQueryControlFlags flags,
-    );
-    
-    extern void vkCmdEndQuery(
-        VkCommandBuffer commandBuffer,
-        VkQueryPool queryPool,
-        uint query,
-    );
-    
-    extern void vkCmdResetQueryPool(
-        VkCommandBuffer commandBuffer,
-        VkQueryPool queryPool,
-        uint firstQuery,
-        uint queryCount,
-    );
-    
-    extern void vkCmdWriteTimestamp(
-        VkCommandBuffer commandBuffer,
-        VkPipelineStageFlagBits pipelineStage,
-        VkQueryPool queryPool,
-        uint query,
-    );
-    
-    extern void vkCmdCopyQueryPoolResults(
-        VkCommandBuffer commandBuffer,
-        VkQueryPool queryPool,
-        uint firstQuery,
-        uint queryCount,
-        VkBuffer dstBuffer,
-        VkDeviceSize dstOffset,
-        VkDeviceSize stride,
-        VkQueryResultFlags flags,
-    );
-    
-    extern void vkCmdPushConstants(
-        VkCommandBuffer commandBuffer,
-        VkPipelineLayout layout,
-        VkShaderStageFlags stageFlags,
-        uint offset,
-        uint size,
-        const(void)* pValues,
-    );
-    
-    extern void vkCmdBeginRenderPass(
-        VkCommandBuffer commandBuffer,
-        const(VkRenderPassBeginInfo)* pRenderPassBegin,
-        VkSubpassContents contents,
-    );
-    
-    extern void vkCmdNextSubpass(
-        VkCommandBuffer commandBuffer,
-        VkSubpassContents contents,
-    );
-    
-    extern void vkCmdEndRenderPass(
-        VkCommandBuffer commandBuffer,
-    );
-    
-    extern void vkCmdExecuteCommands(
-        VkCommandBuffer commandBuffer,
-        uint commandBufferCount,
-        const(VkCommandBuffer)* pCommandBuffers,
-    );
-}
+extern void vkCmdBindPipeline(
+    VkCommandBuffer commandBuffer,
+    VkPipelineBindPoint pipelineBindPoint,
+    VkPipeline pipeline,
+);
+
+extern void vkCmdSetViewport(
+    VkCommandBuffer commandBuffer,
+    uint firstViewport,
+    uint viewportCount,
+    const(VkViewport)* pViewports,
+);
+
+extern void vkCmdSetScissor(
+    VkCommandBuffer commandBuffer,
+    uint firstScissor,
+    uint scissorCount,
+    const(VkRect2D)* pScissors,
+);
+
+extern void vkCmdSetLineWidth(
+    VkCommandBuffer commandBuffer,
+    float lineWidth,
+);
+
+extern void vkCmdSetDepthBias(
+    VkCommandBuffer commandBuffer,
+    float depthBiasConstantFactor,
+    float depthBiasClamp,
+    float depthBiasSlopeFactor,
+);
+
+extern void vkCmdSetBlendConstants(
+    VkCommandBuffer commandBuffer,
+    const(float) blendConstants,
+);
+
+extern void vkCmdSetDepthBounds(
+    VkCommandBuffer commandBuffer,
+    float minDepthBounds,
+    float maxDepthBounds,
+);
+
+extern void vkCmdSetStencilCompareMask(
+    VkCommandBuffer commandBuffer,
+    VkStencilFaceFlags faceMask,
+    uint compareMask,
+);
+
+extern void vkCmdSetStencilWriteMask(
+    VkCommandBuffer commandBuffer,
+    VkStencilFaceFlags faceMask,
+    uint writeMask,
+);
+
+extern void vkCmdSetStencilReference(
+    VkCommandBuffer commandBuffer,
+    VkStencilFaceFlags faceMask,
+    uint reference,
+);
+
+extern void vkCmdBindDescriptorSets(
+    VkCommandBuffer commandBuffer,
+    VkPipelineBindPoint pipelineBindPoint,
+    VkPipelineLayout layout,
+    uint firstSet,
+    uint descriptorSetCount,
+    const(VkDescriptorSet)* pDescriptorSets,
+    uint dynamicOffsetCount,
+    const(uint)* pDynamicOffsets,
+);
+
+extern void vkCmdBindIndexBuffer(
+    VkCommandBuffer commandBuffer,
+    VkBuffer buffer,
+    VkDeviceSize offset,
+    VkIndexType indexType,
+);
+
+extern void vkCmdBindVertexBuffers(
+    VkCommandBuffer commandBuffer,
+    uint firstBinding,
+    uint bindingCount,
+    const(VkBuffer)* pBuffers,
+    const(VkDeviceSize)* pOffsets,
+);
+
+extern void vkCmdDraw(
+    VkCommandBuffer commandBuffer,
+    uint vertexCount,
+    uint instanceCount,
+    uint firstVertex,
+    uint firstInstance,
+);
+
+extern void vkCmdDrawIndexed(
+    VkCommandBuffer commandBuffer,
+    uint indexCount,
+    uint instanceCount,
+    uint firstIndex,
+    int vertexOffset,
+    uint firstInstance,
+);
+
+extern void vkCmdDrawIndirect(
+    VkCommandBuffer commandBuffer,
+    VkBuffer buffer,
+    VkDeviceSize offset,
+    uint drawCount,
+    uint stride,
+);
+
+extern void vkCmdDrawIndexedIndirect(
+    VkCommandBuffer commandBuffer,
+    VkBuffer buffer,
+    VkDeviceSize offset,
+    uint drawCount,
+    uint stride,
+);
+
+extern void vkCmdDispatch(
+    VkCommandBuffer commandBuffer,
+    uint groupCountX,
+    uint groupCountY,
+    uint groupCountZ,
+);
+
+extern void vkCmdDispatchIndirect(
+    VkCommandBuffer commandBuffer,
+    VkBuffer buffer,
+    VkDeviceSize offset,
+);
+
+extern void vkCmdCopyBuffer(
+    VkCommandBuffer commandBuffer,
+    VkBuffer srcBuffer,
+    VkBuffer dstBuffer,
+    uint regionCount,
+    const(VkBufferCopy)* pRegions,
+);
+
+extern void vkCmdCopyImage(
+    VkCommandBuffer commandBuffer,
+    VkImage srcImage,
+    VkImageLayout srcImageLayout,
+    VkImage dstImage,
+    VkImageLayout dstImageLayout,
+    uint regionCount,
+    const(VkImageCopy)* pRegions,
+);
+
+extern void vkCmdBlitImage(
+    VkCommandBuffer commandBuffer,
+    VkImage srcImage,
+    VkImageLayout srcImageLayout,
+    VkImage dstImage,
+    VkImageLayout dstImageLayout,
+    uint regionCount,
+    const(VkImageBlit)* pRegions,
+    VkFilter filter,
+);
+
+extern void vkCmdCopyBufferToImage(
+    VkCommandBuffer commandBuffer,
+    VkBuffer srcBuffer,
+    VkImage dstImage,
+    VkImageLayout dstImageLayout,
+    uint regionCount,
+    const(VkBufferImageCopy)* pRegions,
+);
+
+extern void vkCmdCopyImageToBuffer(
+    VkCommandBuffer commandBuffer,
+    VkImage srcImage,
+    VkImageLayout srcImageLayout,
+    VkBuffer dstBuffer,
+    uint regionCount,
+    const(VkBufferImageCopy)* pRegions,
+);
+
+extern void vkCmdUpdateBuffer(
+    VkCommandBuffer commandBuffer,
+    VkBuffer dstBuffer,
+    VkDeviceSize dstOffset,
+    VkDeviceSize dataSize,
+    const(void)* pData,
+);
+
+extern void vkCmdFillBuffer(
+    VkCommandBuffer commandBuffer,
+    VkBuffer dstBuffer,
+    VkDeviceSize dstOffset,
+    VkDeviceSize size,
+    uint data,
+);
+
+extern void vkCmdClearColorImage(
+    VkCommandBuffer commandBuffer,
+    VkImage image,
+    VkImageLayout imageLayout,
+    const(VkClearColorValue)* pColor,
+    uint rangeCount,
+    const(VkImageSubresourceRange)* pRanges,
+);
+
+extern void vkCmdClearDepthStencilImage(
+    VkCommandBuffer commandBuffer,
+    VkImage image,
+    VkImageLayout imageLayout,
+    const(VkClearDepthStencilValue)* pDepthStencil,
+    uint rangeCount,
+    const(VkImageSubresourceRange)* pRanges,
+);
+
+extern void vkCmdClearAttachments(
+    VkCommandBuffer commandBuffer,
+    uint attachmentCount,
+    const(VkClearAttachment)* pAttachments,
+    uint rectCount,
+    const(VkClearRect)* pRects,
+);
+
+extern void vkCmdResolveImage(
+    VkCommandBuffer commandBuffer,
+    VkImage srcImage,
+    VkImageLayout srcImageLayout,
+    VkImage dstImage,
+    VkImageLayout dstImageLayout,
+    uint regionCount,
+    const(VkImageResolve)* pRegions,
+);
+
+extern void vkCmdSetEvent(
+    VkCommandBuffer commandBuffer,
+    VkEvent event,
+    VkPipelineStageFlags stageMask,
+);
+
+extern void vkCmdResetEvent(
+    VkCommandBuffer commandBuffer,
+    VkEvent event,
+    VkPipelineStageFlags stageMask,
+);
+
+extern void vkCmdWaitEvents(
+    VkCommandBuffer commandBuffer,
+    uint eventCount,
+    const(VkEvent)* pEvents,
+    VkPipelineStageFlags srcStageMask,
+    VkPipelineStageFlags dstStageMask,
+    uint memoryBarrierCount,
+    const(VkMemoryBarrier)* pMemoryBarriers,
+    uint bufferMemoryBarrierCount,
+    const(VkBufferMemoryBarrier)* pBufferMemoryBarriers,
+    uint imageMemoryBarrierCount,
+    const(VkImageMemoryBarrier)* pImageMemoryBarriers,
+);
+
+extern void vkCmdPipelineBarrier(
+    VkCommandBuffer commandBuffer,
+    VkPipelineStageFlags srcStageMask,
+    VkPipelineStageFlags dstStageMask,
+    VkDependencyFlags dependencyFlags,
+    uint memoryBarrierCount,
+    const(VkMemoryBarrier)* pMemoryBarriers,
+    uint bufferMemoryBarrierCount,
+    const(VkBufferMemoryBarrier)* pBufferMemoryBarriers,
+    uint imageMemoryBarrierCount,
+    const(VkImageMemoryBarrier)* pImageMemoryBarriers,
+);
+
+extern void vkCmdBeginQuery(
+    VkCommandBuffer commandBuffer,
+    VkQueryPool queryPool,
+    uint query,
+    VkQueryControlFlags flags,
+);
+
+extern void vkCmdEndQuery(
+    VkCommandBuffer commandBuffer,
+    VkQueryPool queryPool,
+    uint query,
+);
+
+extern void vkCmdResetQueryPool(
+    VkCommandBuffer commandBuffer,
+    VkQueryPool queryPool,
+    uint firstQuery,
+    uint queryCount,
+);
+
+extern void vkCmdWriteTimestamp(
+    VkCommandBuffer commandBuffer,
+    VkPipelineStageFlagBits pipelineStage,
+    VkQueryPool queryPool,
+    uint query,
+);
+
+extern void vkCmdCopyQueryPoolResults(
+    VkCommandBuffer commandBuffer,
+    VkQueryPool queryPool,
+    uint firstQuery,
+    uint queryCount,
+    VkBuffer dstBuffer,
+    VkDeviceSize dstOffset,
+    VkDeviceSize stride,
+    VkQueryResultFlags flags,
+);
+
+extern void vkCmdPushConstants(
+    VkCommandBuffer commandBuffer,
+    VkPipelineLayout layout,
+    VkShaderStageFlags stageFlags,
+    uint offset,
+    uint size,
+    const(void)* pValues,
+);
+
+extern void vkCmdBeginRenderPass(
+    VkCommandBuffer commandBuffer,
+    const(VkRenderPassBeginInfo)* pRenderPassBegin,
+    VkSubpassContents contents,
+);
+
+extern void vkCmdNextSubpass(
+    VkCommandBuffer commandBuffer,
+    VkSubpassContents contents,
+);
+
+extern void vkCmdEndRenderPass(
+    VkCommandBuffer commandBuffer,
+);
+
+extern void vkCmdExecuteCommands(
+    VkCommandBuffer commandBuffer,
+    uint commandBufferCount,
+    const(VkCommandBuffer)* pCommandBuffers,
+);
 
 
 enum VK_API_VERSION_1_1 = VK_MAKE_API_VERSION(0, 1, 1, 0);

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_fragment_density_map_offset
+ * VK_EXT_fragment_density_map_offset (Device)
  * 
  * Author:
  *     Multivendor

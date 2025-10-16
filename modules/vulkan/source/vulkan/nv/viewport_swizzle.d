@@ -1,5 +1,5 @@
 /**
- * VK_NV_viewport_swizzle
+ * VK_NV_viewport_swizzle (Device)
  * 
  * Author:
  *     NVIDIA Corporation

@@ -1,5 +1,5 @@
 /**
- * VK_QCOM_ycbcr_degamma
+ * VK_QCOM_ycbcr_degamma (Device)
  * 
  * Author:
  *     Qualcomm Technologies, Inc.

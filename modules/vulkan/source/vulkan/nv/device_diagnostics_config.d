@@ -1,5 +1,5 @@
 /**
- * VK_NV_device_diagnostics_config
+ * VK_NV_device_diagnostics_config (Device)
  * 
  * Author:
  *     NVIDIA Corporation

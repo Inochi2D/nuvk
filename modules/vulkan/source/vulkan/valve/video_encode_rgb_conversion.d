@@ -1,5 +1,5 @@
 /**
- * VK_VALVE_video_encode_rgb_conversion
+ * VK_VALVE_video_encode_rgb_conversion (Device)
  * 
  * Author:
  *     Valve Corporation

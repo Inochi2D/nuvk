@@ -1,5 +1,5 @@
 /**
- * VK_NV_fragment_shader_barycentric
+ * VK_NV_fragment_shader_barycentric (Device)
  * 
  * Author:
  *     NVIDIA Corporation

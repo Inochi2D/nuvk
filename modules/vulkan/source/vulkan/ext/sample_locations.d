@@ -1,5 +1,5 @@
 /**
- * VK_EXT_sample_locations
+ * VK_EXT_sample_locations (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

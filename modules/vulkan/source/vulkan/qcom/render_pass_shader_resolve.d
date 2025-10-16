@@ -1,5 +1,5 @@
 /**
- * VK_QCOM_render_pass_shader_resolve
+ * VK_QCOM_render_pass_shader_resolve (Device)
  * 
  * Author:
  *     Qualcomm Technologies, Inc.

@@ -1,5 +1,5 @@
 /**
- * VK_NV_displacement_micromap
+ * VK_NV_displacement_micromap (Device)
  * 
  * Author:
  *     NVIDIA Corporation

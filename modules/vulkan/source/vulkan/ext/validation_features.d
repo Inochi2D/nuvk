@@ -1,5 +1,5 @@
 /**
- * VK_EXT_validation_features
+ * VK_EXT_validation_features (Instance)
  * 
  * Author:
  *     LunarG, Inc.

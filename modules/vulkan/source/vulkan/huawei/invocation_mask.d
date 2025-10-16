@@ -1,5 +1,5 @@
 /**
- * VK_HUAWEI_invocation_mask
+ * VK_HUAWEI_invocation_mask (Device)
  * 
  * Author:
  *     Huawei

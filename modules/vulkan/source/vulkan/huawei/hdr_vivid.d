@@ -1,5 +1,5 @@
 /**
- * VK_HUAWEI_hdr_vivid
+ * VK_HUAWEI_hdr_vivid (Device)
  * 
  * Author:
  *     Huawei Technologies Co. Ltd.

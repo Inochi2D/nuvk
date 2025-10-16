@@ -1,5 +1,5 @@
 /**
- * VK_KHR_uniform_buffer_standard_layout
+ * VK_KHR_uniform_buffer_standard_layout (Device)
  * 
  * Author:
  *     Khronos

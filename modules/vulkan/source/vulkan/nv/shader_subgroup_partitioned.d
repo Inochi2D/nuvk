@@ -1,5 +1,5 @@
 /**
- * VK_NV_shader_subgroup_partitioned
+ * VK_NV_shader_subgroup_partitioned (Device)
  * 
  * Author:
  *     NVIDIA Corporation

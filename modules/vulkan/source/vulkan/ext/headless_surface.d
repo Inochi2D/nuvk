@@ -1,5 +1,5 @@
 /**
- * VK_EXT_headless_surface
+ * VK_EXT_headless_surface (Instance)
  * 
  * Author:
  *     Multivendor

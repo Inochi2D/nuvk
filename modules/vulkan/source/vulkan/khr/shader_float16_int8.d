@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_float16_int8
+ * VK_KHR_shader_float16_int8 (Device)
  * 
  * Author:
  *     Khronos

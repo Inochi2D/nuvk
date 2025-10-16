@@ -1,5 +1,5 @@
 /**
- * VK_KHR_relaxed_block_layout
+ * VK_KHR_relaxed_block_layout (Device)
  * 
  * Author:
  *     Khronos

@@ -1,5 +1,5 @@
 /**
- * VK_NV_per_stage_descriptor_set
+ * VK_NV_per_stage_descriptor_set (Device)
  * 
  * Author:
  *     NVIDIA Corporation

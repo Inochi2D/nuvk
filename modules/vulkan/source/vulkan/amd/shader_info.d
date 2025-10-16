@@ -1,5 +1,5 @@
 /**
- * VK_AMD_shader_info
+ * VK_AMD_shader_info (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

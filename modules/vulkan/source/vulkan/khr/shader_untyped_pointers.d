@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_untyped_pointers
+ * VK_KHR_shader_untyped_pointers (Device)
  * 
  * Author:
  *     Khronos

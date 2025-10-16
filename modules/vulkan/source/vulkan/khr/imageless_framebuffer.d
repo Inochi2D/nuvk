@@ -1,5 +1,5 @@
 /**
- * VK_KHR_imageless_framebuffer
+ * VK_KHR_imageless_framebuffer (Device)
  * 
  * Author:
  *     Khronos

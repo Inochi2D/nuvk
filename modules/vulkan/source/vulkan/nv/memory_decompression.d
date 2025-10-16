@@ -1,5 +1,5 @@
 /**
- * VK_NV_memory_decompression
+ * VK_NV_memory_decompression (Device)
  * 
  * Author:
  *     NVIDIA Corporation

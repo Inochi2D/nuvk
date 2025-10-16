@@ -1,5 +1,5 @@
 /**
- * VK_KHR_video_decode_h265
+ * VK_KHR_video_decode_h265 (Device)
  * 
  * Author:
  *     Khronos

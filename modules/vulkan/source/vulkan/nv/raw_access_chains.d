@@ -1,5 +1,5 @@
 /**
- * VK_NV_raw_access_chains
+ * VK_NV_raw_access_chains (Device)
  * 
  * Author:
  *     NVIDIA Corporation

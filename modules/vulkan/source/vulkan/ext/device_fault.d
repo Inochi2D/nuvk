@@ -1,5 +1,5 @@
 /**
- * VK_EXT_device_fault
+ * VK_EXT_device_fault (Device)
  * 
  * Author:
  *     Multivendor

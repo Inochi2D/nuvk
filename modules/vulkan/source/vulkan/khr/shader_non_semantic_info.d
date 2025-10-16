@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_non_semantic_info
+ * VK_KHR_shader_non_semantic_info (Device)
  * 
  * Author:
  *     Khronos

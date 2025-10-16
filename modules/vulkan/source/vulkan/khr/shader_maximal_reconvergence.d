@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_maximal_reconvergence
+ * VK_KHR_shader_maximal_reconvergence (Device)
  * 
  * Author:
  *     Khronos

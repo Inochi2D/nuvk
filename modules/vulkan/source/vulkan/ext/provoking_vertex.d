@@ -1,5 +1,5 @@
 /**
- * VK_EXT_provoking_vertex
+ * VK_EXT_provoking_vertex (Device)
  * 
  * Author:
  *     Multivendor

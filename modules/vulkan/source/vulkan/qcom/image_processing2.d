@@ -1,5 +1,5 @@
 /**
- * VK_QCOM_image_processing2
+ * VK_QCOM_image_processing2 (Device)
  * 
  * Author:
  *     Qualcomm Technologies, Inc.

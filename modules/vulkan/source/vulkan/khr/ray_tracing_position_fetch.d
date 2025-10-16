@@ -1,5 +1,5 @@
 /**
- * VK_KHR_ray_tracing_position_fetch
+ * VK_KHR_ray_tracing_position_fetch (Device)
  * 
  * Author:
  *     Khronos

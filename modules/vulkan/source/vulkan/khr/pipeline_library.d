@@ -1,5 +1,5 @@
 /**
- * VK_KHR_pipeline_library
+ * VK_KHR_pipeline_library (Device)
  * 
  * Author:
  *     Khronos

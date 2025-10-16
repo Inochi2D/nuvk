@@ -1,5 +1,5 @@
 /**
- * VK_EXT_attachment_feedback_loop_dynamic_state
+ * VK_EXT_attachment_feedback_loop_dynamic_state (Device)
  * 
  * Author:
  *     Multivendor

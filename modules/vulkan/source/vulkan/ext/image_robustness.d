@@ -1,5 +1,5 @@
 /**
- * VK_EXT_image_robustness
+ * VK_EXT_image_robustness (Device)
  * 
  * Author:
  *     Multivendor

@@ -1,5 +1,5 @@
 /**
- * VK_GOOGLE_hlsl_functionality1
+ * VK_GOOGLE_hlsl_functionality1 (Device)
  * 
  * Author:
  *     Google LLC

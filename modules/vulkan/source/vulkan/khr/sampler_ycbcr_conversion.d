@@ -1,5 +1,5 @@
 /**
- * VK_KHR_sampler_ycbcr_conversion
+ * VK_KHR_sampler_ycbcr_conversion (Device)
  * 
  * Author:
  *     Khronos

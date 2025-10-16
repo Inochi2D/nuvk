@@ -1,5 +1,5 @@
 /**
- * VK_EXT_shader_module_identifier
+ * VK_EXT_shader_module_identifier (Device)
  * 
  * Author:
  *     Multivendor

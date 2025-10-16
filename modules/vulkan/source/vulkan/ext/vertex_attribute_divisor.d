@@ -1,5 +1,5 @@
 /**
- * VK_EXT_vertex_attribute_divisor
+ * VK_EXT_vertex_attribute_divisor (Device)
  * 
  * Author:
  *     NVIDIA Corporation

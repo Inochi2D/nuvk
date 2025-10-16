@@ -1,5 +1,5 @@
 /**
- * VK_EXT_external_memory_host
+ * VK_EXT_external_memory_host (Device)
  * 
  * Author:
  *     Multivendor

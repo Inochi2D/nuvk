@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_quad_control
+ * VK_KHR_shader_quad_control (Device)
  * 
  * Author:
  *     Khronos

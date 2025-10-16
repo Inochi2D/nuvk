@@ -1,5 +1,5 @@
 /**
- * VK_AMD_shader_core_properties
+ * VK_AMD_shader_core_properties (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

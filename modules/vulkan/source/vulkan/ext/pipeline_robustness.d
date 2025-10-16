@@ -1,5 +1,5 @@
 /**
- * VK_EXT_pipeline_robustness
+ * VK_EXT_pipeline_robustness (Device)
  * 
  * Author:
  *     Imagination Technologies

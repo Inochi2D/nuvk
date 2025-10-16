@@ -1,5 +1,5 @@
 /**
- * VK_EXT_external_memory_acquire_unmodified
+ * VK_EXT_external_memory_acquire_unmodified (Device)
  * 
  * Author:
  *     Multivendor

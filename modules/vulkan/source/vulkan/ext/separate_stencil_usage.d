@@ -1,5 +1,5 @@
 /**
- * VK_EXT_separate_stencil_usage
+ * VK_EXT_separate_stencil_usage (Device)
  * 
  * Author:
  *     Multivendor

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_validation_cache
+ * VK_EXT_validation_cache (Device)
  * 
  * Author:
  *     Google LLC

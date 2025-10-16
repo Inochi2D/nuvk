@@ -1,5 +1,5 @@
 /**
- * VK_EXT_directfb_surface
+ * VK_EXT_directfb_surface (Instance)
  * 
  * Author:
  *     Multivendor

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_4444_formats
+ * VK_EXT_4444_formats (Device)
  * 
  * Author:
  *     Multivendor

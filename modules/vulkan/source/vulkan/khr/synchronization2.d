@@ -1,5 +1,5 @@
 /**
- * VK_KHR_synchronization2
+ * VK_KHR_synchronization2 (Device)
  * 
  * Author:
  *     Khronos

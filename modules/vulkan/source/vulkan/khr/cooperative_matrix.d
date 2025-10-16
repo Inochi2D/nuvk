@@ -1,5 +1,5 @@
 /**
- * VK_KHR_cooperative_matrix
+ * VK_KHR_cooperative_matrix (Device)
  * 
  * Author:
  *     Khronos

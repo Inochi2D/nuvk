@@ -1,5 +1,5 @@
 /**
- * VK_AMD_draw_indirect_count
+ * VK_AMD_draw_indirect_count (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

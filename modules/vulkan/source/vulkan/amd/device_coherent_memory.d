@@ -1,5 +1,5 @@
 /**
- * VK_AMD_device_coherent_memory
+ * VK_AMD_device_coherent_memory (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

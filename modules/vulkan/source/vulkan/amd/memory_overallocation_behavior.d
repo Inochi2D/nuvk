@@ -1,5 +1,5 @@
 /**
- * VK_AMD_memory_overallocation_behavior
+ * VK_AMD_memory_overallocation_behavior (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

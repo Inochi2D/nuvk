@@ -1,5 +1,5 @@
 /**
- * VK_NV_glsl_shader
+ * VK_NV_glsl_shader (Device)
  * 
  * Author:
  *     NVIDIA Corporation

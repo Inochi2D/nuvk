@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_fma
+ * VK_KHR_shader_fma (Device)
  * 
  * Author:
  *     Khronos

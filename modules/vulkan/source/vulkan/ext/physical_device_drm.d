@@ -1,5 +1,5 @@
 /**
- * VK_EXT_physical_device_drm
+ * VK_EXT_physical_device_drm (Device)
  * 
  * Author:
  *     Multivendor

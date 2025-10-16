@@ -1,5 +1,5 @@
 /**
- * VK_NV_ray_tracing_invocation_reorder
+ * VK_NV_ray_tracing_invocation_reorder (Device)
  * 
  * Author:
  *     NVIDIA Corporation

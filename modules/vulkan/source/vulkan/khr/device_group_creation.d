@@ -1,5 +1,5 @@
 /**
- * VK_KHR_device_group_creation
+ * VK_KHR_device_group_creation (Instance)
  * 
  * Author:
  *     Khronos

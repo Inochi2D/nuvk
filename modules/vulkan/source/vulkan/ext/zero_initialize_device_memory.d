@@ -1,5 +1,5 @@
 /**
- * VK_EXT_zero_initialize_device_memory
+ * VK_EXT_zero_initialize_device_memory (Device)
  * 
  * Author:
  *     Multivendor

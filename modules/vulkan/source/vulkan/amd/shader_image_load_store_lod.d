@@ -1,5 +1,5 @@
 /**
- * VK_AMD_shader_image_load_store_lod
+ * VK_AMD_shader_image_load_store_lod (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

@@ -1,5 +1,5 @@
 /**
- * VK_KHR_external_fence_capabilities
+ * VK_KHR_external_fence_capabilities (Instance)
  * 
  * Author:
  *     Khronos

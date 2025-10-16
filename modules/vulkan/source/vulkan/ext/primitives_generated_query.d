@@ -1,5 +1,5 @@
 /**
- * VK_EXT_primitives_generated_query
+ * VK_EXT_primitives_generated_query (Device)
  * 
  * Author:
  *     Multivendor

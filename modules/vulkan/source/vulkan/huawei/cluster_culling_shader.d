@@ -1,5 +1,5 @@
 /**
- * VK_HUAWEI_cluster_culling_shader
+ * VK_HUAWEI_cluster_culling_shader (Device)
  * 
  * Author:
  *     Huawei Technologies Co. Ltd.

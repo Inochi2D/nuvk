@@ -1,5 +1,5 @@
 /**
- * VK_KHR_unified_image_layouts
+ * VK_KHR_unified_image_layouts (Device)
  * 
  * Author:
  *     Khronos

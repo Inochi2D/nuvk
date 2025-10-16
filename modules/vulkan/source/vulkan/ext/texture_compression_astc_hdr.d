@@ -1,5 +1,5 @@
 /**
- * VK_EXT_texture_compression_astc_hdr
+ * VK_EXT_texture_compression_astc_hdr (Device)
  * 
  * Author:
  *     ARM Limited

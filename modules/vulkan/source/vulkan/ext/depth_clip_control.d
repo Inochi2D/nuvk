@@ -1,5 +1,5 @@
 /**
- * VK_EXT_depth_clip_control
+ * VK_EXT_depth_clip_control (Device)
  * 
  * Author:
  *     Multivendor

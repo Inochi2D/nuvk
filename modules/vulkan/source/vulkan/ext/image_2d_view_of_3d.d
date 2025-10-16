@@ -1,5 +1,5 @@
 /**
- * VK_EXT_image_2d_view_of_3d
+ * VK_EXT_image_2d_view_of_3d (Device)
  * 
  * Author:
  *     Multivendor

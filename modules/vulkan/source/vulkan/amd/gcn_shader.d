@@ -1,5 +1,5 @@
 /**
- * VK_AMD_gcn_shader
+ * VK_AMD_gcn_shader (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

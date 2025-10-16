@@ -1,5 +1,5 @@
 /**
- * VK_NV_copy_memory_indirect
+ * VK_NV_copy_memory_indirect (Device)
  * 
  * Author:
  *     NVIDIA Corporation

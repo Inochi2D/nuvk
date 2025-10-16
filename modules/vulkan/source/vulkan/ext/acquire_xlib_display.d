@@ -1,5 +1,5 @@
 /**
- * VK_EXT_acquire_xlib_display
+ * VK_EXT_acquire_xlib_display (Instance)
  * 
  * Author:
  *     NVIDIA Corporation

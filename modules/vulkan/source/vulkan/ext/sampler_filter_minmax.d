@@ -1,5 +1,5 @@
 /**
- * VK_EXT_sampler_filter_minmax
+ * VK_EXT_sampler_filter_minmax (Device)
  * 
  * Author:
  *     NVIDIA Corporation

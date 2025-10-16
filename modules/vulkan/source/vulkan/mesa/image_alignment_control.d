@@ -1,5 +1,5 @@
 /**
- * VK_MESA_image_alignment_control
+ * VK_MESA_image_alignment_control (Device)
  * 
  * Author:
  *     Mesa open source project

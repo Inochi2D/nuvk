@@ -1,5 +1,5 @@
 /**
- * VK_EXT_calibrated_timestamps
+ * VK_EXT_calibrated_timestamps (Device)
  * 
  * Author:
  *     Multivendor

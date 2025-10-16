@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_terminate_invocation
+ * VK_KHR_shader_terminate_invocation (Device)
  * 
  * Author:
  *     Khronos

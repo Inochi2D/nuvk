@@ -1,5 +1,5 @@
 /**
- * VK_EXT_texel_buffer_alignment
+ * VK_EXT_texel_buffer_alignment (Device)
  * 
  * Author:
  *     Multivendor

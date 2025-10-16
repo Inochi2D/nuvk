@@ -1,5 +1,5 @@
 /**
- * VK_EXT_blend_operation_advanced
+ * VK_EXT_blend_operation_advanced (Device)
  * 
  * Author:
  *     NVIDIA Corporation

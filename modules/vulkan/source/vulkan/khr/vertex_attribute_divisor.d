@@ -1,5 +1,5 @@
 /**
- * VK_KHR_vertex_attribute_divisor
+ * VK_KHR_vertex_attribute_divisor (Device)
  * 
  * Author:
  *     Khronos

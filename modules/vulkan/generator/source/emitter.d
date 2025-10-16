@@ -113,7 +113,7 @@ class VkRegistryEmitter {
     void emitVkExt(const ref VkExtension ext) {
         // Write preamble comment.
         file.comment();
-        file.writeln(ext.name);
+        file.writefln!"%s (%s)"(ext.name, ext.type);
         file.writeln();
         if (auto vendor = ext.author in registry.vendors) {
             file.writeln("Author:");
@@ -343,7 +343,10 @@ class VkRegistryEmitter {
                 file.writeln();
             }
 
-            file.openf!"version (%s) {"(feature.name);
+            if (feature.minor > 0) {
+                file.openf!"version (%s) {"(feature.name);
+            }
+
             foreach (i, command; section.commands.map!(c => registry.commands[c]).array) {
                 if (i > 0) {
                     file.writeln();
@@ -359,7 +362,10 @@ class VkRegistryEmitter {
                     file.close(");");
                 }
             }
-            file.close("}");
+
+            if (feature.minor > 0) {
+                file.close("}");
+            }
         }
     }
 

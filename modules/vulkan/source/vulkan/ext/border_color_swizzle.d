@@ -1,5 +1,5 @@
 /**
- * VK_EXT_border_color_swizzle
+ * VK_EXT_border_color_swizzle (Device)
  * 
  * Author:
  *     Multivendor

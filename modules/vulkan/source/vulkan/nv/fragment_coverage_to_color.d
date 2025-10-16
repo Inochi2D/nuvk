@@ -1,5 +1,5 @@
 /**
- * VK_NV_fragment_coverage_to_color
+ * VK_NV_fragment_coverage_to_color (Device)
  * 
  * Author:
  *     NVIDIA Corporation

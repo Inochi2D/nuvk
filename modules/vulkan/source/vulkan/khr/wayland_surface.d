@@ -1,5 +1,5 @@
 /**
- * VK_KHR_wayland_surface
+ * VK_KHR_wayland_surface (Instance)
  * 
  * Author:
  *     Khronos

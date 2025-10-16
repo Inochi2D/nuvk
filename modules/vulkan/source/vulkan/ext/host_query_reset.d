@@ -1,5 +1,5 @@
 /**
- * VK_EXT_host_query_reset
+ * VK_EXT_host_query_reset (Device)
  * 
  * Author:
  *     Multivendor

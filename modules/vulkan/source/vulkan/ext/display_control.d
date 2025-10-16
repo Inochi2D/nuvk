@@ -1,5 +1,5 @@
 /**
- * VK_EXT_display_control
+ * VK_EXT_display_control (Device)
  * 
  * Author:
  *     NVIDIA Corporation

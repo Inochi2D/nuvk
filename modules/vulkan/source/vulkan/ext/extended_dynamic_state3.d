@@ -1,5 +1,5 @@
 /**
- * VK_EXT_extended_dynamic_state3
+ * VK_EXT_extended_dynamic_state3 (Device)
  * 
  * Author:
  *     NVIDIA Corporation

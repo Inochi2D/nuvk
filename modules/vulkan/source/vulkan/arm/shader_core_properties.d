@@ -1,5 +1,5 @@
 /**
- * VK_ARM_shader_core_properties
+ * VK_ARM_shader_core_properties (Device)
  * 
  * Author:
  *     ARM Limited

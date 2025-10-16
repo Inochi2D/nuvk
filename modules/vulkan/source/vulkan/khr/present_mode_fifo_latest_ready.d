@@ -1,5 +1,5 @@
 /**
- * VK_KHR_present_mode_fifo_latest_ready
+ * VK_KHR_present_mode_fifo_latest_ready (Device)
  * 
  * Author:
  *     Khronos

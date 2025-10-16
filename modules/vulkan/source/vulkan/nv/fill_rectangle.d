@@ -1,5 +1,5 @@
 /**
- * VK_NV_fill_rectangle
+ * VK_NV_fill_rectangle (Device)
  * 
  * Author:
  *     NVIDIA Corporation

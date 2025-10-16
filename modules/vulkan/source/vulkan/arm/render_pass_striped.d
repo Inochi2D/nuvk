@@ -1,5 +1,5 @@
 /**
- * VK_ARM_render_pass_striped
+ * VK_ARM_render_pass_striped (Device)
  * 
  * Author:
  *     ARM Limited

@@ -1,5 +1,5 @@
 /**
- * VK_FUCHSIA_external_memory
+ * VK_FUCHSIA_external_memory (Device)
  * 
  * Author:
  *     Google LLC

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_pipeline_library_group_handles
+ * VK_EXT_pipeline_library_group_handles (Device)
  * 
  * Author:
  *     Multivendor

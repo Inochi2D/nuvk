@@ -1,5 +1,5 @@
 /**
- * VK_INTEL_performance_query
+ * VK_INTEL_performance_query (Device)
  * 
  * Author:
  *     Intel Corporation

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_shader_image_atomic_int64
+ * VK_EXT_shader_image_atomic_int64 (Device)
  * 
  * Author:
  *     Multivendor

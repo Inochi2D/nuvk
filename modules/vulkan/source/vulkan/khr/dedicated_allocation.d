@@ -1,5 +1,5 @@
 /**
- * VK_KHR_dedicated_allocation
+ * VK_KHR_dedicated_allocation (Device)
  * 
  * Author:
  *     Khronos

@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_subgroup_uniform_control_flow
+ * VK_KHR_shader_subgroup_uniform_control_flow (Device)
  * 
  * Author:
  *     Khronos

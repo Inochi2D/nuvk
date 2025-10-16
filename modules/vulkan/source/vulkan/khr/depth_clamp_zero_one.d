@@ -1,5 +1,5 @@
 /**
- * VK_KHR_depth_clamp_zero_one
+ * VK_KHR_depth_clamp_zero_one (Device)
  * 
  * Author:
  *     Khronos

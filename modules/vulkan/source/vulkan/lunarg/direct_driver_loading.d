@@ -1,5 +1,5 @@
 /**
- * VK_LUNARG_direct_driver_loading
+ * VK_LUNARG_direct_driver_loading (Instance)
  * 
  * Author:
  *     LunarG, Inc.

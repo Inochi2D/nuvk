@@ -1,5 +1,5 @@
 /**
- * VK_EXT_device_address_binding_report
+ * VK_EXT_device_address_binding_report (Device)
  * 
  * Author:
  *     Multivendor

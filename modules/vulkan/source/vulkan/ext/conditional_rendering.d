@@ -1,5 +1,5 @@
 /**
- * VK_EXT_conditional_rendering
+ * VK_EXT_conditional_rendering (Device)
  * 
  * Author:
  *     NVIDIA Corporation

@@ -1,5 +1,5 @@
 /**
- * VK_QCOM_tile_properties
+ * VK_QCOM_tile_properties (Device)
  * 
  * Author:
  *     Qualcomm Technologies, Inc.

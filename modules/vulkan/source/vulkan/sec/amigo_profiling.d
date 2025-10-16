@@ -1,5 +1,5 @@
 /**
- * VK_SEC_amigo_profiling
+ * VK_SEC_amigo_profiling (Device)
  * 
  * Author:
  *     Samsung Electronics Co., Ltd.

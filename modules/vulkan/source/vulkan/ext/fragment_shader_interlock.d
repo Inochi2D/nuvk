@@ -1,5 +1,5 @@
 /**
- * VK_EXT_fragment_shader_interlock
+ * VK_EXT_fragment_shader_interlock (Device)
  * 
  * Author:
  *     Multivendor

@@ -1,5 +1,5 @@
 /**
- * VK_FUCHSIA_imagepipe_surface
+ * VK_FUCHSIA_imagepipe_surface (Instance)
  * 
  * Author:
  *     Google LLC

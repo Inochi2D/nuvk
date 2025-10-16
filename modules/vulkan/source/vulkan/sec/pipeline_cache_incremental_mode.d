@@ -1,5 +1,5 @@
 /**
- * VK_SEC_pipeline_cache_incremental_mode
+ * VK_SEC_pipeline_cache_incremental_mode (Device)
  * 
  * Author:
  *     Samsung Electronics Co., Ltd.

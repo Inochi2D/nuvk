@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_integer_dot_product
+ * VK_KHR_shader_integer_dot_product (Device)
  * 
  * Author:
  *     Khronos

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_shader_subgroup_vote
+ * VK_EXT_shader_subgroup_vote (Device)
  * 
  * Author:
  *     NVIDIA Corporation

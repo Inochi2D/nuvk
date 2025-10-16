@@ -1,5 +1,5 @@
 /**
- * VK_KHR_swapchain
+ * VK_KHR_swapchain (Device)
  * 
  * Author:
  *     Khronos

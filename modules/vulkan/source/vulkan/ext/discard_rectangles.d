@@ -1,5 +1,5 @@
 /**
- * VK_EXT_discard_rectangles
+ * VK_EXT_discard_rectangles (Device)
  * 
  * Author:
  *     NVIDIA Corporation

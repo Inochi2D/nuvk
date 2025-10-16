@@ -1,5 +1,5 @@
 /**
- * VK_KHR_global_priority
+ * VK_KHR_global_priority (Device)
  * 
  * Author:
  *     Khronos

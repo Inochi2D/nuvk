@@ -1,5 +1,5 @@
 /**
- * VK_KHR_external_memory_fd
+ * VK_KHR_external_memory_fd (Device)
  * 
  * Author:
  *     Khronos

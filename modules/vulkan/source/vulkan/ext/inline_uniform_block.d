@@ -1,5 +1,5 @@
 /**
- * VK_EXT_inline_uniform_block
+ * VK_EXT_inline_uniform_block (Device)
  * 
  * Author:
  *     Multivendor

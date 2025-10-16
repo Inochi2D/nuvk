@@ -1,5 +1,5 @@
 /**
- * VK_EXT_depth_clamp_control
+ * VK_EXT_depth_clamp_control (Device)
  * 
  * Author:
  *     Multivendor

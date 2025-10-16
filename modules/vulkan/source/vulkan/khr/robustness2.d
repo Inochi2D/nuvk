@@ -1,5 +1,5 @@
 /**
- * VK_KHR_robustness2
+ * VK_KHR_robustness2 (Device)
  * 
  * Author:
  *     Khronos

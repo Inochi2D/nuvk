@@ -1,5 +1,5 @@
 /**
- * VK_NV_win32_keyed_mutex
+ * VK_NV_win32_keyed_mutex (Device)
  * 
  * Author:
  *     NVIDIA Corporation

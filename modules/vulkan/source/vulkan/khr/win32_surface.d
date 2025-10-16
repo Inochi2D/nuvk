@@ -1,5 +1,5 @@
 /**
- * VK_KHR_win32_surface
+ * VK_KHR_win32_surface (Instance)
  * 
  * Author:
  *     Khronos

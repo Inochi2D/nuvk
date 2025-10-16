@@ -1,5 +1,5 @@
 /**
- * VK_EXT_legacy_dithering
+ * VK_EXT_legacy_dithering (Device)
  * 
  * Author:
  *     Multivendor

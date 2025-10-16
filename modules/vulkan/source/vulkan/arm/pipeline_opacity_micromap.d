@@ -1,5 +1,5 @@
 /**
- * VK_ARM_pipeline_opacity_micromap
+ * VK_ARM_pipeline_opacity_micromap (Device)
  * 
  * Author:
  *     ARM Limited

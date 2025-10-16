@@ -1,5 +1,5 @@
 /**
- * VK_EXT_debug_report
+ * VK_EXT_debug_report (Instance)
  * 
  * Author:
  *     Google LLC

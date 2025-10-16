@@ -1,5 +1,5 @@
 /**
- * VK_VALVE_descriptor_set_host_mapping
+ * VK_VALVE_descriptor_set_host_mapping (Device)
  * 
  * Author:
  *     Valve Corporation

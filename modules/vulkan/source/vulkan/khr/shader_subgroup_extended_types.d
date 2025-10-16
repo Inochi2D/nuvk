@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_subgroup_extended_types
+ * VK_KHR_shader_subgroup_extended_types (Device)
  * 
  * Author:
  *     Khronos

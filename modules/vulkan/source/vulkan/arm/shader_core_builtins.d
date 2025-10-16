@@ -1,5 +1,5 @@
 /**
- * VK_ARM_shader_core_builtins
+ * VK_ARM_shader_core_builtins (Device)
  * 
  * Author:
  *     ARM Limited

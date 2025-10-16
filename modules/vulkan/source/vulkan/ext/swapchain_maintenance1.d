@@ -1,5 +1,5 @@
 /**
- * VK_EXT_swapchain_maintenance1
+ * VK_EXT_swapchain_maintenance1 (Device)
  * 
  * Author:
  *     Multivendor

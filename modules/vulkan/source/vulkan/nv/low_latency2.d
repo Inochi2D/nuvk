@@ -1,5 +1,5 @@
 /**
- * VK_NV_low_latency2
+ * VK_NV_low_latency2 (Device)
  * 
  * Author:
  *     NVIDIA Corporation

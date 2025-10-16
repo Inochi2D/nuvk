@@ -1,5 +1,5 @@
 /**
- * VK_KHR_copy_memory_indirect
+ * VK_KHR_copy_memory_indirect (Device)
  * 
  * Author:
  *     Khronos

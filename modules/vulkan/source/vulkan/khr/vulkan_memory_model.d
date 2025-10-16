@@ -1,5 +1,5 @@
 /**
- * VK_KHR_vulkan_memory_model
+ * VK_KHR_vulkan_memory_model (Device)
  * 
  * Author:
  *     Khronos

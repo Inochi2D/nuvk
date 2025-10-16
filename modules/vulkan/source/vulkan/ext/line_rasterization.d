@@ -1,5 +1,5 @@
 /**
- * VK_EXT_line_rasterization
+ * VK_EXT_line_rasterization (Device)
  * 
  * Author:
  *     Multivendor

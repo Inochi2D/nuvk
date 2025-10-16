@@ -1,5 +1,5 @@
 /**
- * VK_QCOM_filter_cubic_weights
+ * VK_QCOM_filter_cubic_weights (Device)
  * 
  * Author:
  *     Qualcomm Technologies, Inc.

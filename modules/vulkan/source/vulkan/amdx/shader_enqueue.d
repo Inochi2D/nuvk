@@ -1,5 +1,5 @@
 /**
- * VK_AMDX_shader_enqueue
+ * VK_AMDX_shader_enqueue (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

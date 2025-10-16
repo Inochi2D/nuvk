@@ -1,5 +1,5 @@
 /**
- * VK_KHR_android_surface
+ * VK_KHR_android_surface (Instance)
  * 
  * Author:
  *     Khronos

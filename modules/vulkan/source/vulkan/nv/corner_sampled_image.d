@@ -1,5 +1,5 @@
 /**
- * VK_NV_corner_sampled_image
+ * VK_NV_corner_sampled_image (Device)
  * 
  * Author:
  *     NVIDIA Corporation

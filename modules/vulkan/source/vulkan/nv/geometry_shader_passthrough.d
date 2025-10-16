@@ -1,5 +1,5 @@
 /**
- * VK_NV_geometry_shader_passthrough
+ * VK_NV_geometry_shader_passthrough (Device)
  * 
  * Author:
  *     NVIDIA Corporation

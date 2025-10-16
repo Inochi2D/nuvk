@@ -1,5 +1,5 @@
 /**
- * VK_KHR_video_decode_vp9
+ * VK_KHR_video_decode_vp9 (Device)
  * 
  * Author:
  *     Khronos

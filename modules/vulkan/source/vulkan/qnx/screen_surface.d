@@ -1,5 +1,5 @@
 /**
- * VK_QNX_screen_surface
+ * VK_QNX_screen_surface (Instance)
  * 
  * Author:
  *     BlackBerry Limited

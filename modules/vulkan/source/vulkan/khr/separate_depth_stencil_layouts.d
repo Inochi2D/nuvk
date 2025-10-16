@@ -1,5 +1,5 @@
 /**
- * VK_KHR_separate_depth_stencil_layouts
+ * VK_KHR_separate_depth_stencil_layouts (Device)
  * 
  * Author:
  *     Khronos

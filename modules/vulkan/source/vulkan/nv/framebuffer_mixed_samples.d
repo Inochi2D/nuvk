@@ -1,5 +1,5 @@
 /**
- * VK_NV_framebuffer_mixed_samples
+ * VK_NV_framebuffer_mixed_samples (Device)
  * 
  * Author:
  *     NVIDIA Corporation

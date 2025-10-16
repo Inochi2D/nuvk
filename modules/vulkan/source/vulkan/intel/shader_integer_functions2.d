@@ -1,5 +1,5 @@
 /**
- * VK_INTEL_shader_integer_functions2
+ * VK_INTEL_shader_integer_functions2 (Device)
  * 
  * Author:
  *     Intel Corporation

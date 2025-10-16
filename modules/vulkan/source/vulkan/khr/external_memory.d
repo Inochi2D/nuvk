@@ -1,5 +1,5 @@
 /**
- * VK_KHR_external_memory
+ * VK_KHR_external_memory (Device)
  * 
  * Author:
  *     Khronos

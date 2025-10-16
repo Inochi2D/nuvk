@@ -1,5 +1,5 @@
 /**
- * VK_NV_command_buffer_inheritance
+ * VK_NV_command_buffer_inheritance (Device)
  * 
  * Author:
  *     NVIDIA Corporation

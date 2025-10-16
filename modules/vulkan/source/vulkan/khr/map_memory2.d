@@ -1,5 +1,5 @@
 /**
- * VK_KHR_map_memory2
+ * VK_KHR_map_memory2 (Device)
  * 
  * Author:
  *     Khronos

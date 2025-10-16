@@ -1,5 +1,5 @@
 /**
- * VK_NV_optical_flow
+ * VK_NV_optical_flow (Device)
  * 
  * Author:
  *     NVIDIA Corporation

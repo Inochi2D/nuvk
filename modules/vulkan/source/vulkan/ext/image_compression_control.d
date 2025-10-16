@@ -1,5 +1,5 @@
 /**
- * VK_EXT_image_compression_control
+ * VK_EXT_image_compression_control (Device)
  * 
  * Author:
  *     Multivendor

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_layer_settings
+ * VK_EXT_layer_settings (Instance)
  * 
  * Author:
  *     Multivendor

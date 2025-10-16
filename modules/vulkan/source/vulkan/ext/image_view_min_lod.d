@@ -1,5 +1,5 @@
 /**
- * VK_EXT_image_view_min_lod
+ * VK_EXT_image_view_min_lod (Device)
  * 
  * Author:
  *     Multivendor

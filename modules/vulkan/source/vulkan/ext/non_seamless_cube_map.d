@@ -1,5 +1,5 @@
 /**
- * VK_EXT_non_seamless_cube_map
+ * VK_EXT_non_seamless_cube_map (Device)
  * 
  * Author:
  *     Multivendor

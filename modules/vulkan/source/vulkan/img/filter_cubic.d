@@ -1,5 +1,5 @@
 /**
- * VK_IMG_filter_cubic
+ * VK_IMG_filter_cubic (Device)
  * 
  * Author:
  *     Imagination Technologies

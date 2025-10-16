@@ -1,5 +1,5 @@
 /**
- * VK_NN_vi_surface
+ * VK_NN_vi_surface (Instance)
  * 
  * Author:
  *     Nintendo Co., Ltd.

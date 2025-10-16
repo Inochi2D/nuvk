@@ -1,5 +1,5 @@
 /**
- * VK_AMD_shader_trinary_minmax
+ * VK_AMD_shader_trinary_minmax (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

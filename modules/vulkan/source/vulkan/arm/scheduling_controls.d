@@ -1,5 +1,5 @@
 /**
- * VK_ARM_scheduling_controls
+ * VK_ARM_scheduling_controls (Device)
  * 
  * Author:
  *     ARM Limited

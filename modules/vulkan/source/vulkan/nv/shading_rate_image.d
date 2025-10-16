@@ -1,5 +1,5 @@
 /**
- * VK_NV_shading_rate_image
+ * VK_NV_shading_rate_image (Device)
  * 
  * Author:
  *     NVIDIA Corporation

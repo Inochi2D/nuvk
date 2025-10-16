@@ -1,5 +1,5 @@
 /**
- * VK_EXT_shader_atomic_float
+ * VK_EXT_shader_atomic_float (Device)
  * 
  * Author:
  *     NVIDIA Corporation

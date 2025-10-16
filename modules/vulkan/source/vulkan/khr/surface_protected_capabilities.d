@@ -1,5 +1,5 @@
 /**
- * VK_KHR_surface_protected_capabilities
+ * VK_KHR_surface_protected_capabilities (Instance)
  * 
  * Author:
  *     Khronos

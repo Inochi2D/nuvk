@@ -1,5 +1,5 @@
 /**
- * VK_NVX_binary_import
+ * VK_NVX_binary_import (Device)
  * 
  * Author:
  *     NVIDIA Corporation

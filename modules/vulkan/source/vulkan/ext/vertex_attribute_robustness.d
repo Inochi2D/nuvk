@@ -1,5 +1,5 @@
 /**
- * VK_EXT_vertex_attribute_robustness
+ * VK_EXT_vertex_attribute_robustness (Device)
  * 
  * Author:
  *     Multivendor

@@ -1,5 +1,5 @@
 /**
- * VK_AMD_shader_ballot
+ * VK_AMD_shader_ballot (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

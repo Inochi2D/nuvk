@@ -1,5 +1,5 @@
 /**
- * VK_KHR_16bit_storage
+ * VK_KHR_16bit_storage (Device)
  * 
  * Author:
  *     Khronos

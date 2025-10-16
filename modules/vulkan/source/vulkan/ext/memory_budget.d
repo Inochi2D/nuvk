@@ -1,5 +1,5 @@
 /**
- * VK_EXT_memory_budget
+ * VK_EXT_memory_budget (Device)
  * 
  * Author:
  *     Multivendor

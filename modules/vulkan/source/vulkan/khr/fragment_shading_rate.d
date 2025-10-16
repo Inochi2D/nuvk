@@ -1,5 +1,5 @@
 /**
- * VK_KHR_fragment_shading_rate
+ * VK_KHR_fragment_shading_rate (Device)
  * 
  * Author:
  *     Khronos

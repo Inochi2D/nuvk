@@ -1,5 +1,5 @@
 /**
- * VK_VALVE_fragment_density_map_layered
+ * VK_VALVE_fragment_density_map_layered (Device)
  * 
  * Author:
  *     Valve Corporation

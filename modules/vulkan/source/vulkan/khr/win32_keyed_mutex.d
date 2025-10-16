@@ -1,5 +1,5 @@
 /**
- * VK_KHR_win32_keyed_mutex
+ * VK_KHR_win32_keyed_mutex (Device)
  * 
  * Author:
  *     Khronos

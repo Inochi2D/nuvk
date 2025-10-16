@@ -1,5 +1,5 @@
 /**
- * VK_AMD_mixed_attachment_samples
+ * VK_AMD_mixed_attachment_samples (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

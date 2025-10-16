@@ -1,5 +1,5 @@
 /**
- * VK_QCOM_multiview_per_view_viewports
+ * VK_QCOM_multiview_per_view_viewports (Device)
  * 
  * Author:
  *     Qualcomm Technologies, Inc.

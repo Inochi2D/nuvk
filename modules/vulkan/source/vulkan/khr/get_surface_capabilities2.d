@@ -1,5 +1,5 @@
 /**
- * VK_KHR_get_surface_capabilities2
+ * VK_KHR_get_surface_capabilities2 (Instance)
  * 
  * Author:
  *     Khronos

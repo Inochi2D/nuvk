@@ -1,5 +1,5 @@
 /**
- * VK_KHR_video_encode_intra_refresh
+ * VK_KHR_video_encode_intra_refresh (Device)
  * 
  * Author:
  *     Khronos

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_pipeline_creation_feedback
+ * VK_EXT_pipeline_creation_feedback (Device)
  * 
  * Author:
  *     Google LLC

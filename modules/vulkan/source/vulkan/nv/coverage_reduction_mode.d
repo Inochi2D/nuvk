@@ -1,5 +1,5 @@
 /**
- * VK_NV_coverage_reduction_mode
+ * VK_NV_coverage_reduction_mode (Device)
  * 
  * Author:
  *     NVIDIA Corporation

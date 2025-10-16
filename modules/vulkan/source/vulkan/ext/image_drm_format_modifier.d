@@ -1,5 +1,5 @@
 /**
- * VK_EXT_image_drm_format_modifier
+ * VK_EXT_image_drm_format_modifier (Device)
  * 
  * Author:
  *     Multivendor

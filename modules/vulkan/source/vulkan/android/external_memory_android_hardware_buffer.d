@@ -1,5 +1,5 @@
 /**
- * VK_ANDROID_external_memory_android_hardware_buffer
+ * VK_ANDROID_external_memory_android_hardware_buffer (Device)
  * 
  * Author:
  *     Google LLC

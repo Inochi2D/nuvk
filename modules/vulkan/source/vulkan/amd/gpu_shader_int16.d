@@ -1,5 +1,5 @@
 /**
- * VK_AMD_gpu_shader_int16
+ * VK_AMD_gpu_shader_int16 (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

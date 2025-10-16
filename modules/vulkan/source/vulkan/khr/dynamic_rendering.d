@@ -1,5 +1,5 @@
 /**
- * VK_KHR_dynamic_rendering
+ * VK_KHR_dynamic_rendering (Device)
  * 
  * Author:
  *     Khronos

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_dynamic_rendering_unused_attachments
+ * VK_EXT_dynamic_rendering_unused_attachments (Device)
  * 
  * Author:
  *     Multivendor

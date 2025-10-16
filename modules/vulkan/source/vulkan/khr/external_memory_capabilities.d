@@ -1,5 +1,5 @@
 /**
- * VK_KHR_external_memory_capabilities
+ * VK_KHR_external_memory_capabilities (Instance)
  * 
  * Author:
  *     Khronos

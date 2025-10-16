@@ -1,5 +1,5 @@
 /**
- * VK_KHR_depth_stencil_resolve
+ * VK_KHR_depth_stencil_resolve (Device)
  * 
  * Author:
  *     Khronos

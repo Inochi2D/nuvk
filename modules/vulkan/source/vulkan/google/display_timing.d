@@ -1,5 +1,5 @@
 /**
- * VK_GOOGLE_display_timing
+ * VK_GOOGLE_display_timing (Device)
  * 
  * Author:
  *     Google LLC

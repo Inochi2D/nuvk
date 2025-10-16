@@ -1,5 +1,5 @@
 /**
- * VK_KHR_acceleration_structure
+ * VK_KHR_acceleration_structure (Device)
  * 
  * Author:
  *     Khronos

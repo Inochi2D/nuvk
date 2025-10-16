@@ -1,5 +1,5 @@
 /**
- * VK_KHR_create_renderpass2
+ * VK_KHR_create_renderpass2 (Device)
  * 
  * Author:
  *     Khronos

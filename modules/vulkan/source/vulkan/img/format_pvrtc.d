@@ -1,5 +1,5 @@
 /**
- * VK_IMG_format_pvrtc
+ * VK_IMG_format_pvrtc (Device)
  * 
  * Author:
  *     Imagination Technologies

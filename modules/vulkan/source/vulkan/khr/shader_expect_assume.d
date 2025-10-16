@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_expect_assume
+ * VK_KHR_shader_expect_assume (Device)
  * 
  * Author:
  *     Khronos

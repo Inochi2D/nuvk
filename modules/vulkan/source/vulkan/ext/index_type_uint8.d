@@ -1,5 +1,5 @@
 /**
- * VK_EXT_index_type_uint8
+ * VK_EXT_index_type_uint8 (Device)
  * 
  * Author:
  *     Multivendor

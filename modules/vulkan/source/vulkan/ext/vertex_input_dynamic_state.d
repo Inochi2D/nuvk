@@ -1,5 +1,5 @@
 /**
- * VK_EXT_vertex_input_dynamic_state
+ * VK_EXT_vertex_input_dynamic_state (Device)
  * 
  * Author:
  *     Multivendor

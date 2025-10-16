@@ -1,5 +1,5 @@
 /**
- * VK_AMD_shader_early_and_late_fragment_tests
+ * VK_AMD_shader_early_and_late_fragment_tests (Device)
  * 
  * Author:
  *     Multivendor

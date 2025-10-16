@@ -1,5 +1,5 @@
 /**
- * VK_GOOGLE_user_type
+ * VK_GOOGLE_user_type (Device)
  * 
  * Author:
  *     Google LLC

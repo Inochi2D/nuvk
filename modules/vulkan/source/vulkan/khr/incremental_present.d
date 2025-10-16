@@ -1,5 +1,5 @@
 /**
- * VK_KHR_incremental_present
+ * VK_KHR_incremental_present (Device)
  * 
  * Author:
  *     Khronos

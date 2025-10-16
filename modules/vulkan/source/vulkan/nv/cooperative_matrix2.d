@@ -1,5 +1,5 @@
 /**
- * VK_NV_cooperative_matrix2
+ * VK_NV_cooperative_matrix2 (Device)
  * 
  * Author:
  *     NVIDIA Corporation

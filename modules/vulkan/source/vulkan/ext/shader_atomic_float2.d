@@ -1,5 +1,5 @@
 /**
- * VK_EXT_shader_atomic_float2
+ * VK_EXT_shader_atomic_float2 (Device)
  * 
  * Author:
  *     Multivendor

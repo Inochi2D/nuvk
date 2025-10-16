@@ -1,5 +1,5 @@
 /**
- * VK_EXT_hdr_metadata
+ * VK_EXT_hdr_metadata (Device)
  * 
  * Author:
  *     Google LLC

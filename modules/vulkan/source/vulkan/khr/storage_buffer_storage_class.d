@@ -1,5 +1,5 @@
 /**
- * VK_KHR_storage_buffer_storage_class
+ * VK_KHR_storage_buffer_storage_class (Device)
  * 
  * Author:
  *     Khronos

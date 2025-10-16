@@ -1,5 +1,5 @@
 /**
- * VK_KHR_external_fence
+ * VK_KHR_external_fence (Device)
  * 
  * Author:
  *     Khronos

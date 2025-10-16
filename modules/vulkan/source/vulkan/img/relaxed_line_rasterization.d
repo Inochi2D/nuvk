@@ -1,5 +1,5 @@
 /**
- * VK_IMG_relaxed_line_rasterization
+ * VK_IMG_relaxed_line_rasterization (Device)
  * 
  * Author:
  *     Imagination Technologies

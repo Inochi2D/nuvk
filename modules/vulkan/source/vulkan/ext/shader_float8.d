@@ -1,5 +1,5 @@
 /**
- * VK_EXT_shader_float8
+ * VK_EXT_shader_float8 (Device)
  * 
  * Author:
  *     Multivendor

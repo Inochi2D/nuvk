@@ -1,5 +1,5 @@
 /**
- * VK_EXT_conservative_rasterization
+ * VK_EXT_conservative_rasterization (Device)
  * 
  * Author:
  *     NVIDIA Corporation

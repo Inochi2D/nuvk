@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_float_controls2
+ * VK_KHR_shader_float_controls2 (Device)
  * 
  * Author:
  *     Khronos

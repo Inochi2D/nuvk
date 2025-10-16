@@ -1,5 +1,5 @@
 /**
- * VK_EXT_shader_viewport_index_layer
+ * VK_EXT_shader_viewport_index_layer (Device)
  * 
  * Author:
  *     NVIDIA Corporation

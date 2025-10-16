@@ -1,5 +1,5 @@
 /**
- * VK_QCOM_tile_shading
+ * VK_QCOM_tile_shading (Device)
  * 
  * Author:
  *     Qualcomm Technologies, Inc.

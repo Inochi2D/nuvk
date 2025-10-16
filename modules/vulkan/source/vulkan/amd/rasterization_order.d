@@ -1,5 +1,5 @@
 /**
- * VK_AMD_rasterization_order
+ * VK_AMD_rasterization_order (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

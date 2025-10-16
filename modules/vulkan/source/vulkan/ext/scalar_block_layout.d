@@ -1,5 +1,5 @@
 /**
- * VK_EXT_scalar_block_layout
+ * VK_EXT_scalar_block_layout (Device)
  * 
  * Author:
  *     Multivendor

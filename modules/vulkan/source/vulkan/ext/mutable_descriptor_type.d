@@ -1,5 +1,5 @@
 /**
- * VK_EXT_mutable_descriptor_type
+ * VK_EXT_mutable_descriptor_type (Device)
  * 
  * Author:
  *     Multivendor

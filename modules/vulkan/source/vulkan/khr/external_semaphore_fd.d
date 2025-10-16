@@ -1,5 +1,5 @@
 /**
- * VK_KHR_external_semaphore_fd
+ * VK_KHR_external_semaphore_fd (Device)
  * 
  * Author:
  *     Khronos

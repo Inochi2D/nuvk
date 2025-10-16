@@ -1,5 +1,5 @@
 /**
- * VK_AMD_negative_viewport_height
+ * VK_AMD_negative_viewport_height (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

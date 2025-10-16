@@ -1,5 +1,5 @@
 /**
- * VK_EXT_transform_feedback
+ * VK_EXT_transform_feedback (Device)
  * 
  * Author:
  *     NVIDIA Corporation

@@ -1,5 +1,5 @@
 /**
- * VK_NV_fragment_shading_rate_enums
+ * VK_NV_fragment_shading_rate_enums (Device)
  * 
  * Author:
  *     NVIDIA Corporation

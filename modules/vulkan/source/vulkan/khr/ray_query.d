@@ -1,5 +1,5 @@
 /**
- * VK_KHR_ray_query
+ * VK_KHR_ray_query (Device)
  * 
  * Author:
  *     Khronos

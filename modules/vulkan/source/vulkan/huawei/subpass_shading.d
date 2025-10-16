@@ -1,5 +1,5 @@
 /**
- * VK_HUAWEI_subpass_shading
+ * VK_HUAWEI_subpass_shading (Device)
  * 
  * Author:
  *     Huawei Technologies Co. Ltd.

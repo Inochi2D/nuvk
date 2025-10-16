@@ -1,5 +1,5 @@
 /**
- * VK_AMD_pipeline_compiler_control
+ * VK_AMD_pipeline_compiler_control (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

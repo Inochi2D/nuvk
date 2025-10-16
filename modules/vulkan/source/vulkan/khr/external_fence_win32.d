@@ -1,5 +1,5 @@
 /**
- * VK_KHR_external_fence_win32
+ * VK_KHR_external_fence_win32 (Device)
  * 
  * Author:
  *     Khronos

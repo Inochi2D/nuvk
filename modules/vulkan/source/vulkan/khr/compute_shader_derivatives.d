@@ -1,5 +1,5 @@
 /**
- * VK_KHR_compute_shader_derivatives
+ * VK_KHR_compute_shader_derivatives (Device)
  * 
  * Author:
  *     Khronos

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_metal_surface
+ * VK_EXT_metal_surface (Instance)
  * 
  * Author:
  *     Multivendor

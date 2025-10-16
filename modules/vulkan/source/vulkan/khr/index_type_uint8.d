@@ -1,5 +1,5 @@
 /**
- * VK_KHR_index_type_uint8
+ * VK_KHR_index_type_uint8 (Device)
  * 
  * Author:
  *     Khronos

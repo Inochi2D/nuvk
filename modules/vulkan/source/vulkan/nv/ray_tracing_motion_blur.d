@@ -1,5 +1,5 @@
 /**
- * VK_NV_ray_tracing_motion_blur
+ * VK_NV_ray_tracing_motion_blur (Device)
  * 
  * Author:
  *     NVIDIA Corporation

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_full_screen_exclusive
+ * VK_EXT_full_screen_exclusive (Device)
  * 
  * Author:
  *     Multivendor

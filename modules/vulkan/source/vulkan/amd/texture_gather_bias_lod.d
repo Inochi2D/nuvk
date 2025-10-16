@@ -1,5 +1,5 @@
 /**
- * VK_AMD_texture_gather_bias_lod
+ * VK_AMD_texture_gather_bias_lod (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

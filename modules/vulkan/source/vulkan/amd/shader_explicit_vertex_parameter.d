@@ -1,5 +1,5 @@
 /**
- * VK_AMD_shader_explicit_vertex_parameter
+ * VK_AMD_shader_explicit_vertex_parameter (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

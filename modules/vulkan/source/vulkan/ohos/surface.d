@@ -1,5 +1,5 @@
 /**
- * VK_OHOS_surface
+ * VK_OHOS_surface (Instance)
  * 
  * Author:
  *     Huawei Technologies Co. Ltd.

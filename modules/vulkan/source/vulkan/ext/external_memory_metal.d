@@ -1,5 +1,5 @@
 /**
- * VK_EXT_external_memory_metal
+ * VK_EXT_external_memory_metal (Device)
  * 
  * Author:
  *     Multivendor

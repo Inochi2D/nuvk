@@ -1,5 +1,5 @@
 /**
- * VK_NV_present_metering
+ * VK_NV_present_metering (Device)
  * 
  * Author:
  *     NVIDIA Corporation

@@ -1,5 +1,5 @@
 /**
- * VK_KHR_present_id2
+ * VK_KHR_present_id2 (Device)
  * 
  * Author:
  *     Khronos

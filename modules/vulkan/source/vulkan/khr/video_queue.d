@@ -1,5 +1,5 @@
 /**
- * VK_KHR_video_queue
+ * VK_KHR_video_queue (Device)
  * 
  * Author:
  *     Khronos

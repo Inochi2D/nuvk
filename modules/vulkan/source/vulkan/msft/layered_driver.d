@@ -1,5 +1,5 @@
 /**
- * VK_MSFT_layered_driver
+ * VK_MSFT_layered_driver (Device)
  * 
  * Author:
  *     Microsoft Corporation

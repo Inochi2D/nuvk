@@ -1,5 +1,5 @@
 /**
- * VK_GOOGLE_decorate_string
+ * VK_GOOGLE_decorate_string (Device)
  * 
  * Author:
  *     Google LLC

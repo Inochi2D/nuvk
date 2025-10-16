@@ -1,5 +1,5 @@
 /**
- * VK_KHR_dynamic_rendering_local_read
+ * VK_KHR_dynamic_rendering_local_read (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

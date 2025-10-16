@@ -1,5 +1,5 @@
 /**
- * VK_NV_external_memory_capabilities
+ * VK_NV_external_memory_capabilities (Instance)
  * 
  * Author:
  *     NVIDIA Corporation

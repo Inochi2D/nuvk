@@ -1,5 +1,5 @@
 /**
- * VK_KHR_buffer_device_address
+ * VK_KHR_buffer_device_address (Device)
  * 
  * Author:
  *     Khronos

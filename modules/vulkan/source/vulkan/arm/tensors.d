@@ -1,5 +1,5 @@
 /**
- * VK_ARM_tensors
+ * VK_ARM_tensors (Device)
  * 
  * Author:
  *     ARM Limited

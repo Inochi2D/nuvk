@@ -1,5 +1,5 @@
 /**
- * VK_EXT_external_memory_dma_buf
+ * VK_EXT_external_memory_dma_buf (Device)
  * 
  * Author:
  *     Multivendor

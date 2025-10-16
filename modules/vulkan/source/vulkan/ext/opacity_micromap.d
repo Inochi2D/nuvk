@@ -1,5 +1,5 @@
 /**
- * VK_EXT_opacity_micromap
+ * VK_EXT_opacity_micromap (Device)
  * 
  * Author:
  *     Multivendor

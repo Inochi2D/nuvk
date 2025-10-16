@@ -1,5 +1,5 @@
 /**
- * VK_EXT_subpass_merge_feedback
+ * VK_EXT_subpass_merge_feedback (Device)
  * 
  * Author:
  *     Multivendor

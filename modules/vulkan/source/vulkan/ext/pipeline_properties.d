@@ -1,5 +1,5 @@
 /**
- * VK_EXT_pipeline_properties
+ * VK_EXT_pipeline_properties (Device)
  * 
  * Author:
  *     Multivendor

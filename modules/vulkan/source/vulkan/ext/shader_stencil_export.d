@@ -1,5 +1,5 @@
 /**
- * VK_EXT_shader_stencil_export
+ * VK_EXT_shader_stencil_export (Device)
  * 
  * Author:
  *     Multivendor

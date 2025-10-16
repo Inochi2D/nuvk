@@ -1,5 +1,5 @@
 /**
- * VK_EXT_nested_command_buffer
+ * VK_EXT_nested_command_buffer (Device)
  * 
  * Author:
  *     Multivendor

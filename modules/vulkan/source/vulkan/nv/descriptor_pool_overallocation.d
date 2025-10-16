@@ -1,5 +1,5 @@
 /**
- * VK_NV_descriptor_pool_overallocation
+ * VK_NV_descriptor_pool_overallocation (Device)
  * 
  * Author:
  *     NVIDIA Corporation

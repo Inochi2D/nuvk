@@ -1,5 +1,5 @@
 /**
- * VK_EXT_graphics_pipeline_library
+ * VK_EXT_graphics_pipeline_library (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

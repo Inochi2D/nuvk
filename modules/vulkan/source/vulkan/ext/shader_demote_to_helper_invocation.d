@@ -1,5 +1,5 @@
 /**
- * VK_EXT_shader_demote_to_helper_invocation
+ * VK_EXT_shader_demote_to_helper_invocation (Device)
  * 
  * Author:
  *     Multivendor

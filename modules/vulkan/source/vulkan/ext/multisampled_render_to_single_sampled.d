@@ -1,5 +1,5 @@
 /**
- * VK_EXT_multisampled_render_to_single_sampled
+ * VK_EXT_multisampled_render_to_single_sampled (Device)
  * 
  * Author:
  *     Multivendor

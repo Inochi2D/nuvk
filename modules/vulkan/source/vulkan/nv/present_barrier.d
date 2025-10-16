@@ -1,5 +1,5 @@
 /**
- * VK_NV_present_barrier
+ * VK_NV_present_barrier (Device)
  * 
  * Author:
  *     NVIDIA Corporation

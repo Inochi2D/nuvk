@@ -1,5 +1,5 @@
 /**
- * VK_ANDROID_external_format_resolve
+ * VK_ANDROID_external_format_resolve (Device)
  * 
  * Author:
  *     Google LLC

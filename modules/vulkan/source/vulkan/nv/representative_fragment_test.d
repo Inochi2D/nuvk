@@ -1,5 +1,5 @@
 /**
- * VK_NV_representative_fragment_test
+ * VK_NV_representative_fragment_test (Device)
  * 
  * Author:
  *     NVIDIA Corporation

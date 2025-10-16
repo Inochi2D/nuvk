@@ -1,5 +1,5 @@
 /**
- * VK_KHR_load_store_op_none
+ * VK_KHR_load_store_op_none (Device)
  * 
  * Author:
  *     Khronos

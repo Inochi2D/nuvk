@@ -1,5 +1,5 @@
 /**
- * VK_KHR_present_wait2
+ * VK_KHR_present_wait2 (Device)
  * 
  * Author:
  *     Khronos

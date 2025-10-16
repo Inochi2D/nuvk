@@ -1,5 +1,5 @@
 /**
- * VK_NV_dedicated_allocation_image_aliasing
+ * VK_NV_dedicated_allocation_image_aliasing (Device)
  * 
  * Author:
  *     NVIDIA

@@ -1,5 +1,5 @@
 /**
- * VK_NV_compute_shader_derivatives
+ * VK_NV_compute_shader_derivatives (Device)
  * 
  * Author:
  *     NVIDIA Corporation

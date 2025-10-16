@@ -1,5 +1,5 @@
 /**
- * VK_KHR_external_semaphore_capabilities
+ * VK_KHR_external_semaphore_capabilities (Instance)
  * 
  * Author:
  *     Khronos

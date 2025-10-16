@@ -1,5 +1,5 @@
 /**
- * VK_EXT_multi_draw
+ * VK_EXT_multi_draw (Device)
  * 
  * Author:
  *     Multivendor

@@ -1,5 +1,5 @@
 /**
- * VK_KHR_zero_initialize_workgroup_memory
+ * VK_KHR_zero_initialize_workgroup_memory (Device)
  * 
  * Author:
  *     Khronos

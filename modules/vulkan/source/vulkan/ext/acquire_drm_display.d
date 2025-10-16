@@ -1,5 +1,5 @@
 /**
- * VK_EXT_acquire_drm_display
+ * VK_EXT_acquire_drm_display (Instance)
  * 
  * Author:
  *     Multivendor

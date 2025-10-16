@@ -1,5 +1,5 @@
 /**
- * VK_EXT_rgba10x6_formats
+ * VK_EXT_rgba10x6_formats (Device)
  * 
  * Author:
  *     Multivendor

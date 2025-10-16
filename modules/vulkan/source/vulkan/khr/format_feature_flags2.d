@@ -1,5 +1,5 @@
 /**
- * VK_KHR_format_feature_flags2
+ * VK_KHR_format_feature_flags2 (Device)
  * 
  * Author:
  *     Khronos

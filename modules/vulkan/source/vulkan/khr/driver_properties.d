@@ -1,5 +1,5 @@
 /**
- * VK_KHR_driver_properties
+ * VK_KHR_driver_properties (Device)
  * 
  * Author:
  *     Khronos

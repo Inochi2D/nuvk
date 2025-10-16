@@ -1,5 +1,5 @@
 /**
- * VK_NV_ray_tracing_validation
+ * VK_NV_ray_tracing_validation (Device)
  * 
  * Author:
  *     NVIDIA Corporation

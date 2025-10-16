@@ -1,5 +1,5 @@
 /**
- * VK_NV_external_memory
+ * VK_NV_external_memory (Device)
  * 
  * Author:
  *     NVIDIA Corporation

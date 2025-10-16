@@ -1,5 +1,5 @@
 /**
- * VK_KHR_portability_enumeration
+ * VK_KHR_portability_enumeration (Instance)
  * 
  * Author:
  *     Khronos

@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shared_presentable_image
+ * VK_KHR_shared_presentable_image (Device)
  * 
  * Author:
  *     Khronos

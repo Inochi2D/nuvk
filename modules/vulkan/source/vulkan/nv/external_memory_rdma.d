@@ -1,5 +1,5 @@
 /**
- * VK_NV_external_memory_rdma
+ * VK_NV_external_memory_rdma (Device)
  * 
  * Author:
  *     NVIDIA Corporation

@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_draw_parameters
+ * VK_KHR_shader_draw_parameters (Device)
  * 
  * Author:
  *     Khronos

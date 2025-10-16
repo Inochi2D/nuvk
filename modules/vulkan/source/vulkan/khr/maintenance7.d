@@ -1,5 +1,5 @@
 /**
- * VK_KHR_maintenance7
+ * VK_KHR_maintenance7 (Device)
  * 
  * Author:
  *     Khronos

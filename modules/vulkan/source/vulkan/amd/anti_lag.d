@@ -1,5 +1,5 @@
 /**
- * VK_AMD_anti_lag
+ * VK_AMD_anti_lag (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

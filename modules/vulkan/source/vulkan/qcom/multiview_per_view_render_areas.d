@@ -1,5 +1,5 @@
 /**
- * VK_QCOM_multiview_per_view_render_areas
+ * VK_QCOM_multiview_per_view_render_areas (Device)
  * 
  * Author:
  *     Qualcomm Technologies, Inc.

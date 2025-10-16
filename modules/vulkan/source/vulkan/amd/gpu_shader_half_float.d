@@ -1,5 +1,5 @@
 /**
- * VK_AMD_gpu_shader_half_float
+ * VK_AMD_gpu_shader_half_float (Device)
  * 
  * Author:
  *     Advanced Micro Devices, Inc.

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_swapchain_colorspace
+ * VK_EXT_swapchain_colorspace (Instance)
  * 
  * Author:
  *     Google LLC

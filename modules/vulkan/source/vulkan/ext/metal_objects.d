@@ -1,5 +1,5 @@
 /**
- * VK_EXT_metal_objects
+ * VK_EXT_metal_objects (Device)
  * 
  * Author:
  *     Multivendor

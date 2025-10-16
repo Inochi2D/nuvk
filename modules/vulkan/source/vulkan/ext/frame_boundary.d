@@ -1,5 +1,5 @@
 /**
- * VK_EXT_frame_boundary
+ * VK_EXT_frame_boundary (Device)
  * 
  * Author:
  *     Multivendor

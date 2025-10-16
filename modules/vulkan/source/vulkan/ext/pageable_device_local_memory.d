@@ -1,5 +1,5 @@
 /**
- * VK_EXT_pageable_device_local_memory
+ * VK_EXT_pageable_device_local_memory (Device)
  * 
  * Author:
  *     Multivendor

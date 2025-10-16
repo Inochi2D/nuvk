@@ -1,5 +1,5 @@
 /**
- * VK_NV_external_compute_queue
+ * VK_NV_external_compute_queue (Device)
  * 
  * Author:
  *     NVIDIA Corporation

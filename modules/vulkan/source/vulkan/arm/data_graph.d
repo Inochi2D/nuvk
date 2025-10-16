@@ -1,5 +1,5 @@
 /**
- * VK_ARM_data_graph
+ * VK_ARM_data_graph (Device)
  * 
  * Author:
  *     ARM Limited

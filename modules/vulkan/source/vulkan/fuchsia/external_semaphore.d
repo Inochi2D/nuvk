@@ -1,5 +1,5 @@
 /**
- * VK_FUCHSIA_external_semaphore
+ * VK_FUCHSIA_external_semaphore (Device)
  * 
  * Author:
  *     Google LLC

@@ -1,5 +1,5 @@
 /**
- * VK_KHR_image_format_list
+ * VK_KHR_image_format_list (Device)
  * 
  * Author:
  *     Khronos

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_astc_decode_mode
+ * VK_EXT_astc_decode_mode (Device)
  * 
  * Author:
  *     ARM Limited

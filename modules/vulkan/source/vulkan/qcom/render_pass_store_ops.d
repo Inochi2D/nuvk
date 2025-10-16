@@ -1,5 +1,5 @@
 /**
- * VK_QCOM_render_pass_store_ops
+ * VK_QCOM_render_pass_store_ops (Device)
  * 
  * Author:
  *     Qualcomm Technologies, Inc.

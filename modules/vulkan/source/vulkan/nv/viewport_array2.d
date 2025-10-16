@@ -1,5 +1,5 @@
 /**
- * VK_NV_viewport_array2
+ * VK_NV_viewport_array2 (Device)
  * 
  * Author:
  *     NVIDIA Corporation

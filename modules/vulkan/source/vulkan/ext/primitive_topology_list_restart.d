@@ -1,5 +1,5 @@
 /**
- * VK_EXT_primitive_topology_list_restart
+ * VK_EXT_primitive_topology_list_restart (Device)
  * 
  * Author:
  *     Multivendor

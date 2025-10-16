@@ -1,5 +1,5 @@
 /**
- * VK_EXT_surface_maintenance1
+ * VK_EXT_surface_maintenance1 (Instance)
  * 
  * Author:
  *     Multivendor

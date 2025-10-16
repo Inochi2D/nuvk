@@ -1,5 +1,5 @@
 /**
- * VK_EXT_pipeline_protected_access
+ * VK_EXT_pipeline_protected_access (Device)
  * 
  * Author:
  *     Multivendor

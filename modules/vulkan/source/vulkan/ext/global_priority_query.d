@@ -1,5 +1,5 @@
 /**
- * VK_EXT_global_priority_query
+ * VK_EXT_global_priority_query (Device)
  * 
  * Author:
  *     Multivendor

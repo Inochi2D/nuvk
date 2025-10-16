@@ -1,5 +1,5 @@
 /**
- * VK_EXT_debug_utils
+ * VK_EXT_debug_utils (Instance)
  * 
  * Author:
  *     Multivendor

@@ -1,5 +1,5 @@
 /**
- * VK_EXT_subgroup_size_control
+ * VK_EXT_subgroup_size_control (Device)
  * 
  * Author:
  *     Multivendor

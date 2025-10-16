@@ -1,5 +1,5 @@
 /**
- * VK_FUCHSIA_buffer_collection
+ * VK_FUCHSIA_buffer_collection (Device)
  * 
  * Author:
  *     Google LLC

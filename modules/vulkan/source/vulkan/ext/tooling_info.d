@@ -1,5 +1,5 @@
 /**
- * VK_EXT_tooling_info
+ * VK_EXT_tooling_info (Device)
  * 
  * Author:
  *     Multivendor

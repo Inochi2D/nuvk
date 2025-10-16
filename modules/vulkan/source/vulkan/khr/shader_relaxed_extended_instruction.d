@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_relaxed_extended_instruction
+ * VK_KHR_shader_relaxed_extended_instruction (Device)
  * 
  * Author:
  *     Khronos

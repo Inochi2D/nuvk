@@ -1,5 +1,5 @@
 /**
- * VK_EXT_depth_range_unrestricted
+ * VK_EXT_depth_range_unrestricted (Device)
  * 
  * Author:
  *     NVIDIA Corporation

@@ -1,5 +1,5 @@
 /**
- * VK_KHR_shader_subgroup_rotate
+ * VK_KHR_shader_subgroup_rotate (Device)
  * 
  * Author:
  *     Khronos

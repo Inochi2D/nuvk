@@ -1,5 +1,5 @@
 /**
- * VK_KHR_descriptor_update_template
+ * VK_KHR_descriptor_update_template (Device)
  * 
  * Author:
  *     Khronos

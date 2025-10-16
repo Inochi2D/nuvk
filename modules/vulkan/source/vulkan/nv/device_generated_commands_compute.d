@@ -1,5 +1,5 @@
 /**
- * VK_NV_device_generated_commands_compute
+ * VK_NV_device_generated_commands_compute (Device)
  * 
  * Author:
  *     NVIDIA Corporation

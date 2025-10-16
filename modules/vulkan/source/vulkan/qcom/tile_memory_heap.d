@@ -1,5 +1,5 @@
 /**
- * VK_QCOM_tile_memory_heap
+ * VK_QCOM_tile_memory_heap (Device)
  * 
  * Author:
  *     Qualcomm Technologies, Inc.

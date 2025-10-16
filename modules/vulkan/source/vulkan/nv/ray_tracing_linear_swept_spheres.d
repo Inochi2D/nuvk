@@ -1,5 +1,5 @@
 /**
- * VK_NV_ray_tracing_linear_swept_spheres
+ * VK_NV_ray_tracing_linear_swept_spheres (Device)
  * 
  * Author:
  *     NVIDIA Corporation
