@@ -2,6 +2,7 @@ module registry;
 
 import std.algorithm;
 import std.range;
+import std.sumtype;
 import std.string;
 import std.typecons;
 
@@ -13,7 +14,7 @@ import util.omap;
  */
 class VkRegistry {
     /** Registered platforms. */
-    VkPlatform[] platforms;
+    OMap!(string, VkPlatform) platforms;
 
     /** Registered vendors. */
     OMap!(string, VkVendor) vendors;
@@ -46,7 +47,7 @@ class VkRegistry {
     OMap!(string, VkCommand) commands;
 
     /** Registered features */
-    VkFeature[] features;
+    OMap!(string, VkFeature) features;
 
     /** Registered extensions */
     OMap!(string, VkExtension) extensions;
@@ -97,8 +98,8 @@ struct VkDefineType {
 
     alias base this;
 
-    @property bool funclike() => value.empty;
-    @property bool commented() => value.startsWith("//");
+    @property bool funclike() const => value.empty;
+    @property bool commented() const => value.startsWith("//");
 }
 
 /** 
@@ -118,6 +119,7 @@ struct VkBitmaskType {
     VkType base;
     string requires;
     string backing;
+    string alias_;
 
     alias base this;
 }
@@ -137,6 +139,7 @@ struct VkHandleType {
  */
 struct VkEnumType {
     VkType base;
+    string alias_;
     string comment;
     bool bitmask;
     VkBitWidth width = VkBitWidth.U32;
@@ -150,7 +153,7 @@ struct VkEnumType {
         }
     }
 
-    @property string backingType() {
+    @property string backingType() const {
         final switch (width) {
             case VkBitWidth.U32:
                 return "uint";
@@ -168,13 +171,14 @@ struct VkEnumMember {
     string type;
     string value;
     string alias_;
+    string deprecated_;
     string comment;
 
-    string shortName(string prefix) => shortName(prefix, name);
+    string shortName(string prefix) const => shortName(prefix, name);
 
-    string shortAlias(string prefix) => shortName(prefix, alias_);
+    string shortAlias(string prefix) const => shortName(prefix, alias_);
 
-    string shortName(string prefix, string name) {
+    string shortName(string prefix, string name) const {
         import std.ascii : isDigit;
 
         enum suffix = "FLAG_BITS_";
@@ -189,6 +193,10 @@ struct VkEnumMember {
             return name;
         }
     }
+
+    @property bool hasAlias() const => !alias_.empty;
+
+    @property bool isDeprecated() const => !deprecated_.empty;
 }
 
 /** 
@@ -196,16 +204,11 @@ struct VkEnumMember {
  */
 struct VkStructType {
     VkType base;
+    string alias_;
     string extends;
     VkStructMember[] members;
 
     alias base this;
-
-    this(return scope typeof(this) other) {
-        foreach (i, ref field; other.tupleof) {
-            this.tupleof[i] = __rvalue(field);
-        }
-    }
 }
 
 /** 
@@ -216,6 +219,7 @@ struct VkStructMember {
     string type;
     string[] values;
     bool optional = false;
+    string deprecated_;
 
     string comment;
 
@@ -225,14 +229,14 @@ struct VkStructMember {
      * Returns: our name suffixed with an underscore, if it's a keyword.
      */
     @property string safename() const {
-        switch (name) {
-            case "module":
-            case "version":
-                return name ~ "_";
-            default:
-                return name;
+        if (name in keywords) {
+            return name ~ "_";
+        } else {
+            return name;
         }
     }
+
+    @property bool isDeprecated() const => !deprecated_.empty;
 }
 
 /** 
@@ -259,12 +263,10 @@ struct VkUnionMember {
      * Returns: our name suffixed with an underscore, if it's a keyword.
      */
     @property string safename() const {
-        switch (name) {
-            case "module":
-            case "version":
-                return name ~ "_";
-            default:
-                return name;
+        if (name in keywords) {
+            return name ~ "_";
+        } else {
+            return name;
         }
     }
 }
@@ -307,6 +309,8 @@ struct VkCommand {
 
         return result;
     }
+
+    @property bool isAlias() const => !alias_.empty;
 }
 
 /** 
@@ -317,6 +321,19 @@ struct VkParam {
     string type;
     bool optional;
     string comment;
+
+    /** 
+     * Dodge collisions with D keywords.
+     * 
+     * Returns: our name suffixed with an underscore, if it's a keyword.
+     */
+    @property string safename() const {
+        if (name in keywords) {
+            return name ~ "_";
+        } else {
+            return name;
+        }
+    }
 }
 
 /** 
@@ -345,13 +362,59 @@ struct VkExtension {
     VkExtensionType type;
     string[] supported;
     string promoted;
-    VkDepends depends;
+    string deprecated_;
+    VkDepends depends = null;
     VkSection[] sections;
+    string platform;
 
     @property string shortName() const {
-        const offset = "VK_".length + author.length + 1;
-        return name[offset .. $];
+        import std.ascii;
+
+        if (name.startsWith("VK_")) {
+            auto result = name["VK_".length .. $];
+
+            auto index = result.indexOf("_");
+            assert(index != -1, result);
+            result = result[index + 1 .. $];
+
+            // Some extension short names start with numbers.
+            if (result[0].isDigit) {
+                result = "_" ~ result;
+            }
+
+            return result;
+        } else if (name.startsWith("vulkan_video_codec_")) {
+            const offset = "vulkan_video_codec_".length;
+            return name[offset .. $];
+        } else {
+            return "common";
+        }
     }
+
+    @property string prefix() const {
+        if (name.startsWith("VK_")) {
+            auto result = name["VK_".length .. $];
+            auto index = result.indexOf("_");
+            assert(index != -1, result);
+            return result[0 .. index].toLower;
+        } else if (name.startsWith("vulkan_video_codec")) {
+            return "video";
+        } else {
+            assert(false, name);
+        }
+    }
+
+    @property bool disabled() const => supported == ["disabled"];
+
+    @property bool supportedByVulkan() const {
+        return supported.empty || supported.canFind("vulkan");
+    }
+
+    @property bool usable() const => !disabled && supportedByVulkan;
+
+    @property bool isVulkan() const => name.startsWith("VK_");
+
+    @property bool isVideo() const => name.startsWith("vulkan_video_codec");
 }
 
 /** 
@@ -359,41 +422,102 @@ struct VkExtension {
  */
 struct VkSection {
     string name;
-    string depends;
+    VkDepends depends = null;
 
     string[] types;
     VkEnumMember[] mconsts;
     string[] commands;
 
-    @property bool empty() => types.empty && mconsts.empty && commands.empty;
+    @property bool empty() const => types.empty && mconsts.empty && commands.empty;
 }
 
 /** 
  * Generalizes a depends expression into an AST.
  */
-class VkDepends {
-    bool isOp;
+struct VkDepends {
+    SumType!(typeof(null), string, VkDependsOp) inner;
 
-    union {
-        string name;
-        Op op;
+    alias inner this;
+
+    @disable this();
+
+    this(ref return scope inout(VkDepends) other) inout {
+        inner = other.inner;
+    }
+
+    this(return scope VkDepends other) inout {
+        inner = __rvalue(other.inner);
+    }
+
+    this(typeof(null)) {
+        inner = null;
     }
 
     this(string name) {
-        isOp = false;
-        this.name = name;
+        inner = name;
     }
 
-    this(char operator, VkDepends lhs, VkDepends rhs) {
-        isOp = true;
-        op = Op(operator, lhs, rhs);
+    this(char operator, ref VkDepends lhs, ref VkDepends rhs) {
+        inner = VkDependsOp(operator, new VkDepends(lhs), new VkDepends(rhs));
     }
 
-    struct Op {
-        char operator;
-        VkDepends lhs;
-        VkDepends rhs;
+    bool opCast(T : bool)() const {
+        return !inner.has!(const typeof(null));
     }
+
+    bool opBinary(string op : "==")(string str) const {
+        return inner.match!(
+            (string name) => name == str,
+            _ => false,
+        );
+    }
+
+    string toString() const {
+        return inner.match!(
+            (typeof(null)) => null.stringof,
+            (string name) => name,
+            (const ref VkDependsOp op) {
+                auto lhs = op.lhs.toString();
+                auto rhs = op.rhs.toString();
+                return format!"(%s%s%s)"(lhs, op.operator, rhs);
+            },
+        );
+    }
+
+    @property bool isFeature() const => inner.match!(
+        (string name) => name.startsWith("VK_VERSION_"),
+        _ => false,
+    );
+
+    @property inout(string) name() inout => inner.get!(inout string);
+
+    @property inout(VkDependsOp) op() inout => inner.get!(inout VkDependsOp);
+
+    @property bool isName() inout => inner.has!(inout string);
+
+    @property bool isOp() inout => inner.has!(inout VkDependsOp);
+}
+
+@"constructing VkDepends from null works"
+unittest {
+    VkDepends result = null;
+
+    assert(!result);
+}
+
+@"constructing VkDepends from a string works"
+unittest {
+    VkDepends result = "hello";
+
+    assert(result);
+    assert(result.isName);
+    assert(result.name == "hello");
+}
+
+struct VkDependsOp {
+    char operator;
+    VkDepends* lhs;
+    VkDepends* rhs;
 }
 
 /** 
@@ -467,3 +591,10 @@ VkExtensionType toVkExtensionType(Char)(in Char[] value) {
             return VkExtensionType.Device;
     }
 }
+
+const bool[string] keywords = [
+    "module": true,
+    "version": true,
+    "scope": true,
+    "function": true,
+];

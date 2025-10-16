@@ -102,11 +102,12 @@ class VkRegistryParser {
         in (element.tagName == "platforms")
     {
         foreach (child; element.childElements) {
-            registry.platforms ~= VkPlatform(
+            auto platform = VkPlatform(
                 child.getAttribute("name").idup,
                 child.getAttribute("comment").idup,
                 child.getAttribute("protect").idup,
             );
+            registry.platforms[platform.name] = platform;
         }
     }
 
@@ -150,35 +151,35 @@ class VkRegistryParser {
                     break;
 
                 case VkTypeCategory.Define:
-                    registry.defines[base.name] = parseDefineType(child, base);
+                    parseDefineType(child, base);
                     break;
 
                 case VkTypeCategory.Basetype:
-                    registry.basetypes[base.name] = parseBasetypeType(child, base);
+                    parseBasetypeType(child, base);
                     break;
 
                 case VkTypeCategory.Bitmask:
-                    registry.bitmasks[base.name] = parseBitmaskType(child, base);
+                    parseBitmaskType(child, base);
                     break;
 
                 case VkTypeCategory.Handle:
-                    registry.handles[base.name] = parseHandleType(child, base);
+                    parseHandleType(child, base);
                     break;
 
                 case VkTypeCategory.Enum:
-                    registry.enums[base.name] = parseEnumType(child, base);
+                    parseEnumType(child, base);
                     break;
 
                 case VkTypeCategory.FuncPtr:
-                    registry.funcptrs[base.name] = parseFuncPtrType(child, base);
+                    parseFuncPtrType(child, base);
                     break;
 
                 case VkTypeCategory.Struct:
-                    registry.structs[base.name] = parseStructType(child, base);
+                    parseStructType(child, base);
                     break;
 
                 case VkTypeCategory.Union:
-                    registry.unions[base.name] = parseUnionType(child, base);
+                    parseUnionType(child, base);
                     break;
 
                 default:
@@ -208,7 +209,7 @@ class VkRegistryParser {
     /** 
      * Parse <type category="basetype"> tags.
      */
-    private VkDefineType parseDefineType(XmlElement element, ref const(VkType) base) {
+    private void parseDefineType(XmlElement element, ref const(VkType) base) {
         VkDefineType result;
         result.base = base;
 
@@ -230,13 +231,13 @@ class VkRegistryParser {
             result.api = api.idup.split(",");
         }
 
-        return result;
+        registry.defines[base.name] = result;
     }
 
     /** 
      * Parse <type category="basetype"> tags.
      */
-    private VkBasetypeType parseBasetypeType(XmlElement element, ref const(VkType) base) {
+    private void parseBasetypeType(XmlElement element, ref const(VkType) base) {
         VkBasetypeType result;
         result.base = base;
 
@@ -245,13 +246,19 @@ class VkRegistryParser {
             result.type = parseTypeString(type.textContent, whole);
         }
 
-        return result;
+        registry.basetypes[base.name] = result;
     }
 
     /** 
      * Parse <type category="bitmask"> tags.
      */
-    private VkBitmaskType parseBitmaskType(XmlElement element, ref const(VkType) base) {
+    private void parseBitmaskType(XmlElement element, ref const(VkType) base) {
+        if (auto api = element.getAttribute("api")) {
+            if (api == "vulkansc") {
+                return;
+            }
+        }
+
         VkBitmaskType result;
         result.base = base;
 
@@ -259,17 +266,21 @@ class VkRegistryParser {
             result.requires = requires.idup;
         }
 
+        if (auto alias_ = element.getAttribute("alias")) {
+            result.alias_ = alias_.idup;
+        }
+
         if (auto type = element.firstChildByTagName("type")) {
             result.backing = type.textContent.idup;
         }
 
-        return result;
+        registry.bitmasks[base.name] = result;
     }
 
     /** 
      * Parse <type category="handle"> tags.
      */
-    private VkHandleType parseHandleType(XmlElement element, ref const(VkType) base) {
+    private void parseHandleType(XmlElement element, ref const(VkType) base) {
         VkHandleType result;
         result.base = base;
 
@@ -277,13 +288,13 @@ class VkRegistryParser {
             result.alias_ = alias_.idup;
         }
 
-        return result;
+        registry.handles[base.name] = result;
     }
 
     /**
      * Parse <type category="enum"> tags.
      */ 
-    private VkEnumType parseEnumType(XmlElement element, ref const(VkType) base) {
+    private void parseEnumType(XmlElement element, ref const(VkType) base) {
         VkEnumType result;
         result.base = base;
 
@@ -291,13 +302,17 @@ class VkRegistryParser {
             result.name = name.idup;
         }
 
-        return result;
+        if (auto alias_ = element.getAttribute("alias")) {
+            result.alias_ = alias_.idup;
+        }
+
+        registry.enums[base.name] = result;
     }
 
     /** 
      * Parse <type category="funcpointer"> tags.
      */
-    private VkFuncPtrType parseFuncPtrType(XmlElement element, ref const(VkType) base) {
+    private void parseFuncPtrType(XmlElement element, ref const(VkType) base) {
         import std.ascii : isAlphaNum;
 
         VkFuncPtrType result;
@@ -335,18 +350,22 @@ class VkRegistryParser {
             result.params ~= __rvalue(param);
         }
 
-        return result;
+        registry.funcptrs[base.name] = result;
     }
 
     /** 
      * Parse <type category="struct"> tags.
      */
-    private VkStructType parseStructType(XmlElement element, ref const(VkType) base) {
+    private void parseStructType(XmlElement element, ref const(VkType) base) {
         VkStructType result;
         result.base = base;
 
         if (auto extends_ = element.getAttribute("structextends")) {
             result.extends = extends_.idup;
+        }
+
+        if (auto alias_ = element.getAttribute("alias")) {
+            result.alias_ = alias_.idup;
         }
 
         foreach (XmlElement child; element.childElements) {
@@ -393,16 +412,20 @@ class VkRegistryParser {
                 member.optional = parse!bool(optional);
             }
 
+            if (auto deprecated_ = child.getAttribute("deprecated")) {
+                member.deprecated_ = deprecated_.idup;
+            }
+
             result.members ~= member;
         }
 
-        return result;
+        registry.structs[base.name] = result;
     }
 
     /** 
      * Parse <type category="union"> tags.
      */
-    private VkUnionType parseUnionType(XmlElement element, ref const(VkType) base) {
+    private void parseUnionType(XmlElement element, ref const(VkType) base) {
         VkUnionType result;
         result.base = base;
 
@@ -421,11 +444,17 @@ class VkRegistryParser {
             if (auto name = child.firstChildByTagName("name")) {
                 member.name = name.textContent.idup;
 
-                if (auto type = child.firstChildByTagName("type")) {
-                    member.type = parseTypeString(type.textContent);
+                size_t postNameLength = 0;
+                for (XmlNode tag = name; tag; tag = tag.nextSibling) {
+                    postNameLength += tag.textContent.length;
+                }
 
-                    if (auto next = name.nextSibling) {
-                        member.type ~= next.textContent;
+                if (auto type = child.firstChildByTagName("type")) {
+                    auto whole = child.textContent[0 .. $ - postNameLength];
+                    member.type = parseTypeString(type.textContent, whole);
+
+                    if (auto length = child.firstChildByTagName("enum")) {
+                        member.type = format!"%s[%s]"(member.type, length.textContent);
                     }
                 }
             }
@@ -433,7 +462,7 @@ class VkRegistryParser {
             result.members ~= __rvalue(member);
         }
 
-        return result;
+        registry.unions[base.name] = result;
     }
 
     /** 
@@ -510,6 +539,14 @@ class VkRegistryParser {
                 member.name = cname.idup;
             }
 
+            if (auto alias_ = child.getAttribute("alias")) {
+                member.alias_ = alias_.idup;
+            }
+
+            if (auto deprecated_ = child.getAttribute("deprecated")) {
+                member.deprecated_ = deprecated_.idup;
+            }
+
             if (auto comment = child.getAttribute("comment")) {
                 member.comment = comment.idup;
             }
@@ -571,6 +608,10 @@ class VkRegistryParser {
                 member.alias_ = alias_.idup;
             }
 
+            if (auto deprecated_ = child.getAttribute("deprecated")) {
+                member.deprecated_ = deprecated_.idup;
+            }
+
             if (auto comment = child.getAttribute("comment")) {
                 member.comment = comment.idup;
             }
@@ -627,21 +668,27 @@ class VkRegistryParser {
         in (element.tagName == "commands")
     {
         foreach (child; element.childElements) {
-            auto command = parseCommand(child);
-            registry.commands[command.name] = command;
+            parseCommand(child);
         }
     }
 
     /** 
      * Parse an individual <command> tag and return its value.
      */
-    private VkCommand parseCommand(XmlElement element) {
+    private void parseCommand(XmlElement element) {
         VkCommand result;
+
+        if (auto api = element.getAttribute("api")) {
+            if (api == "vulkansc") {
+                return;
+            }
+        }
 
         if (auto alias_ = element.getAttribute("alias")) {
             result.name = element.getAttribute("name").idup;
             result.alias_ = alias_.idup;
-            return result;
+            registry.commands[result.name] = result;
+            return;
         }
 
         if (auto successes = element.getAttribute("successcodes")) {
@@ -703,7 +750,7 @@ class VkRegistryParser {
             result.params ~= param;
         }
 
-        return result;
+        registry.commands[result.name] = result;
     }
 
     /** 
@@ -722,6 +769,12 @@ class VkRegistryParser {
 
         if (auto api = element.getAttribute("api")) {
             result.api = api.idup.split(",");
+        }
+
+        if (auto number = element.getAttribute("number")) {
+            auto pair = number.split(".");
+            result.major = pair[0].parse!int;
+            result.minor = pair[1].parse!int;
         }
 
         if (auto depends = element.getAttribute("depends")) {
@@ -773,7 +826,7 @@ class VkRegistryParser {
             result.sections ~= section;
         }
 
-        registry.features ~= result;
+        registry.features[result.name] = __rvalue(result);
     }
 
     /** 
@@ -783,15 +836,14 @@ class VkRegistryParser {
         in (element.tagName == "extensions")
     {
         foreach (child; element.childElements) {
-            auto extension = parseExtension(child);
-            registry.extensions[extension.name] = __rvalue(extension);
+            parseExtension(child);
         }
     }
 
     /** 
      * Parse an individual <extension> tag and return its value.
      */
-    private VkExtension parseExtension(XmlElement element) {
+    private void parseExtension(XmlElement element) {
         VkExtension result;
 
         if (auto name = element.getAttribute("name")) {
@@ -822,6 +874,20 @@ class VkRegistryParser {
             result.promoted = promoted.idup;
         }
 
+        if (auto deprecated_ = element.getAttribute("deprecatedby")) {
+            result.deprecated_ = deprecated_.idup;
+        }
+
+        if (auto platform = element.getAttribute("platform")) {
+            result.platform = platform.idup;
+
+        }
+
+        // GGP is Stadia, a now defunct cloud gaming platform. Unsupported.
+        if (result.platform == "ggp") {
+            return;
+        }
+
         foreach (sectiontag; element.childElements) {
             if (sectiontag.tagName != "require") {
                 if (sectiontag.tagName == "comment") {
@@ -834,7 +900,9 @@ class VkRegistryParser {
 
             VkSection section;
 
-            section.depends = sectiontag.getAttribute("depends").idup;
+            if (auto depends = sectiontag.getAttribute("depends")) {
+                section.depends = parseDependsString(depends);
+            }
 
             foreach (child; sectiontag.childElements) {
                 switch (child.tagName) {
@@ -867,7 +935,7 @@ class VkRegistryParser {
             result.sections ~= section;
         }
 
-        return result;
+        registry.extensions[result.name] = __rvalue(result);
     }
 
     /**
@@ -899,6 +967,10 @@ class VkRegistryParser {
                 }
             } else if (auto alias_ = element.getAttribute("alias")) {
                 member.alias_ = alias_.idup;
+            }
+
+            if (auto deprecated_ = element.getAttribute("deprecated")) {
+                member.deprecated_ = deprecated_.idup;
             }
 
             if (auto extends = element.getAttribute("extends")) {

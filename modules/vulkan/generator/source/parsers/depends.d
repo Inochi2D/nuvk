@@ -24,12 +24,21 @@ VkDepends parseDependsString(xmlstring depends) {
     return VkDependsParser(depends).parse();
 }
 
-@"parsing depends string works"
+@"parsing name depends string works"
+unittest {
+    auto depends = "VK_VERSION_1_2";
+    auto result = parseDependsString(depends);
+
+    assert(result.isName, result.toString());
+    assert(result.name == "VK_VERSION_1_2", result.toString());
+}
+
+@"parsing complex depends string works"
 unittest {
     auto depends = "((VK_KHR_get_physical_device_properties2,VK_VERSION_1_1)+VK_KHR_depth_stencil_resolve),VK_VERSION_1_2";
     auto result = parseDependsString(depends);
 
-    assert(result.isOp);
+    assert(result.isOp, result.toString());
     assert(result.op.operator == ',');
     assert(result.op.lhs.isOp);
     assert(result.op.lhs.op.operator == '+');
@@ -60,7 +69,7 @@ struct VkDependsParser {
             if (depends[0] in ops) {
                 tokens ~= Token(depends[0]);
                 depends.popFront();
-            } else if (auto match = depends.matchFirst(regex(`^[a-zA-Z0-9_]+`))) {
+            } else if (auto match = depends.matchFirst(regex(`^[a-zA-Z0-9_:]+`))) {
                 tokens ~= Token(match.front);
                 depends = depends[match.front.length .. $];
             } else {
@@ -69,74 +78,57 @@ struct VkDependsParser {
         }
     }
 
-    VkDepends parse() {
-        return matchAny();
-    }
+    VkDepends parse()
+        out (; tokens.empty, tokens.map!(t => t.toString()).join)
+    { return matchAny(); }
 
     private VkDepends matchAny() {
-        if (auto result = matchOr()) {
-            return result;
-        } else if (auto result = matchAnd()) {
-            return result;
-        } else if (auto result = matchName()) {
-            return result;
-        } else {
-            return null;
+        auto result = matchAtom();
+
+        while (auto expr = matchExpr(result)) {
+            result = expr;
         }
+
+        return result;
     }
 
-    private VkDepends matchParensOrName() {
+    private VkDepends matchAtom() {
         if (auto result = matchParens()) {
             return result;
         } else if (auto result = matchName()) {
             return result;
         } else {
-            return null;
-        }
-    }
-
-    private VkDepends matchParensOrAny() {
-        if (auto result = matchParens()) {
-            return result;
-        } else if (auto result = matchAny()) {
-            return result;
-        } else {
-            return null;
+            return VkDepends(null);
         }
     }
 
     private VkDepends matchName() {
         if (tokens.empty) {
-            return null;
+            return VkDepends(null);
         } else if (auto name = tokens.front.tryName) {
             tokens.popFront();
-            return new VkDepends(name.text.idup);
+            return VkDepends(name.text.idup);
         } else {
-            return null;
+            return VkDepends(null);
         }
     }
 
-    private VkDepends matchAnd() => matchOp('+');
-
-    private VkDepends matchOr() => matchOp(',');
-
-    private VkDepends matchOp(char op) {
+    private VkDepends matchExpr(VkDepends lhs) {
         auto checkpoint = tokens;
 
-        if (auto lhs = matchParensOrName()) {
-            if (tokens.empty) {
-                goto fail;
-            } else if (tokens.front.hasOp(op)) {
-                tokens.popFront();
-                if (auto rhs = matchParensOrName()) {
-                    return new VkDepends(op, lhs, rhs);
-                }
+        if (tokens.empty) {
+            goto fail;
+        } else if (tokens.front.hasOp(',') || tokens.front.hasOp('+')) {
+            auto op = tokens.front.get!OpTk;
+            tokens.popFront();
+            if (auto rhs = matchAtom()) {
+                return VkDepends(op, lhs, rhs);
             }
         }
 
      fail:
         tokens = checkpoint;
-        return null;
+        return VkDepends(null);
     }
 
     private VkDepends matchParens() {
@@ -158,7 +150,7 @@ struct VkDependsParser {
 
      fail:
         tokens = checkpoint;
-        return null;
+        return VkDepends(null);
     }
 }
 
@@ -217,6 +209,10 @@ private struct Token {
     inout(OpTk*) tryOp() inout => inner.match!(
         function inout(OpTk*)(ref inout(OpTk) op) => &op, _ => null,
     );
+
+    string toString() const {
+        return inner.match!(any => any.toString());
+    }
 }
 
 /** 
@@ -224,6 +220,10 @@ private struct Token {
  */
 private struct NameTk {
     xmlstring text;
+
+    string toString() const {
+        return text.idup;
+    }
 }
 
 /** 
@@ -234,6 +234,10 @@ private enum OpTk : char {
     ParClose = ')',
     And = '+',
     Or = ',',
+}
+
+private string toString(OpTk op) {
+    return [cast(char) op];
 }
 
 /** 

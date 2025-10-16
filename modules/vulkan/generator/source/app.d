@@ -4,8 +4,10 @@ import std.stdio;
 import std.algorithm;
 import std.array;
 import std.conv : parse;
+import std.file;
+import std.format;
+import std.uni;
 import curl = std.net.curl;
-import std.array : array;
 import std.parallelism;
 import std.path;
 import std.range;
@@ -136,17 +138,53 @@ struct App {
             }
         }
 
-        if (!input.dryrun) {
-            foreach (name; input.names) {
-                switch (name) {
-                    case "core":
-                        emitCore(vulkan, stdout, logger);
-                        break;
+        if (input.names == ["*"]) {
+            input.names = ["core"] ~ (vulkan.extensions[] ~ video.extensions[])
+                .filter!(e => e.usable)
+                .map!(e => e.name)
+                .array;
+        }
 
-                    default:
-                        emitExt(vulkan, name, stdout, logger);
-                        break;
-                }
+        foreach (name; input.names) {
+            switch (name) {
+                case "core":
+                    const filename = "source/vulkan/core.d";
+                    logger.info("<orange>%s</orange> - Vulkan Core", filename);
+                    emitVkCore(vulkan, input.dryrun ? stdout : File(filename, "wt"), logger);
+                    break;
+
+                case "vulkan_video_codecs_common":
+                    const filename = "source/vulkan/video/common.d";
+                    logger.info("<orange>%s</orange> - Video Common", filename);
+                    if (!input.dryrun) {
+                        mkdirRecurse("source/vulkan/video");
+                    }
+                    emitVidCommon(video, input.dryrun ? stdout : File(filename, "wt"), logger);
+                    break;
+
+                default:
+                    if (auto ext = name in vulkan.extensions) {
+                        if (input.platforms.get(ext.platform, true)) {
+                            const filename = format!"source/vulkan/%s/%s.d"(ext.prefix, ext.shortName);
+                            logger.info("<orange>%s</orange> - Vulkan Extension <yellow>%s</yellow>", filename, ext.name);
+                            if (!input.dryrun) {
+                                mkdirRecurse(dirName(filename));
+                            }
+                            emitVkExt(vulkan, *ext, input.dryrun ? stdout : File(filename, "wt"), logger);
+                        }
+                    } else if (auto ext = name in video.extensions) {
+                        if (input.platforms.get(ext.platform, true)) {
+                            const filename = format!"source/vulkan/video/%s.d"(ext.shortName);
+                            logger.info("<orange>%s</orange> - Video Extension <yellow>%s</yellow>", filename, ext.name);
+                            if (!input.dryrun) {
+                                mkdirRecurse("source/vulkan/video");
+                            }
+                            emitVidExt(video, *ext, input.dryrun ? stdout : File(filename, "wt"), logger);
+                        }
+                    } else {
+                        logger.warn("unable to find extension <yellow>%s</yellow>", name);
+                    }
+                    break;
             }
         }
 
@@ -154,8 +192,8 @@ struct App {
     }
 
     private void listPlatforms(ref VkRegistry registry) {
-        const namepad = registry.platforms.map!(p => p.name.length).maxElement(0);
-        const protpad = registry.platforms.map!(p => p.protect.length).maxElement(0);
+        const namepad = registry.platforms[].map!(p => p.name.length).maxElement(0);
+        const protpad = registry.platforms[].map!(p => p.protect.length).maxElement(0);
         foreach (ref platform; registry.platforms) {
             logger.info(
                 "<yellow>%-*s</yellow>   <blue>%-*s</blue>   <grey>%s</grey>",
@@ -171,7 +209,7 @@ struct App {
     private void listVendors(ref VkRegistry registry) {
         const namepad = registry.vendors[].map!(v => v.ext.length).maxElement(0);
         const authpad = registry.vendors[].map!(v => v.author.length).maxElement(0);
-        foreach (ref vendor; registry.vendors) {
+        foreach (vendor; registry.vendors) {
             logger.info(
                 "<yellow>%-*s</yellow>   <grey>%-*s</grey>   <grey>%s</grey>",
                 namepad, vendor.ext, authpad, vendor.author, vendor.contact,
@@ -370,9 +408,9 @@ struct App {
     }
 
     private void listExtensions(ref VkRegistry registry) {
-        bool supportedByVulkan(ref VkExtension ext) => ext.supported.empty || ext.supported.canFind("vulkan");
+        bool usable(ref VkExtension ext) => ext.usable;
 
-        foreach (ref extension; registry.extensions[].filter!supportedByVulkan) {
+        foreach (ref extension; registry.extensions[].filter!usable) {
             logger.info("<yellow>%s</yellow> - %d", extension.name, extension.number);
             listSections(registry, extension.sections);
         }
@@ -398,6 +436,8 @@ struct Input {
     string[] list;
 
     string[] names;
+
+    bool[string] platforms;
 
     string vk;
 
@@ -440,7 +480,7 @@ struct Input {
         }
 
         if (names.empty) {
-            names = ["core"];
+            names = ["*"];
         }
 
         if (vk.empty) {
@@ -459,6 +499,9 @@ struct Input {
 
     private Expect handleLong(ArgKey key, ArgValue value) {
         switch (key.get) {
+            case "platforms":
+                return handlePlatforms(value);
+
             case "vk":
                 return handleVkArg(value);
 
@@ -504,12 +547,33 @@ struct Input {
                 names ~= value.get;
                 return expect;
 
+            case Expect.Platform:
+                if (value.get.startsWith("!")) {
+                    platforms[value.get[1 .. $]] = false;
+                } else {
+                    platforms[value.get] = true;
+                }
+                return expect;
+
             case Expect.List:
                 list ~= value.get.split(",");
                 return expect;
 
             default:
                 return Expect.Arg;
+        }
+    }
+
+    private Expect handlePlatforms(ArgValue value) {
+        if (value.isNull) {
+            return Expect.Platform;
+        } else {
+            if (value.get.startsWith("!")) {
+                platforms[value.get[1 .. $]] = false;
+            } else {
+                platforms[value.get] = true;
+            }
+            return Expect.Arg;
         }
     }
 
@@ -563,6 +627,7 @@ struct Input {
     private enum Expect {
         Arg = 0,
 
+        Platform,
         Vk,
         Video,
         List,

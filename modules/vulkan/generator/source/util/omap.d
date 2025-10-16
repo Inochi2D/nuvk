@@ -42,7 +42,11 @@ struct OMap(K, V) {
         }
     }
 
-	auto opIndex() inout {
+	inout(V)[] opIndex() inout {
+		return arr[];
+	}
+
+	inout(V)[] opSlice() inout {
 		return arr[];
 	}
 
@@ -99,7 +103,20 @@ struct OMap(K, V) {
 		return result;
 	}
 
-	int opApply(scope int delegate(ref const(size_t), ref inout(V)) dg) inout {
+	int opApply(scope int delegate(const ref V) dg) const {
+		int result = 0;
+
+		foreach (const ref V item; arr) {
+			result = dg(item);
+			if (result) {
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	int opApply(scope int delegate(size_t, ref V) dg) {
 		int result = 0;
 
 		foreach (i, ref item; arr) {
@@ -112,10 +129,36 @@ struct OMap(K, V) {
 		return result;
 	}
 
-	int opApply(scope int delegate(ref const(K), ref inout(V)) dg) inout {
+	int opApply(scope int delegate(size_t, const ref V) dg) const {
+		int result = 0;
+
+		foreach (i, const ref item; arr) {
+			result = dg(i, item);
+			if (result) {
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	int opApply(scope int delegate(const ref K, ref V) dg) {
 		int result = 0;
 
 		foreach (i, ref item; arr) {
+			result = dg(keys[i], item);
+			if (result) {
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	int opApply(scope int delegate(const ref K, const ref V) dg) const {
+		int result = 0;
+
+		foreach (i, const ref item; arr) {
 			result = dg(keys[i], item);
 			if (result) {
 				break;

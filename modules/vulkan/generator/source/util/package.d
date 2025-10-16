@@ -77,5 +77,5 @@ string snakeToCamel(string name) {
 string capitalize(string str) {
     import std.string;
 
-    return str[0 .. 1].toUpper ~ str[1 .. $];
+    return str.empty ? str : str[0 .. 1].toUpper ~ str[1 .. $];
 }
