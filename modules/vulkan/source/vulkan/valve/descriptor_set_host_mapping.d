@@ -12,6 +12,7 @@
 module vulkan.valve.descriptor_set_host_mapping;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

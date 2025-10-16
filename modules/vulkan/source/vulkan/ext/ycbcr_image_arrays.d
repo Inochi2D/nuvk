@@ -12,6 +12,7 @@
 module vulkan.ext.ycbcr_image_arrays;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

@@ -12,6 +12,7 @@
 module vulkan.arm.pipeline_opacity_micromap;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

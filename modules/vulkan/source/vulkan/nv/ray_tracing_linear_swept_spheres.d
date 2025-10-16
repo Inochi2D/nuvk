@@ -12,6 +12,7 @@
 module vulkan.nv.ray_tracing_linear_swept_spheres;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

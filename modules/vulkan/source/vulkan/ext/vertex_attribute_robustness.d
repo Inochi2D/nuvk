@@ -12,6 +12,7 @@
 module vulkan.ext.vertex_attribute_robustness;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.khr.maintenance9;

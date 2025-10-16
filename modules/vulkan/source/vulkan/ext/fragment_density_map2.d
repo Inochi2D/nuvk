@@ -12,6 +12,7 @@
 module vulkan.ext.fragment_density_map2;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

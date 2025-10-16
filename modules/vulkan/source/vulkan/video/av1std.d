@@ -11,6 +11,7 @@
 module vulkan.video.av1std;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 
@@ -316,6 +317,7 @@ struct StdVideoAV1ColorConfigFlags {
     uint separate_uv_delta_q:1;
     uint color_description_present_flag:1;
     uint reserved:28;
+    mixin DMD20473;
 }
 
 struct StdVideoAV1ColorConfig {
@@ -333,6 +335,7 @@ struct StdVideoAV1ColorConfig {
 struct StdVideoAV1TimingInfoFlags {
     uint equal_picture_interval:1;
     uint reserved:31;
+    mixin DMD20473;
 }
 
 struct StdVideoAV1TimingInfo {
@@ -346,6 +349,7 @@ struct StdVideoAV1LoopFilterFlags {
     uint loop_filter_delta_enabled:1;
     uint loop_filter_delta_update:1;
     uint reserved:30;
+    mixin DMD20473;
 }
 
 struct StdVideoAV1LoopFilter {
@@ -362,6 +366,7 @@ struct StdVideoAV1QuantizationFlags {
     uint using_qmatrix:1;
     uint diff_uv_delta:1;
     uint reserved:30;
+    mixin DMD20473;
 }
 
 struct StdVideoAV1Quantization {
@@ -385,6 +390,7 @@ struct StdVideoAV1Segmentation {
 struct StdVideoAV1TileInfoFlags {
     uint uniform_tile_spacing_flag:1;
     uint reserved:31;
+    mixin DMD20473;
 }
 
 struct StdVideoAV1TileInfo {
@@ -425,6 +431,7 @@ struct StdVideoAV1FilmGrainFlags {
     uint clip_to_restricted_range:1;
     uint update_grain:1;
     uint reserved:28;
+    mixin DMD20473;
 }
 
 struct StdVideoAV1FilmGrain {
@@ -476,6 +483,7 @@ struct StdVideoAV1SequenceHeaderFlags {
     uint timing_info_present_flag:1;
     uint initial_display_delay_present_flag:1;
     uint reserved:13;
+    mixin DMD20473;
 }
 
 struct StdVideoAV1SequenceHeader {

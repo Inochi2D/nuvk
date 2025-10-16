@@ -12,6 +12,7 @@
 module vulkan.nv.fragment_shading_rate_enums;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

@@ -12,6 +12,7 @@
 module vulkan.nv.fragment_shader_barycentric;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.khr.fragment_shader_barycentric;

@@ -12,6 +12,7 @@
 module vulkan.khr.video_encode_h264;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.video.h264std;

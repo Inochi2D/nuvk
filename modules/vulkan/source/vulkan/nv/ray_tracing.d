@@ -12,6 +12,7 @@
 module vulkan.nv.ray_tracing;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.khr.ray_tracing_pipeline;
@@ -226,6 +227,7 @@ alias VkTransformMatrixNV = VkTransformMatrixKHR;
 
 alias VkAabbPositionsNV = VkAabbPositionsKHR;
 
+alias VkAccelerationStructureInstanceNV = VkAccelerationStructureInstanceKHR;
 
 alias PFN_vkCreateAccelerationStructureNV = VkResult function(
     VkDevice device,

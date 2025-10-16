@@ -12,6 +12,7 @@
 module vulkan.khr.deferred_host_operations;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

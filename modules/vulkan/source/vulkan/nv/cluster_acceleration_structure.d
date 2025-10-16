@@ -12,6 +12,7 @@
 module vulkan.nv.cluster_acceleration_structure;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 
@@ -125,6 +126,7 @@ struct VkClusterAccelerationStructureGeometryIndexAndGeometryFlagsNV {
     uint geometryIndex:24;
     uint reserved:5;
     uint geometryFlags:3;
+    mixin DMD20473;
 }
 
 alias VkClusterAccelerationStructureClusterFlagsNV = VkFlags;
@@ -195,6 +197,7 @@ struct VkClusterAccelerationStructureBuildTriangleClusterInfoNV {
     VkDeviceAddress geometryIndexAndFlagsBuffer;
     VkDeviceAddress opacityMicromapArray;
     VkDeviceAddress opacityMicromapIndexBuffer;
+    mixin DMD20473;
 }
 
 struct VkClusterAccelerationStructureBuildTriangleClusterTemplateInfoNV {
@@ -216,6 +219,7 @@ struct VkClusterAccelerationStructureBuildTriangleClusterTemplateInfoNV {
     VkDeviceAddress opacityMicromapArray;
     VkDeviceAddress opacityMicromapIndexBuffer;
     VkDeviceAddress instantiationBoundingBoxLimit;
+    mixin DMD20473;
 }
 
 struct VkClusterAccelerationStructureInstantiateClusterInfoNV {
@@ -224,6 +228,7 @@ struct VkClusterAccelerationStructureInstantiateClusterInfoNV {
     uint reserved:8;
     VkDeviceAddress clusterTemplateAddress;
     VkStridedDeviceAddressNV vertexBuffer;
+    mixin DMD20473;
 }
 
 enum VkClusterAccelerationStructureIndexFormatFlagBitsNV : uint {

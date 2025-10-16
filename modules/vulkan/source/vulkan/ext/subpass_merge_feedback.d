@@ -12,6 +12,7 @@
 module vulkan.ext.subpass_merge_feedback;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

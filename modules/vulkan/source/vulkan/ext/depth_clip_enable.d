@@ -12,6 +12,7 @@
 module vulkan.ext.depth_clip_enable;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

@@ -12,6 +12,7 @@
 module vulkan.nv.linear_color_attachment;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

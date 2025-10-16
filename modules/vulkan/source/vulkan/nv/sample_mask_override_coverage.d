@@ -12,6 +12,7 @@
 module vulkan.nv.sample_mask_override_coverage;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

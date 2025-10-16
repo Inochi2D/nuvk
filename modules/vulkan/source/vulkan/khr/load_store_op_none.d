@@ -12,6 +12,7 @@
 module vulkan.khr.load_store_op_none;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

@@ -12,6 +12,7 @@
 module vulkan.nv.device_diagnostics_config;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

@@ -12,6 +12,7 @@
 module vulkan.khr.imageless_framebuffer;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

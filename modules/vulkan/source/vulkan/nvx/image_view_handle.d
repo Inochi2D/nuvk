@@ -12,6 +12,7 @@
 module vulkan.nvx.image_view_handle;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

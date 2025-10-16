@@ -15,6 +15,7 @@
 module vulkan.nv.cuda_kernel_launch;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

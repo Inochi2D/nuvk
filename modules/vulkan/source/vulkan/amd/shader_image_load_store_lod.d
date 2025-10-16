@@ -12,6 +12,7 @@
 module vulkan.amd.shader_image_load_store_lod;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

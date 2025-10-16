@@ -12,6 +12,7 @@
 module vulkan.nv.ray_tracing_motion_blur;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 
@@ -42,9 +43,39 @@ struct VkAccelerationStructureMotionInfoNV {
     VkFlags flags;
 }
 
+struct VkAccelerationStructureMotionInstanceNV {
+    VkAccelerationStructureMotionInstanceTypeNV type;
+    VkFlags flags;
+    VkAccelerationStructureMotionInstanceDataNV data;
+}
 
+union VkAccelerationStructureMotionInstanceDataNV {
+    VkAccelerationStructureInstanceKHR staticInstance;
+    VkAccelerationStructureMatrixMotionInstanceNV matrixMotionInstance;
+    VkAccelerationStructureSRTMotionInstanceNV srtMotionInstance;
+}
 
+struct VkAccelerationStructureMatrixMotionInstanceNV {
+    VkTransformMatrixKHR transformT0;
+    VkTransformMatrixKHR transformT1;
+    uint instanceCustomIndex:24;
+    uint mask:8;
+    uint instanceShaderBindingTableRecordOffset:24;
+    VkFlags flags:8;
+    ulong accelerationStructureReference;
+    mixin DMD20473;
+}
 
+struct VkAccelerationStructureSRTMotionInstanceNV {
+    VkSRTDataNV transformT0;
+    VkSRTDataNV transformT1;
+    uint instanceCustomIndex:24;
+    uint mask:8;
+    uint instanceShaderBindingTableRecordOffset:24;
+    VkFlags flags:8;
+    ulong accelerationStructureReference;
+    mixin DMD20473;
+}
 
 struct VkSRTDataNV {
     float sx;

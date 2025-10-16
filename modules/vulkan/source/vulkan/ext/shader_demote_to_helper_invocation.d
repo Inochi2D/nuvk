@@ -12,6 +12,7 @@
 module vulkan.ext.shader_demote_to_helper_invocation;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

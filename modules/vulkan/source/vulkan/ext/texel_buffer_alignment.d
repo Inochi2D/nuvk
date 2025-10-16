@@ -12,6 +12,7 @@
 module vulkan.ext.texel_buffer_alignment;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

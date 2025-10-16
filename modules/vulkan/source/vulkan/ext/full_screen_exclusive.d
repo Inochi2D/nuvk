@@ -15,6 +15,7 @@
 module vulkan.ext.full_screen_exclusive;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.platforms.windows;

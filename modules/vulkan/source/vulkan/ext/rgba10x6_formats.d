@@ -12,6 +12,7 @@
 module vulkan.ext.rgba10x6_formats;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

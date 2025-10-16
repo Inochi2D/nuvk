@@ -12,6 +12,7 @@
 module vulkan.ext.zero_initialize_device_memory;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

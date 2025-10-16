@@ -12,6 +12,7 @@
 module vulkan.nv.external_memory;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.khr.external_memory;

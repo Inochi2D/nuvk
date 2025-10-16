@@ -12,6 +12,7 @@
 module vulkan.khr.ray_tracing_pipeline;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.khr.pipeline_library;

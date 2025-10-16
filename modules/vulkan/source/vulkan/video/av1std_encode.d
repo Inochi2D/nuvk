@@ -11,6 +11,7 @@
 module vulkan.video.av1std_encode;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 import vulkan.video.av1std;
@@ -41,6 +42,7 @@ struct StdVideoEncodeAV1OperatingPointInfoFlags {
     uint low_delay_mode_flag:1;
     uint initial_display_delay_present_for_this_op:1;
     uint reserved:29;
+    mixin DMD20473;
 }
 
 struct StdVideoEncodeAV1OperatingPointInfo {
@@ -84,6 +86,7 @@ struct StdVideoEncodeAV1PictureInfoFlags {
     uint show_frame:1;
     uint showable_frame:1;
     uint reserved:3;
+    mixin DMD20473;
 }
 
 struct StdVideoEncodeAV1PictureInfo {
@@ -120,6 +123,7 @@ struct StdVideoEncodeAV1ReferenceInfoFlags {
     uint disable_frame_end_update_cdf:1;
     uint segmentation_enabled:1;
     uint reserved:30;
+    mixin DMD20473;
 }
 
 struct StdVideoEncodeAV1ReferenceInfo {

@@ -11,6 +11,7 @@
 module vulkan.video.h265std_encode;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 import vulkan.video.h265std;
@@ -58,6 +59,7 @@ struct StdVideoEncodeH265SliceSegmentHeaderFlags {
     uint collocated_from_l0_flag:1;
     uint slice_loop_filter_across_slices_enabled_flag:1;
     uint reserved:20;
+    mixin DMD20473;
 }
 
 struct StdVideoEncodeH265SliceSegmentHeader {
@@ -82,6 +84,7 @@ struct StdVideoEncodeH265ReferenceListsInfoFlags {
     uint ref_pic_list_modification_flag_l0:1;
     uint ref_pic_list_modification_flag_l1:1;
     uint reserved:30;
+    mixin DMD20473;
 }
 
 struct StdVideoEncodeH265ReferenceListsInfo {
@@ -105,6 +108,7 @@ struct StdVideoEncodeH265PictureInfoFlags {
     uint short_term_ref_pic_set_sps_flag:1;
     uint slice_temporal_mvp_enabled_flag:1;
     uint reserved:23;
+    mixin DMD20473;
 }
 
 struct StdVideoEncodeH265LongTermRefPics {
@@ -136,6 +140,7 @@ struct StdVideoEncodeH265ReferenceInfoFlags {
     uint used_for_long_term_reference:1;
     uint unused_for_reference:1;
     uint reserved:30;
+    mixin DMD20473;
 }
 
 struct StdVideoEncodeH265ReferenceInfo {

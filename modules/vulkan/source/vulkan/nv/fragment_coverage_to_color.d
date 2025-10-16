@@ -12,6 +12,7 @@
 module vulkan.nv.fragment_coverage_to_color;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

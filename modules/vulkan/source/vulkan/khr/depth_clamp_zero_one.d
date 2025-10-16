@@ -12,6 +12,7 @@
 module vulkan.khr.depth_clamp_zero_one;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

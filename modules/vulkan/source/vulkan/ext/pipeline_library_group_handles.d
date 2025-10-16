@@ -12,6 +12,7 @@
 module vulkan.ext.pipeline_library_group_handles;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

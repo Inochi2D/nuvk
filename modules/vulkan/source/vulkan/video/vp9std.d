@@ -11,6 +11,7 @@
 module vulkan.video.vp9std;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 
@@ -139,6 +140,7 @@ enum STD_VIDEO_VP9_COLOR_SPACE_INVALID = StdVideoVP9ColorSpace.STD_VIDEO_VP9_COL
 struct StdVideoVP9ColorConfigFlags {
     uint color_range:1;
     uint reserved:31;
+    mixin DMD20473;
 }
 
 struct StdVideoVP9ColorConfig {
@@ -154,6 +156,7 @@ struct StdVideoVP9LoopFilterFlags {
     uint loop_filter_delta_enabled:1;
     uint loop_filter_delta_update:1;
     uint reserved:30;
+    mixin DMD20473;
 }
 
 struct StdVideoVP9LoopFilter {
@@ -172,6 +175,7 @@ struct StdVideoVP9SegmentationFlags {
     uint segmentation_update_data:1;
     uint segmentation_abs_or_delta_update:1;
     uint reserved:28;
+    mixin DMD20473;
 }
 
 struct StdVideoVP9Segmentation {

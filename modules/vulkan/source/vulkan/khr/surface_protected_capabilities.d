@@ -12,6 +12,7 @@
 module vulkan.khr.surface_protected_capabilities;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

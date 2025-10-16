@@ -12,6 +12,7 @@
 module vulkan.khr.video_encode_intra_refresh;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

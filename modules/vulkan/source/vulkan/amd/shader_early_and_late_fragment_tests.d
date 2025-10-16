@@ -12,6 +12,7 @@
 module vulkan.amd.shader_early_and_late_fragment_tests;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

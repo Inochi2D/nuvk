@@ -12,6 +12,7 @@
 module vulkan.ext.display_surface_counter;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

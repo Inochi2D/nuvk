@@ -12,6 +12,7 @@
 module vulkan.ext.shader_subgroup_vote;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

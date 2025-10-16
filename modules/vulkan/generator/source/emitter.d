@@ -85,6 +85,7 @@ class VkRegistryEmitter {
         file.writeln("module vulkan.core;");
         file.writeln();
         file.writeln("import numem.core.types : OpaqueHandle;");
+        file.writeln("import vulkan.patches;");
         file.writeln("import vulkan.loader;");
         file.writeln();
         file.writeln("public import vulkan.defines;");
@@ -146,6 +147,7 @@ class VkRegistryEmitter {
 
         file.writeln();
         file.writeln("import numem.core.types : OpaqueHandle;");
+        file.writeln("import vulkan.patches;");
         file.writeln("import vulkan.loader;");
         file.writeln("import vulkan.core;");
 
@@ -266,6 +268,7 @@ class VkRegistryEmitter {
         file.writefln!"module vulkan.video.common;";
         file.writeln();
         file.writeln("import numem.core.types : OpaqueHandle;");
+        file.writeln("import vulkan.patches;");
         file.writeln("import vulkan.loader;");
         file.writeln();
         file.writeln("public import vulkan.video.defines;");
@@ -310,6 +313,7 @@ class VkRegistryEmitter {
         }
         file.writeln();
         file.writeln("import numem.core.types : OpaqueHandle;");
+        file.writeln("import vulkan.patches;");
         file.writeln("import vulkan.loader;");
         file.writeln("import vulkan.video.common;");
         if (ext.name.endsWith("_encode")) {
@@ -712,6 +716,9 @@ class VkRegistryEmitter {
                     }
                 }
             }
+            if (struct_.hasBitfields) {
+                file.writeln("mixin DMD20473;");
+            }
             file.close("}");
         }
     }
@@ -995,12 +1002,4 @@ private const bool[string] bespoke = [
     "ANativeWindow": true,
 
     "OHNativeWindow": true,
-
-    // bitfield jail
-    "VkAccelerationStructureInstanceKHR": true,
-    "VkAccelerationStructureSRTMotionInstanceNV": true,
-    "VkAccelerationStructureMatrixMotionInstanceNV": true,
-    "VkAccelerationStructureMotionInstanceDataNV": true,
-    "VkAccelerationStructureMotionInstanceNV": true,
-    "VkAccelerationStructureInstanceNV": true,
 ];

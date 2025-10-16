@@ -9,6 +9,7 @@
 module vulkan.core;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 
 public import vulkan.defines;

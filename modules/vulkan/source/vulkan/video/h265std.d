@@ -11,6 +11,7 @@
 module vulkan.video.h265std;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 
@@ -193,6 +194,7 @@ struct StdVideoH265HrdFlags {
     uint fixed_pic_rate_general_flag:8;
     uint fixed_pic_rate_within_cvs_flag:8;
     uint low_delay_hrd_flag:8;
+    mixin DMD20473;
 }
 
 struct StdVideoH265HrdParameters {
@@ -218,6 +220,7 @@ struct StdVideoH265VpsFlags {
     uint vps_sub_layer_ordering_info_present_flag:1;
     uint vps_timing_info_present_flag:1;
     uint vps_poc_proportional_to_timing_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH265ProfileTierLevelFlags {
@@ -226,6 +229,7 @@ struct StdVideoH265ProfileTierLevelFlags {
     uint general_interlaced_source_flag:1;
     uint general_non_packed_constraint_flag:1;
     uint general_frame_only_constraint_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH265ProfileTierLevel {
@@ -277,6 +281,7 @@ struct StdVideoH265SpsVuiFlags {
     uint tiles_fixed_structure_flag:1;
     uint motion_vectors_over_pic_boundaries_flag:1;
     uint restricted_ref_pic_lists_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH265SequenceParameterSetVui {
@@ -343,11 +348,13 @@ struct StdVideoH265SpsFlags {
     uint palette_mode_enabled_flag:1;
     uint sps_palette_predictor_initializers_present_flag:1;
     uint intra_boundary_filtering_disabled_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH265ShortTermRefPicSetFlags {
     uint inter_ref_pic_set_prediction_flag:1;
     uint delta_rps_sign:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH265ShortTermRefPicSet {
@@ -446,6 +453,7 @@ struct StdVideoH265PpsFlags {
     uint pps_palette_predictor_initializers_present_flag:1;
     uint monochrome_palette_flag:1;
     uint pps_range_extension_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH265PictureParameterSet {

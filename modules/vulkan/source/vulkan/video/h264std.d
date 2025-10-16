@@ -11,6 +11,7 @@
 module vulkan.video.h264std;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 
@@ -281,6 +282,7 @@ struct StdVideoH264SpsVuiFlags {
     uint bitstream_restriction_flag:1;
     uint nal_hrd_parameters_present_flag:1;
     uint vcl_hrd_parameters_present_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH264HrdParameters {
@@ -333,6 +335,7 @@ struct StdVideoH264SpsFlags {
     uint frame_cropping_flag:1;
     uint seq_scaling_matrix_present_flag:1;
     uint vui_parameters_present_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH264ScalingLists {
@@ -379,6 +382,7 @@ struct StdVideoH264PpsFlags {
     uint bottom_field_pic_order_in_frame_present_flag:1;
     uint entropy_coding_mode_flag:1;
     uint pic_scaling_matrix_present_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoH264PictureParameterSet {

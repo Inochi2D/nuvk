@@ -12,6 +12,7 @@
 module vulkan.amd.gpu_shader_half_float;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 import vulkan.khr.shader_float16_int8;

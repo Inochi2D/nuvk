@@ -12,6 +12,7 @@
 module vulkan.khr.get_physical_device_properties2;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

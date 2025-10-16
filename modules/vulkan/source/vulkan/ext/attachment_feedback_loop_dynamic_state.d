@@ -12,6 +12,7 @@
 module vulkan.ext.attachment_feedback_loop_dynamic_state;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

@@ -12,6 +12,7 @@
 module vulkan.ext.depth_range_unrestricted;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

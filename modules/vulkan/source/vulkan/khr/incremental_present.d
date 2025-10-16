@@ -12,6 +12,7 @@
 module vulkan.khr.incremental_present;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

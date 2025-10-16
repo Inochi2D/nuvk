@@ -12,6 +12,7 @@
 module vulkan.khr.sampler_mirror_clamp_to_edge;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

@@ -12,6 +12,7 @@
 module vulkan.ext.custom_border_color;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

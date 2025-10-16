@@ -12,6 +12,7 @@
 module vulkan.qcom.multiview_per_view_render_areas;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

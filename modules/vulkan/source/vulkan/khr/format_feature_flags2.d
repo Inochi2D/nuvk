@@ -12,6 +12,7 @@
 module vulkan.khr.format_feature_flags2;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

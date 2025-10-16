@@ -12,6 +12,7 @@
 module vulkan.nv.raw_access_chains;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

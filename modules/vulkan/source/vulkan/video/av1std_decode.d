@@ -11,6 +11,7 @@
 module vulkan.video.av1std_decode;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 import vulkan.video.av1std;
@@ -54,6 +55,7 @@ struct StdVideoDecodeAV1PictureInfoFlags {
     uint usesChromaLr:1;
     uint apply_grain:1;
     uint reserved:3;
+    mixin DMD20473;
 }
 
 struct StdVideoDecodeAV1PictureInfo {
@@ -87,6 +89,7 @@ struct StdVideoDecodeAV1ReferenceInfoFlags {
     uint disable_frame_end_update_cdf:1;
     uint segmentation_enabled:1;
     uint reserved:30;
+    mixin DMD20473;
 }
 
 struct StdVideoDecodeAV1ReferenceInfo {

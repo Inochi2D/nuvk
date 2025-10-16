@@ -12,6 +12,7 @@
 module vulkan.khr.shader_integer_dot_product;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

@@ -12,6 +12,7 @@
 module vulkan.ext.pipeline_protected_access;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
 

@@ -11,6 +11,7 @@
 module vulkan.video.h265std_decode;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 import vulkan.video.h265std;
@@ -29,6 +30,7 @@ struct StdVideoDecodeH265PictureInfoFlags {
     uint IdrPicFlag:1;
     uint IsReference:1;
     uint short_term_ref_pic_set_sps_flag:1;
+    mixin DMD20473;
 }
 
 struct StdVideoDecodeH265PictureInfo {
@@ -48,6 +50,7 @@ struct StdVideoDecodeH265PictureInfo {
 struct StdVideoDecodeH265ReferenceInfoFlags {
     uint used_for_long_term_reference:1;
     uint unused_for_reference:1;
+    mixin DMD20473;
 }
 
 struct StdVideoDecodeH265ReferenceInfo {

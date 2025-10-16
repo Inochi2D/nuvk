@@ -11,6 +11,7 @@
 module vulkan.video.vp9std_decode;
 
 import numem.core.types : OpaqueHandle;
+import vulkan.patches;
 import vulkan.loader;
 import vulkan.video.common;
 import vulkan.video.vp9std;
@@ -33,6 +34,7 @@ struct StdVideoDecodeVP9PictureInfoFlags {
     uint show_frame:1;
     uint UsePrevFrameMvs:1;
     uint reserved:24;
+    mixin DMD20473;
 }
 
 struct StdVideoDecodeVP9PictureInfo {
