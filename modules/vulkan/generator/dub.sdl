@@ -1,0 +1,24 @@
+name "vulkan-generator"
+description "Vulkan Bindings generator."
+authors "Luna the Foxgirl" "Mireille Arseneault"
+copyright "Copyright © 2025, Kitsunebi Games"
+license "BSL-1.0"
+
+targetPath "out/"
+workingDirectory ".."
+
+stringImportPaths "text"
+
+dependency "cosmicolor" version="~>0.1.4"
+dependency "yxml" version="~>0.1.7"
+
+configuration "application" {
+    targetType "executable"
+    mainSourceFile "source/app.d"
+}
+
+configuration "unittest" {
+    targetType "autodetect"
+
+    dependency "silly" version="~>1.2.0-dev.2"
+}

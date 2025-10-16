@@ -1,1 +1,0 @@
-dub -q --temp-build --single generator.d -- "$@"

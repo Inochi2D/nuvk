@@ -7,6 +7,9 @@ license "Apache-2.0"
 targetPath "out/"
 workingDirectory "out/"
 
+// Sub-packages.
+subPackage "generator"
+
 # Dependencies.
 dependency "numem" version="~>1.3"
 dependency "nulib" version="~>0.3"
@@ -23,9 +26,9 @@ dflags "-preview=bitfields"
 
 # Configs
 configuration "static" {
-	targetType "staticLibrary"
+    targetType "staticLibrary"
 }
 
 configuration "dynamic" {
-	targetType "dynamicLibrary"
+    targetType "dynamicLibrary"
 }
