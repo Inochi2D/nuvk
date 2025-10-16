@@ -1,26 +1,17 @@
+# Redub Junk
+.ldc2_cache
 .dub
 docs.json
 dub.selections.json
-__dummy.html
-/vktest
-vktest.so
-vktest.dylib
-vktest.dll
-vktest.a
-vktest.lib
-vktest-test-*
-*.exe
-*.pdb
-*.o
-*.obj
-*.lst
 
+# Other Junk
+.DS_Store
+.vscode/
+
+# Output Artifacts
 out/
-
 *.spv
 
 # Python generated shenanigans.
 __*__
 .vscode
-
-test/
