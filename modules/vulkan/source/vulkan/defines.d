@@ -5,6 +5,7 @@ module vulkan.defines;
 
 
 enum VK_NULL_HANDLE = null;
+enum VKSC_API_VARIANT = 1;
 
 pragma(inline, true)
 uint VK_MAKE_VERSION(uint major, uint minor, uint patch) @nogc nothrow {

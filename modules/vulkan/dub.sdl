@@ -19,7 +19,7 @@ dependency "inmath" version="~>1.3"
 libs "vulkan-1" platform="windows"
 lflags "/libpath:$VULKAN_SDK\\Lib\\" platform="windows"
 
-preBuildCommands "dub run :vulkan-generator -- vk"
+preBuildCommands "dub run :vulkan-generator"
 
 # Posix Platforms don't need $VULKAN_SDL
 libs "vulkan" platform="posix"
@@ -28,9 +28,9 @@ dflags "-preview=bitfields"
 
 # Configs
 configuration "static" {
-	targetType "staticLibrary"
+    targetType "staticLibrary"
 }
 
 configuration "dynamic" {
-	targetType "dynamicLibrary"
+    targetType "dynamicLibrary"
 }
