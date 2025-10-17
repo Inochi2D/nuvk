@@ -9,7 +9,7 @@ workingDirectory ".."
 
 stringImportPaths "text"
 
-dependency "cosmicolor" version="~>0.1.4"
+dependency "cosmicolor" version="~>0.1.5"
 dependency "yxml" version="~>0.1.7"
 
 configuration "application" {
