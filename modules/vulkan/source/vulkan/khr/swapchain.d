@@ -128,7 +128,7 @@ alias PFN_vkCreateSwapchainKHR = VkResult function(
     VkDevice device,
     const(VkSwapchainCreateInfoKHR)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSwapchainKHR* pSwapchain,
+    ref VkSwapchainKHR pSwapchain,
 );
 
 alias PFN_vkDestroySwapchainKHR = void function(

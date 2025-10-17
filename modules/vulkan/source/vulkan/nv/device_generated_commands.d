@@ -249,7 +249,7 @@ alias PFN_vkCreateIndirectCommandsLayoutNV = VkResult function(
     VkDevice device,
     const(VkIndirectCommandsLayoutCreateInfoNV)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkIndirectCommandsLayoutNV* pIndirectCommandsLayout,
+    ref VkIndirectCommandsLayoutNV pIndirectCommandsLayout,
 );
 
 alias PFN_vkDestroyIndirectCommandsLayoutNV = void function(

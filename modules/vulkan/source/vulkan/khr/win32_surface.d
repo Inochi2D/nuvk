@@ -58,7 +58,7 @@ alias PFN_vkCreateWin32SurfaceKHR = VkResult function(
     VkInstance instance,
     const(VkWin32SurfaceCreateInfoKHR)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSurfaceKHR* pSurface,
+    ref VkSurfaceKHR pSurface,
 );
 
 alias PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR = VkBool32 function(

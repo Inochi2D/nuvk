@@ -54,5 +54,5 @@ alias PFN_vkCreateMetalSurfaceEXT = VkResult function(
     VkInstance instance,
     const(VkMetalSurfaceCreateInfoEXT)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSurfaceKHR* pSurface,
+    ref VkSurfaceKHR pSurface,
 );

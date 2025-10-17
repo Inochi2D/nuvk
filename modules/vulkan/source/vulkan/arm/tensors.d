@@ -275,7 +275,7 @@ alias PFN_vkCreateTensorARM = VkResult function(
     VkDevice device,
     const(VkTensorCreateInfoARM)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkTensorARM* pTensor,
+    ref VkTensorARM pTensor,
 );
 
 alias PFN_vkDestroyTensorARM = void function(
@@ -288,7 +288,7 @@ alias PFN_vkCreateTensorViewARM = VkResult function(
     VkDevice device,
     const(VkTensorViewCreateInfoARM)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkTensorViewARM* pView,
+    ref VkTensorViewARM pView,
 );
 
 alias PFN_vkDestroyTensorViewARM = void function(

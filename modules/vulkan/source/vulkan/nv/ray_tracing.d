@@ -233,7 +233,7 @@ alias PFN_vkCreateAccelerationStructureNV = VkResult function(
     VkDevice device,
     const(VkAccelerationStructureCreateInfoNV)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkAccelerationStructureNV* pAccelerationStructure,
+    ref VkAccelerationStructureNV pAccelerationStructure,
 );
 
 alias PFN_vkDestroyAccelerationStructureNV = void function(

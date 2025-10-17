@@ -91,14 +91,14 @@ alias PFN_vkCreateCuModuleNVX = VkResult function(
     VkDevice device,
     const(VkCuModuleCreateInfoNVX)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkCuModuleNVX* pModule,
+    ref VkCuModuleNVX pModule,
 );
 
 alias PFN_vkCreateCuFunctionNVX = VkResult function(
     VkDevice device,
     const(VkCuFunctionCreateInfoNVX)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkCuFunctionNVX* pFunction,
+    ref VkCuFunctionNVX pFunction,
 );
 
 alias PFN_vkDestroyCuModuleNVX = void function(

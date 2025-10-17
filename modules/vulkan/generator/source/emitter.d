@@ -356,15 +356,7 @@ class VkRegistryEmitter {
                     file.writeln();
                 }
 
-                if (command.params.empty) {
-                    file.writefln!"extern %s %s();"(command.type, command.name);
-                } else {
-                    file.openf!"extern %s %s("(command.type, command.name);
-                    foreach (param; command.params) {
-                        file.writefln!"%s %s,"(param.type, param.safename);
-                    }
-                    file.close(");");
-                }
+                emitCommand(command);
             }
 
             if (feature.minor > 0) {
@@ -736,6 +728,18 @@ class VkRegistryEmitter {
                 file.writefln!"%s %s;"(member.type, member.safename);
             }
             file.close("}");
+        }
+    }
+
+    private void emitCommand(const ref VkCommand command) {
+        if (command.params.empty) {
+            file.writefln!"extern %s %s();"(command.type, command.name);
+        } else {
+            file.openf!"extern %s %s("(command.type, command.name);
+            foreach (param; command.params) {
+                file.writefln!"%s %s,"(param.type, param.safename);
+            }
+            file.close(");");
         }
     }
 

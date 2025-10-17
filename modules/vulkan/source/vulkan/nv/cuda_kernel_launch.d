@@ -104,7 +104,7 @@ alias PFN_vkCreateCudaModuleNV = VkResult function(
     VkDevice device,
     const(VkCudaModuleCreateInfoNV)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkCudaModuleNV* pModule,
+    ref VkCudaModuleNV pModule,
 );
 
 alias PFN_vkGetCudaModuleCacheNV = VkResult function(
@@ -118,7 +118,7 @@ alias PFN_vkCreateCudaFunctionNV = VkResult function(
     VkDevice device,
     const(VkCudaFunctionCreateInfoNV)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkCudaFunctionNV* pFunction,
+    ref VkCudaFunctionNV pFunction,
 );
 
 alias PFN_vkDestroyCudaModuleNV = void function(

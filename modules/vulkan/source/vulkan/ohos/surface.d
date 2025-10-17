@@ -54,5 +54,5 @@ alias PFN_vkCreateSurfaceOHOS = VkResult function(
     VkInstance instance,
     const(VkSurfaceCreateInfoOHOS)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSurfaceKHR* pSurface,
+    ref VkSurfaceKHR pSurface,
 );

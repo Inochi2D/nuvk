@@ -69,7 +69,7 @@ alias PFN_vkCreateSamplerYcbcrConversion = VkResult function(
     VkDevice device,
     const(VkSamplerYcbcrConversionCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSamplerYcbcrConversion* pYcbcrConversion,
+    ref VkSamplerYcbcrConversion pYcbcrConversion,
 );
 
 alias PFN_vkDestroySamplerYcbcrConversion = void function(

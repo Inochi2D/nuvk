@@ -166,7 +166,7 @@ alias PFN_vkCreateDisplayModeKHR = VkResult function(
     VkDisplayKHR display,
     const(VkDisplayModeCreateInfoKHR)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkDisplayModeKHR* pMode,
+    ref VkDisplayModeKHR pMode,
 );
 
 alias PFN_vkGetDisplayPlaneCapabilitiesKHR = VkResult function(
@@ -180,5 +180,5 @@ alias PFN_vkCreateDisplayPlaneSurfaceKHR = VkResult function(
     VkInstance instance,
     const(VkDisplaySurfaceCreateInfoKHR)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSurfaceKHR* pSurface,
+    ref VkSurfaceKHR pSurface,
 );

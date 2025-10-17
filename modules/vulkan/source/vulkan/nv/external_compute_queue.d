@@ -71,7 +71,7 @@ alias PFN_vkCreateExternalComputeQueueNV = VkResult function(
     VkDevice device,
     const(VkExternalComputeQueueCreateInfoNV)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkExternalComputeQueueNV* pExternalQueue,
+    ref VkExternalComputeQueueNV pExternalQueue,
 );
 
 alias PFN_vkDestroyExternalComputeQueueNV = void function(

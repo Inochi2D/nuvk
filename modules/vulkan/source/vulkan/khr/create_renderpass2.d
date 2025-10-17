@@ -66,7 +66,7 @@ alias PFN_vkCreateRenderPass2 = VkResult function(
     VkDevice device,
     const(VkRenderPassCreateInfo2)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkRenderPass* pRenderPass,
+    ref VkRenderPass pRenderPass,
 );
 
 alias PFN_vkCmdBeginRenderPass2 = void function(

@@ -61,7 +61,7 @@ alias PFN_vkCreatePrivateDataSlot = VkResult function(
     VkDevice device,
     const(VkPrivateDataSlotCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkPrivateDataSlot* pPrivateDataSlot,
+    ref VkPrivateDataSlot pPrivateDataSlot,
 );
 
 alias PFN_vkDestroyPrivateDataSlot = void function(

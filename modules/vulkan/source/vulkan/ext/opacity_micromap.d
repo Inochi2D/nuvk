@@ -257,7 +257,7 @@ alias PFN_vkCreateMicromapEXT = VkResult function(
     VkDevice device,
     const(VkMicromapCreateInfoEXT)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkMicromapEXT* pMicromap,
+    ref VkMicromapEXT pMicromap,
 );
 
 alias PFN_vkDestroyMicromapEXT = void function(

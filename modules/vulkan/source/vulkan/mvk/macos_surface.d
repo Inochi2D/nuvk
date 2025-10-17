@@ -54,5 +54,5 @@ alias PFN_vkCreateMacOSSurfaceMVK = VkResult function(
     VkInstance instance,
     const(VkMacOSSurfaceCreateInfoMVK)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSurfaceKHR* pSurface,
+    ref VkSurfaceKHR pSurface,
 );

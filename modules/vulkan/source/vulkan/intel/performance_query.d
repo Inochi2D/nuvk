@@ -182,7 +182,7 @@ alias PFN_vkCmdSetPerformanceOverrideINTEL = VkResult function(
 alias PFN_vkAcquirePerformanceConfigurationINTEL = VkResult function(
     VkDevice device,
     const(VkPerformanceConfigurationAcquireInfoINTEL)* pAcquireInfo,
-    VkPerformanceConfigurationINTEL* pConfiguration,
+    ref VkPerformanceConfigurationINTEL pConfiguration,
 );
 
 alias PFN_vkReleasePerformanceConfigurationINTEL = VkResult function(

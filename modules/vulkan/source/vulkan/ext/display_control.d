@@ -102,7 +102,7 @@ alias PFN_vkRegisterDeviceEventEXT = VkResult function(
     VkDevice device,
     const(VkDeviceEventInfoEXT)* pDeviceEventInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkFence* pFence,
+    ref VkFence pFence,
 );
 
 alias PFN_vkRegisterDisplayEventEXT = VkResult function(
@@ -110,7 +110,7 @@ alias PFN_vkRegisterDisplayEventEXT = VkResult function(
     VkDisplayKHR display,
     const(VkDisplayEventInfoEXT)* pDisplayEventInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkFence* pFence,
+    ref VkFence pFence,
 );
 
 alias PFN_vkGetSwapchainCounterEXT = VkResult function(

@@ -181,7 +181,7 @@ alias PFN_vkCreateDebugReportCallbackEXT = VkResult function(
     VkInstance instance,
     const(VkDebugReportCallbackCreateInfoEXT)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkDebugReportCallbackEXT* pCallback,
+    ref VkDebugReportCallbackEXT pCallback,
 );
 
 alias PFN_vkDestroyDebugReportCallbackEXT = void function(

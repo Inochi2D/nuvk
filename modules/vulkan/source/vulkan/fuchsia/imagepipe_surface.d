@@ -53,5 +53,5 @@ alias PFN_vkCreateImagePipeSurfaceFUCHSIA = VkResult function(
     VkInstance instance,
     const(VkImagePipeSurfaceCreateInfoFUCHSIA)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSurfaceKHR* pSurface,
+    ref VkSurfaceKHR pSurface,
 );

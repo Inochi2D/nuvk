@@ -167,7 +167,7 @@ alias PFN_vkCreateBufferCollectionFUCHSIA = VkResult function(
     VkDevice device,
     const(VkBufferCollectionCreateInfoFUCHSIA)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkBufferCollectionFUCHSIA* pCollection,
+    ref VkBufferCollectionFUCHSIA pCollection,
 );
 
 alias PFN_vkSetBufferCollectionImageConstraintsFUCHSIA = VkResult function(

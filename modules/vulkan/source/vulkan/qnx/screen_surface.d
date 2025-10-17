@@ -57,7 +57,7 @@ alias PFN_vkCreateScreenSurfaceQNX = VkResult function(
     VkInstance instance,
     const(VkScreenSurfaceCreateInfoQNX)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSurfaceKHR* pSurface,
+    ref VkSurfaceKHR pSurface,
 );
 
 alias PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX = VkBool32 function(

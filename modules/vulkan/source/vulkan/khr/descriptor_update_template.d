@@ -58,7 +58,7 @@ alias PFN_vkCreateDescriptorUpdateTemplate = VkResult function(
     VkDevice device,
     const(VkDescriptorUpdateTemplateCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkDescriptorUpdateTemplate* pDescriptorUpdateTemplate,
+    ref VkDescriptorUpdateTemplate pDescriptorUpdateTemplate,
 );
 
 alias PFN_vkDestroyDescriptorUpdateTemplate = void function(

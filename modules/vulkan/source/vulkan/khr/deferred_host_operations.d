@@ -51,7 +51,7 @@ alias VkDeferredOperationKHR = OpaqueHandle!("VkDeferredOperationKHR");
 alias PFN_vkCreateDeferredOperationKHR = VkResult function(
     VkDevice device,
     const(VkAllocationCallbacks)* pAllocator,
-    VkDeferredOperationKHR* pDeferredOperation,
+    ref VkDeferredOperationKHR pDeferredOperation,
 );
 
 alias PFN_vkDestroyDeferredOperationKHR = void function(
