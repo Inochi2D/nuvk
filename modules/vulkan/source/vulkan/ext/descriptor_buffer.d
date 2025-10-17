@@ -268,6 +268,8 @@ alias PFN_vkGetSamplerOpaqueCaptureDescriptorDataEXT = VkResult function(
 public import vulkan.khr.acceleration_structure;
 public import vulkan.nv.ray_tracing;
 
+import vulkan.khr.acceleration_structure : VkAccelerationStructureKHR;
+import vulkan.nv.ray_tracing : VkAccelerationStructureNV;
 struct VkAccelerationStructureCaptureDescriptorDataInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CAPTURE_DESCRIPTOR_DATA_INFO_EXT;
     const(void)* pNext;

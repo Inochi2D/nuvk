@@ -15,8 +15,6 @@ import numem.core.types : OpaqueHandle;
 import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
-import vulkan.khr.shader_bfloat16;
-import vulkan.khr.cooperative_matrix;
 
 extern (System) @nogc nothrow:
 
@@ -53,8 +51,10 @@ struct VkCooperativeMatrixPropertiesNV {
     VkScopeNV scope_;
 }
 
+import vulkan.khr.cooperative_matrix : VkScopeKHR;
 alias VkScopeNV = VkScopeKHR;
 
+import vulkan.khr.cooperative_matrix : VkComponentTypeKHR;
 alias VkComponentTypeNV = VkComponentTypeKHR;
 
 struct VkPhysicalDeviceCooperativeMatrixFeaturesNV {

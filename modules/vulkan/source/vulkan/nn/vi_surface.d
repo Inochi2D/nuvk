@@ -48,6 +48,7 @@ struct VkViSurfaceCreateInfoNN {
     void* window;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateViSurfaceNN = VkResult function(
     VkInstance instance,
     const(VkViSurfaceCreateInfoNN)* pCreateInfo,

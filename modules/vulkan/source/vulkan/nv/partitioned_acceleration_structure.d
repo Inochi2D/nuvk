@@ -15,7 +15,6 @@ import numem.core.types : OpaqueHandle;
 import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
-import vulkan.nv.cluster_acceleration_structure;
 
 extern (System) @nogc nothrow:
 
@@ -69,13 +68,14 @@ enum VK_PARTITIONED_ACCELERATION_STRUCTURE_OP_TYPE_WRITE_INSTANCE_NV = VkPartiti
 enum VK_PARTITIONED_ACCELERATION_STRUCTURE_OP_TYPE_UPDATE_INSTANCE_NV = VkPartitionedAccelerationStructureOpTypeNV.VK_PARTITIONED_ACCELERATION_STRUCTURE_OP_TYPE_UPDATE_INSTANCE_NV;
 enum VK_PARTITIONED_ACCELERATION_STRUCTURE_OP_TYPE_WRITE_PARTITION_TRANSLATION_NV = VkPartitionedAccelerationStructureOpTypeNV.VK_PARTITIONED_ACCELERATION_STRUCTURE_OP_TYPE_WRITE_PARTITION_TRANSLATION_NV;
 
+import vulkan.nv.cluster_acceleration_structure : VkStridedDeviceAddressNV;
 struct VkBuildPartitionedAccelerationStructureIndirectCommandNV {
     VkPartitionedAccelerationStructureOpTypeNV opType;
     uint argCount;
     VkStridedDeviceAddressNV argData;
 }
 
-alias VkPartitionedAccelerationStructureInstanceFlagsNV = VkFlags;
+alias VkPartitionedAccelerationStructureInstanceFlagsNV = VkBitFlagsBase!(VkFlags, VkPartitionedAccelerationStructureInstanceFlagBitsNV);
 
 enum VkPartitionedAccelerationStructureInstanceFlagBitsNV : uint {
     VK_PARTITIONED_ACCELERATION_STRUCTURE_INSTANCE_FLAG_TRIANGLE_FACING_CULL_DISABLE_BIT_NV = 1,
@@ -91,6 +91,7 @@ enum VK_PARTITIONED_ACCELERATION_STRUCTURE_INSTANCE_FLAG_FORCE_OPAQUE_BIT_NV = V
 enum VK_PARTITIONED_ACCELERATION_STRUCTURE_INSTANCE_FLAG_FORCE_NO_OPAQUE_BIT_NV = VkPartitionedAccelerationStructureInstanceFlagBitsNV.VK_PARTITIONED_ACCELERATION_STRUCTURE_INSTANCE_FLAG_FORCE_NO_OPAQUE_BIT_NV;
 enum VK_PARTITIONED_ACCELERATION_STRUCTURE_INSTANCE_FLAG_ENABLE_EXPLICIT_BOUNDING_BOX_NV = VkPartitionedAccelerationStructureInstanceFlagBitsNV.VK_PARTITIONED_ACCELERATION_STRUCTURE_INSTANCE_FLAG_ENABLE_EXPLICIT_BOUNDING_BOX_NV;
 
+import vulkan.khr.acceleration_structure : VkTransformMatrixKHR;
 struct VkPartitionedAccelerationStructureWriteInstanceDataNV {
     VkTransformMatrixKHR transform;
     float[6] explicitAABB;
@@ -121,6 +122,7 @@ struct VkWriteDescriptorSetPartitionedAccelerationStructureNV {
     const(VkDeviceAddress)* pAccelerationStructures;
 }
 
+import vulkan.khr.acceleration_structure : VkBuildAccelerationStructureFlagsKHR;
 struct VkPartitionedAccelerationStructureInstancesInputNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_PARTITIONED_ACCELERATION_STRUCTURE_INSTANCES_INPUT_NV;
     void* pNext;
@@ -142,6 +144,7 @@ struct VkBuildPartitionedAccelerationStructureInfoNV {
     VkDeviceAddress srcInfosCount;
 }
 
+import vulkan.khr.acceleration_structure : VkAccelerationStructureBuildSizesInfoKHR;
 alias PFN_vkGetPartitionedAccelerationStructuresBuildSizesNV = void function(
     VkDevice device,
     const(VkPartitionedAccelerationStructureInstancesInputNV)* pInfo,

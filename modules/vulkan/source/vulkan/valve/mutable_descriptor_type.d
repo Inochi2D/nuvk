@@ -31,8 +31,11 @@ public import vulkan.khr.maintenance3;
 enum VK_VALVE_MUTABLE_DESCRIPTOR_TYPE_SPEC_VERSION = 1;
 enum VK_VALVE_MUTABLE_DESCRIPTOR_TYPE_EXTENSION_NAME = "VK_VALVE_mutable_descriptor_type";
 
+import vulkan.ext.mutable_descriptor_type : VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT;
 alias VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE = VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT;
 
+import vulkan.ext.mutable_descriptor_type : VkMutableDescriptorTypeListEXT;
 alias VkMutableDescriptorTypeListVALVE = VkMutableDescriptorTypeListEXT;
 
+import vulkan.ext.mutable_descriptor_type : VkMutableDescriptorTypeCreateInfoEXT;
 alias VkMutableDescriptorTypeCreateInfoVALVE = VkMutableDescriptorTypeCreateInfoEXT;

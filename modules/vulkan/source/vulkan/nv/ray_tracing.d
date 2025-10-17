@@ -75,6 +75,7 @@ enum VK_NV_RAY_TRACING_SPEC_VERSION = 3;
 enum VK_NV_RAY_TRACING_EXTENSION_NAME = "VK_NV_ray_tracing";
 enum VK_SHADER_UNUSED_NV = VK_SHADER_UNUSED_KHR;
 
+import vulkan.khr.ray_tracing_pipeline : VkRayTracingShaderGroupTypeKHR;
 struct VkRayTracingShaderGroupCreateInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV;
     const(void)* pNext;
@@ -85,6 +86,7 @@ struct VkRayTracingShaderGroupCreateInfoNV {
     uint intersectionShader;
 }
 
+import vulkan.khr.ray_tracing_pipeline : VkRayTracingShaderGroupTypeKHR;
 alias VkRayTracingShaderGroupTypeNV = VkRayTracingShaderGroupTypeKHR;
 
 struct VkRayTracingPipelineCreateInfoNV {
@@ -101,8 +103,10 @@ struct VkRayTracingPipelineCreateInfoNV {
     int basePipelineIndex;
 }
 
+import vulkan.khr.acceleration_structure : VkGeometryTypeKHR;
 alias VkGeometryTypeNV = VkGeometryTypeKHR;
 
+import vulkan.khr.acceleration_structure : VkAccelerationStructureTypeKHR;
 alias VkAccelerationStructureTypeNV = VkAccelerationStructureTypeKHR;
 
 struct VkGeometryTrianglesNV {
@@ -135,6 +139,7 @@ struct VkGeometryDataNV {
     VkGeometryAABBNV aabbs;
 }
 
+import vulkan.khr.acceleration_structure : VkGeometryTypeKHR, VkGeometryFlagsKHR;
 struct VkGeometryNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_GEOMETRY_NV;
     const(void)* pNext;
@@ -145,10 +150,12 @@ struct VkGeometryNV {
 
 alias VkGeometryFlagsNV = VkGeometryFlagsKHR;
 
+import vulkan.khr.acceleration_structure : VkGeometryFlagBitsKHR;
 alias VkGeometryFlagBitsNV = VkGeometryFlagBitsKHR;
 
 alias VkGeometryInstanceFlagsNV = VkGeometryInstanceFlagsKHR;
 
+import vulkan.khr.acceleration_structure : VkGeometryInstanceFlagBitsKHR;
 alias VkGeometryInstanceFlagBitsNV = VkGeometryInstanceFlagBitsKHR;
 
 struct VkAccelerationStructureInfoNV {
@@ -170,10 +177,12 @@ struct VkAccelerationStructureCreateInfoNV {
 
 alias VkAccelerationStructureNV = OpaqueHandle!("VkAccelerationStructureNV");
 
+import vulkan.khr.acceleration_structure : VkBuildAccelerationStructureFlagBitsKHR;
 alias VkBuildAccelerationStructureFlagBitsNV = VkBuildAccelerationStructureFlagBitsKHR;
 
 alias VkBuildAccelerationStructureFlagsNV = VkBuildAccelerationStructureFlagsKHR;
 
+import vulkan.khr.acceleration_structure : VkCopyAccelerationStructureModeKHR;
 alias VkCopyAccelerationStructureModeNV = VkCopyAccelerationStructureModeKHR;
 
 struct VkBindAccelerationStructureMemoryInfoNV {
@@ -223,10 +232,13 @@ enum VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_OBJECT_NV = VkAccelerati
 enum VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_NV = VkAccelerationStructureMemoryRequirementsTypeNV.VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_NV;
 enum VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_UPDATE_SCRATCH_NV = VkAccelerationStructureMemoryRequirementsTypeNV.VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_UPDATE_SCRATCH_NV;
 
+import vulkan.khr.acceleration_structure : VkTransformMatrixKHR;
 alias VkTransformMatrixNV = VkTransformMatrixKHR;
 
+import vulkan.khr.acceleration_structure : VkAabbPositionsKHR;
 alias VkAabbPositionsNV = VkAabbPositionsKHR;
 
+import vulkan.khr.acceleration_structure : VkAccelerationStructureInstanceKHR;
 alias VkAccelerationStructureInstanceNV = VkAccelerationStructureInstanceKHR;
 
 alias PFN_vkCreateAccelerationStructureNV = VkResult function(
@@ -266,6 +278,7 @@ alias PFN_vkCmdBuildAccelerationStructureNV = void function(
     VkDeviceSize scratchOffset,
 );
 
+import vulkan.khr.acceleration_structure : VkCopyAccelerationStructureModeKHR;
 alias PFN_vkCmdCopyAccelerationStructureNV = void function(
     VkCommandBuffer commandBuffer,
     VkAccelerationStructureNV dst,

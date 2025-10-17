@@ -25,7 +25,6 @@ version (VK_VERSION_1_3)
 version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
-version (VK_VERSION_1_3):
 
 struct VK_ARM_tensors {
     
@@ -70,7 +69,7 @@ enum VK_ARM_TENSORS_EXTENSION_NAME = "VK_ARM_tensors";
 alias VkTensorARM = OpaqueHandle!("VkTensorARM");
 alias VkTensorViewARM = OpaqueHandle!("VkTensorViewARM");
 
-alias VkTensorCreateFlagsARM = VkFlags64;
+alias VkTensorCreateFlagsARM = VkBitFlagsBase!(VkFlags64, VkTensorCreateFlagBitsARM);
 
 enum VkTensorCreateFlagBitsARM : ulong {
     VK_TENSOR_CREATE_MUTABLE_FORMAT_BIT_ARM = 1,
@@ -84,7 +83,7 @@ enum VK_TENSOR_CREATE_PROTECTED_BIT_ARM = VkTensorCreateFlagBitsARM.VK_TENSOR_CR
 enum VK_TENSOR_CREATE_RESERVED_3_BIT_ARM = VkTensorCreateFlagBitsARM.VK_TENSOR_CREATE_RESERVED_3_BIT_ARM;
 enum VK_TENSOR_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM = VkTensorCreateFlagBitsARM.VK_TENSOR_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM;
 
-alias VkTensorViewCreateFlagsARM = VkFlags64;
+alias VkTensorViewCreateFlagsARM = VkBitFlagsBase!(VkFlags64, VkTensorViewCreateFlagBitsARM);
 
 enum VkTensorViewCreateFlagBitsARM : ulong {
     VK_TENSOR_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM = 1,
@@ -92,7 +91,7 @@ enum VkTensorViewCreateFlagBitsARM : ulong {
 
 enum VK_TENSOR_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM = VkTensorViewCreateFlagBitsARM.VK_TENSOR_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM;
 
-alias VkTensorUsageFlagsARM = VkFlags64;
+alias VkTensorUsageFlagsARM = VkBitFlagsBase!(VkFlags64, VkTensorUsageFlagBitsARM);
 
 enum VkTensorUsageFlagBitsARM : ulong {
     VK_TENSOR_USAGE_SHADER_BIT_ARM = 2,

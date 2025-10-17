@@ -41,7 +41,7 @@ struct VK_EXT_conditional_rendering {
 enum VK_EXT_CONDITIONAL_RENDERING_SPEC_VERSION = 2;
 enum VK_EXT_CONDITIONAL_RENDERING_EXTENSION_NAME = "VK_EXT_conditional_rendering";
 
-alias VkConditionalRenderingFlagsEXT = VkFlags;
+alias VkConditionalRenderingFlagsEXT = VkBitFlagsBase!(VkFlags, VkConditionalRenderingFlagBitsEXT);
 
 enum VkConditionalRenderingFlagBitsEXT : uint {
     VK_CONDITIONAL_RENDERING_INVERTED_BIT_EXT = 1,

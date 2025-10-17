@@ -25,7 +25,6 @@ version (VK_VERSION_1_3)
 version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
-version (VK_VERSION_1_1):
 
 enum VK_NV_DESCRIPTOR_POOL_OVERALLOCATION_SPEC_VERSION = 1;
 enum VK_NV_DESCRIPTOR_POOL_OVERALLOCATION_EXTENSION_NAME = "VK_NV_descriptor_pool_overallocation";

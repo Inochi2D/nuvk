@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 version (VK_VERSION_1_3) {} else {
-    version (VK_VERSION_1_1):
     public import vulkan.khr.dynamic_rendering;
 }
 

@@ -93,7 +93,7 @@ struct VkDispatchTileInfoQCOM {
     const(void)* pNext;
 }
 
-alias VkTileShadingRenderPassFlagsQCOM = VkFlags;
+alias VkTileShadingRenderPassFlagsQCOM = VkBitFlagsBase!(VkFlags, VkTileShadingRenderPassFlagBitsQCOM);
 
 enum VkTileShadingRenderPassFlagBitsQCOM : uint {
     VK_TILE_SHADING_RENDER_PASS_ENABLE_BIT_QCOM = 1,

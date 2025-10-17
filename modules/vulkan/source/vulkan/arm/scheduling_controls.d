@@ -48,7 +48,7 @@ struct VkPhysicalDeviceSchedulingControlsPropertiesARM {
     VkFlags64 schedulingControlsFlags;
 }
 
-alias VkPhysicalDeviceSchedulingControlsFlagsARM = VkFlags64;
+alias VkPhysicalDeviceSchedulingControlsFlagsARM = VkBitFlagsBase!(VkFlags64, VkPhysicalDeviceSchedulingControlsFlagBitsARM);
 
 enum VkPhysicalDeviceSchedulingControlsFlagBitsARM : ulong {
     VK_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_SHADER_CORE_COUNT_ARM = 1,

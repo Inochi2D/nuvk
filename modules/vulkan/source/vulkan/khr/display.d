@@ -89,7 +89,7 @@ enum VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR = VkDisplayPlaneAlphaFlagBitsKHR.VK_D
 enum VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_BIT_KHR = VkDisplayPlaneAlphaFlagBitsKHR.VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_BIT_KHR;
 enum VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR = VkDisplayPlaneAlphaFlagBitsKHR.VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR;
 
-alias VkDisplayPlaneAlphaFlagsKHR = VkFlags;
+alias VkDisplayPlaneAlphaFlagsKHR = VkBitFlagsBase!(VkFlags, VkDisplayPlaneAlphaFlagBitsKHR);
 
 struct VkDisplayPlaneCapabilitiesKHR {
     VkFlags supportedAlpha;
@@ -120,6 +120,7 @@ struct VkDisplayPropertiesKHR {
 
 alias VkDisplaySurfaceCreateFlagsKHR = VkFlags;
 
+import vulkan.khr.surface : VkSurfaceTransformFlagBitsKHR;
 struct VkDisplaySurfaceCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR;
     const(void)* pNext;
@@ -133,7 +134,8 @@ struct VkDisplaySurfaceCreateInfoKHR {
     VkExtent2D imageExtent;
 }
 
-alias VkSurfaceTransformFlagsKHR = VkFlags;
+import vulkan.khr.surface : VkSurfaceTransformFlagBitsKHR;
+alias VkSurfaceTransformFlagsKHR = VkBitFlagsBase!(VkFlags, VkSurfaceTransformFlagBitsKHR);
 
 alias PFN_vkGetPhysicalDeviceDisplayPropertiesKHR = VkResult function(
     VkPhysicalDevice physicalDevice,
@@ -176,6 +178,7 @@ alias PFN_vkGetDisplayPlaneCapabilitiesKHR = VkResult function(
     VkDisplayPlaneCapabilitiesKHR* pCapabilities,
 );
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateDisplayPlaneSurfaceKHR = VkResult function(
     VkInstance instance,
     const(VkDisplaySurfaceCreateInfoKHR)* pCreateInfo,

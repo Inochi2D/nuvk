@@ -92,7 +92,7 @@ enum VK_OPTICAL_FLOW_USAGE_HINT_BIT_NV = VkOpticalFlowUsageFlagBitsNV.VK_OPTICAL
 enum VK_OPTICAL_FLOW_USAGE_COST_BIT_NV = VkOpticalFlowUsageFlagBitsNV.VK_OPTICAL_FLOW_USAGE_COST_BIT_NV;
 enum VK_OPTICAL_FLOW_USAGE_GLOBAL_FLOW_BIT_NV = VkOpticalFlowUsageFlagBitsNV.VK_OPTICAL_FLOW_USAGE_GLOBAL_FLOW_BIT_NV;
 
-alias VkOpticalFlowUsageFlagsNV = VkFlags;
+alias VkOpticalFlowUsageFlagsNV = VkBitFlagsBase!(VkFlags, VkOpticalFlowUsageFlagBitsNV);
 
 struct VkOpticalFlowImageFormatInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_OPTICAL_FLOW_IMAGE_FORMAT_INFO_NV;
@@ -120,7 +120,7 @@ enum VK_OPTICAL_FLOW_GRID_SIZE_2X2_BIT_NV = VkOpticalFlowGridSizeFlagBitsNV.VK_O
 enum VK_OPTICAL_FLOW_GRID_SIZE_4X4_BIT_NV = VkOpticalFlowGridSizeFlagBitsNV.VK_OPTICAL_FLOW_GRID_SIZE_4X4_BIT_NV;
 enum VK_OPTICAL_FLOW_GRID_SIZE_8X8_BIT_NV = VkOpticalFlowGridSizeFlagBitsNV.VK_OPTICAL_FLOW_GRID_SIZE_8X8_BIT_NV;
 
-alias VkOpticalFlowGridSizeFlagsNV = VkFlags;
+alias VkOpticalFlowGridSizeFlagsNV = VkBitFlagsBase!(VkFlags, VkOpticalFlowGridSizeFlagBitsNV);
 
 enum VkOpticalFlowPerformanceLevelNV {
     VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_UNKNOWN_NV = 0,
@@ -170,7 +170,7 @@ enum VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_GLOBAL_FLOW_BIT_NV = VkOpticalFlowSes
 enum VK_OPTICAL_FLOW_SESSION_CREATE_ALLOW_REGIONS_BIT_NV = VkOpticalFlowSessionCreateFlagBitsNV.VK_OPTICAL_FLOW_SESSION_CREATE_ALLOW_REGIONS_BIT_NV;
 enum VK_OPTICAL_FLOW_SESSION_CREATE_BOTH_DIRECTIONS_BIT_NV = VkOpticalFlowSessionCreateFlagBitsNV.VK_OPTICAL_FLOW_SESSION_CREATE_BOTH_DIRECTIONS_BIT_NV;
 
-alias VkOpticalFlowSessionCreateFlagsNV = VkFlags;
+alias VkOpticalFlowSessionCreateFlagsNV = VkBitFlagsBase!(VkFlags, VkOpticalFlowSessionCreateFlagBitsNV);
 
 enum VkOpticalFlowExecuteFlagBitsNV : uint {
     VK_OPTICAL_FLOW_EXECUTE_DISABLE_TEMPORAL_HINTS_BIT_NV = 1,
@@ -178,7 +178,7 @@ enum VkOpticalFlowExecuteFlagBitsNV : uint {
 
 enum VK_OPTICAL_FLOW_EXECUTE_DISABLE_TEMPORAL_HINTS_BIT_NV = VkOpticalFlowExecuteFlagBitsNV.VK_OPTICAL_FLOW_EXECUTE_DISABLE_TEMPORAL_HINTS_BIT_NV;
 
-alias VkOpticalFlowExecuteFlagsNV = VkFlags;
+alias VkOpticalFlowExecuteFlagsNV = VkBitFlagsBase!(VkFlags, VkOpticalFlowExecuteFlagBitsNV);
 
 alias VkOpticalFlowSessionNV = OpaqueHandle!("VkOpticalFlowSessionNV");
 

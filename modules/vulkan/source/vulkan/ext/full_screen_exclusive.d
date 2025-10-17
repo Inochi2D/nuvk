@@ -79,6 +79,8 @@ struct VkSurfaceCapabilitiesFullScreenExclusiveEXT {
     VkBool32 fullScreenExclusiveSupported;
 }
 
+import vulkan.khr.get_surface_capabilities2 : VkPhysicalDeviceSurfaceInfo2KHR;
+import vulkan.khr.surface : VkPresentModeKHR;
 alias PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT = VkResult function(
     VkPhysicalDevice physicalDevice,
     const(VkPhysicalDeviceSurfaceInfo2KHR)* pSurfaceInfo,
@@ -86,11 +88,13 @@ alias PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT = VkResult function(
     VkPresentModeKHR* pPresentModes,
 );
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkAcquireFullScreenExclusiveModeEXT = VkResult function(
     VkDevice device,
     VkSwapchainKHR swapchain,
 );
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkReleaseFullScreenExclusiveModeEXT = VkResult function(
     VkDevice device,
     VkSwapchainKHR swapchain,
@@ -108,6 +112,8 @@ version (VK_VERSION_1_1) {} else {
     public import vulkan.khr.device_group;
 }
 
+import vulkan.khr.get_surface_capabilities2 : VkPhysicalDeviceSurfaceInfo2KHR;
+import vulkan.khr.device_group : VkDeviceGroupPresentModeFlagsKHR;
 alias PFN_vkGetDeviceGroupSurfacePresentModes2EXT = VkResult function(
     VkDevice device,
     const(VkPhysicalDeviceSurfaceInfo2KHR)* pSurfaceInfo,

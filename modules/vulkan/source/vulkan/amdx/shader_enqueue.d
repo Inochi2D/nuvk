@@ -92,6 +92,7 @@ struct VkExecutionGraphPipelineScratchSizeAMDX {
     VkDeviceSize sizeGranularity;
 }
 
+import vulkan.khr.pipeline_library : VkPipelineLibraryCreateInfoKHR;
 struct VkExecutionGraphPipelineCreateInfoAMDX {
     VkStructureType sType = VK_STRUCTURE_TYPE_EXECUTION_GRAPH_PIPELINE_CREATE_INFO_AMDX;
     const(void)* pNext;

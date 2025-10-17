@@ -75,7 +75,7 @@ enum VK_IMAGE_COMPRESSION_FIXED_RATE_DEFAULT_EXT = VkImageCompressionFlagBitsEXT
 enum VK_IMAGE_COMPRESSION_FIXED_RATE_EXPLICIT_EXT = VkImageCompressionFlagBitsEXT.VK_IMAGE_COMPRESSION_FIXED_RATE_EXPLICIT_EXT;
 enum VK_IMAGE_COMPRESSION_DISABLED_EXT = VkImageCompressionFlagBitsEXT.VK_IMAGE_COMPRESSION_DISABLED_EXT;
 
-alias VkImageCompressionFlagsEXT = VkFlags;
+alias VkImageCompressionFlagsEXT = VkBitFlagsBase!(VkFlags, VkImageCompressionFlagBitsEXT);
 
 enum VkImageCompressionFixedRateFlagBitsEXT : uint {
     VK_IMAGE_COMPRESSION_FIXED_RATE_NONE_EXT = 0,
@@ -131,7 +131,7 @@ enum VK_IMAGE_COMPRESSION_FIXED_RATE_22BPC_BIT_EXT = VkImageCompressionFixedRate
 enum VK_IMAGE_COMPRESSION_FIXED_RATE_23BPC_BIT_EXT = VkImageCompressionFixedRateFlagBitsEXT.VK_IMAGE_COMPRESSION_FIXED_RATE_23BPC_BIT_EXT;
 enum VK_IMAGE_COMPRESSION_FIXED_RATE_24BPC_BIT_EXT = VkImageCompressionFixedRateFlagBitsEXT.VK_IMAGE_COMPRESSION_FIXED_RATE_24BPC_BIT_EXT;
 
-alias VkImageCompressionFixedRateFlagsEXT = VkFlags;
+alias VkImageCompressionFixedRateFlagsEXT = VkBitFlagsBase!(VkFlags, VkImageCompressionFixedRateFlagBitsEXT);
 
 alias PFN_vkGetImageSubresourceLayout2 = void function(
     VkDevice device,

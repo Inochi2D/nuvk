@@ -37,6 +37,7 @@ struct VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV {
     VkBool32 linearSweptSpheres;
 }
 
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressConstKHR;
 struct VkAccelerationStructureGeometryLinearSweptSpheresDataNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_LINEAR_SWEPT_SPHERES_DATA_NV;
     const(void)* pNext;
@@ -53,6 +54,7 @@ struct VkAccelerationStructureGeometryLinearSweptSpheresDataNV {
     VkRayTracingLssPrimitiveEndCapsModeNV endCapsMode;
 }
 
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressConstKHR;
 struct VkAccelerationStructureGeometrySpheresDataNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_SPHERES_DATA_NV;
     const(void)* pNext;

@@ -53,6 +53,7 @@ struct VkXcbSurfaceCreateInfoKHR {
     xcb_window_t window;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateXcbSurfaceKHR = VkResult function(
     VkInstance instance,
     const(VkXcbSurfaceCreateInfoKHR)* pCreateInfo,

@@ -251,10 +251,10 @@ struct App {
 
     private void listBitmasks(ref VkRegistry registry) {
         foreach (ref bitmask; registry.bitmasks) {
-            if (bitmask.requires.empty) {
+            if (bitmask.bitvalues.empty) {
                 logger.info("<lgreen>%s</lgreen> : <lblue>%s</lblue>", bitmask.name, bitmask.backing);
             } else {
-                logger.info("<lgreen>%s</lgreen> : <lgreen>%s</lgreen>", bitmask.name, bitmask.requires);
+                logger.info("<lgreen>%s</lgreen> : <lgreen>%s</lgreen>", bitmask.name, bitmask.bitvalues);
             }
         }
 

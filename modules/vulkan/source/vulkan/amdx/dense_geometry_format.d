@@ -44,6 +44,7 @@ struct VkPhysicalDeviceDenseGeometryFormatFeaturesAMDX {
     VkBool32 denseGeometryFormat;
 }
 
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressConstKHR;
 struct VkAccelerationStructureDenseGeometryFormatTrianglesDataAMDX {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DENSE_GEOMETRY_FORMAT_TRIANGLES_DATA_AMDX;
     const(void)* pNext;

@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 version (VK_VERSION_1_3) {} else {
-    version (VK_VERSION_1_1):
     public import vulkan.khr.synchronization2;
 }
 
@@ -95,7 +94,7 @@ enum VK_VIDEO_CODEC_OPERATION_DECODE_AV1_BIT_KHR = VkVideoCodecOperationFlagBits
 enum VK_VIDEO_CODEC_OPERATION_ENCODE_AV1_BIT_KHR = VkVideoCodecOperationFlagBitsKHR.VK_VIDEO_CODEC_OPERATION_ENCODE_AV1_BIT_KHR;
 enum VK_VIDEO_CODEC_OPERATION_DECODE_VP9_BIT_KHR = VkVideoCodecOperationFlagBitsKHR.VK_VIDEO_CODEC_OPERATION_DECODE_VP9_BIT_KHR;
 
-alias VkVideoCodecOperationFlagsKHR = VkFlags;
+alias VkVideoCodecOperationFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoCodecOperationFlagBitsKHR);
 
 enum VkVideoChromaSubsamplingFlagBitsKHR : uint {
     VK_VIDEO_CHROMA_SUBSAMPLING_INVALID_KHR = 0,
@@ -111,7 +110,7 @@ enum VK_VIDEO_CHROMA_SUBSAMPLING_420_BIT_KHR = VkVideoChromaSubsamplingFlagBitsK
 enum VK_VIDEO_CHROMA_SUBSAMPLING_422_BIT_KHR = VkVideoChromaSubsamplingFlagBitsKHR.VK_VIDEO_CHROMA_SUBSAMPLING_422_BIT_KHR;
 enum VK_VIDEO_CHROMA_SUBSAMPLING_444_BIT_KHR = VkVideoChromaSubsamplingFlagBitsKHR.VK_VIDEO_CHROMA_SUBSAMPLING_444_BIT_KHR;
 
-alias VkVideoChromaSubsamplingFlagsKHR = VkFlags;
+alias VkVideoChromaSubsamplingFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoChromaSubsamplingFlagBitsKHR);
 
 enum VkVideoComponentBitDepthFlagBitsKHR : uint {
     VK_VIDEO_COMPONENT_BIT_DEPTH_INVALID_KHR = 0,
@@ -125,7 +124,7 @@ enum VK_VIDEO_COMPONENT_BIT_DEPTH_8_BIT_KHR = VkVideoComponentBitDepthFlagBitsKH
 enum VK_VIDEO_COMPONENT_BIT_DEPTH_10_BIT_KHR = VkVideoComponentBitDepthFlagBitsKHR.VK_VIDEO_COMPONENT_BIT_DEPTH_10_BIT_KHR;
 enum VK_VIDEO_COMPONENT_BIT_DEPTH_12_BIT_KHR = VkVideoComponentBitDepthFlagBitsKHR.VK_VIDEO_COMPONENT_BIT_DEPTH_12_BIT_KHR;
 
-alias VkVideoComponentBitDepthFlagsKHR = VkFlags;
+alias VkVideoComponentBitDepthFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoComponentBitDepthFlagBitsKHR);
 
 enum VkVideoCapabilityFlagBitsKHR : uint {
     VK_VIDEO_CAPABILITY_PROTECTED_CONTENT_BIT_KHR = 1,
@@ -135,7 +134,7 @@ enum VkVideoCapabilityFlagBitsKHR : uint {
 enum VK_VIDEO_CAPABILITY_PROTECTED_CONTENT_BIT_KHR = VkVideoCapabilityFlagBitsKHR.VK_VIDEO_CAPABILITY_PROTECTED_CONTENT_BIT_KHR;
 enum VK_VIDEO_CAPABILITY_SEPARATE_REFERENCE_IMAGES_BIT_KHR = VkVideoCapabilityFlagBitsKHR.VK_VIDEO_CAPABILITY_SEPARATE_REFERENCE_IMAGES_BIT_KHR;
 
-alias VkVideoCapabilityFlagsKHR = VkFlags;
+alias VkVideoCapabilityFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoCapabilityFlagBitsKHR);
 
 enum VkVideoSessionCreateFlagBitsKHR : uint {
     VK_VIDEO_SESSION_CREATE_PROTECTED_CONTENT_BIT_KHR = 1,
@@ -153,8 +152,9 @@ enum VK_VIDEO_SESSION_CREATE_ALLOW_ENCODE_QUANTIZATION_DELTA_MAP_BIT_KHR = VkVid
 enum VK_VIDEO_SESSION_CREATE_ALLOW_ENCODE_EMPHASIS_MAP_BIT_KHR = VkVideoSessionCreateFlagBitsKHR.VK_VIDEO_SESSION_CREATE_ALLOW_ENCODE_EMPHASIS_MAP_BIT_KHR;
 enum VK_VIDEO_SESSION_CREATE_INLINE_SESSION_PARAMETERS_BIT_KHR = VkVideoSessionCreateFlagBitsKHR.VK_VIDEO_SESSION_CREATE_INLINE_SESSION_PARAMETERS_BIT_KHR;
 
-alias VkVideoSessionCreateFlagsKHR = VkFlags;
-alias VkVideoSessionParametersCreateFlagsKHR = VkFlags;
+alias VkVideoSessionCreateFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoSessionCreateFlagBitsKHR);
+import vulkan.khr.video_encode_quantization_map : VkVideoSessionParametersCreateFlagBitsKHR;
+alias VkVideoSessionParametersCreateFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoSessionParametersCreateFlagBitsKHR);
 alias VkVideoBeginCodingFlagsKHR = VkFlags;
 alias VkVideoEndCodingFlagsKHR = VkFlags;
 
@@ -168,7 +168,7 @@ enum VK_VIDEO_CODING_CONTROL_RESET_BIT_KHR = VkVideoCodingControlFlagBitsKHR.VK_
 enum VK_VIDEO_CODING_CONTROL_ENCODE_RATE_CONTROL_BIT_KHR = VkVideoCodingControlFlagBitsKHR.VK_VIDEO_CODING_CONTROL_ENCODE_RATE_CONTROL_BIT_KHR;
 enum VK_VIDEO_CODING_CONTROL_ENCODE_QUALITY_LEVEL_BIT_KHR = VkVideoCodingControlFlagBitsKHR.VK_VIDEO_CODING_CONTROL_ENCODE_QUALITY_LEVEL_BIT_KHR;
 
-alias VkVideoCodingControlFlagsKHR = VkFlags;
+alias VkVideoCodingControlFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoCodingControlFlagBitsKHR);
 
 struct VkQueueFamilyQueryResultStatusPropertiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_QUERY_RESULT_STATUS_PROPERTIES_KHR;

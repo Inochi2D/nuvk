@@ -44,7 +44,7 @@ struct VkDeviceDiagnosticsConfigCreateInfoNV {
     VkFlags flags;
 }
 
-alias VkDeviceDiagnosticsConfigFlagsNV = VkFlags;
+alias VkDeviceDiagnosticsConfigFlagsNV = VkBitFlagsBase!(VkFlags, VkDeviceDiagnosticsConfigFlagBitsNV);
 
 enum VkDeviceDiagnosticsConfigFlagBitsNV : uint {
     VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_SHADER_DEBUG_INFO_BIT_NV = 1,

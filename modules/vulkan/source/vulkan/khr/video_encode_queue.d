@@ -45,8 +45,10 @@ struct VK_KHR_video_encode_queue {
 enum VK_KHR_VIDEO_ENCODE_QUEUE_SPEC_VERSION = 12;
 enum VK_KHR_VIDEO_ENCODE_QUEUE_EXTENSION_NAME = "VK_KHR_video_encode_queue";
 
-alias VkVideoEncodeFlagsKHR = VkFlags;
+import vulkan.khr.video_encode_quantization_map : VkVideoEncodeFlagBitsKHR;
+alias VkVideoEncodeFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoEncodeFlagBitsKHR);
 
+import vulkan.khr.video_queue : VkVideoPictureResourceInfoKHR, VkVideoReferenceSlotInfoKHR, VkVideoReferenceSlotInfoKHR;
 struct VkVideoEncodeInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_INFO_KHR;
     const(void)* pNext;
@@ -73,7 +75,7 @@ enum VK_VIDEO_ENCODE_CAPABILITY_INSUFFICIENT_BITSTREAM_BUFFER_RANGE_DETECTION_BI
 enum VK_VIDEO_ENCODE_CAPABILITY_QUANTIZATION_DELTA_MAP_BIT_KHR = VkVideoEncodeCapabilityFlagBitsKHR.VK_VIDEO_ENCODE_CAPABILITY_QUANTIZATION_DELTA_MAP_BIT_KHR;
 enum VK_VIDEO_ENCODE_CAPABILITY_EMPHASIS_MAP_BIT_KHR = VkVideoEncodeCapabilityFlagBitsKHR.VK_VIDEO_ENCODE_CAPABILITY_EMPHASIS_MAP_BIT_KHR;
 
-alias VkVideoEncodeCapabilityFlagsKHR = VkFlags;
+alias VkVideoEncodeCapabilityFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoEncodeCapabilityFlagBitsKHR);
 
 struct VkVideoEncodeCapabilitiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_CAPABILITIES_KHR;
@@ -117,7 +119,7 @@ enum VK_VIDEO_ENCODE_FEEDBACK_RESERVED_7_BIT_KHR = VkVideoEncodeFeedbackFlagBits
 enum VK_VIDEO_ENCODE_FEEDBACK_RESERVED_8_BIT_KHR = VkVideoEncodeFeedbackFlagBitsKHR.VK_VIDEO_ENCODE_FEEDBACK_RESERVED_8_BIT_KHR;
 enum VK_VIDEO_ENCODE_FEEDBACK_RESERVED_9_BIT_KHR = VkVideoEncodeFeedbackFlagBitsKHR.VK_VIDEO_ENCODE_FEEDBACK_RESERVED_9_BIT_KHR;
 
-alias VkVideoEncodeFeedbackFlagsKHR = VkFlags;
+alias VkVideoEncodeFeedbackFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoEncodeFeedbackFlagBitsKHR);
 
 enum VkVideoEncodeUsageFlagBitsKHR : uint {
     VK_VIDEO_ENCODE_USAGE_DEFAULT_KHR = 0,
@@ -133,7 +135,7 @@ enum VK_VIDEO_ENCODE_USAGE_STREAMING_BIT_KHR = VkVideoEncodeUsageFlagBitsKHR.VK_
 enum VK_VIDEO_ENCODE_USAGE_RECORDING_BIT_KHR = VkVideoEncodeUsageFlagBitsKHR.VK_VIDEO_ENCODE_USAGE_RECORDING_BIT_KHR;
 enum VK_VIDEO_ENCODE_USAGE_CONFERENCING_BIT_KHR = VkVideoEncodeUsageFlagBitsKHR.VK_VIDEO_ENCODE_USAGE_CONFERENCING_BIT_KHR;
 
-alias VkVideoEncodeUsageFlagsKHR = VkFlags;
+alias VkVideoEncodeUsageFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoEncodeUsageFlagBitsKHR);
 
 enum VkVideoEncodeContentFlagBitsKHR : uint {
     VK_VIDEO_ENCODE_CONTENT_DEFAULT_KHR = 0,
@@ -147,7 +149,7 @@ enum VK_VIDEO_ENCODE_CONTENT_CAMERA_BIT_KHR = VkVideoEncodeContentFlagBitsKHR.VK
 enum VK_VIDEO_ENCODE_CONTENT_DESKTOP_BIT_KHR = VkVideoEncodeContentFlagBitsKHR.VK_VIDEO_ENCODE_CONTENT_DESKTOP_BIT_KHR;
 enum VK_VIDEO_ENCODE_CONTENT_RENDERED_BIT_KHR = VkVideoEncodeContentFlagBitsKHR.VK_VIDEO_ENCODE_CONTENT_RENDERED_BIT_KHR;
 
-alias VkVideoEncodeContentFlagsKHR = VkFlags;
+alias VkVideoEncodeContentFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoEncodeContentFlagBitsKHR);
 
 enum VkVideoEncodeTuningModeKHR {
     VK_VIDEO_ENCODE_TUNING_MODE_DEFAULT_KHR = 0,
@@ -185,7 +187,7 @@ enum VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DISABLED_BIT_KHR = VkVideoEncodeRateContr
 enum VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR = VkVideoEncodeRateControlModeFlagBitsKHR.VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR;
 enum VK_VIDEO_ENCODE_RATE_CONTROL_MODE_VBR_BIT_KHR = VkVideoEncodeRateControlModeFlagBitsKHR.VK_VIDEO_ENCODE_RATE_CONTROL_MODE_VBR_BIT_KHR;
 
-alias VkVideoEncodeRateControlModeFlagsKHR = VkFlags;
+alias VkVideoEncodeRateControlModeFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoEncodeRateControlModeFlagBitsKHR);
 
 struct VkVideoEncodeRateControlInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_RATE_CONTROL_INFO_KHR;
@@ -207,6 +209,7 @@ struct VkVideoEncodeRateControlLayerInfoKHR {
     uint frameRateDenominator;
 }
 
+import vulkan.khr.video_queue : VkVideoProfileInfoKHR;
 struct VkPhysicalDeviceVideoEncodeQualityLevelInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_QUALITY_LEVEL_INFO_KHR;
     const(void)* pNext;
@@ -227,6 +230,7 @@ struct VkVideoEncodeQualityLevelInfoKHR {
     uint qualityLevel;
 }
 
+import vulkan.khr.video_queue : VkVideoSessionParametersKHR;
 struct VkVideoEncodeSessionParametersGetInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_SESSION_PARAMETERS_GET_INFO_KHR;
     const(void)* pNext;

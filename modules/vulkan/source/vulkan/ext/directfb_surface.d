@@ -53,6 +53,7 @@ struct VkDirectFBSurfaceCreateInfoEXT {
     IDirectFBSurface* surface;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateDirectFBSurfaceEXT = VkResult function(
     VkInstance instance,
     const(VkDirectFBSurfaceCreateInfoEXT)* pCreateInfo,

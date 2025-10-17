@@ -36,6 +36,7 @@ struct VK_NV_cooperative_matrix2 {
 enum VK_NV_COOPERATIVE_MATRIX_2_SPEC_VERSION = 1;
 enum VK_NV_COOPERATIVE_MATRIX_2_EXTENSION_NAME = "VK_NV_cooperative_matrix2";
 
+import vulkan.khr.cooperative_matrix : VkComponentTypeKHR, VkComponentTypeKHR, VkComponentTypeKHR, VkComponentTypeKHR, VkScopeKHR;
 struct VkCooperativeMatrixFlexibleDimensionsPropertiesNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_COOPERATIVE_MATRIX_FLEXIBLE_DIMENSIONS_PROPERTIES_NV;
     void* pNext;

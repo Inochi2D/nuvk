@@ -30,7 +30,7 @@ enum VK_AMD_PIPELINE_COMPILER_CONTROL_EXTENSION_NAME = "VK_AMD_pipeline_compiler
 
 enum VkPipelineCompilerControlFlagBitsAMD : uint;
 
-alias VkPipelineCompilerControlFlagsAMD = VkFlags;
+alias VkPipelineCompilerControlFlagsAMD = VkBitFlagsBase!(VkFlags, VkPipelineCompilerControlFlagBitsAMD);
 
 struct VkPipelineCompilerControlCreateInfoAMD {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_COMPILER_CONTROL_CREATE_INFO_AMD;

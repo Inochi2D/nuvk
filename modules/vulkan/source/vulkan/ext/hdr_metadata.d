@@ -54,6 +54,7 @@ struct VkXYColorEXT {
     float y;
 }
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkSetHdrMetadataEXT = void function(
     VkDevice device,
     uint swapchainCount,

@@ -37,6 +37,7 @@ struct StdVideoDecodeVP9PictureInfoFlags {
     mixin DMD20473;
 }
 
+import vulkan.video.vp9std : StdVideoVP9Profile, StdVideoVP9FrameType, StdVideoVP9InterpolationFilter, StdVideoVP9ColorConfig, StdVideoVP9LoopFilter, StdVideoVP9Segmentation;
 struct StdVideoDecodeVP9PictureInfo {
     StdVideoDecodeVP9PictureInfoFlags flags;
     StdVideoVP9Profile profile;

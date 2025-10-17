@@ -118,6 +118,7 @@ struct VkIndirectExecutionSetPipelineInfoEXT {
     uint maxPipelineCount;
 }
 
+import vulkan.ext.shader_object : VkShaderEXT;
 struct VkIndirectExecutionSetShaderInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_INDIRECT_EXECUTION_SET_SHADER_INFO_EXT;
     const(void)* pNext;
@@ -257,7 +258,7 @@ enum VkIndirectExecutionSetInfoTypeEXT {
 enum VK_INDIRECT_EXECUTION_SET_INFO_TYPE_PIPELINES_EXT = VkIndirectExecutionSetInfoTypeEXT.VK_INDIRECT_EXECUTION_SET_INFO_TYPE_PIPELINES_EXT;
 enum VK_INDIRECT_EXECUTION_SET_INFO_TYPE_SHADER_OBJECTS_EXT = VkIndirectExecutionSetInfoTypeEXT.VK_INDIRECT_EXECUTION_SET_INFO_TYPE_SHADER_OBJECTS_EXT;
 
-alias VkIndirectCommandsLayoutUsageFlagsEXT = VkFlags;
+alias VkIndirectCommandsLayoutUsageFlagsEXT = VkBitFlagsBase!(VkFlags, VkIndirectCommandsLayoutUsageFlagBitsEXT);
 
 enum VkIndirectCommandsLayoutUsageFlagBitsEXT : uint {
     VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_EXT = 1,
@@ -267,7 +268,7 @@ enum VkIndirectCommandsLayoutUsageFlagBitsEXT : uint {
 enum VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_EXT = VkIndirectCommandsLayoutUsageFlagBitsEXT.VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_EXT;
 enum VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_EXT = VkIndirectCommandsLayoutUsageFlagBitsEXT.VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_EXT;
 
-alias VkIndirectCommandsInputModeFlagsEXT = VkFlags;
+alias VkIndirectCommandsInputModeFlagsEXT = VkBitFlagsBase!(VkFlags, VkIndirectCommandsInputModeFlagBitsEXT);
 
 enum VkIndirectCommandsInputModeFlagBitsEXT : uint {
     VK_INDIRECT_COMMANDS_INPUT_MODE_VULKAN_INDEX_BUFFER_EXT = 1,
@@ -290,6 +291,7 @@ struct VkGeneratedCommandsPipelineInfoEXT {
     VkPipeline pipeline;
 }
 
+import vulkan.ext.shader_object : VkShaderEXT;
 struct VkGeneratedCommandsShaderInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_GENERATED_COMMANDS_SHADER_INFO_EXT;
     void* pNext;
@@ -357,6 +359,7 @@ alias PFN_vkUpdateIndirectExecutionSetShaderEXT = void function(
 
 public import vulkan.ext.shader_object;
 
+import vulkan.ext.shader_object : VkShaderEXT;
 struct VkWriteIndirectExecutionSetShaderEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_WRITE_INDIRECT_EXECUTION_SET_SHADER_EXT;
     const(void)* pNext;

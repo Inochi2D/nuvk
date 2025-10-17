@@ -58,7 +58,7 @@ enum VK_ADDRESS_COPY_DEVICE_LOCAL_BIT_KHR = VkAddressCopyFlagBitsKHR.VK_ADDRESS_
 enum VK_ADDRESS_COPY_SPARSE_BIT_KHR = VkAddressCopyFlagBitsKHR.VK_ADDRESS_COPY_SPARSE_BIT_KHR;
 enum VK_ADDRESS_COPY_PROTECTED_BIT_KHR = VkAddressCopyFlagBitsKHR.VK_ADDRESS_COPY_PROTECTED_BIT_KHR;
 
-alias VkAddressCopyFlagsKHR = VkFlags;
+alias VkAddressCopyFlagsKHR = VkBitFlagsBase!(VkFlags, VkAddressCopyFlagBitsKHR);
 
 struct VkCopyMemoryIndirectCommandKHR {
     VkDeviceAddress srcAddress;

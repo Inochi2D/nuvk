@@ -33,4 +33,5 @@ version (VK_VERSION_1_1) {} else {
 enum VK_NV_FRAGMENT_SHADER_BARYCENTRIC_SPEC_VERSION = 1;
 enum VK_NV_FRAGMENT_SHADER_BARYCENTRIC_EXTENSION_NAME = "VK_NV_fragment_shader_barycentric";
 
+import vulkan.khr.fragment_shader_barycentric : VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR;
 alias VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV = VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR;

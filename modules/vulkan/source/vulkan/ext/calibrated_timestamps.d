@@ -42,16 +42,20 @@ struct VK_EXT_calibrated_timestamps {
 enum VK_EXT_CALIBRATED_TIMESTAMPS_SPEC_VERSION = 2;
 enum VK_EXT_CALIBRATED_TIMESTAMPS_EXTENSION_NAME = "VK_EXT_calibrated_timestamps";
 
+import vulkan.khr.calibrated_timestamps : VkTimeDomainKHR;
 alias VkTimeDomainEXT = VkTimeDomainKHR;
 
+import vulkan.khr.calibrated_timestamps : VkCalibratedTimestampInfoKHR;
 alias VkCalibratedTimestampInfoEXT = VkCalibratedTimestampInfoKHR;
 
+import vulkan.khr.calibrated_timestamps : VkTimeDomainKHR;
 alias PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsKHR = VkResult function(
     VkPhysicalDevice physicalDevice,
     uint* pTimeDomainCount,
     VkTimeDomainKHR* pTimeDomains,
 );
 
+import vulkan.khr.calibrated_timestamps : VkCalibratedTimestampInfoKHR;
 alias PFN_vkGetCalibratedTimestampsKHR = VkResult function(
     VkDevice device,
     uint timestampCount,

@@ -27,7 +27,6 @@ version (VK_VERSION_1_2)
 
 public import vulkan.khr.shader_maximal_reconvergence;
 version (VK_VERSION_1_2) {} else {
-    version (VK_VERSION_1_1):
     public import vulkan.khr.vulkan_memory_model;
 }
 

@@ -116,7 +116,7 @@ enum VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR = VkDeviceGroupPresentModeFlagB
 enum VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR = VkDeviceGroupPresentModeFlagBitsKHR.VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR;
 enum VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR = VkDeviceGroupPresentModeFlagBitsKHR.VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR;
 
-alias VkDeviceGroupPresentModeFlagsKHR = VkFlags;
+alias VkDeviceGroupPresentModeFlagsKHR = VkBitFlagsBase!(VkFlags, VkDeviceGroupPresentModeFlagBitsKHR);
 
 struct VkDeviceGroupPresentCapabilitiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_CAPABILITIES_KHR;
@@ -130,12 +130,14 @@ alias PFN_vkGetDeviceGroupPresentCapabilitiesKHR = VkResult function(
     VkDeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities,
 );
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkGetDeviceGroupSurfacePresentModesKHR = VkResult function(
     VkDevice device,
     VkSurfaceKHR surface,
     VkDeviceGroupPresentModeFlagsKHR* pModes,
 );
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkGetPhysicalDevicePresentRectanglesKHR = VkResult function(
     VkPhysicalDevice physicalDevice,
     VkSurfaceKHR surface,
@@ -145,12 +147,14 @@ alias PFN_vkGetPhysicalDevicePresentRectanglesKHR = VkResult function(
 
 public import vulkan.khr.swapchain;
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 struct VkImageSwapchainCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHR;
     const(void)* pNext;
     VkSwapchainKHR swapchain;
 }
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 struct VkBindImageMemorySwapchainInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHR;
     const(void)* pNext;
@@ -158,6 +162,7 @@ struct VkBindImageMemorySwapchainInfoKHR {
     uint imageIndex;
 }
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 struct VkAcquireNextImageInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR;
     const(void)* pNext;

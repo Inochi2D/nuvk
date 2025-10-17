@@ -52,6 +52,7 @@ struct VkSwapchainDisplayNativeHdrCreateInfoAMD {
     VkBool32 localDimmingEnable;
 }
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkSetLocalDimmingAMD = void function(
     VkDevice device,
     VkSwapchainKHR swapChain,

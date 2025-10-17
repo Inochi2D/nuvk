@@ -50,6 +50,7 @@ struct VkIOSSurfaceCreateInfoMVK {
     const(void)* pView;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateIOSSurfaceMVK = VkResult function(
     VkInstance instance,
     const(VkIOSSurfaceCreateInfoMVK)* pCreateInfo,

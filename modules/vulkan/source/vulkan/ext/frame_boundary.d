@@ -54,4 +54,4 @@ enum VkFrameBoundaryFlagBitsEXT : uint {
 
 enum VK_FRAME_BOUNDARY_FRAME_END_BIT_EXT = VkFrameBoundaryFlagBitsEXT.VK_FRAME_BOUNDARY_FRAME_END_BIT_EXT;
 
-alias VkFrameBoundaryFlagsEXT = VkFlags;
+alias VkFrameBoundaryFlagsEXT = VkBitFlagsBase!(VkFlags, VkFrameBoundaryFlagBitsEXT);

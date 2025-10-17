@@ -46,6 +46,7 @@ struct VkSharedPresentSurfaceCapabilitiesKHR {
     VkFlags sharedPresentSupportedUsageFlags;
 }
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkGetSwapchainStatusKHR = VkResult function(
     VkDevice device,
     VkSwapchainKHR swapchain,

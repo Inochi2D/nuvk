@@ -86,12 +86,14 @@ struct VkDisplayEventInfoEXT {
     VkDisplayEventTypeEXT displayEvent;
 }
 
+import vulkan.ext.display_surface_counter : VkSurfaceCounterFlagsEXT;
 struct VkSwapchainCounterCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_SWAPCHAIN_COUNTER_CREATE_INFO_EXT;
     const(void)* pNext;
     VkFlags surfaceCounters;
 }
 
+import vulkan.khr.display : VkDisplayKHR;
 alias PFN_vkDisplayPowerControlEXT = VkResult function(
     VkDevice device,
     VkDisplayKHR display,
@@ -105,6 +107,7 @@ alias PFN_vkRegisterDeviceEventEXT = VkResult function(
     ref VkFence pFence,
 );
 
+import vulkan.khr.display : VkDisplayKHR;
 alias PFN_vkRegisterDisplayEventEXT = VkResult function(
     VkDevice device,
     VkDisplayKHR display,
@@ -113,6 +116,8 @@ alias PFN_vkRegisterDisplayEventEXT = VkResult function(
     ref VkFence pFence,
 );
 
+import vulkan.ext.display_surface_counter : VkSurfaceCounterFlagBitsEXT;
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkGetSwapchainCounterEXT = VkResult function(
     VkDevice device,
     VkSwapchainKHR swapchain,

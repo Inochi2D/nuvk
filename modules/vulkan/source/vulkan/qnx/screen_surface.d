@@ -53,6 +53,7 @@ struct VkScreenSurfaceCreateInfoQNX {
     _screen_window* window;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateScreenSurfaceQNX = VkResult function(
     VkInstance instance,
     const(VkScreenSurfaceCreateInfoQNX)* pCreateInfo,

@@ -25,7 +25,6 @@ version (VK_VERSION_1_3)
 version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
-version (VK_VERSION_1_1):
 
 enum VK_NV_SHADER_SUBGROUP_PARTITIONED_SPEC_VERSION = 1;
 enum VK_NV_SHADER_SUBGROUP_PARTITIONED_EXTENSION_NAME = "VK_NV_shader_subgroup_partitioned";

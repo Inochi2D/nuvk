@@ -183,6 +183,7 @@ struct VkColorBlendEquationEXT {
     VkBlendOp alphaBlendOp;
 }
 
+import vulkan.ext.blend_operation_advanced : VkBlendOverlapEXT;
 struct VkColorBlendAdvancedEXT {
     VkBlendOp advancedBlendOp;
     VkBool32 srcPremultiplied;
@@ -266,6 +267,7 @@ alias PFN_vkCmdSetRasterizationStreamEXT = void function(
 
 public import vulkan.ext.conservative_rasterization;
 
+import vulkan.ext.conservative_rasterization : VkConservativeRasterizationModeEXT;
 alias PFN_vkCmdSetConservativeRasterizationModeEXT = void function(
     VkCommandBuffer commandBuffer,
     VkConservativeRasterizationModeEXT conservativeRasterizationMode,
@@ -301,6 +303,7 @@ alias PFN_vkCmdSetColorBlendAdvancedEXT = void function(
 
 public import vulkan.ext.provoking_vertex;
 
+import vulkan.ext.provoking_vertex : VkProvokingVertexModeEXT;
 alias PFN_vkCmdSetProvokingVertexModeEXT = void function(
     VkCommandBuffer commandBuffer,
     VkProvokingVertexModeEXT provokingVertexMode,
@@ -308,6 +311,7 @@ alias PFN_vkCmdSetProvokingVertexModeEXT = void function(
 
 public import vulkan.ext.line_rasterization;
 
+import vulkan.ext.line_rasterization : VkLineRasterizationModeEXT;
 alias PFN_vkCmdSetLineRasterizationModeEXT = void function(
     VkCommandBuffer commandBuffer,
     VkLineRasterizationModeEXT lineRasterizationMode,
@@ -334,6 +338,7 @@ alias PFN_vkCmdSetViewportWScalingEnableNV = void function(
 
 public import vulkan.nv.viewport_swizzle;
 
+import vulkan.nv.viewport_swizzle : VkViewportSwizzleNV;
 alias PFN_vkCmdSetViewportSwizzleNV = void function(
     VkCommandBuffer commandBuffer,
     uint firstViewport,
@@ -355,6 +360,7 @@ alias PFN_vkCmdSetCoverageToColorLocationNV = void function(
 
 public import vulkan.nv.framebuffer_mixed_samples;
 
+import vulkan.nv.framebuffer_mixed_samples : VkCoverageModulationModeNV;
 alias PFN_vkCmdSetCoverageModulationModeNV = void function(
     VkCommandBuffer commandBuffer,
     VkCoverageModulationModeNV coverageModulationMode,
@@ -387,6 +393,7 @@ alias PFN_vkCmdSetRepresentativeFragmentTestEnableNV = void function(
 
 public import vulkan.nv.coverage_reduction_mode;
 
+import vulkan.nv.coverage_reduction_mode : VkCoverageReductionModeNV;
 alias PFN_vkCmdSetCoverageReductionModeNV = void function(
     VkCommandBuffer commandBuffer,
     VkCoverageReductionModeNV coverageReductionMode,

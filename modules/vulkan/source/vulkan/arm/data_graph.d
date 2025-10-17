@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 public import vulkan.khr.deferred_host_operations;
-version (VK_VERSION_1_3):
 public import vulkan.khr.maintenance5;
 
 struct VK_ARM_data_graph {
@@ -115,6 +114,7 @@ struct VkDataGraphPipelineCompilerControlCreateInfoARM {
     const(char)* pVendorOptions;
 }
 
+import vulkan.khr.maintenance5 : VkPipelineCreateFlags2KHR;
 struct VkDataGraphPipelineCreateInfoARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_CREATE_INFO_ARM;
     const(void)* pNext;
@@ -141,7 +141,7 @@ struct VkDataGraphPipelineSessionCreateInfoARM {
     VkPipeline dataGraphPipeline;
 }
 
-alias VkDataGraphPipelineSessionCreateFlagsARM = VkFlags64;
+alias VkDataGraphPipelineSessionCreateFlagsARM = VkBitFlagsBase!(VkFlags64, VkDataGraphPipelineSessionCreateFlagBitsARM);
 
 enum VkDataGraphPipelineSessionCreateFlagBitsARM : ulong {
     VK_DATA_GRAPH_PIPELINE_SESSION_CREATE_PROTECTED_BIT_ARM = 1,
@@ -211,7 +211,7 @@ struct VkDataGraphPipelineIdentifierCreateInfoARM {
     const(ubyte)* pIdentifier;
 }
 
-alias VkDataGraphPipelineDispatchFlagsARM = VkFlags64;
+alias VkDataGraphPipelineDispatchFlagsARM = VkBitFlagsBase!(VkFlags64, VkDataGraphPipelineDispatchFlagBitsARM);
 
 enum VkDataGraphPipelineDispatchFlagBitsARM : ulong;
 
@@ -272,6 +272,7 @@ struct VkPhysicalDeviceDataGraphOperationSupportARM {
     uint version_;
 }
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkCreateDataGraphPipelinesARM = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,

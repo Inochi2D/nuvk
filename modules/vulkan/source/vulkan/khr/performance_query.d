@@ -81,7 +81,7 @@ struct VkPerformanceCounterDescriptionKHR {
     char[VK_MAX_DESCRIPTION_SIZE] description;
 }
 
-alias VkPerformanceCounterDescriptionFlagsKHR = VkFlags;
+alias VkPerformanceCounterDescriptionFlagsKHR = VkBitFlagsBase!(VkFlags, VkPerformanceCounterDescriptionFlagBitsKHR);
 
 enum VkPerformanceCounterDescriptionFlagBitsKHR : uint {
     VK_PERFORMANCE_COUNTER_DESCRIPTION_PERFORMANCE_IMPACTING_BIT_KHR = 1,
@@ -182,7 +182,7 @@ struct VkAcquireProfilingLockInfoKHR {
     ulong timeout;
 }
 
-alias VkAcquireProfilingLockFlagsKHR = VkFlags;
+alias VkAcquireProfilingLockFlagsKHR = VkBitFlagsBase!(VkFlags, VkAcquireProfilingLockFlagBitsKHR);
 
 enum VkAcquireProfilingLockFlagBitsKHR : uint;
 
@@ -215,7 +215,6 @@ alias PFN_vkReleaseProfilingLockKHR = void function(
     VkDevice device,
 );
 
-version (VKSC_VERSION_1_0):
 
 struct VkPerformanceQueryReservationInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_PERFORMANCE_QUERY_RESERVATION_INFO_KHR;

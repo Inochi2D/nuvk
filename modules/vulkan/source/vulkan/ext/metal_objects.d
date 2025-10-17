@@ -54,7 +54,7 @@ enum VK_EXPORT_METAL_OBJECT_TYPE_METAL_TEXTURE_BIT_EXT = VkExportMetalObjectType
 enum VK_EXPORT_METAL_OBJECT_TYPE_METAL_IOSURFACE_BIT_EXT = VkExportMetalObjectTypeFlagBitsEXT.VK_EXPORT_METAL_OBJECT_TYPE_METAL_IOSURFACE_BIT_EXT;
 enum VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT = VkExportMetalObjectTypeFlagBitsEXT.VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT;
 
-alias VkExportMetalObjectTypeFlagsEXT = VkFlags;
+alias VkExportMetalObjectTypeFlagsEXT = VkBitFlagsBase!(VkFlags, VkExportMetalObjectTypeFlagBitsEXT);
 
 struct VkExportMetalObjectCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECT_CREATE_INFO_EXT;

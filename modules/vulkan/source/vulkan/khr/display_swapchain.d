@@ -45,6 +45,7 @@ struct VkDisplayPresentInfoKHR {
     VkBool32 persistent;
 }
 
+import vulkan.khr.swapchain : VkSwapchainCreateInfoKHR, VkSwapchainKHR;
 alias PFN_vkCreateSharedSwapchainsKHR = VkResult function(
     VkDevice device,
     uint swapchainCount,

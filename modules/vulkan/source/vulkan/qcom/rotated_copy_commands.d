@@ -15,7 +15,6 @@ import numem.core.types : OpaqueHandle;
 import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
-import vulkan.khr.surface;
 
 extern (System) @nogc nothrow:
 
@@ -33,6 +32,7 @@ version (VK_VERSION_1_3) {} else {
 enum VK_QCOM_ROTATED_COPY_COMMANDS_SPEC_VERSION = 2;
 enum VK_QCOM_ROTATED_COPY_COMMANDS_EXTENSION_NAME = "VK_QCOM_rotated_copy_commands";
 
+import vulkan.khr.surface : VkSurfaceTransformFlagBitsKHR;
 struct VkCopyCommandTransformInfoQCOM {
     VkStructureType sType = VK_STRUCTURE_TYPE_COPY_COMMAND_TRANSFORM_INFO_QCOM;
     const(void)* pNext;

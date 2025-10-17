@@ -15,7 +15,6 @@ import numem.core.types : OpaqueHandle;
 import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
-import vulkan.khr.pipeline_library;
 
 extern (System) @nogc nothrow:
 
@@ -87,6 +86,7 @@ enum VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV = VK_RAY_TRACING_SHADER_GROUP_T
 enum VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
 enum VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_NV = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
 
+import vulkan.khr.pipeline_library : VkPipelineLibraryCreateInfoKHR;
 struct VkRayTracingPipelineCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR;
     const(void)* pNext;
@@ -169,6 +169,7 @@ alias PFN_vkCmdTraceRaysKHR = void function(
     uint depth,
 );
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkCreateRayTracingPipelinesKHR = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,

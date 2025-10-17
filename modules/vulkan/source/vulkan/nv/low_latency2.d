@@ -154,6 +154,7 @@ enum VkOutOfBandQueueTypeNV {
 enum VK_OUT_OF_BAND_QUEUE_TYPE_RENDER_NV = VkOutOfBandQueueTypeNV.VK_OUT_OF_BAND_QUEUE_TYPE_RENDER_NV;
 enum VK_OUT_OF_BAND_QUEUE_TYPE_PRESENT_NV = VkOutOfBandQueueTypeNV.VK_OUT_OF_BAND_QUEUE_TYPE_PRESENT_NV;
 
+import vulkan.khr.surface : VkPresentModeKHR;
 struct VkLatencySurfaceCapabilitiesNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_LATENCY_SURFACE_CAPABILITIES_NV;
     const(void)* pNext;
@@ -161,24 +162,28 @@ struct VkLatencySurfaceCapabilitiesNV {
     VkPresentModeKHR* pPresentModes;
 }
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkSetLatencySleepModeNV = VkResult function(
     VkDevice device,
     VkSwapchainKHR swapchain,
     const(VkLatencySleepModeInfoNV)* pSleepModeInfo,
 );
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkLatencySleepNV = VkResult function(
     VkDevice device,
     VkSwapchainKHR swapchain,
     const(VkLatencySleepInfoNV)* pSleepInfo,
 );
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkSetLatencyMarkerNV = void function(
     VkDevice device,
     VkSwapchainKHR swapchain,
     const(VkSetLatencyMarkerInfoNV)* pLatencyMarkerInfo,
 );
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkGetLatencyTimingsNV = void function(
     VkDevice device,
     VkSwapchainKHR swapchain,

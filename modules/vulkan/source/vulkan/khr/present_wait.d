@@ -43,6 +43,7 @@ struct VkPhysicalDevicePresentWaitFeaturesKHR {
     VkBool32 presentWait;
 }
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkWaitForPresentKHR = VkResult function(
     VkDevice device,
     VkSwapchainKHR swapchain,
