@@ -319,7 +319,7 @@ alias PFN_vkCreateIndirectCommandsLayoutEXT = VkResult function(
     VkDevice device,
     const(VkIndirectCommandsLayoutCreateInfoEXT)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkIndirectCommandsLayoutEXT* pIndirectCommandsLayout,
+    ref VkIndirectCommandsLayoutEXT pIndirectCommandsLayout,
 );
 
 alias PFN_vkDestroyIndirectCommandsLayoutEXT = void function(
@@ -332,7 +332,7 @@ alias PFN_vkCreateIndirectExecutionSetEXT = VkResult function(
     VkDevice device,
     const(VkIndirectExecutionSetCreateInfoEXT)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkIndirectExecutionSetEXT* pIndirectExecutionSet,
+    ref VkIndirectExecutionSetEXT pIndirectExecutionSet,
 );
 
 alias PFN_vkDestroyIndirectExecutionSetEXT = void function(

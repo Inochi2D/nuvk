@@ -397,11 +397,7 @@ class VkRegistryParser {
 
                     auto postfix = child.textContent[$ - postNameLength + member.name.length .. $ - commentLength];
                     auto whole = child.textContent[0 .. $ - postNameLength] ~ postfix;
-                    member.type = parseTypeString(type.textContent, whole, &member.width);
-
-                    // if (auto length = child.firstChildByTagName("enum")) {
-                    //     member.type = format!"%s[%s]"(member.type, length.textContent);
-                    // }
+                    member.type = parseTypeString(type.textContent, whole, width: &member.width);
                 }
             }
 
@@ -465,10 +461,6 @@ class VkRegistryParser {
                     auto postfix = child.textContent[$ - postNameLength + member.name.length .. $ - commentLength];
                     auto whole = child.textContent[0 .. $ - postNameLength] ~ postfix;
                     member.type = parseTypeString(type.textContent, whole);
-
-                    // if (auto length = child.firstChildByTagName("enum")) {
-                    //     member.type = format!"%s[%s]"(member.type, length.textContent);
-                    // }
                 }
             }
 
@@ -748,6 +740,12 @@ class VkRegistryParser {
 
             VkParam param;
 
+            if (auto length = child.getAttribute("len")) {
+                param.optional = true;
+            } else if (auto optional = child.getAttribute("optional")) {
+                param.optional = true;
+            }
+
             if (auto name = child.firstChildByTagName("name")) {
                 param.name = name.textContent.idup;
 
@@ -759,7 +757,7 @@ class VkRegistryParser {
                 if (auto type = child.firstChildByTagName("type")) {
                     auto postfix = child.textContent[$ - postNameLength + param.name.length .. $];
                     auto whole = child.textContent[0 .. $ - postNameLength] ~ postfix;
-                    param.type = parseTypeString(type.textContent, whole);
+                    param.type = parseTypeString(type.textContent, whole, refify: !param.optional);
                 }
             }
 
@@ -1066,11 +1064,13 @@ class VkRegistryParser {
      * 
      * Params:
      *   name = A type in string form as obtained from an XML document.
+     *   width = Out parameter for returning the bit width of bitfields.
+     *   refify = Whether to convert pointers to handles into refs.
      * 
      * Returns: the D equivalent of the given type.
      */
-    private static string parseTypeString(xmlstring name, uint* width = null) {
-        return parseTypeString(name, name, width);
+    private string parseTypeString(xmlstring name, uint* width = null, bool refify = false) {
+        return parseTypeString(name, name, width, refify);
     }
 
     /** 
@@ -1079,10 +1079,12 @@ class VkRegistryParser {
      * Params:
      *   name = A type in string form as obtained from an XML document.
      *   whole = The surrounding text of the given type name.
+     *   width = Out parameter for returning the bit width of bitfields.
+     *   refify = Whether to convert pointers to handles into refs.
      * 
      * Returns: the D equivalent of the given type.
      */
-    private static string parseTypeString(xmlstring name, xmlstring whole, uint* width = null) {
+    private string parseTypeString(xmlstring name, xmlstring whole, uint* width = null, bool refify = false) {
         import std.ascii;
 
         string result = typemap.get(name, name).idup;
@@ -1130,6 +1132,11 @@ class VkRegistryParser {
                 result ~= post[0];
                 post = post[1 .. $].strip;
             }
+        }
+
+        // Convert pointers to handles into refs instead.
+        if (refify && name in registry.handles && result.endsWith("*")) {
+            result = format!"ref %s"(result[0 .. $ - 1]);
         }
 
         return result;

@@ -52,5 +52,5 @@ alias PFN_vkCreateViSurfaceNN = VkResult function(
     VkInstance instance,
     const(VkViSurfaceCreateInfoNN)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSurfaceKHR* pSurface,
+    ref VkSurfaceKHR pSurface,
 );

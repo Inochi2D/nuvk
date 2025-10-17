@@ -4607,7 +4607,7 @@ enum VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE = VkSystemAllocationScope.INSTANCE;
 extern VkResult vkCreateInstance(
     const(VkInstanceCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkInstance* pInstance,
+    ref VkInstance pInstance,
 );
 
 extern void vkDestroyInstance(
@@ -4704,7 +4704,7 @@ extern VkResult vkCreateDevice(
     VkPhysicalDevice physicalDevice,
     const(VkDeviceCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkDevice* pDevice,
+    ref VkDevice pDevice,
 );
 
 extern void vkDestroyDevice(
@@ -4846,7 +4846,7 @@ extern void vkGetDeviceQueue(
     VkDevice device,
     uint queueFamilyIndex,
     uint queueIndex,
-    VkQueue* pQueue,
+    ref VkQueue pQueue,
 );
 
 extern VkResult vkQueueSubmit(
@@ -4893,7 +4893,7 @@ extern VkResult vkAllocateMemory(
     VkDevice device,
     const(VkMemoryAllocateInfo)* pAllocateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkDeviceMemory* pMemory,
+    ref VkDeviceMemory pMemory,
 );
 
 extern void vkFreeMemory(
@@ -5147,7 +5147,7 @@ extern VkResult vkCreateFence(
     VkDevice device,
     const(VkFenceCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkFence* pFence,
+    ref VkFence pFence,
 );
 
 extern void vkDestroyFence(
@@ -5191,7 +5191,7 @@ extern VkResult vkCreateSemaphore(
     VkDevice device,
     const(VkSemaphoreCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSemaphore* pSemaphore,
+    ref VkSemaphore pSemaphore,
 );
 
 extern void vkDestroySemaphore(
@@ -5224,7 +5224,7 @@ extern VkResult vkCreateEvent(
     VkDevice device,
     const(VkEventCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkEvent* pEvent,
+    ref VkEvent pEvent,
 );
 
 extern void vkDestroyEvent(
@@ -5361,7 +5361,7 @@ extern VkResult vkCreateQueryPool(
     VkDevice device,
     const(VkQueryPoolCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkQueryPool* pQueryPool,
+    ref VkQueryPool pQueryPool,
 );
 
 extern void vkDestroyQueryPool(
@@ -5502,7 +5502,7 @@ extern VkResult vkCreateBuffer(
     VkDevice device,
     const(VkBufferCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkBuffer* pBuffer,
+    ref VkBuffer pBuffer,
 );
 
 extern void vkDestroyBuffer(
@@ -5531,7 +5531,7 @@ extern VkResult vkCreateBufferView(
     VkDevice device,
     const(VkBufferViewCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkBufferView* pView,
+    ref VkBufferView pView,
 );
 
 extern void vkDestroyBufferView(
@@ -5662,7 +5662,7 @@ extern VkResult vkCreateImage(
     VkDevice device,
     const(VkImageCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkImage* pImage,
+    ref VkImage pImage,
 );
 
 extern void vkDestroyImage(
@@ -5760,7 +5760,7 @@ extern VkResult vkCreateImageView(
     VkDevice device,
     const(VkImageViewCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkImageView* pView,
+    ref VkImageView pView,
 );
 
 extern void vkDestroyImageView(
@@ -5787,7 +5787,7 @@ extern VkResult vkCreateShaderModule(
     VkDevice device,
     const(VkShaderModuleCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkShaderModule* pShaderModule,
+    ref VkShaderModule pShaderModule,
 );
 
 extern void vkDestroyShaderModule(
@@ -5814,7 +5814,7 @@ extern VkResult vkCreatePipelineCache(
     VkDevice device,
     const(VkPipelineCacheCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkPipelineCache* pPipelineCache,
+    ref VkPipelineCache pPipelineCache,
 );
 
 extern void vkDestroyPipelineCache(
@@ -6762,7 +6762,7 @@ extern VkResult vkCreatePipelineLayout(
     VkDevice device,
     const(VkPipelineLayoutCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkPipelineLayout* pPipelineLayout,
+    ref VkPipelineLayout pPipelineLayout,
 );
 
 extern void vkDestroyPipelineLayout(
@@ -6873,7 +6873,7 @@ extern VkResult vkCreateSampler(
     VkDevice device,
     const(VkSamplerCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSampler* pSampler,
+    ref VkSampler pSampler,
 );
 
 extern void vkDestroySampler(
@@ -7065,7 +7065,7 @@ extern VkResult vkCreateDescriptorSetLayout(
     VkDevice device,
     const(VkDescriptorSetLayoutCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkDescriptorSetLayout* pSetLayout,
+    ref VkDescriptorSetLayout pSetLayout,
 );
 
 extern void vkDestroyDescriptorSetLayout(
@@ -7078,7 +7078,7 @@ extern VkResult vkCreateDescriptorPool(
     VkDevice device,
     const(VkDescriptorPoolCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkDescriptorPool* pDescriptorPool,
+    ref VkDescriptorPool pDescriptorPool,
 );
 
 extern void vkDestroyDescriptorPool(
@@ -7404,7 +7404,7 @@ extern VkResult vkCreateFramebuffer(
     VkDevice device,
     const(VkFramebufferCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkFramebuffer* pFramebuffer,
+    ref VkFramebuffer pFramebuffer,
 );
 
 extern void vkDestroyFramebuffer(
@@ -7417,7 +7417,7 @@ extern VkResult vkCreateRenderPass(
     VkDevice device,
     const(VkRenderPassCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkRenderPass* pRenderPass,
+    ref VkRenderPass pRenderPass,
 );
 
 extern void vkDestroyRenderPass(
@@ -7469,7 +7469,7 @@ extern VkResult vkCreateCommandPool(
     VkDevice device,
     const(VkCommandPoolCreateInfo)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkCommandPool* pCommandPool,
+    ref VkCommandPool pCommandPool,
 );
 
 extern void vkDestroyCommandPool(
@@ -8621,7 +8621,7 @@ version (VK_VERSION_1_1) {
     extern void vkGetDeviceQueue2(
         VkDevice device,
         const(VkDeviceQueueInfo2)* pQueueInfo,
-        VkQueue* pQueue,
+        ref VkQueue pQueue,
     );
 }
 
@@ -8725,7 +8725,7 @@ version (VK_VERSION_1_1) {
         VkDevice device,
         const(VkSamplerYcbcrConversionCreateInfo)* pCreateInfo,
         const(VkAllocationCallbacks)* pAllocator,
-        VkSamplerYcbcrConversion* pYcbcrConversion,
+        ref VkSamplerYcbcrConversion pYcbcrConversion,
     );
     
     extern void vkDestroySamplerYcbcrConversion(
@@ -8780,7 +8780,7 @@ version (VK_VERSION_1_1) {
         VkDevice device,
         const(VkDescriptorUpdateTemplateCreateInfo)* pCreateInfo,
         const(VkAllocationCallbacks)* pAllocator,
-        VkDescriptorUpdateTemplate* pDescriptorUpdateTemplate,
+        ref VkDescriptorUpdateTemplate pDescriptorUpdateTemplate,
     );
     
     extern void vkDestroyDescriptorUpdateTemplate(
@@ -9417,7 +9417,7 @@ version (VK_VERSION_1_2) {
         VkDevice device,
         const(VkRenderPassCreateInfo2)* pCreateInfo,
         const(VkAllocationCallbacks)* pAllocator,
-        VkRenderPass* pRenderPass,
+        ref VkRenderPass pRenderPass,
     );
     
     extern void vkCmdBeginRenderPass2(
@@ -10248,7 +10248,7 @@ version (VK_VERSION_1_3) {
         VkDevice device,
         const(VkPrivateDataSlotCreateInfo)* pCreateInfo,
         const(VkAllocationCallbacks)* pAllocator,
-        VkPrivateDataSlot* pPrivateDataSlot,
+        ref VkPrivateDataSlot pPrivateDataSlot,
     );
     
     extern void vkDestroyPrivateDataSlot(

@@ -49,5 +49,5 @@ alias PFN_vkGetDrmDisplayEXT = VkResult function(
     VkPhysicalDevice physicalDevice,
     int drmFd,
     uint connectorId,
-    VkDisplayKHR* display,
+    ref VkDisplayKHR display,
 );

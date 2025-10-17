@@ -57,7 +57,7 @@ alias PFN_vkCreateDirectFBSurfaceEXT = VkResult function(
     VkInstance instance,
     const(VkDirectFBSurfaceCreateInfoEXT)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSurfaceKHR* pSurface,
+    ref VkSurfaceKHR pSurface,
 );
 
 alias PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT = VkBool32 function(

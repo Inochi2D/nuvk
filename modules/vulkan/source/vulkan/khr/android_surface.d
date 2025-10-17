@@ -55,5 +55,5 @@ alias PFN_vkCreateAndroidSurfaceKHR = VkResult function(
     VkInstance instance,
     const(VkAndroidSurfaceCreateInfoKHR)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSurfaceKHR* pSurface,
+    ref VkSurfaceKHR pSurface,
 );

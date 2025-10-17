@@ -223,7 +223,7 @@ alias PFN_vkCreateOpticalFlowSessionNV = VkResult function(
     VkDevice device,
     const(VkOpticalFlowSessionCreateInfoNV)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkOpticalFlowSessionNV* pSession,
+    ref VkOpticalFlowSessionNV pSession,
 );
 
 alias PFN_vkDestroyOpticalFlowSessionNV = void function(

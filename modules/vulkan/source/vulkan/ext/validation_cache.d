@@ -71,7 +71,7 @@ alias PFN_vkCreateValidationCacheEXT = VkResult function(
     VkDevice device,
     const(VkValidationCacheCreateInfoEXT)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkValidationCacheEXT* pValidationCache,
+    ref VkValidationCacheEXT pValidationCache,
 );
 
 alias PFN_vkDestroyValidationCacheEXT = void function(

@@ -196,7 +196,7 @@ alias PFN_vkCreateDebugUtilsMessengerEXT = VkResult function(
     VkInstance instance,
     const(VkDebugUtilsMessengerCreateInfoEXT)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkDebugUtilsMessengerEXT* pMessenger,
+    ref VkDebugUtilsMessengerEXT pMessenger,
 );
 
 alias PFN_vkDestroyDebugUtilsMessengerEXT = void function(

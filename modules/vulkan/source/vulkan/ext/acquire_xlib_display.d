@@ -53,5 +53,5 @@ alias PFN_vkGetRandROutputDisplayEXT = VkResult function(
     VkPhysicalDevice physicalDevice,
     Display* dpy,
     RROutput rrOutput,
-    VkDisplayKHR* pDisplay,
+    ref VkDisplayKHR pDisplay,
 );

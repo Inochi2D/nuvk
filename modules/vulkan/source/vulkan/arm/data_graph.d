@@ -286,7 +286,7 @@ alias PFN_vkCreateDataGraphPipelineSessionARM = VkResult function(
     VkDevice device,
     const(VkDataGraphPipelineSessionCreateInfoARM)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkDataGraphPipelineSessionARM* pSession,
+    ref VkDataGraphPipelineSessionARM pSession,
 );
 
 alias PFN_vkGetDataGraphPipelineSessionBindPointRequirementsARM = VkResult function(

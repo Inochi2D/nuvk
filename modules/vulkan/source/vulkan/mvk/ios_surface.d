@@ -54,5 +54,5 @@ alias PFN_vkCreateIOSSurfaceMVK = VkResult function(
     VkInstance instance,
     const(VkIOSSurfaceCreateInfoMVK)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSurfaceKHR* pSurface,
+    ref VkSurfaceKHR pSurface,
 );

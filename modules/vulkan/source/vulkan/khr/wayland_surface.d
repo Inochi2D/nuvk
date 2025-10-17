@@ -57,7 +57,7 @@ alias PFN_vkCreateWaylandSurfaceKHR = VkResult function(
     VkInstance instance,
     const(VkWaylandSurfaceCreateInfoKHR)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSurfaceKHR* pSurface,
+    ref VkSurfaceKHR pSurface,
 );
 
 alias PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR = VkBool32 function(

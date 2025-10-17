@@ -340,7 +340,7 @@ alias PFN_vkCreateVideoSessionKHR = VkResult function(
     VkDevice device,
     const(VkVideoSessionCreateInfoKHR)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkVideoSessionKHR* pVideoSession,
+    ref VkVideoSessionKHR pVideoSession,
 );
 
 alias PFN_vkDestroyVideoSessionKHR = void function(
@@ -367,7 +367,7 @@ alias PFN_vkCreateVideoSessionParametersKHR = VkResult function(
     VkDevice device,
     const(VkVideoSessionParametersCreateInfoKHR)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkVideoSessionParametersKHR* pVideoSessionParameters,
+    ref VkVideoSessionParametersKHR pVideoSessionParameters,
 );
 
 alias PFN_vkUpdateVideoSessionParametersKHR = VkResult function(

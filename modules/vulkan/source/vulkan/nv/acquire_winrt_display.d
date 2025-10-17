@@ -52,5 +52,5 @@ alias PFN_vkAcquireWinrtDisplayNV = VkResult function(
 alias PFN_vkGetWinrtDisplayNV = VkResult function(
     VkPhysicalDevice physicalDevice,
     uint deviceRelativeId,
-    VkDisplayKHR* pDisplay,
+    ref VkDisplayKHR pDisplay,
 );

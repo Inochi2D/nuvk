@@ -48,5 +48,5 @@ alias PFN_vkCreateHeadlessSurfaceEXT = VkResult function(
     VkInstance instance,
     const(VkHeadlessSurfaceCreateInfoEXT)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSurfaceKHR* pSurface,
+    ref VkSurfaceKHR pSurface,
 );

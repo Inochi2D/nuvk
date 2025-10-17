@@ -57,7 +57,7 @@ alias PFN_vkCreateXcbSurfaceKHR = VkResult function(
     VkInstance instance,
     const(VkXcbSurfaceCreateInfoKHR)* pCreateInfo,
     const(VkAllocationCallbacks)* pAllocator,
-    VkSurfaceKHR* pSurface,
+    ref VkSurfaceKHR pSurface,
 );
 
 alias PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR = VkBool32 function(
