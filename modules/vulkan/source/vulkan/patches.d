@@ -2,11 +2,12 @@
  * Dirty hacks and fixes to dumb problems.
  */
 module vulkan.patches;
+public import vulkan.bitflags;
 
 /**
-    Template that provides a workaround for issue 20473 in D 2.111
-    https://github.com/dlang/dmd/issues/20473
-*/
+ * Template that provides a workaround for issue 20473 in D 2.111
+ *   https://github.com/dlang/dmd/issues/20473
+ */
 mixin template DMD20473() {
     static if (__VERSION__ <= 2111) {
         extern(D) size_t toHash() const {

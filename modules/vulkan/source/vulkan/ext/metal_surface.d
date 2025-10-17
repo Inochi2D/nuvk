@@ -50,6 +50,7 @@ struct VkMetalSurfaceCreateInfoEXT {
 }
 
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateMetalSurfaceEXT = VkResult function(
     VkInstance instance,
     const(VkMetalSurfaceCreateInfoEXT)* pCreateInfo,

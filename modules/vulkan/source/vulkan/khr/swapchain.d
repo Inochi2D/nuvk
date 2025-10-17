@@ -88,8 +88,9 @@ enum VK_SWAPCHAIN_CREATE_PRESENT_WAIT_2_BIT_KHR = VkSwapchainCreateFlagBitsKHR.V
 enum VK_SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_KHR = VkSwapchainCreateFlagBitsKHR.VK_SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_KHR;
 enum VK_SWAPCHAIN_CREATE_RESERVED_8_BIT_EXT = VkSwapchainCreateFlagBitsKHR.VK_SWAPCHAIN_CREATE_RESERVED_8_BIT_EXT;
 
-alias VkSwapchainCreateFlagsKHR = VkFlags;
+alias VkSwapchainCreateFlagsKHR = VkBitFlagsBase!(VkFlags, VkSwapchainCreateFlagBitsKHR);
 
+import vulkan.khr.surface : VkSurfaceKHR, VkColorSpaceKHR, VkSurfaceTransformFlagBitsKHR, VkCompositeAlphaFlagBitsKHR, VkPresentModeKHR;
 struct VkSwapchainCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     const(void)* pNext;
@@ -158,7 +159,6 @@ alias PFN_vkQueuePresentKHR = VkResult function(
     const(VkPresentInfoKHR)* pPresentInfo,
 );
 
-version (VK_VERSION_1_1):
 
 struct VkImageSwapchainCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -195,7 +195,7 @@ enum VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR = VkDeviceGroupPresentModeFlagB
 enum VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR = VkDeviceGroupPresentModeFlagBitsKHR.VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR;
 enum VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR = VkDeviceGroupPresentModeFlagBitsKHR.VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR;
 
-alias VkDeviceGroupPresentModeFlagsKHR = VkFlags;
+alias VkDeviceGroupPresentModeFlagsKHR = VkBitFlagsBase!(VkFlags, VkDeviceGroupPresentModeFlagBitsKHR);
 
 struct VkDeviceGroupPresentCapabilitiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_CAPABILITIES_KHR;
@@ -223,12 +223,14 @@ alias PFN_vkGetDeviceGroupPresentCapabilitiesKHR = VkResult function(
     VkDeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities,
 );
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkGetDeviceGroupSurfacePresentModesKHR = VkResult function(
     VkDevice device,
     VkSurfaceKHR surface,
     VkDeviceGroupPresentModeFlagsKHR* pModes,
 );
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkGetPhysicalDevicePresentRectanglesKHR = VkResult function(
     VkPhysicalDevice physicalDevice,
     VkSurfaceKHR surface,

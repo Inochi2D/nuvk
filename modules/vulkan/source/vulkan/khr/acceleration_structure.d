@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.deferred_host_operations;
 version (VK_VERSION_1_2) {} else {
     public import vulkan.khr.buffer_device_address;
-    version (VK_VERSION_1_1):
     public import vulkan.ext.descriptor_indexing;
 }
 
@@ -208,8 +207,8 @@ struct VkAccelerationStructureGeometryKHR {
     VkFlags flags;
 }
 
-alias VkGeometryFlagsKHR = VkFlags;
-alias VkGeometryInstanceFlagsKHR = VkFlags;
+alias VkGeometryFlagsKHR = VkBitFlagsBase!(VkFlags, VkGeometryFlagBitsKHR);
+alias VkGeometryInstanceFlagsKHR = VkBitFlagsBase!(VkFlags, VkGeometryInstanceFlagBitsKHR);
 
 enum VkGeometryFlagBitsKHR : uint {
     VK_GEOMETRY_OPAQUE_BIT_KHR = 1,
@@ -321,7 +320,7 @@ deprecated("aliased")
 enum VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DATA_ACCESS_KHR = VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DATA_ACCESS_BIT_KHR;
 enum VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_CLUSTER_OPACITY_MICROMAPS_BIT_NV = VkBuildAccelerationStructureFlagBitsKHR.VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_CLUSTER_OPACITY_MICROMAPS_BIT_NV;
 
-alias VkBuildAccelerationStructureFlagsKHR = VkFlags;
+alias VkBuildAccelerationStructureFlagsKHR = VkBitFlagsBase!(VkFlags, VkBuildAccelerationStructureFlagBitsKHR);
 
 enum VkCopyAccelerationStructureModeKHR {
     VK_COPY_ACCELERATION_STRUCTURE_MODE_CLONE_KHR = 0,
@@ -443,7 +442,7 @@ enum VK_ACCELERATION_STRUCTURE_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR = Vk
 enum VK_ACCELERATION_STRUCTURE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT = VkAccelerationStructureCreateFlagBitsKHR.VK_ACCELERATION_STRUCTURE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT;
 enum VK_ACCELERATION_STRUCTURE_CREATE_MOTION_BIT_NV = VkAccelerationStructureCreateFlagBitsKHR.VK_ACCELERATION_STRUCTURE_CREATE_MOTION_BIT_NV;
 
-alias VkAccelerationStructureCreateFlagsKHR = VkFlags;
+alias VkAccelerationStructureCreateFlagsKHR = VkBitFlagsBase!(VkFlags, VkAccelerationStructureCreateFlagBitsKHR);
 
 enum VkBuildAccelerationStructureModeKHR {
     VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR = 0,
@@ -490,6 +489,7 @@ alias PFN_vkCmdBuildAccelerationStructuresIndirectKHR = void function(
     const(const(uint)*)* ppMaxPrimitiveCounts,
 );
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkBuildAccelerationStructuresKHR = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,
@@ -498,18 +498,21 @@ alias PFN_vkBuildAccelerationStructuresKHR = VkResult function(
     const(const(VkAccelerationStructureBuildRangeInfoKHR)*)* ppBuildRangeInfos,
 );
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkCopyAccelerationStructureKHR = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,
     const(VkCopyAccelerationStructureInfoKHR)* pInfo,
 );
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkCopyAccelerationStructureToMemoryKHR = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,
     const(VkCopyAccelerationStructureToMemoryInfoKHR)* pInfo,
 );
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkCopyMemoryToAccelerationStructureKHR = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,

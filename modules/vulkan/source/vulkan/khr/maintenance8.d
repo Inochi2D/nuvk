@@ -25,7 +25,6 @@ version (VK_VERSION_1_3)
 version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
-version (VK_VERSION_1_1):
 
 enum VK_KHR_MAINTENANCE_8_SPEC_VERSION = 1;
 enum VK_KHR_MAINTENANCE_8_EXTENSION_NAME = "VK_KHR_maintenance8";
@@ -43,7 +42,7 @@ enum VkAccessFlagBits3KHR : ulong {
 
 enum VK_ACCESS_3_NONE_KHR = VkAccessFlagBits3KHR.VK_ACCESS_3_NONE_KHR;
 
-alias VkAccessFlags3KHR = VkFlags64;
+alias VkAccessFlags3KHR = VkBitFlagsBase!(VkFlags64, VkAccessFlagBits3KHR);
 
 enum VkPipelineCacheCreateFlagBits : uint {
     EXTERNALLY_SYNCHRONIZED_BIT = 1,

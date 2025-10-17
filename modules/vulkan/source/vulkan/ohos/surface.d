@@ -50,6 +50,7 @@ struct VkSurfaceCreateInfoOHOS {
 }
 
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateSurfaceOHOS = VkResult function(
     VkInstance instance,
     const(VkSurfaceCreateInfoOHOS)* pCreateInfo,

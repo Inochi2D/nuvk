@@ -49,6 +49,7 @@ struct VkImagePipeSurfaceCreateInfoFUCHSIA {
     zx_handle_t imagePipeHandle;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateImagePipeSurfaceFUCHSIA = VkResult function(
     VkInstance instance,
     const(VkImagePipeSurfaceCreateInfoFUCHSIA)* pCreateInfo,

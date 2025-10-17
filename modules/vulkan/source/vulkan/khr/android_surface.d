@@ -51,6 +51,7 @@ struct VkAndroidSurfaceCreateInfoKHR {
     ANativeWindow* window;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateAndroidSurfaceKHR = VkResult function(
     VkInstance instance,
     const(VkAndroidSurfaceCreateInfoKHR)* pCreateInfo,

@@ -30,7 +30,7 @@ public import vulkan.khr.video_encode_queue;
 enum VK_KHR_VIDEO_ENCODE_INTRA_REFRESH_SPEC_VERSION = 1;
 enum VK_KHR_VIDEO_ENCODE_INTRA_REFRESH_EXTENSION_NAME = "VK_KHR_video_encode_intra_refresh";
 
-alias VkVideoEncodeIntraRefreshModeFlagsKHR = VkFlags;
+alias VkVideoEncodeIntraRefreshModeFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoEncodeIntraRefreshModeFlagBitsKHR);
 
 enum VkVideoEncodeIntraRefreshModeFlagBitsKHR : uint {
     VK_VIDEO_ENCODE_INTRA_REFRESH_MODE_NONE_KHR = 0,

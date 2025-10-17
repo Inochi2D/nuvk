@@ -90,7 +90,7 @@ enum VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT = VkDebugUtilsMessageSeverityF
 enum VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT = VkDebugUtilsMessageSeverityFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
 enum VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT = VkDebugUtilsMessageSeverityFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 
-alias VkDebugUtilsMessageSeverityFlagsEXT = VkFlags;
+alias VkDebugUtilsMessageSeverityFlagsEXT = VkBitFlagsBase!(VkFlags, VkDebugUtilsMessageSeverityFlagBitsEXT);
 
 enum VkDebugUtilsMessageTypeFlagBitsEXT : uint {
     VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT = 1,
@@ -104,7 +104,7 @@ enum VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT = VkDebugUtilsMessageTypeFla
 enum VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT = VkDebugUtilsMessageTypeFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 enum VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT = VkDebugUtilsMessageTypeFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT;
 
-alias VkDebugUtilsMessageTypeFlagsEXT = VkFlags;
+alias VkDebugUtilsMessageTypeFlagsEXT = VkBitFlagsBase!(VkFlags, VkDebugUtilsMessageTypeFlagBitsEXT);
 
 struct VkDebugUtilsMessengerCallbackDataEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT;

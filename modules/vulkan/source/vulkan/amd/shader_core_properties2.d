@@ -39,4 +39,4 @@ struct VkPhysicalDeviceShaderCoreProperties2AMD {
 
 enum VkShaderCorePropertiesFlagBitsAMD : uint;
 
-alias VkShaderCorePropertiesFlagsAMD = VkFlags;
+alias VkShaderCorePropertiesFlagsAMD = VkBitFlagsBase!(VkFlags, VkShaderCorePropertiesFlagBitsAMD);

@@ -63,12 +63,14 @@ struct VkPresentTimeGOOGLE {
     ulong desiredPresentTime;
 }
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkGetRefreshCycleDurationGOOGLE = VkResult function(
     VkDevice device,
     VkSwapchainKHR swapchain,
     VkRefreshCycleDurationGOOGLE* pDisplayTimingProperties,
 );
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkGetPastPresentationTimingGOOGLE = VkResult function(
     VkDevice device,
     VkSwapchainKHR swapchain,

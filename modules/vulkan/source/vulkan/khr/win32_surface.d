@@ -54,6 +54,7 @@ struct VkWin32SurfaceCreateInfoKHR {
     HWND hwnd;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateWin32SurfaceKHR = VkResult function(
     VkInstance instance,
     const(VkWin32SurfaceCreateInfoKHR)* pCreateInfo,

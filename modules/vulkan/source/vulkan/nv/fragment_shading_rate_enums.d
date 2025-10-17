@@ -50,6 +50,7 @@ struct VkPhysicalDeviceFragmentShadingRateEnumsPropertiesNV {
     VkSampleCountFlagBits maxFragmentShadingRateInvocationCount;
 }
 
+import vulkan.khr.fragment_shading_rate : VkFragmentShadingRateCombinerOpKHR;
 struct VkPipelineFragmentShadingRateEnumStateCreateInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_FRAGMENT_SHADING_RATE_ENUM_STATE_CREATE_INFO_NV;
     const(void)* pNext;
@@ -94,6 +95,7 @@ enum VkFragmentShadingRateTypeNV {
 enum VK_FRAGMENT_SHADING_RATE_TYPE_FRAGMENT_SIZE_NV = VkFragmentShadingRateTypeNV.VK_FRAGMENT_SHADING_RATE_TYPE_FRAGMENT_SIZE_NV;
 enum VK_FRAGMENT_SHADING_RATE_TYPE_ENUMS_NV = VkFragmentShadingRateTypeNV.VK_FRAGMENT_SHADING_RATE_TYPE_ENUMS_NV;
 
+import vulkan.khr.fragment_shading_rate : VkFragmentShadingRateCombinerOpKHR;
 alias PFN_vkCmdSetFragmentShadingRateEnumNV = void function(
     VkCommandBuffer commandBuffer,
     VkFragmentShadingRateNV shadingRate,

@@ -50,7 +50,7 @@ enum VkMemoryDecompressionMethodFlagBitsNV : ulong {
 
 enum VK_MEMORY_DECOMPRESSION_METHOD_GDEFLATE_1_0_BIT_NV = VkMemoryDecompressionMethodFlagBitsNV.VK_MEMORY_DECOMPRESSION_METHOD_GDEFLATE_1_0_BIT_NV;
 
-alias VkMemoryDecompressionMethodFlagsNV = VkFlags64;
+alias VkMemoryDecompressionMethodFlagsNV = VkBitFlagsBase!(VkFlags64, VkMemoryDecompressionMethodFlagBitsNV);
 
 struct VkDecompressMemoryRegionNV {
     VkDeviceAddress srcAddress;

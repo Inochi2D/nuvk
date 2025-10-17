@@ -47,7 +47,7 @@ enum VkVideoDecodeCapabilityFlagBitsKHR : uint {
 enum VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_COINCIDE_BIT_KHR = VkVideoDecodeCapabilityFlagBitsKHR.VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_COINCIDE_BIT_KHR;
 enum VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_DISTINCT_BIT_KHR = VkVideoDecodeCapabilityFlagBitsKHR.VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_DISTINCT_BIT_KHR;
 
-alias VkVideoDecodeCapabilityFlagsKHR = VkFlags;
+alias VkVideoDecodeCapabilityFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoDecodeCapabilityFlagBitsKHR);
 
 struct VkVideoDecodeCapabilitiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_CAPABILITIES_KHR;
@@ -67,7 +67,7 @@ enum VK_VIDEO_DECODE_USAGE_TRANSCODING_BIT_KHR = VkVideoDecodeUsageFlagBitsKHR.V
 enum VK_VIDEO_DECODE_USAGE_OFFLINE_BIT_KHR = VkVideoDecodeUsageFlagBitsKHR.VK_VIDEO_DECODE_USAGE_OFFLINE_BIT_KHR;
 enum VK_VIDEO_DECODE_USAGE_STREAMING_BIT_KHR = VkVideoDecodeUsageFlagBitsKHR.VK_VIDEO_DECODE_USAGE_STREAMING_BIT_KHR;
 
-alias VkVideoDecodeUsageFlagsKHR = VkFlags;
+alias VkVideoDecodeUsageFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoDecodeUsageFlagBitsKHR);
 
 struct VkVideoDecodeUsageInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_USAGE_INFO_KHR;
@@ -77,6 +77,7 @@ struct VkVideoDecodeUsageInfoKHR {
 
 alias VkVideoDecodeFlagsKHR = VkFlags;
 
+import vulkan.khr.video_queue : VkVideoPictureResourceInfoKHR, VkVideoReferenceSlotInfoKHR, VkVideoReferenceSlotInfoKHR;
 struct VkVideoDecodeInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_INFO_KHR;
     const(void)* pNext;

@@ -94,6 +94,7 @@ union VkClusterAccelerationStructureOpInputNV {
     VkClusterAccelerationStructureMoveObjectsInputNV* pMoveObjects;
 }
 
+import vulkan.khr.acceleration_structure : VkBuildAccelerationStructureFlagsKHR;
 struct VkClusterAccelerationStructureInputInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_CLUSTER_ACCELERATION_STRUCTURE_INPUT_INFO_NV;
     void* pNext;
@@ -104,6 +105,7 @@ struct VkClusterAccelerationStructureInputInfoNV {
     VkClusterAccelerationStructureOpInputNV opInput;
 }
 
+import vulkan.khr.ray_tracing_pipeline : VkStridedDeviceAddressRegionKHR, VkStridedDeviceAddressRegionKHR, VkStridedDeviceAddressRegionKHR;
 struct VkClusterAccelerationStructureCommandsInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_CLUSTER_ACCELERATION_STRUCTURE_COMMANDS_INFO_NV;
     void* pNext;
@@ -129,7 +131,7 @@ struct VkClusterAccelerationStructureGeometryIndexAndGeometryFlagsNV {
     mixin DMD20473;
 }
 
-alias VkClusterAccelerationStructureClusterFlagsNV = VkFlags;
+alias VkClusterAccelerationStructureClusterFlagsNV = VkBitFlagsBase!(VkFlags, VkClusterAccelerationStructureClusterFlagBitsNV);
 
 enum VkClusterAccelerationStructureClusterFlagBitsNV : uint {
     VK_CLUSTER_ACCELERATION_STRUCTURE_CLUSTER_ALLOW_DISABLE_OPACITY_MICROMAPS_NV = 1,
@@ -137,7 +139,7 @@ enum VkClusterAccelerationStructureClusterFlagBitsNV : uint {
 
 enum VK_CLUSTER_ACCELERATION_STRUCTURE_CLUSTER_ALLOW_DISABLE_OPACITY_MICROMAPS_NV = VkClusterAccelerationStructureClusterFlagBitsNV.VK_CLUSTER_ACCELERATION_STRUCTURE_CLUSTER_ALLOW_DISABLE_OPACITY_MICROMAPS_NV;
 
-alias VkClusterAccelerationStructureGeometryFlagsNV = VkFlags;
+alias VkClusterAccelerationStructureGeometryFlagsNV = VkBitFlagsBase!(VkFlags, VkClusterAccelerationStructureGeometryFlagBitsNV);
 
 enum VkClusterAccelerationStructureGeometryFlagBitsNV : uint {
     VK_CLUSTER_ACCELERATION_STRUCTURE_GEOMETRY_CULL_DISABLE_BIT_NV = 1,
@@ -149,7 +151,7 @@ enum VK_CLUSTER_ACCELERATION_STRUCTURE_GEOMETRY_CULL_DISABLE_BIT_NV = VkClusterA
 enum VK_CLUSTER_ACCELERATION_STRUCTURE_GEOMETRY_NO_DUPLICATE_ANYHIT_INVOCATION_BIT_NV = VkClusterAccelerationStructureGeometryFlagBitsNV.VK_CLUSTER_ACCELERATION_STRUCTURE_GEOMETRY_NO_DUPLICATE_ANYHIT_INVOCATION_BIT_NV;
 enum VK_CLUSTER_ACCELERATION_STRUCTURE_GEOMETRY_OPAQUE_BIT_NV = VkClusterAccelerationStructureGeometryFlagBitsNV.VK_CLUSTER_ACCELERATION_STRUCTURE_GEOMETRY_OPAQUE_BIT_NV;
 
-alias VkClusterAccelerationStructureAddressResolutionFlagsNV = VkFlags;
+alias VkClusterAccelerationStructureAddressResolutionFlagsNV = VkBitFlagsBase!(VkFlags, VkClusterAccelerationStructureAddressResolutionFlagBitsNV);
 
 enum VkClusterAccelerationStructureAddressResolutionFlagBitsNV : uint {
     VK_CLUSTER_ACCELERATION_STRUCTURE_ADDRESS_RESOLUTION_NONE_NV = 0,
@@ -241,7 +243,7 @@ enum VK_CLUSTER_ACCELERATION_STRUCTURE_INDEX_FORMAT_8BIT_NV = VkClusterAccelerat
 enum VK_CLUSTER_ACCELERATION_STRUCTURE_INDEX_FORMAT_16BIT_NV = VkClusterAccelerationStructureIndexFormatFlagBitsNV.VK_CLUSTER_ACCELERATION_STRUCTURE_INDEX_FORMAT_16BIT_NV;
 enum VK_CLUSTER_ACCELERATION_STRUCTURE_INDEX_FORMAT_32BIT_NV = VkClusterAccelerationStructureIndexFormatFlagBitsNV.VK_CLUSTER_ACCELERATION_STRUCTURE_INDEX_FORMAT_32BIT_NV;
 
-alias VkClusterAccelerationStructureIndexFormatFlagsNV = VkFlags;
+alias VkClusterAccelerationStructureIndexFormatFlagsNV = VkBitFlagsBase!(VkFlags, VkClusterAccelerationStructureIndexFormatFlagBitsNV);
 
 enum VkClusterAccelerationStructureTypeNV {
     VK_CLUSTER_ACCELERATION_STRUCTURE_TYPE_CLUSTERS_BOTTOM_LEVEL_NV = 0,
@@ -283,6 +285,7 @@ struct VkClusterAccelerationStructureGetTemplateIndicesInfoNV {
     VkDeviceAddress clusterTemplateAddress;
 }
 
+import vulkan.khr.acceleration_structure : VkAccelerationStructureBuildSizesInfoKHR;
 alias PFN_vkGetClusterAccelerationStructureBuildSizesNV = void function(
     VkDevice device,
     const(VkClusterAccelerationStructureInputInfoNV)* pInfo,

@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 version (VK_VERSION_1_2) {} else {
-    version (VK_VERSION_1_1):
     public import vulkan.khr.buffer_device_address;
 }
 
@@ -118,7 +117,7 @@ enum VkIndirectStateFlagBitsNV : uint {
 
 enum VK_INDIRECT_STATE_FLAG_FRONTFACE_BIT_NV = VkIndirectStateFlagBitsNV.VK_INDIRECT_STATE_FLAG_FRONTFACE_BIT_NV;
 
-alias VkIndirectStateFlagsNV = VkFlags;
+alias VkIndirectStateFlagsNV = VkBitFlagsBase!(VkFlags, VkIndirectStateFlagBitsNV);
 
 alias VkIndirectCommandsLayoutNV = OpaqueHandle!("VkIndirectCommandsLayoutNV");
 
@@ -158,7 +157,7 @@ enum VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_NV = VkIndirectCo
 enum VK_INDIRECT_COMMANDS_LAYOUT_USAGE_INDEXED_SEQUENCES_BIT_NV = VkIndirectCommandsLayoutUsageFlagBitsNV.VK_INDIRECT_COMMANDS_LAYOUT_USAGE_INDEXED_SEQUENCES_BIT_NV;
 enum VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_NV = VkIndirectCommandsLayoutUsageFlagBitsNV.VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_NV;
 
-alias VkIndirectCommandsLayoutUsageFlagsNV = VkFlags;
+alias VkIndirectCommandsLayoutUsageFlagsNV = VkBitFlagsBase!(VkFlags, VkIndirectCommandsLayoutUsageFlagBitsNV);
 
 struct VkIndirectCommandsStreamNV {
     VkBuffer buffer;

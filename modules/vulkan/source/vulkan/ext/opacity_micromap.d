@@ -86,6 +86,7 @@ enum VkMicromapTypeEXT {
 enum VK_MICROMAP_TYPE_OPACITY_MICROMAP_EXT = VkMicromapTypeEXT.VK_MICROMAP_TYPE_OPACITY_MICROMAP_EXT;
 enum VK_MICROMAP_TYPE_DISPLACEMENT_MICROMAP_NV = VkMicromapTypeEXT.VK_MICROMAP_TYPE_DISPLACEMENT_MICROMAP_NV;
 
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressKHR, VkDeviceOrHostAddressConstKHR;
 struct VkMicromapBuildInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_MICROMAP_BUILD_INFO_EXT;
     const(void)* pNext;
@@ -131,7 +132,7 @@ enum VK_BUILD_MICROMAP_PREFER_FAST_TRACE_BIT_EXT = VkBuildMicromapFlagBitsEXT.VK
 enum VK_BUILD_MICROMAP_PREFER_FAST_BUILD_BIT_EXT = VkBuildMicromapFlagBitsEXT.VK_BUILD_MICROMAP_PREFER_FAST_BUILD_BIT_EXT;
 enum VK_BUILD_MICROMAP_ALLOW_COMPACTION_BIT_EXT = VkBuildMicromapFlagBitsEXT.VK_BUILD_MICROMAP_ALLOW_COMPACTION_BIT_EXT;
 
-alias VkBuildMicromapFlagsEXT = VkFlags;
+alias VkBuildMicromapFlagsEXT = VkBitFlagsBase!(VkFlags, VkBuildMicromapFlagBitsEXT);
 
 enum VkCopyMicromapModeEXT {
     VK_COPY_MICROMAP_MODE_CLONE_EXT = 0,
@@ -166,6 +167,7 @@ struct VkMicromapVersionInfoEXT {
     const(ubyte)* pVersionData;
 }
 
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressKHR;
 struct VkCopyMicromapToMemoryInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_COPY_MICROMAP_TO_MEMORY_INFO_EXT;
     const(void)* pNext;
@@ -174,6 +176,7 @@ struct VkCopyMicromapToMemoryInfoEXT {
     VkCopyMicromapModeEXT mode;
 }
 
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressConstKHR;
 struct VkCopyMemoryToMicromapInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_COPY_MEMORY_TO_MICROMAP_INFO_EXT;
     const(void)* pNext;
@@ -196,7 +199,7 @@ enum VkMicromapCreateFlagBitsEXT : uint {
 
 enum VK_MICROMAP_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_EXT = VkMicromapCreateFlagBitsEXT.VK_MICROMAP_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_EXT;
 
-alias VkMicromapCreateFlagsEXT = VkFlags;
+alias VkMicromapCreateFlagsEXT = VkBitFlagsBase!(VkFlags, VkMicromapCreateFlagBitsEXT);
 
 enum VkBuildMicromapModeEXT {
     VK_BUILD_MICROMAP_MODE_BUILD_EXT = 0,
@@ -220,6 +223,7 @@ enum VkOpacityMicromapFormatEXT {
 enum VK_OPACITY_MICROMAP_FORMAT_2_STATE_EXT = VkOpacityMicromapFormatEXT.VK_OPACITY_MICROMAP_FORMAT_2_STATE_EXT;
 enum VK_OPACITY_MICROMAP_FORMAT_4_STATE_EXT = VkOpacityMicromapFormatEXT.VK_OPACITY_MICROMAP_FORMAT_4_STATE_EXT;
 
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressConstKHR;
 struct VkAccelerationStructureTrianglesOpacityMicromapEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_TRIANGLES_OPACITY_MICROMAP_EXT;
     void* pNext;
@@ -272,6 +276,7 @@ alias PFN_vkCmdBuildMicromapsEXT = void function(
     const(VkMicromapBuildInfoEXT)* pInfos,
 );
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkBuildMicromapsEXT = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,
@@ -279,18 +284,21 @@ alias PFN_vkBuildMicromapsEXT = VkResult function(
     const(VkMicromapBuildInfoEXT)* pInfos,
 );
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkCopyMicromapEXT = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,
     const(VkCopyMicromapInfoEXT)* pInfo,
 );
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkCopyMicromapToMemoryEXT = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,
     const(VkCopyMicromapToMemoryInfoEXT)* pInfo,
 );
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkCopyMemoryToMicromapEXT = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,
@@ -331,12 +339,14 @@ alias PFN_vkCmdWriteMicromapsPropertiesEXT = void function(
     uint firstQuery,
 );
 
+import vulkan.khr.acceleration_structure : VkAccelerationStructureCompatibilityKHR;
 alias PFN_vkGetDeviceMicromapCompatibilityEXT = void function(
     VkDevice device,
     const(VkMicromapVersionInfoEXT)* pVersionInfo,
     VkAccelerationStructureCompatibilityKHR* pCompatibility,
 );
 
+import vulkan.khr.acceleration_structure : VkAccelerationStructureBuildTypeKHR;
 alias PFN_vkGetMicromapBuildSizesEXT = void function(
     VkDevice device,
     VkAccelerationStructureBuildTypeKHR buildType,

@@ -44,6 +44,7 @@ struct VkHeadlessSurfaceCreateInfoEXT {
     VkFlags flags;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateHeadlessSurfaceEXT = VkResult function(
     VkInstance instance,
     const(VkHeadlessSurfaceCreateInfoEXT)* pCreateInfo,

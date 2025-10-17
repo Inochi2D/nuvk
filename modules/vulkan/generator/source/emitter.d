@@ -161,12 +161,6 @@ class VkRegistryEmitter {
             file.writefln!"import vulkan.%s.%s;"(deprecated_.prefix, deprecated_.shortName);
         }
 
-        if (auto deps = ext.name in dependencies) {
-            foreach (ref dep; (*deps).map!(d => registry.extensions[d])) {
-                file.writefln!"import vulkan.%s.%s;"(dep.prefix, dep.shortName);
-            }
-        }
-
         if (auto video = ext.name in videos) {
             foreach (v; *video) {
                 file.writefln!"import vulkan.video.%s;"(v);
@@ -340,7 +334,7 @@ class VkRegistryEmitter {
      * Emit a section from core Vulkan.
      */
     private void emitCoreSection(const ref VkSection section, const ref VkFeature feature, ref VkTypeCategory prevcategory) {
-        emitSection(section, prevcategory);
+        emitSection(section, prevcategory, null);
 
         if (!section.commands.empty) {
             if (prevcategory) {
@@ -369,11 +363,11 @@ class VkRegistryEmitter {
      * Emit a section from a Vulkan extension.
      */
     private void emitExtSection(const ref VkSection section, const ref VkExtension ext, ref VkTypeCategory prevcategory) {
-        emitSection(section, prevcategory);
+        emitSection(section, prevcategory, &ext);
 
         foreach (ref command; section.commands.map!(c => registry.commands[c])) {
             file.writeln();
-            emitFuncPtr(command);
+            emitFuncPtr(command, &ext);
         }
     }
 
@@ -432,7 +426,7 @@ class VkRegistryEmitter {
     /** 
      * Common functionality between all functions that emit Vulkan sections.
      */
-    private VkTypeCategory emitSection(const ref VkSection section, ref VkTypeCategory prevcategory) {
+    private VkTypeCategory emitSection(const ref VkSection section, ref VkTypeCategory prevcategory, const VkExtension* current) {
         // Section marker.
         if (!section.name.empty) {
             file.writeln();
@@ -476,7 +470,7 @@ class VkRegistryEmitter {
                     break;
 
                 case VkTypeCategory.Bitmask:
-                    emitBitmask(registry.bitmasks[type.name]);
+                    emitBitmask(registry.bitmasks[type.name], current);
                     break;
 
                 case VkTypeCategory.Handle:
@@ -484,15 +478,15 @@ class VkRegistryEmitter {
                     break;
 
                 case VkTypeCategory.Enum:
-                    emitEnum(registry.enums[type.name]);
+                    emitEnum(registry.enums[type.name], current);
                     break;
 
                 case VkTypeCategory.FuncPtr:
-                    emitFuncPtr(registry.funcptrs[type.name]);
+                    emitFuncPtr(registry.funcptrs[type.name], current);
                     break;
 
                 case VkTypeCategory.Struct:
-                    emitStruct(registry.structs[type.name]);
+                    emitStruct(registry.structs[type.name], current);
                     break;
 
                 case VkTypeCategory.Union:
@@ -522,7 +516,7 @@ class VkRegistryEmitter {
             (typeof(null)) {},
             (string name) {
                 if (name in registry.features) {
-                    file.writefln!"version (%s):"(name);
+                    // file.writefln!"version (%s):"(name);
                 } else if (auto dep = name in registry.extensions) {
                     file.writefln!"public import vulkan.%s.%s;"(dep.prefix, dep.shortName);
                 } else {
@@ -572,8 +566,11 @@ class VkRegistryEmitter {
         }
     }
 
-    private void emitBitmask(const ref VkBitmaskType bitmask) {
-        if (bitmask.alias_.empty) {
+    private void emitBitmask(const ref VkBitmaskType bitmask, const VkExtension* current) {
+        if (bitmask.bitvalues) {
+            emitProvenance(bitmask.bitvalues, current);
+            file.writefln!"alias %s = VkBitFlagsBase!(%s, %s);"(bitmask.name, bitmask.backing, bitmask.bitvalues);
+        } else if (bitmask.alias_.empty) {
             file.writefln!"alias %s = %s;"(bitmask.name, bitmask.backing);
         } else {
             file.writefln!"alias %s = %s;"(bitmask.name, bitmask.alias_);
@@ -589,7 +586,8 @@ class VkRegistryEmitter {
         }
     }
 
-    private void emitEnum(const ref VkEnumType enum_) {
+    private void emitEnum(const ref VkEnumType enum_, const(VkExtension)* current) {
+        emitProvenance(enum_, current);
         if (enum_.alias_) {
             emitAlias(enum_.name, enum_.alias_);
         } else if (enum_.bitmask) {
@@ -649,20 +647,21 @@ class VkRegistryEmitter {
         }
     }
 
-    private void emitFuncPtr(const ref VkCommand command) {
+    private void emitFuncPtr(const ref VkCommand command, const(VkExtension)* current) {
         if (command.alias_) {
             auto funcptr = registry.commands[command.alias_].funcptr;
-            emitFuncPtr(funcptr);
+            emitFuncPtr(funcptr, current);
         } else {
             auto funcptr = command.funcptr;
-            emitFuncPtr(funcptr);
+            emitFuncPtr(funcptr, current);
         }
     }
 
-    private void emitFuncPtr(const ref VkFuncPtrType funcptr) {
+    private void emitFuncPtr(const ref VkFuncPtrType funcptr, const(VkExtension)* current) {
         if (funcptr.params.empty) {
             file.writefln!"alias %s = %s function();"(funcptr.name, funcptr.type);
         } else {
+            emitProvenance(funcptr, current);
             file.openf!"alias %s = %s function("(funcptr.name, funcptr.type);
             foreach (ref param; funcptr.params) {
                 file.writefln!"%s %s,"(param.type, param.safename);
@@ -671,11 +670,12 @@ class VkRegistryEmitter {
         }
     }
 
-    private void emitStruct(const ref VkStructType struct_) {
+    private void emitStruct(const ref VkStructType struct_, const(VkExtension)* current) {
         if (struct_.name.isBespoke) {
             return;
         }
 
+        emitProvenance(struct_, current);
         if (!struct_.alias_.empty) {
             emitAlias(struct_.name, struct_.alias_);
         } else if (struct_.members.empty) {
@@ -735,6 +735,7 @@ class VkRegistryEmitter {
         if (command.params.empty) {
             file.writefln!"extern %s %s();"(command.type, command.name);
         } else {
+            emitProvenance(command, null);
             file.openf!"extern %s %s("(command.type, command.name);
             foreach (param; command.params) {
                 file.writefln!"%s %s,"(param.type, param.safename);
@@ -746,6 +747,77 @@ class VkRegistryEmitter {
     private void emitDeprecation(bool deprecated_, string reason) {
         if (deprecated_) {
             file.writefln!"deprecated(\"%s\")"(reason);
+        }
+    }
+
+    private void emitProvenance(const ref VkEnumType enum_, const(VkExtension)* current) {
+        if (enum_.alias_) {
+            emitProvenance(enum_.alias_, current);
+            return;
+        }
+    }
+
+    private void emitProvenance(const ref VkStructType struct_, const(VkExtension)* current) {
+        if (struct_.alias_) {
+            emitProvenance(struct_.alias_, current);
+            return;
+        }
+
+        string[][string] provs;
+        foreach (ref member; struct_.members) {
+            if (auto ext = registry.provenance(member.utype)) {
+                provs[ext.name] ~= member.utype;
+            }
+        }
+
+        foreach (ext, deps; provs) {
+            emitImport(registry.extensions[ext], deps.filter!(d => d !in *current).array);
+        }
+    }
+
+    private void emitProvenance(const ref VkFuncPtrType funcptr, const(VkExtension)* current) {
+        string[][string] provs;
+        foreach (ref param; funcptr.params) {
+            if (auto ext = registry.provenance(param.utype)) {
+                provs[ext.name] ~= param.utype;
+            }
+        }
+
+        foreach (ext, deps; provs) {
+            emitImport(registry.extensions[ext], deps.filter!(d => d !in *current).array);
+        }
+    }
+
+    private void emitProvenance(const ref VkCommand command, const(VkExtension)* current) {
+        string[][string] provs;
+        foreach (ref param; command.params) {
+            if (auto ext = registry.provenance(param.utype)) {
+                provs[ext.name] ~= param.utype;
+            }
+        }
+
+        foreach (ext, deps; provs) {
+            emitImport(registry.extensions[ext], deps.filter!(d => d !in *current).array);
+        }
+    }
+
+    private void emitProvenance(string name, const(VkExtension)* current) {
+        if (!current || name !in *current) {
+            if (auto ext = registry.provenance(name)) {
+                if (!current || ext.name != current.name) {
+                    emitImport(*ext, [name]);
+                }
+            }
+        }
+    }
+
+    private void emitImport(const ref VkExtension ext) {
+        file.writefln!"import vulkan.%s.%s;"(ext.prefix, ext.shortName);
+    }
+
+    private void emitImport(const ref VkExtension ext, string[] deps) {
+        if (!deps.empty) {
+            file.writefln!"import vulkan.%s.%s : %s;"(ext.prefix, ext.shortName, deps.join(", "));
         }
     }
 
@@ -875,35 +947,6 @@ private const string[string] platforms = [
     "win32": "Windows",
     "ios": "iOS",
     "macos": "OSX",
-];
-
-/** 
- * Dependencies between extensions that have to be manually added because
- *   vk.xml is a mess.
- */
-private string[][string] dependencies = [
-    "VK_EXT_pipeline_properties": [
-        "VK_KHR_pipeline_executable_properties",
-    ],
-    "VK_KHR_ray_tracing_pipeline": [
-        "VK_KHR_pipeline_library",
-    ],
-    "VK_NV_framebuffer_mixed_samples": [
-        "VK_AMD_mixed_attachment_samples",
-    ],
-    "VK_NV_cooperative_matrix": [
-        "VK_KHR_shader_bfloat16",
-        "VK_KHR_cooperative_matrix",
-    ],
-    "VK_NV_partitioned_acceleration_structure": [
-        "VK_NV_cluster_acceleration_structure",
-    ],
-    "VK_QCOM_render_pass_transform": [
-        "VK_KHR_surface",
-    ],
-    "VK_QCOM_rotated_copy_commands": [
-        "VK_KHR_surface",
-    ],
 ];
 
 /** 

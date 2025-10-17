@@ -35,7 +35,7 @@ struct VK_NV_external_memory_capabilities {
 enum VK_NV_EXTERNAL_MEMORY_CAPABILITIES_SPEC_VERSION = 1;
 enum VK_NV_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME = "VK_NV_external_memory_capabilities";
 
-alias VkExternalMemoryHandleTypeFlagsNV = VkFlags;
+alias VkExternalMemoryHandleTypeFlagsNV = VkBitFlagsBase!(VkFlags, VkExternalMemoryHandleTypeFlagBitsNV);
 
 enum VkExternalMemoryHandleTypeFlagBitsNV : uint {
     VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT_NV = 1,
@@ -49,7 +49,7 @@ enum VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_NV = VkExternalMemoryHa
 enum VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_BIT_NV = VkExternalMemoryHandleTypeFlagBitsNV.VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_BIT_NV;
 enum VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_KMT_BIT_NV = VkExternalMemoryHandleTypeFlagBitsNV.VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_KMT_BIT_NV;
 
-alias VkExternalMemoryFeatureFlagsNV = VkFlags;
+alias VkExternalMemoryFeatureFlagsNV = VkBitFlagsBase!(VkFlags, VkExternalMemoryFeatureFlagBitsNV);
 
 enum VkExternalMemoryFeatureFlagBitsNV : uint {
     VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT_NV = 1,

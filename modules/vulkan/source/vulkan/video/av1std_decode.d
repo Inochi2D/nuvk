@@ -58,6 +58,7 @@ struct StdVideoDecodeAV1PictureInfoFlags {
     mixin DMD20473;
 }
 
+import vulkan.video.av1std : StdVideoAV1FrameType, StdVideoAV1InterpolationFilter, StdVideoAV1TxMode, StdVideoAV1TileInfo, StdVideoAV1Quantization, StdVideoAV1Segmentation, StdVideoAV1LoopFilter, StdVideoAV1CDEF, StdVideoAV1LoopRestoration, StdVideoAV1GlobalMotion, StdVideoAV1FilmGrain;
 struct StdVideoDecodeAV1PictureInfo {
     StdVideoDecodeAV1PictureInfoFlags flags;
     StdVideoAV1FrameType frame_type;

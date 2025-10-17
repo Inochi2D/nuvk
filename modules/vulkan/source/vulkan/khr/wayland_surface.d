@@ -53,6 +53,7 @@ struct VkWaylandSurfaceCreateInfoKHR {
     wl_surface* surface;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateWaylandSurfaceKHR = VkResult function(
     VkInstance instance,
     const(VkWaylandSurfaceCreateInfoKHR)* pCreateInfo,

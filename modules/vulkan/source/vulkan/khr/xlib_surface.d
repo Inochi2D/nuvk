@@ -53,6 +53,7 @@ struct VkXlibSurfaceCreateInfoKHR {
     Window window;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateXlibSurfaceKHR = VkResult function(
     VkInstance instance,
     const(VkXlibSurfaceCreateInfoKHR)* pCreateInfo,

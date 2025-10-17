@@ -145,8 +145,9 @@ enum VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR = VkCompositeAlphaFlagBitsKHR.VK_
 enum VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR = VkCompositeAlphaFlagBitsKHR.VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR;
 enum VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR = VkCompositeAlphaFlagBitsKHR.VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
 
-alias VkCompositeAlphaFlagsKHR = VkFlags;
+alias VkCompositeAlphaFlagsKHR = VkBitFlagsBase!(VkFlags, VkCompositeAlphaFlagBitsKHR);
 
+import vulkan.khr.display : VkSurfaceTransformFlagsKHR;
 struct VkSurfaceCapabilitiesKHR {
     uint minImageCount;
     uint maxImageCount;

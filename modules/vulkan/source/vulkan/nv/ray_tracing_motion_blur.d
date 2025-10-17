@@ -30,6 +30,7 @@ public import vulkan.khr.ray_tracing_pipeline;
 enum VK_NV_RAY_TRACING_MOTION_BLUR_SPEC_VERSION = 1;
 enum VK_NV_RAY_TRACING_MOTION_BLUR_EXTENSION_NAME = "VK_NV_ray_tracing_motion_blur";
 
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressConstKHR;
 struct VkAccelerationStructureGeometryMotionTrianglesDataNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_MOTION_TRIANGLES_DATA_NV;
     const(void)* pNext;
@@ -55,6 +56,7 @@ union VkAccelerationStructureMotionInstanceDataNV {
     VkAccelerationStructureSRTMotionInstanceNV srtMotionInstance;
 }
 
+import vulkan.khr.acceleration_structure : VkTransformMatrixKHR, VkTransformMatrixKHR, VkGeometryInstanceFlagsKHR;
 struct VkAccelerationStructureMatrixMotionInstanceNV {
     VkTransformMatrixKHR transformT0;
     VkTransformMatrixKHR transformT1;
@@ -66,6 +68,7 @@ struct VkAccelerationStructureMatrixMotionInstanceNV {
     mixin DMD20473;
 }
 
+import vulkan.khr.acceleration_structure : VkGeometryInstanceFlagsKHR;
 struct VkAccelerationStructureSRTMotionInstanceNV {
     VkSRTDataNV transformT0;
     VkSRTDataNV transformT1;

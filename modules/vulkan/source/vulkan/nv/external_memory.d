@@ -31,12 +31,14 @@ public import vulkan.nv.external_memory_capabilities;
 enum VK_NV_EXTERNAL_MEMORY_SPEC_VERSION = 1;
 enum VK_NV_EXTERNAL_MEMORY_EXTENSION_NAME = "VK_NV_external_memory";
 
+import vulkan.nv.external_memory_capabilities : VkExternalMemoryHandleTypeFlagsNV;
 struct VkExternalMemoryImageCreateInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO_NV;
     const(void)* pNext;
     VkFlags handleTypes;
 }
 
+import vulkan.nv.external_memory_capabilities : VkExternalMemoryHandleTypeFlagsNV;
 struct VkExportMemoryAllocateInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO_NV;
     const(void)* pNext;

@@ -58,6 +58,7 @@ struct VkPresentWait2InfoKHR {
     ulong timeout;
 }
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkWaitForPresent2KHR = VkResult function(
     VkDevice device,
     VkSwapchainKHR swapchain,

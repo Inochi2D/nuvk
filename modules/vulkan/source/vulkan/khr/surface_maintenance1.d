@@ -31,6 +31,7 @@ public import vulkan.khr.get_surface_capabilities2;
 enum VK_KHR_SURFACE_MAINTENANCE_1_SPEC_VERSION = 1;
 enum VK_KHR_SURFACE_MAINTENANCE_1_EXTENSION_NAME = "VK_KHR_surface_maintenance1";
 
+import vulkan.khr.surface : VkPresentModeKHR;
 struct VkSurfacePresentModeKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_SURFACE_PRESENT_MODE_KHR;
     void* pNext;
@@ -53,7 +54,7 @@ enum VK_PRESENT_SCALING_ASPECT_RATIO_STRETCH_BIT_EXT = VK_PRESENT_SCALING_ASPECT
 enum VK_PRESENT_SCALING_STRETCH_BIT_KHR = VkPresentScalingFlagBitsKHR.VK_PRESENT_SCALING_STRETCH_BIT_KHR;
 enum VK_PRESENT_SCALING_STRETCH_BIT_EXT = VK_PRESENT_SCALING_STRETCH_BIT_KHR;
 
-alias VkPresentScalingFlagsKHR = VkFlags;
+alias VkPresentScalingFlagsKHR = VkBitFlagsBase!(VkFlags, VkPresentScalingFlagBitsKHR);
 
 enum VkPresentGravityFlagBitsKHR : uint {
     VK_PRESENT_GRAVITY_MIN_BIT_KHR = 1,
@@ -71,7 +72,7 @@ enum VK_PRESENT_GRAVITY_MAX_BIT_EXT = VK_PRESENT_GRAVITY_MAX_BIT_KHR;
 enum VK_PRESENT_GRAVITY_CENTERED_BIT_KHR = VkPresentGravityFlagBitsKHR.VK_PRESENT_GRAVITY_CENTERED_BIT_KHR;
 enum VK_PRESENT_GRAVITY_CENTERED_BIT_EXT = VK_PRESENT_GRAVITY_CENTERED_BIT_KHR;
 
-alias VkPresentGravityFlagsKHR = VkFlags;
+alias VkPresentGravityFlagsKHR = VkBitFlagsBase!(VkFlags, VkPresentGravityFlagBitsKHR);
 
 struct VkSurfacePresentScalingCapabilitiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_SURFACE_PRESENT_SCALING_CAPABILITIES_KHR;
@@ -83,6 +84,7 @@ struct VkSurfacePresentScalingCapabilitiesKHR {
     VkExtent2D maxScaledImageExtent;
 }
 
+import vulkan.khr.surface : VkPresentModeKHR;
 struct VkSurfacePresentModeCompatibilityKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_SURFACE_PRESENT_MODE_COMPATIBILITY_KHR;
     void* pNext;

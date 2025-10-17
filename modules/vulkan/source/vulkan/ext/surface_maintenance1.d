@@ -32,16 +32,21 @@ public import vulkan.khr.surface;
 enum VK_EXT_SURFACE_MAINTENANCE_1_SPEC_VERSION = 1;
 enum VK_EXT_SURFACE_MAINTENANCE_1_EXTENSION_NAME = "VK_EXT_surface_maintenance1";
 
+import vulkan.khr.surface_maintenance1 : VkSurfacePresentModeKHR;
 alias VkSurfacePresentModeEXT = VkSurfacePresentModeKHR;
 
+import vulkan.khr.surface_maintenance1 : VkPresentScalingFlagBitsKHR;
 alias VkPresentScalingFlagBitsEXT = VkPresentScalingFlagBitsKHR;
 
 alias VkPresentScalingFlagsEXT = VkPresentScalingFlagsKHR;
 
+import vulkan.khr.surface_maintenance1 : VkPresentGravityFlagBitsKHR;
 alias VkPresentGravityFlagBitsEXT = VkPresentGravityFlagBitsKHR;
 
 alias VkPresentGravityFlagsEXT = VkPresentGravityFlagsKHR;
 
+import vulkan.khr.surface_maintenance1 : VkSurfacePresentScalingCapabilitiesKHR;
 alias VkSurfacePresentScalingCapabilitiesEXT = VkSurfacePresentScalingCapabilitiesKHR;
 
+import vulkan.khr.surface_maintenance1 : VkSurfacePresentModeCompatibilityKHR;
 alias VkSurfacePresentModeCompatibilityEXT = VkSurfacePresentModeCompatibilityKHR;

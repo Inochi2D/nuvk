@@ -51,6 +51,7 @@ struct VkSwapchainPresentFenceInfoKHR {
     const(VkFence)* pFences;
 }
 
+import vulkan.khr.surface : VkPresentModeKHR;
 struct VkSwapchainPresentModesCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODES_CREATE_INFO_KHR;
     const(void)* pNext;
@@ -58,6 +59,7 @@ struct VkSwapchainPresentModesCreateInfoKHR {
     const(VkPresentModeKHR)* pPresentModes;
 }
 
+import vulkan.khr.surface : VkPresentModeKHR;
 struct VkSwapchainPresentModeInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODE_INFO_KHR;
     const(void)* pNext;
@@ -65,6 +67,7 @@ struct VkSwapchainPresentModeInfoKHR {
     const(VkPresentModeKHR)* pPresentModes;
 }
 
+import vulkan.khr.surface_maintenance1 : VkPresentScalingFlagsKHR, VkPresentGravityFlagsKHR, VkPresentGravityFlagsKHR;
 struct VkSwapchainPresentScalingCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_SCALING_CREATE_INFO_KHR;
     const(void)* pNext;
@@ -73,6 +76,7 @@ struct VkSwapchainPresentScalingCreateInfoKHR {
     VkFlags presentGravityY;
 }
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 struct VkReleaseSwapchainImagesInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_RELEASE_SWAPCHAIN_IMAGES_INFO_KHR;
     const(void)* pNext;

@@ -42,6 +42,7 @@ struct VK_NV_external_memory_win32 {
 enum VK_NV_EXTERNAL_MEMORY_WIN32_SPEC_VERSION = 1;
 enum VK_NV_EXTERNAL_MEMORY_WIN32_EXTENSION_NAME = "VK_NV_external_memory_win32";
 
+import vulkan.nv.external_memory_capabilities : VkExternalMemoryHandleTypeFlagsNV;
 struct VkImportMemoryWin32HandleInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_NV;
     const(void)* pNext;
@@ -56,6 +57,7 @@ struct VkExportMemoryWin32HandleInfoNV {
     DWORD dwAccess;
 }
 
+import vulkan.nv.external_memory_capabilities : VkExternalMemoryHandleTypeFlagsNV;
 alias PFN_vkGetMemoryWin32HandleNV = VkResult function(
     VkDevice device,
     VkDeviceMemory memory,

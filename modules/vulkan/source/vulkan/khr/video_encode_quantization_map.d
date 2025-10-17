@@ -98,6 +98,7 @@ struct VkVideoEncodeH265QuantizationMapCapabilitiesKHR {
     int maxQpDelta;
 }
 
+import vulkan.khr.video_encode_h265 : VkVideoEncodeH265CtbSizeFlagsKHR;
 struct VkVideoFormatH265QuantizationMapPropertiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_FORMAT_H265_QUANTIZATION_MAP_PROPERTIES_KHR;
     void* pNext;
@@ -113,6 +114,7 @@ struct VkVideoEncodeAV1QuantizationMapCapabilitiesKHR {
     int maxQIndexDelta;
 }
 
+import vulkan.khr.video_encode_av1 : VkVideoEncodeAV1SuperblockSizeFlagsKHR;
 struct VkVideoFormatAV1QuantizationMapPropertiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_FORMAT_AV1_QUANTIZATION_MAP_PROPERTIES_KHR;
     void* pNext;

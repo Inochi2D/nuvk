@@ -31,4 +31,5 @@ public import vulkan.khr.swapchain;
 enum VK_EXT_PRESENT_MODE_FIFO_LATEST_READY_SPEC_VERSION = 1;
 enum VK_EXT_PRESENT_MODE_FIFO_LATEST_READY_EXTENSION_NAME = "VK_EXT_present_mode_fifo_latest_ready";
 
+import vulkan.khr.present_mode_fifo_latest_ready : VkPhysicalDevicePresentModeFifoLatestReadyFeaturesKHR;
 alias VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT = VkPhysicalDevicePresentModeFifoLatestReadyFeaturesKHR;

@@ -62,6 +62,7 @@ struct StdVideoEncodeH265SliceSegmentHeaderFlags {
     mixin DMD20473;
 }
 
+import vulkan.video.h265std : StdVideoH265SliceType;
 struct StdVideoEncodeH265SliceSegmentHeader {
     StdVideoEncodeH265SliceSegmentHeaderFlags flags;
     StdVideoH265SliceType slice_type;
@@ -121,6 +122,7 @@ struct StdVideoEncodeH265LongTermRefPics {
     ubyte[STD_VIDEO_H265_MAX_DELTA_POC] delta_poc_msb_cycle_lt;
 }
 
+import vulkan.video.h265std : StdVideoH265PictureType, StdVideoH265ShortTermRefPicSet;
 struct StdVideoEncodeH265PictureInfo {
     StdVideoEncodeH265PictureInfoFlags flags;
     StdVideoH265PictureType pic_type;
@@ -143,6 +145,7 @@ struct StdVideoEncodeH265ReferenceInfoFlags {
     mixin DMD20473;
 }
 
+import vulkan.video.h265std : StdVideoH265PictureType;
 struct StdVideoEncodeH265ReferenceInfo {
     StdVideoEncodeH265ReferenceInfoFlags flags;
     StdVideoH265PictureType pic_type;

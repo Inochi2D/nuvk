@@ -46,6 +46,8 @@ struct VkPhysicalDeviceDisplacementMicromapPropertiesNV {
     uint maxDisplacementMicromapSubdivisionLevel;
 }
 
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressConstKHR;
+import vulkan.ext.opacity_micromap : VkMicromapUsageEXT, VkMicromapUsageEXT, VkMicromapEXT;
 struct VkAccelerationStructureTrianglesDisplacementMicromapNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_TRIANGLES_DISPLACEMENT_MICROMAP_NV;
     void* pNext;

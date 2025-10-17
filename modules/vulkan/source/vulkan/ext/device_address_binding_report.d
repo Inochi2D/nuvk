@@ -48,7 +48,7 @@ struct VkDeviceAddressBindingCallbackDataEXT {
     VkDeviceAddressBindingTypeEXT bindingType;
 }
 
-alias VkDeviceAddressBindingFlagsEXT = VkFlags;
+alias VkDeviceAddressBindingFlagsEXT = VkBitFlagsBase!(VkFlags, VkDeviceAddressBindingFlagBitsEXT);
 
 enum VkDeviceAddressBindingFlagBitsEXT : uint {
     VK_DEVICE_ADDRESS_BINDING_INTERNAL_OBJECT_BIT_EXT = 1,

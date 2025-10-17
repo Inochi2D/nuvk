@@ -36,7 +36,7 @@ struct VK_EXT_display_surface_counter {
 enum VK_EXT_DISPLAY_SURFACE_COUNTER_SPEC_VERSION = 1;
 enum VK_EXT_DISPLAY_SURFACE_COUNTER_EXTENSION_NAME = "VK_EXT_display_surface_counter";
 
-alias VkSurfaceCounterFlagsEXT = VkFlags;
+alias VkSurfaceCounterFlagsEXT = VkBitFlagsBase!(VkFlags, VkSurfaceCounterFlagBitsEXT);
 
 enum VkSurfaceCounterFlagBitsEXT : uint {
     VK_SURFACE_COUNTER_VBLANK_BIT_EXT = 1,
@@ -47,6 +47,8 @@ enum VK_SURFACE_COUNTER_VBLANK_BIT_EXT = VkSurfaceCounterFlagBitsEXT.VK_SURFACE_
 deprecated("aliased")
 enum VK_SURFACE_COUNTER_VBLANK_EXT = VK_SURFACE_COUNTER_VBLANK_BIT_EXT;
 
+import vulkan.khr.display : VkSurfaceTransformFlagsKHR;
+import vulkan.khr.surface : VkSurfaceTransformFlagBitsKHR, VkCompositeAlphaFlagsKHR;
 struct VkSurfaceCapabilities2EXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_EXT;
     void* pNext;
@@ -63,6 +65,7 @@ struct VkSurfaceCapabilities2EXT {
     VkFlags supportedSurfaceCounters;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT = VkResult function(
     VkPhysicalDevice physicalDevice,
     VkSurfaceKHR surface,

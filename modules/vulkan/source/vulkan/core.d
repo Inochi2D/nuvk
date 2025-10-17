@@ -4074,7 +4074,7 @@ enum VK_FORMAT_FEATURE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR = VkFormatFeatur
 enum VK_FORMAT_FEATURE_VIDEO_ENCODE_INPUT_BIT_KHR = VkFormatFeatureFlagBits.VIDEO_ENCODE_INPUT_BIT_KHR;
 enum VK_FORMAT_FEATURE_VIDEO_ENCODE_DPB_BIT_KHR = VkFormatFeatureFlagBits.VIDEO_ENCODE_DPB_BIT_KHR;
 
-alias VkFormatFeatureFlags = VkFlags;
+alias VkFormatFeatureFlags = VkBitFlagsBase!(VkFlags, VkFormatFeatureFlagBits);
 
 struct VkFormatProperties {
     VkFlags linearTilingFeatures;
@@ -4144,7 +4144,7 @@ enum VK_IMAGE_CREATE_VIDEO_PROFILE_INDEPENDENT_BIT_KHR = VkImageCreateFlagBits.V
 enum VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_EXT = VkImageCreateFlagBits.FRAGMENT_DENSITY_MAP_OFFSET_BIT_EXT;
 enum VK_IMAGE_CREATE_RESERVED_22_BIT_KHR = VkImageCreateFlagBits.RESERVED_22_BIT_KHR;
 
-alias VkImageCreateFlags = VkFlags;
+alias VkImageCreateFlags = VkBitFlagsBase!(VkFlags, VkImageCreateFlagBits);
 
 struct VkImageFormatProperties {
     VkExtent3D maxExtent;
@@ -4240,11 +4240,11 @@ enum VK_IMAGE_USAGE_VIDEO_ENCODE_EMPHASIS_MAP_BIT_KHR = VkImageUsageFlagBits.VID
 enum VK_IMAGE_USAGE_RESERVED_29_BIT_KHR = VkImageUsageFlagBits.RESERVED_29_BIT_KHR;
 enum VK_IMAGE_USAGE_RESERVED_30_BIT_KHR = VkImageUsageFlagBits.RESERVED_30_BIT_KHR;
 
-alias VkImageUsageFlags = VkFlags;
+alias VkImageUsageFlags = VkBitFlagsBase!(VkFlags, VkImageUsageFlagBits);
 
 alias VkInstance = OpaqueHandle!("VkInstance");
 
-alias VkInstanceCreateFlags = VkFlags;
+alias VkInstanceCreateFlags = VkBitFlagsBase!(VkFlags, VkInstanceCreateFlagBits);
 
 enum VkInstanceCreateFlagBits : uint {
     ENUMERATE_PORTABILITY_BIT_KHR = 1,
@@ -4290,7 +4290,7 @@ enum VK_MEMORY_HEAP_SEU_SAFE_BIT = VkMemoryHeapFlagBits.SEU_SAFE_BIT;
 enum VK_MEMORY_HEAP_MULTI_INSTANCE_BIT_KHR = VK_MEMORY_HEAP_MULTI_INSTANCE_BIT;
 enum VK_MEMORY_HEAP_TILE_MEMORY_BIT_QCOM = VkMemoryHeapFlagBits.TILE_MEMORY_BIT_QCOM;
 
-alias VkMemoryHeapFlags = VkFlags;
+alias VkMemoryHeapFlags = VkBitFlagsBase!(VkFlags, VkMemoryHeapFlagBits);
 
 enum VkMemoryPropertyFlagBits : uint {
     DEVICE_LOCAL_BIT = 1,
@@ -4314,7 +4314,7 @@ enum VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD = VkMemoryPropertyFlagBits.DEVIC
 enum VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD = VkMemoryPropertyFlagBits.DEVICE_UNCACHED_BIT_AMD;
 enum VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV = VkMemoryPropertyFlagBits.RDMA_CAPABLE_BIT_NV;
 
-alias VkMemoryPropertyFlags = VkFlags;
+alias VkMemoryPropertyFlags = VkBitFlagsBase!(VkFlags, VkMemoryPropertyFlagBits);
 
 struct VkMemoryType {
     VkFlags propertyFlags;
@@ -4568,7 +4568,7 @@ enum VK_QUEUE_RESERVED_12_BIT_EXT = VkQueueFlagBits.RESERVED_12_BIT_EXT;
 enum VK_QUEUE_RESERVED_13_BIT_EXT = VkQueueFlagBits.RESERVED_13_BIT_EXT;
 enum VK_QUEUE_RESERVED_11_BIT_ARM = VkQueueFlagBits.RESERVED_11_BIT_ARM;
 
-alias VkQueueFlags = VkFlags;
+alias VkQueueFlags = VkBitFlagsBase!(VkFlags, VkQueueFlagBits);
 
 enum VkSampleCountFlagBits : uint {
     VK_SAMPLE_COUNT_1_BIT = 1,
@@ -4588,7 +4588,7 @@ enum VK_SAMPLE_COUNT_16_BIT = VkSampleCountFlagBits.VK_SAMPLE_COUNT_16_BIT;
 enum VK_SAMPLE_COUNT_32_BIT = VkSampleCountFlagBits.VK_SAMPLE_COUNT_32_BIT;
 enum VK_SAMPLE_COUNT_64_BIT = VkSampleCountFlagBits.VK_SAMPLE_COUNT_64_BIT;
 
-alias VkSampleCountFlags = VkFlags;
+alias VkSampleCountFlags = VkBitFlagsBase!(VkFlags, VkSampleCountFlagBits);
 
 enum VkSystemAllocationScope {
     COMMAND = 0,
@@ -4689,7 +4689,7 @@ struct VkDeviceCreateInfo {
     const(VkPhysicalDeviceFeatures)* pEnabledFeatures;
 }
 
-alias VkDeviceQueueCreateFlags = VkFlags;
+alias VkDeviceQueueCreateFlags = VkBitFlagsBase!(VkFlags, VkDeviceQueueCreateFlagBits);
 
 struct VkDeviceQueueCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -4826,7 +4826,7 @@ enum VK_PIPELINE_STAGE_TASK_SHADER_BIT_EXT = VkPipelineStageFlagBits.TASK_SHADER
 enum VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT = VkPipelineStageFlagBits.MESH_SHADER_BIT_EXT;
 enum VK_PIPELINE_STAGE_COMMAND_PREPROCESS_BIT_EXT = VkPipelineStageFlagBits.COMMAND_PREPROCESS_BIT_EXT;
 
-alias VkPipelineStageFlags = VkFlags;
+alias VkPipelineStageFlags = VkBitFlagsBase!(VkFlags, VkPipelineStageFlagBits);
 
 alias VkQueue = OpaqueHandle!("VkQueue");
 
@@ -4887,7 +4887,7 @@ enum VkMemoryMapFlagBits : uint {
 
 enum VK_MEMORY_MAP_PLACED_BIT_EXT = VkMemoryMapFlagBits.PLACED_BIT_EXT;
 
-alias VkMemoryMapFlags = VkFlags;
+alias VkMemoryMapFlags = VkBitFlagsBase!(VkFlags, VkMemoryMapFlagBits);
 
 extern VkResult vkAllocateMemory(
     VkDevice device,
@@ -5023,7 +5023,7 @@ enum VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT = VkImageAspectFlagBits.MEMORY_PLANE
 enum VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT = VkImageAspectFlagBits.MEMORY_PLANE_3_BIT_EXT;
 enum VK_IMAGE_ASPECT_NONE_KHR = VK_IMAGE_ASPECT_NONE;
 
-alias VkImageAspectFlags = VkFlags;
+alias VkImageAspectFlags = VkBitFlagsBase!(VkFlags, VkImageAspectFlagBits);
 
 struct VkImageSubresource {
     VkFlags aspectMask;
@@ -5047,7 +5047,7 @@ enum VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT = VkSparseImageFormatFlagBits.SIN
 enum VK_SPARSE_IMAGE_FORMAT_ALIGNED_MIP_SIZE_BIT = VkSparseImageFormatFlagBits.ALIGNED_MIP_SIZE_BIT;
 enum VK_SPARSE_IMAGE_FORMAT_NONSTANDARD_BLOCK_SIZE_BIT = VkSparseImageFormatFlagBits.NONSTANDARD_BLOCK_SIZE_BIT;
 
-alias VkSparseImageFormatFlags = VkFlags;
+alias VkSparseImageFormatFlags = VkBitFlagsBase!(VkFlags, VkSparseImageFormatFlagBits);
 
 struct VkSparseImageFormatProperties {
     VkFlags aspectMask;
@@ -5098,7 +5098,7 @@ enum VkSparseMemoryBindFlagBits : uint {
 
 enum VK_SPARSE_MEMORY_BIND_METADATA_BIT = VkSparseMemoryBindFlagBits.METADATA_BIT;
 
-alias VkSparseMemoryBindFlags = VkFlags;
+alias VkSparseMemoryBindFlags = VkBitFlagsBase!(VkFlags, VkSparseMemoryBindFlagBits);
 
 extern void vkGetImageSparseMemoryRequirements(
     VkDevice device,
@@ -5135,7 +5135,7 @@ enum VkFenceCreateFlagBits : uint {
 
 enum VK_FENCE_CREATE_SIGNALED_BIT = VkFenceCreateFlagBits.SIGNALED_BIT;
 
-alias VkFenceCreateFlags = VkFlags;
+alias VkFenceCreateFlags = VkBitFlagsBase!(VkFlags, VkFenceCreateFlagBits);
 
 struct VkFenceCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
@@ -5204,7 +5204,7 @@ extern void vkDestroySemaphore(
 
 alias VkEvent = OpaqueHandle!("VkEvent");
 
-alias VkEventCreateFlags = VkFlags;
+alias VkEventCreateFlags = VkBitFlagsBase!(VkFlags, VkEventCreateFlagBits);
 
 enum VkEventCreateFlagBits : uint {
     DEVICE_ONLY_BIT = 1,
@@ -5282,7 +5282,7 @@ enum VK_QUERY_PIPELINE_STATISTIC_TASK_SHADER_INVOCATIONS_BIT_EXT = VkQueryPipeli
 enum VK_QUERY_PIPELINE_STATISTIC_MESH_SHADER_INVOCATIONS_BIT_EXT = VkQueryPipelineStatisticFlagBits.MESH_SHADER_INVOCATIONS_BIT_EXT;
 enum VK_QUERY_PIPELINE_STATISTIC_CLUSTER_CULLING_SHADER_INVOCATIONS_BIT_HUAWEI = VkQueryPipelineStatisticFlagBits.CLUSTER_CULLING_SHADER_INVOCATIONS_BIT_HUAWEI;
 
-alias VkQueryPipelineStatisticFlags = VkFlags;
+alias VkQueryPipelineStatisticFlags = VkBitFlagsBase!(VkFlags, VkQueryPipelineStatisticFlagBits);
 
 alias VkQueryPool = OpaqueHandle!("VkQueryPool");
 
@@ -5292,7 +5292,7 @@ enum VkQueryPoolCreateFlagBits : uint {
 
 enum VK_QUERY_POOL_CREATE_RESET_BIT_KHR = VkQueryPoolCreateFlagBits.RESET_BIT_KHR;
 
-alias VkQueryPoolCreateFlags = VkFlags;
+alias VkQueryPoolCreateFlags = VkBitFlagsBase!(VkFlags, VkQueryPoolCreateFlagBits);
 
 struct VkQueryPoolCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
@@ -5317,7 +5317,7 @@ enum VK_QUERY_RESULT_WITH_AVAILABILITY_BIT = VkQueryResultFlagBits.WITH_AVAILABI
 enum VK_QUERY_RESULT_PARTIAL_BIT = VkQueryResultFlagBits.PARTIAL_BIT;
 enum VK_QUERY_RESULT_WITH_STATUS_BIT_KHR = VkQueryResultFlagBits.WITH_STATUS_BIT_KHR;
 
-alias VkQueryResultFlags = VkFlags;
+alias VkQueryResultFlags = VkBitFlagsBase!(VkFlags, VkQueryResultFlagBits);
 
 enum VkQueryType {
     OCCLUSION = 0,
@@ -5409,7 +5409,7 @@ enum VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR = VK_BUFFER_CREATE_D
 enum VK_BUFFER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT = VkBufferCreateFlagBits.DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT;
 enum VK_BUFFER_CREATE_VIDEO_PROFILE_INDEPENDENT_BIT_KHR = VkBufferCreateFlagBits.VIDEO_PROFILE_INDEPENDENT_BIT_KHR;
 
-alias VkBufferCreateFlags = VkFlags;
+alias VkBufferCreateFlags = VkBitFlagsBase!(VkFlags, VkBufferCreateFlagBits);
 
 struct VkBufferCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -5488,7 +5488,7 @@ enum VK_BUFFER_USAGE_MICROMAP_BUILD_INPUT_READ_ONLY_BIT_EXT = VkBufferUsageFlagB
 enum VK_BUFFER_USAGE_MICROMAP_STORAGE_BIT_EXT = VkBufferUsageFlagBits.MICROMAP_STORAGE_BIT_EXT;
 enum VK_BUFFER_USAGE_TILE_MEMORY_BIT_QCOM = VkBufferUsageFlagBits.TILE_MEMORY_BIT_QCOM;
 
-alias VkBufferUsageFlags = VkFlags;
+alias VkBufferUsageFlags = VkBitFlagsBase!(VkFlags, VkBufferUsageFlagBits);
 
 enum VkSharingMode {
     EXCLUSIVE = 0,
@@ -5725,7 +5725,7 @@ enum VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DYNAMIC_BIT_EXT = VkImageViewCrea
 enum VK_IMAGE_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT = VkImageViewCreateFlagBits.DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT;
 enum VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DEFERRED_BIT_EXT = VkImageViewCreateFlagBits.FRAGMENT_DENSITY_MAP_DEFERRED_BIT_EXT;
 
-alias VkImageViewCreateFlags = VkFlags;
+alias VkImageViewCreateFlags = VkBitFlagsBase!(VkFlags, VkImageViewCreateFlagBits);
 
 struct VkImageViewCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -5800,7 +5800,8 @@ extern void vkDestroyShaderModule(
 
 alias VkPipelineCache = OpaqueHandle!("VkPipelineCache");
 
-alias VkPipelineCacheCreateFlags = VkFlags;
+import vulkan.ext.pipeline_creation_cache_control : VkPipelineCacheCreateFlagBits;
+alias VkPipelineCacheCreateFlags = VkBitFlagsBase!(VkFlags, VkPipelineCacheCreateFlagBits);
 
 struct VkPipelineCacheCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
@@ -5999,7 +6000,7 @@ enum VK_COLOR_COMPONENT_G_BIT = VkColorComponentFlagBits.G_BIT;
 enum VK_COLOR_COMPONENT_B_BIT = VkColorComponentFlagBits.B_BIT;
 enum VK_COLOR_COMPONENT_A_BIT = VkColorComponentFlagBits.A_BIT;
 
-alias VkColorComponentFlags = VkFlags;
+alias VkColorComponentFlags = VkBitFlagsBase!(VkFlags, VkColorComponentFlagBits);
 
 enum VkCompareOp {
     NEVER = 0,
@@ -6043,7 +6044,7 @@ enum VK_CULL_MODE_FRONT_BIT = VkCullModeFlagBits.FRONT_BIT;
 enum VK_CULL_MODE_BACK_BIT = VkCullModeFlagBits.BACK_BIT;
 enum VK_CULL_MODE_FRONT_AND_BACK = VkCullModeFlagBits.FRONT_AND_BACK;
 
-alias VkCullModeFlags = VkFlags;
+alias VkCullModeFlags = VkBitFlagsBase!(VkFlags, VkCullModeFlagBits);
 
 enum VkDynamicState {
     VIEWPORT = 0,
@@ -6308,7 +6309,8 @@ struct VkPipelineColorBlendAttachmentState {
     VkFlags colorWriteMask;
 }
 
-alias VkPipelineColorBlendStateCreateFlags = VkFlags;
+import vulkan.ext.rasterization_order_attachment_access : VkPipelineColorBlendStateCreateFlagBits;
+alias VkPipelineColorBlendStateCreateFlags = VkBitFlagsBase!(VkFlags, VkPipelineColorBlendStateCreateFlagBits);
 
 struct VkPipelineColorBlendStateCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -6411,8 +6413,9 @@ enum VK_PIPELINE_CREATE_RAY_TRACING_DISPLACEMENT_MICROMAP_BIT_NV = VkPipelineCre
 enum VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT = VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT;
 enum VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT = VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT;
 
-alias VkPipelineCreateFlags = VkFlags;
-alias VkPipelineDepthStencilStateCreateFlags = VkFlags;
+alias VkPipelineCreateFlags = VkBitFlagsBase!(VkFlags, VkPipelineCreateFlagBits);
+import vulkan.ext.rasterization_order_attachment_access : VkPipelineDepthStencilStateCreateFlagBits;
+alias VkPipelineDepthStencilStateCreateFlags = VkBitFlagsBase!(VkFlags, VkPipelineDepthStencilStateCreateFlagBits);
 
 struct VkPipelineDepthStencilStateCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
@@ -6449,7 +6452,8 @@ struct VkPipelineInputAssemblyStateCreateInfo {
     VkBool32 primitiveRestartEnable;
 }
 
-alias VkPipelineLayoutCreateFlags = VkFlags;
+import vulkan.ext.graphics_pipeline_library : VkPipelineLayoutCreateFlagBits;
+alias VkPipelineLayoutCreateFlags = VkBitFlagsBase!(VkFlags, VkPipelineLayoutCreateFlagBits);
 alias VkPipelineMultisampleStateCreateFlags = VkFlags;
 
 struct VkPipelineMultisampleStateCreateInfo {
@@ -6496,7 +6500,7 @@ enum VK_PIPELINE_SHADER_STAGE_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT_EXT = VK_PI
 enum VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT_EXT = VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT;
 enum VK_PIPELINE_SHADER_STAGE_CREATE_RESERVED_3_BIT_KHR = VkPipelineShaderStageCreateFlagBits.RESERVED_3_BIT_KHR;
 
-alias VkPipelineShaderStageCreateFlags = VkFlags;
+alias VkPipelineShaderStageCreateFlags = VkBitFlagsBase!(VkFlags, VkPipelineShaderStageCreateFlagBits);
 
 struct VkPipelineShaderStageCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -6639,7 +6643,7 @@ enum VK_SHADER_STAGE_SUBPASS_SHADING_BIT_HUAWEI = VkShaderStageFlagBits.SUBPASS_
 enum VK_SHADER_STAGE_CLUSTER_CULLING_BIT_HUAWEI = VkShaderStageFlagBits.CLUSTER_CULLING_BIT_HUAWEI;
 enum VK_SHADER_STAGE_RESERVED_15_BIT_NV = VkShaderStageFlagBits.RESERVED_15_BIT_NV;
 
-alias VkShaderStageFlags = VkFlags;
+alias VkShaderStageFlags = VkBitFlagsBase!(VkFlags, VkShaderStageFlagBits);
 
 struct VkSpecializationInfo {
     uint mapEntryCount;
@@ -6838,7 +6842,7 @@ enum VK_SAMPLER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT = VkSamplerCreat
 enum VK_SAMPLER_CREATE_NON_SEAMLESS_CUBE_MAP_BIT_EXT = VkSamplerCreateFlagBits.NON_SEAMLESS_CUBE_MAP_BIT_EXT;
 enum VK_SAMPLER_CREATE_IMAGE_PROCESSING_BIT_QCOM = VkSamplerCreateFlagBits.IMAGE_PROCESSING_BIT_QCOM;
 
-alias VkSamplerCreateFlags = VkFlags;
+alias VkSamplerCreateFlags = VkBitFlagsBase!(VkFlags, VkSamplerCreateFlagBits);
 
 struct VkSamplerCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -6928,7 +6932,7 @@ enum VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT = VkDescriptorPoolCreateFlagBit
 enum VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_SETS_BIT_NV = VkDescriptorPoolCreateFlagBits.ALLOW_OVERALLOCATION_SETS_BIT_NV;
 enum VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_POOLS_BIT_NV = VkDescriptorPoolCreateFlagBits.ALLOW_OVERALLOCATION_POOLS_BIT_NV;
 
-alias VkDescriptorPoolCreateFlags = VkFlags;
+alias VkDescriptorPoolCreateFlags = VkBitFlagsBase!(VkFlags, VkDescriptorPoolCreateFlagBits);
 
 struct VkDescriptorPoolCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -6992,7 +6996,7 @@ enum VK_DESCRIPTOR_SET_LAYOUT_CREATE_INDIRECT_BINDABLE_BIT_NV = VkDescriptorSetL
 enum VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT = VkDescriptorSetLayoutCreateFlagBits.HOST_ONLY_POOL_BIT_EXT;
 enum VK_DESCRIPTOR_SET_LAYOUT_CREATE_PER_STAGE_BIT_NV = VkDescriptorSetLayoutCreateFlagBits.PER_STAGE_BIT_NV;
 
-alias VkDescriptorSetLayoutCreateFlags = VkFlags;
+alias VkDescriptorSetLayoutCreateFlags = VkBitFlagsBase!(VkFlags, VkDescriptorSetLayoutCreateFlagBits);
 
 struct VkDescriptorSetLayoutCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -7190,7 +7194,7 @@ enum VK_ACCESS_NONE_KHR = VK_ACCESS_NONE;
 enum VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_EXT = VkAccessFlagBits.COMMAND_PREPROCESS_READ_BIT_EXT;
 enum VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_EXT = VkAccessFlagBits.COMMAND_PREPROCESS_WRITE_BIT_EXT;
 
-alias VkAccessFlags = VkFlags;
+alias VkAccessFlags = VkBitFlagsBase!(VkFlags, VkAccessFlagBits);
 
 struct VkAttachmentDescription {
     VkFlags flags;
@@ -7214,7 +7218,7 @@ enum VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT = VkAttachmentDescriptionFlagBits.M
 enum VK_ATTACHMENT_DESCRIPTION_RESERVED_1_BIT_KHR = VkAttachmentDescriptionFlagBits.RESERVED_1_BIT_KHR;
 enum VK_ATTACHMENT_DESCRIPTION_RESERVED_2_BIT_KHR = VkAttachmentDescriptionFlagBits.RESERVED_2_BIT_KHR;
 
-alias VkAttachmentDescriptionFlags = VkFlags;
+alias VkAttachmentDescriptionFlags = VkBitFlagsBase!(VkFlags, VkAttachmentDescriptionFlagBits);
 
 enum VkAttachmentLoadOp {
     LOAD = 0,
@@ -7275,7 +7279,7 @@ enum VK_DEPENDENCY_QUEUE_FAMILY_OWNERSHIP_TRANSFER_USE_ALL_STAGES_BIT_KHR = VkDe
 enum VK_DEPENDENCY_ASYMMETRIC_EVENT_BIT_KHR = VkDependencyFlagBits.ASYMMETRIC_EVENT_BIT_KHR;
 enum VK_DEPENDENCY_EXTENSION_586_BIT_IMG = VkDependencyFlagBits.EXTENSION_586_BIT_IMG;
 
-alias VkDependencyFlags = VkFlags;
+alias VkDependencyFlags = VkBitFlagsBase!(VkFlags, VkDependencyFlagBits);
 
 alias VkFramebuffer = OpaqueHandle!("VkFramebuffer");
 
@@ -7287,7 +7291,7 @@ enum VkFramebufferCreateFlagBits : uint {
 enum VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT = VkFramebufferCreateFlagBits.IMAGELESS_BIT;
 enum VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT_KHR = VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT;
 
-alias VkFramebufferCreateFlags = VkFlags;
+alias VkFramebufferCreateFlags = VkBitFlagsBase!(VkFlags, VkFramebufferCreateFlagBits);
 
 struct VkFramebufferCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -7333,7 +7337,7 @@ enum VK_RENDER_PASS_CREATE_RESERVED_0_BIT_KHR = VkRenderPassCreateFlagBits.RESER
 enum VK_RENDER_PASS_CREATE_TRANSFORM_BIT_QCOM = VkRenderPassCreateFlagBits.TRANSFORM_BIT_QCOM;
 enum VK_RENDER_PASS_CREATE_PER_LAYER_FRAGMENT_DENSITY_BIT_VALVE = VkRenderPassCreateFlagBits.PER_LAYER_FRAGMENT_DENSITY_BIT_VALVE;
 
-alias VkRenderPassCreateFlags = VkFlags;
+alias VkRenderPassCreateFlags = VkBitFlagsBase!(VkFlags, VkRenderPassCreateFlagBits);
 
 struct VkRenderPassCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -7398,7 +7402,7 @@ enum VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT 
 enum VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT = VkSubpassDescriptionFlagBits.RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT;
 enum VK_SUBPASS_DESCRIPTION_ENABLE_LEGACY_DITHERING_BIT_EXT = VkSubpassDescriptionFlagBits.ENABLE_LEGACY_DITHERING_BIT_EXT;
 
-alias VkSubpassDescriptionFlags = VkFlags;
+alias VkSubpassDescriptionFlags = VkBitFlagsBase!(VkFlags, VkSubpassDescriptionFlagBits);
 
 extern VkResult vkCreateFramebuffer(
     VkDevice device,
@@ -7446,7 +7450,7 @@ enum VK_COMMAND_POOL_CREATE_TRANSIENT_BIT = VkCommandPoolCreateFlagBits.TRANSIEN
 enum VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT = VkCommandPoolCreateFlagBits.RESET_COMMAND_BUFFER_BIT;
 enum VK_COMMAND_POOL_CREATE_PROTECTED_BIT = VkCommandPoolCreateFlagBits.PROTECTED_BIT;
 
-alias VkCommandPoolCreateFlags = VkFlags;
+alias VkCommandPoolCreateFlags = VkBitFlagsBase!(VkFlags, VkCommandPoolCreateFlagBits);
 
 struct VkCommandPoolCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -7463,7 +7467,7 @@ enum VkCommandPoolResetFlagBits : uint {
 enum VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT = VkCommandPoolResetFlagBits.RELEASE_RESOURCES_BIT;
 enum VK_COMMAND_POOL_RESET_RESERVED_1_BIT_COREAVI = VkCommandPoolResetFlagBits.RESERVED_1_BIT_COREAVI;
 
-alias VkCommandPoolResetFlags = VkFlags;
+alias VkCommandPoolResetFlags = VkBitFlagsBase!(VkFlags, VkCommandPoolResetFlagBits);
 
 extern VkResult vkCreateCommandPool(
     VkDevice device,
@@ -7528,7 +7532,7 @@ enum VkCommandBufferResetFlagBits : uint {
 
 enum VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT = VkCommandBufferResetFlagBits.RELEASE_RESOURCES_BIT;
 
-alias VkCommandBufferResetFlags = VkFlags;
+alias VkCommandBufferResetFlags = VkBitFlagsBase!(VkFlags, VkCommandBufferResetFlagBits);
 
 enum VkCommandBufferUsageFlagBits : uint {
     ONE_TIME_SUBMIT_BIT = 1,
@@ -7540,7 +7544,7 @@ enum VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT = VkCommandBufferUsageFlagBits.
 enum VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT = VkCommandBufferUsageFlagBits.RENDER_PASS_CONTINUE_BIT;
 enum VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT = VkCommandBufferUsageFlagBits.SIMULTANEOUS_USE_BIT;
 
-alias VkCommandBufferUsageFlags = VkFlags;
+alias VkCommandBufferUsageFlags = VkBitFlagsBase!(VkFlags, VkCommandBufferUsageFlagBits);
 
 enum VkQueryControlFlagBits : uint {
     PRECISE_BIT = 1,
@@ -7548,7 +7552,7 @@ enum VkQueryControlFlagBits : uint {
 
 enum VK_QUERY_CONTROL_PRECISE_BIT = VkQueryControlFlagBits.PRECISE_BIT;
 
-alias VkQueryControlFlags = VkFlags;
+alias VkQueryControlFlags = VkBitFlagsBase!(VkFlags, VkQueryControlFlagBits);
 
 extern VkResult vkAllocateCommandBuffers(
     VkDevice device,
@@ -7693,7 +7697,7 @@ enum VK_STENCIL_FACE_FRONT_AND_BACK = VkStencilFaceFlagBits.FRONT_AND_BACK;
 deprecated("aliased")
 enum VK_STENCIL_FRONT_AND_BACK = VK_STENCIL_FACE_FRONT_AND_BACK;
 
-alias VkStencilFaceFlags = VkFlags;
+alias VkStencilFaceFlags = VkBitFlagsBase!(VkFlags, VkStencilFaceFlagBits);
 
 enum VkSubpassContents {
     INLINE = 0,
@@ -8068,7 +8072,7 @@ struct VkPhysicalDeviceSubgroupProperties {
     VkBool32 quadOperationsInAllStages;
 }
 
-alias VkSubgroupFeatureFlags = VkFlags;
+alias VkSubgroupFeatureFlags = VkBitFlagsBase!(VkFlags, VkSubgroupFeatureFlagBits);
 
 enum VkSubgroupFeatureFlagBits : uint {
     BASIC_BIT = 1,
@@ -8161,7 +8165,7 @@ struct VkMemoryDedicatedAllocateInfo {
 
 // Promoted from VK_KHR_device_group
 
-alias VkPeerMemoryFeatureFlags = VkFlags;
+alias VkPeerMemoryFeatureFlags = VkBitFlagsBase!(VkFlags, VkPeerMemoryFeatureFlagBits);
 
 enum VkPeerMemoryFeatureFlagBits : uint {
     COPY_SRC_BIT = 1,
@@ -8183,7 +8187,7 @@ enum VK_PEER_MEMORY_FEATURE_COPY_DST_BIT_KHR = VK_PEER_MEMORY_FEATURE_COPY_DST_B
 enum VK_PEER_MEMORY_FEATURE_GENERIC_SRC_BIT_KHR = VK_PEER_MEMORY_FEATURE_GENERIC_SRC_BIT;
 enum VK_PEER_MEMORY_FEATURE_GENERIC_DST_BIT_KHR = VK_PEER_MEMORY_FEATURE_GENERIC_DST_BIT;
 
-alias VkMemoryAllocateFlags = VkFlags;
+alias VkMemoryAllocateFlags = VkBitFlagsBase!(VkFlags, VkMemoryAllocateFlagBits);
 
 enum VkMemoryAllocateFlagBits : uint {
     DEVICE_MASK_BIT = 1,
@@ -8801,7 +8805,7 @@ version (VK_VERSION_1_1) {
 
 enum uint VK_LUID_SIZE = 8;
 
-alias VkExternalMemoryHandleTypeFlags = VkFlags;
+alias VkExternalMemoryHandleTypeFlags = VkBitFlagsBase!(VkFlags, VkExternalMemoryHandleTypeFlagBits);
 
 enum VkExternalMemoryHandleTypeFlagBits : uint {
     OPAQUE_FD_BIT = 1,
@@ -8859,7 +8863,7 @@ enum VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLBUFFER_BIT_EXT = VkExternalMemoryHandleTy
 enum VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLTEXTURE_BIT_EXT = VkExternalMemoryHandleTypeFlagBits.MTLTEXTURE_BIT_EXT;
 enum VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLHEAP_BIT_EXT = VkExternalMemoryHandleTypeFlagBits.MTLHEAP_BIT_EXT;
 
-alias VkExternalMemoryFeatureFlags = VkFlags;
+alias VkExternalMemoryFeatureFlags = VkBitFlagsBase!(VkFlags, VkExternalMemoryFeatureFlagBits);
 
 enum VkExternalMemoryFeatureFlagBits : uint {
     DEDICATED_ONLY_BIT = 1,
@@ -8951,7 +8955,7 @@ struct VkExportMemoryAllocateInfo {
 
 // Promoted from VK_KHR_external_fence_capabilities
 
-alias VkExternalFenceHandleTypeFlags = VkFlags;
+alias VkExternalFenceHandleTypeFlags = VkBitFlagsBase!(VkFlags, VkExternalFenceHandleTypeFlagBits);
 
 enum VkExternalFenceHandleTypeFlagBits : uint {
     OPAQUE_FD_BIT = 1,
@@ -8977,7 +8981,7 @@ enum VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT_KHR = VK_EXTERNAL_FENCE_HANDLE_TY
 enum VK_EXTERNAL_FENCE_HANDLE_TYPE_SCI_SYNC_OBJ_BIT_NV = VkExternalFenceHandleTypeFlagBits.SCI_SYNC_OBJ_BIT_NV;
 enum VK_EXTERNAL_FENCE_HANDLE_TYPE_SCI_SYNC_FENCE_BIT_NV = VkExternalFenceHandleTypeFlagBits.SCI_SYNC_FENCE_BIT_NV;
 
-alias VkExternalFenceFeatureFlags = VkFlags;
+alias VkExternalFenceFeatureFlags = VkBitFlagsBase!(VkFlags, VkExternalFenceFeatureFlagBits);
 
 enum VkExternalFenceFeatureFlagBits : uint {
     EXPORTABLE_BIT = 1,
@@ -9015,7 +9019,7 @@ version (VK_VERSION_1_1) {
 
 // Promoted from VK_KHR_external_fence
 
-alias VkFenceImportFlags = VkFlags;
+alias VkFenceImportFlags = VkBitFlagsBase!(VkFlags, VkFenceImportFlagBits);
 
 enum VkFenceImportFlagBits : uint {
     TEMPORARY_BIT = 1,
@@ -9033,7 +9037,7 @@ struct VkExportFenceCreateInfo {
 
 // Promoted from VK_KHR_external_semaphore
 
-alias VkSemaphoreImportFlags = VkFlags;
+alias VkSemaphoreImportFlags = VkBitFlagsBase!(VkFlags, VkSemaphoreImportFlagBits);
 
 enum VkSemaphoreImportFlagBits : uint {
     TEMPORARY_BIT = 1,
@@ -9051,7 +9055,7 @@ struct VkExportSemaphoreCreateInfo {
 
 // Promoted from VK_KHR_external_semaphore_capabilities
 
-alias VkExternalSemaphoreHandleTypeFlags = VkFlags;
+alias VkExternalSemaphoreHandleTypeFlags = VkBitFlagsBase!(VkFlags, VkExternalSemaphoreHandleTypeFlagBits);
 
 enum VkExternalSemaphoreHandleTypeFlagBits : uint {
     OPAQUE_FD_BIT = 1,
@@ -9083,7 +9087,7 @@ enum VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT_KHR = VK_EXTERNAL_SEMAPHORE_H
 enum VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA = VkExternalSemaphoreHandleTypeFlagBits.ZIRCON_EVENT_BIT_FUCHSIA;
 enum VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SCI_SYNC_OBJ_BIT_NV = VkExternalSemaphoreHandleTypeFlagBits.SCI_SYNC_OBJ_BIT_NV;
 
-alias VkExternalSemaphoreFeatureFlags = VkFlags;
+alias VkExternalSemaphoreFeatureFlags = VkBitFlagsBase!(VkFlags, VkExternalSemaphoreFeatureFlagBits);
 
 enum VkExternalSemaphoreFeatureFlagBits : uint {
     EXPORTABLE_BIT = 1,
@@ -9706,7 +9710,7 @@ enum VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT_EXT = VK_DESCRIPTOR_BINDING_PARTI
 enum VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT_EXT = VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT;
 enum VK_DESCRIPTOR_BINDING_RESERVED_4_BIT_QCOM = VkDescriptorBindingFlagBits.RESERVED_4_BIT_QCOM;
 
-alias VkDescriptorBindingFlags = VkFlags;
+alias VkDescriptorBindingFlags = VkBitFlagsBase!(VkFlags, VkDescriptorBindingFlagBits);
 
 // Promoted from VK_KHR_depth_stencil_resolve (extension 200)
 
@@ -9758,7 +9762,7 @@ deprecated("aliased")
 enum VK_RESOLVE_MODE_EXTERNAL_FORMAT_DOWNSAMPLE_ANDROID = VK_RESOLVE_MODE_EXTERNAL_FORMAT_DOWNSAMPLE_BIT_ANDROID;
 enum VK_RESOLVE_MODE_RESERVED_5_BIT_EXT = VkResolveModeFlagBits.RESERVED_5_BIT_EXT;
 
-alias VkResolveModeFlags = VkFlags;
+alias VkResolveModeFlags = VkBitFlagsBase!(VkFlags, VkResolveModeFlagBits);
 
 // Promoted from VK_EXT_scalar_block_layout (extension 222))
 
@@ -9957,7 +9961,7 @@ enum VkSemaphoreWaitFlagBits : uint {
 enum VK_SEMAPHORE_WAIT_ANY_BIT = VkSemaphoreWaitFlagBits.ANY_BIT;
 enum VK_SEMAPHORE_WAIT_ANY_BIT_KHR = VK_SEMAPHORE_WAIT_ANY_BIT;
 
-alias VkSemaphoreWaitFlags = VkFlags;
+alias VkSemaphoreWaitFlags = VkBitFlagsBase!(VkFlags, VkSemaphoreWaitFlagBits);
 
 struct VkSemaphoreWaitInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO;
@@ -10138,7 +10142,7 @@ enum VK_PIPELINE_CREATION_FEEDBACK_VALID_BIT_EXT = VK_PIPELINE_CREATION_FEEDBACK
 enum VK_PIPELINE_CREATION_FEEDBACK_APPLICATION_PIPELINE_CACHE_HIT_BIT_EXT = VK_PIPELINE_CREATION_FEEDBACK_APPLICATION_PIPELINE_CACHE_HIT_BIT;
 enum VK_PIPELINE_CREATION_FEEDBACK_BASE_PIPELINE_ACCELERATION_BIT_EXT = VK_PIPELINE_CREATION_FEEDBACK_BASE_PIPELINE_ACCELERATION_BIT;
 
-alias VkPipelineCreationFeedbackFlags = VkFlags;
+alias VkPipelineCreationFeedbackFlags = VkBitFlagsBase!(VkFlags, VkPipelineCreationFeedbackFlagBits);
 
 struct VkPipelineCreationFeedbackCreateInfo {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_CREATION_FEEDBACK_CREATE_INFO;
@@ -10191,7 +10195,7 @@ enum VK_TOOL_PURPOSE_MODIFYING_FEATURES_BIT_EXT = VK_TOOL_PURPOSE_MODIFYING_FEAT
 enum VK_TOOL_PURPOSE_DEBUG_REPORTING_BIT_EXT = VkToolPurposeFlagBits.DEBUG_REPORTING_BIT_EXT;
 enum VK_TOOL_PURPOSE_DEBUG_MARKERS_BIT_EXT = VkToolPurposeFlagBits.DEBUG_MARKERS_BIT_EXT;
 
-alias VkToolPurposeFlags = VkFlags;
+alias VkToolPurposeFlags = VkBitFlagsBase!(VkFlags, VkToolPurposeFlagBits);
 
 struct VkPhysicalDeviceToolProperties {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TOOL_PROPERTIES;
@@ -10298,7 +10302,7 @@ enum VK_PIPELINE_CACHE_CREATE_INTERNALLY_SYNCHRONIZED_MERGE_BIT_KHR = VkPipeline
 
 // Promoted from VK_KHR_synchronization2 (extension 315)
 
-alias VkPipelineStageFlags2 = VkFlags64;
+alias VkPipelineStageFlags2 = VkBitFlagsBase!(VkFlags64, VkPipelineStageFlagBits2);
 
 enum VkPipelineStageFlagBits2 : ulong {
     VK_PIPELINE_STAGE_2_NONE = 0,
@@ -10469,7 +10473,7 @@ enum VK_PIPELINE_STAGE_2_RESERVED_45_BIT_NV = VkPipelineStageFlagBits2.VK_PIPELI
 enum VK_PIPELINE_STAGE_2_RESERVED_47_BIT_KHR = VkPipelineStageFlagBits2.VK_PIPELINE_STAGE_2_RESERVED_47_BIT_KHR;
 enum VK_PIPELINE_STAGE_2_RESERVED_43_BIT_ARM = VkPipelineStageFlagBits2.VK_PIPELINE_STAGE_2_RESERVED_43_BIT_ARM;
 
-alias VkAccessFlags2 = VkFlags64;
+alias VkAccessFlags2 = VkBitFlagsBase!(VkFlags64, VkAccessFlagBits2);
 
 enum VkAccessFlagBits2 : ulong {
     VK_ACCESS_2_NONE = 0,
@@ -10727,7 +10731,7 @@ enum VkSubmitFlagBits : uint {
 enum VK_SUBMIT_PROTECTED_BIT = VkSubmitFlagBits.PROTECTED_BIT;
 enum VK_SUBMIT_PROTECTED_BIT_KHR = VK_SUBMIT_PROTECTED_BIT;
 
-alias VkSubmitFlags = VkFlags;
+alias VkSubmitFlags = VkBitFlagsBase!(VkFlags, VkSubmitFlagBits);
 
 struct VkPhysicalDeviceSynchronization2Features {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES;
@@ -11056,7 +11060,7 @@ struct VkCommandBufferInheritanceRenderingInfo {
     VkSampleCountFlagBits rasterizationSamples;
 }
 
-alias VkRenderingFlags = VkFlags;
+alias VkRenderingFlags = VkBitFlagsBase!(VkFlags, VkRenderingFlagBits);
 
 enum VkRenderingFlagBits : uint {
     CONTENTS_SECONDARY_COMMAND_BUFFERS_BIT = 1,
@@ -11232,7 +11236,7 @@ struct VkPhysicalDeviceTexelBufferAlignmentProperties {
 
 // Promoted from VK_KHR_format_feature_flags2 (extension 361)
 
-alias VkFormatFeatureFlags2 = VkFlags64;
+alias VkFormatFeatureFlags2 = VkBitFlagsBase!(VkFlags64, VkFormatFeatureFlagBits2);
 
 enum VkFormatFeatureFlagBits2 : ulong {
     VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_BIT = 1,
@@ -11746,7 +11750,7 @@ enum VkMemoryUnmapFlagBits : uint {
 
 enum VK_MEMORY_UNMAP_RESERVE_BIT_EXT = VkMemoryUnmapFlagBits.RESERVE_BIT_EXT;
 
-alias VkMemoryUnmapFlags = VkFlags;
+alias VkMemoryUnmapFlags = VkBitFlagsBase!(VkFlags, VkMemoryUnmapFlagBits);
 
 version (VK_VERSION_1_4) {
     extern VkResult vkMapMemory2(
@@ -11809,7 +11813,7 @@ struct VkSubresourceLayout2 {
     VkSubresourceLayout subresourceLayout;
 }
 
-alias VkPipelineCreateFlags2 = VkFlags64;
+alias VkPipelineCreateFlags2 = VkBitFlagsBase!(VkFlags64, VkPipelineCreateFlagBits2);
 
 enum VkPipelineCreateFlagBits2 : ulong {
     VK_PIPELINE_CREATE_2_DISABLE_OPTIMIZATION_BIT = 1,
@@ -11937,7 +11941,7 @@ struct VkPipelineCreateFlags2CreateInfo {
     VkFlags64 flags;
 }
 
-alias VkBufferUsageFlags2 = VkFlags64;
+alias VkBufferUsageFlags2 = VkBitFlagsBase!(VkFlags64, VkBufferUsageFlagBits2);
 
 enum VkBufferUsageFlagBits2 : ulong {
     VK_BUFFER_USAGE_2_TRANSFER_SRC_BIT = 1,
@@ -12325,7 +12329,7 @@ enum VK_HOST_IMAGE_COPY_MEMCPY_BIT_EXT = VK_HOST_IMAGE_COPY_MEMCPY_BIT;
 deprecated("aliased")
 enum VK_HOST_IMAGE_COPY_MEMCPY_EXT = VK_HOST_IMAGE_COPY_MEMCPY_BIT;
 
-alias VkHostImageCopyFlags = VkFlags;
+alias VkHostImageCopyFlags = VkBitFlagsBase!(VkFlags, VkHostImageCopyFlagBits);
 
 struct VkMemoryToImageCopy {
     VkStructureType sType = VK_STRUCTURE_TYPE_MEMORY_TO_IMAGE_COPY;

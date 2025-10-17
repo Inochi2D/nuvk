@@ -15,7 +15,6 @@ import numem.core.types : OpaqueHandle;
 import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
-import vulkan.amd.mixed_attachment_samples;
 
 extern (System) @nogc nothrow:
 
@@ -57,4 +56,5 @@ version (VK_VERSION_1_3) {} else {
     public import vulkan.khr.dynamic_rendering;
 }
 
+import vulkan.amd.mixed_attachment_samples : VkAttachmentSampleCountInfoAMD;
 alias VkAttachmentSampleCountInfoNV = VkAttachmentSampleCountInfoAMD;
