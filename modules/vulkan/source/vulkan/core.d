@@ -5255,7 +5255,7 @@ enum VK_API_VERSION_1_1 = VK_MAKE_API_VERSION(0, 1, 1, 0);
 
 // Device Initialization
 
-version (VK_BASE_VERSION_1_1) {
+version (VK_VERSION_1_1) {
     extern VkResult vkEnumerateInstanceVersion(
         uint* pApiVersion,
     );
@@ -5279,7 +5279,7 @@ struct VkBindImageMemoryInfo {
     VkDeviceSize memoryOffset;
 }
 
-version (VK_BASE_VERSION_1_1) {
+version (VK_VERSION_1_1) {
     extern VkResult vkBindBufferMemory2(
         VkDevice device,
         uint bindInfoCount,
@@ -5365,7 +5365,7 @@ struct VkDeviceGroupBindSparseInfo {
     uint memoryDeviceIndex;
 }
 
-version (VK_BASE_VERSION_1_1) {
+version (VK_VERSION_1_1) {
     extern void vkGetDeviceGroupPeerMemoryFeatures(
         VkDevice device,
         uint heapIndex,
@@ -5417,7 +5417,7 @@ struct VkDeviceGroupDeviceCreateInfo {
     const(VkPhysicalDevice)* pPhysicalDevices;
 }
 
-version (VK_BASE_VERSION_1_1) {
+version (VK_VERSION_1_1) {
     extern VkResult vkEnumeratePhysicalDeviceGroups(
         VkInstance instance,
         uint* pPhysicalDeviceGroupCount,
@@ -5457,7 +5457,7 @@ struct VkSparseImageMemoryRequirements2 {
     VkSparseImageMemoryRequirements memoryRequirements;
 }
 
-version (VK_BASE_VERSION_1_1) {
+version (VK_VERSION_1_1) {
     extern void vkGetImageMemoryRequirements2(
         VkDevice device,
         const(VkImageMemoryRequirementsInfo2)* pInfo,
@@ -5542,7 +5542,7 @@ struct VkPhysicalDeviceSparseImageFormatInfo2 {
     VkImageTiling tiling;
 }
 
-version (VK_BASE_VERSION_1_1) {
+version (VK_VERSION_1_1) {
     extern void vkGetPhysicalDeviceFeatures2(
         VkPhysicalDevice physicalDevice,
         VkPhysicalDeviceFeatures2* pFeatures,
@@ -5588,7 +5588,7 @@ version (VK_BASE_VERSION_1_1) {
 
 alias VkCommandPoolTrimFlags = VkFlags;
 
-version (VK_BASE_VERSION_1_1) {
+version (VK_VERSION_1_1) {
     extern void vkTrimCommandPool(
         VkDevice device,
         VkCommandPool commandPool,
@@ -5638,7 +5638,7 @@ struct VkProtectedSubmitInfo {
     VkBool32 protectedSubmit;
 }
 
-version (VK_BASE_VERSION_1_1) {
+version (VK_VERSION_1_1) {
     extern void vkGetDeviceQueue2(
         VkDevice device,
         const(VkDeviceQueueInfo2)* pQueueInfo,
@@ -5746,7 +5746,7 @@ struct VkPhysicalDeviceIDProperties {
     VkBool32 deviceLUIDValid;
 }
 
-version (VK_BASE_VERSION_1_1) {
+version (VK_VERSION_1_1) {
     extern void vkGetPhysicalDeviceExternalBufferProperties(
         VkPhysicalDevice physicalDevice,
         const(VkPhysicalDeviceExternalBufferInfo)* pExternalBufferInfo,
@@ -5814,7 +5814,7 @@ struct VkExternalFenceProperties {
     VkExternalFenceFeatureFlags externalFenceFeatures;
 }
 
-version (VK_BASE_VERSION_1_1) {
+version (VK_VERSION_1_1) {
     extern void vkGetPhysicalDeviceExternalFenceProperties(
         VkPhysicalDevice physicalDevice,
         const(VkPhysicalDeviceExternalFenceInfo)* pExternalFenceInfo,
@@ -5891,7 +5891,7 @@ struct VkExternalSemaphoreProperties {
     VkExternalSemaphoreFeatureFlags externalSemaphoreFeatures;
 }
 
-version (VK_BASE_VERSION_1_1) {
+version (VK_VERSION_1_1) {
     extern void vkGetPhysicalDeviceExternalSemaphoreProperties(
         VkPhysicalDevice physicalDevice,
         const(VkPhysicalDeviceExternalSemaphoreInfo)* pExternalSemaphoreInfo,
@@ -5941,7 +5941,7 @@ struct VkPhysicalDevice16BitStorageFeatures {
 
 // Promoted from VK_KHR_device_group
 
-version (VK_COMPUTE_VERSION_1_1) {
+version (VK_VERSION_1_1) {
     extern void vkCmdDispatchBase(
         VkCommandBuffer commandBuffer,
         uint baseGroupX,
@@ -5999,7 +5999,7 @@ struct VkDescriptorUpdateTemplateCreateInfo {
     uint set;
 }
 
-version (VK_COMPUTE_VERSION_1_1) {
+version (VK_VERSION_1_1) {
     extern VkResult vkCreateDescriptorUpdateTemplate(
         VkDevice device,
         const(VkDescriptorUpdateTemplateCreateInfo)* pCreateInfo,
@@ -6036,7 +6036,7 @@ struct VkDescriptorSetLayoutSupport {
     VkBool32 supported;
 }
 
-version (VK_COMPUTE_VERSION_1_1) {
+version (VK_VERSION_1_1) {
     extern void vkGetDescriptorSetLayoutSupport(
         VkDevice device,
         const(VkDescriptorSetLayoutCreateInfo)* pCreateInfo,
@@ -6106,7 +6106,7 @@ enum VkChromaLocation
     VK_CHROMA_LOCATION_COSITED_EVEN_KHR = VK_CHROMA_LOCATION_COSITED_EVEN,
     VK_CHROMA_LOCATION_MIDPOINT_KHR = VK_CHROMA_LOCATION_MIDPOINT;
 
-version (VK_COMPUTE_VERSION_1_1) {
+version (VK_VERSION_1_1) {
     extern VkResult vkCreateSamplerYcbcrConversion(
         VkDevice device,
         const(VkSamplerYcbcrConversionCreateInfo)* pCreateInfo,
@@ -6453,7 +6453,7 @@ struct VkPhysicalDeviceHostQueryResetFeatures {
     VkBool32 hostQueryReset;
 }
 
-version (VK_BASE_VERSION_1_2) {
+version (VK_VERSION_1_2) {
     extern void vkResetQueryPool(
         VkDevice device,
         VkQueryPool queryPool,
@@ -6521,7 +6521,7 @@ struct VkSemaphoreSignalInfo {
     ulong value;
 }
 
-version (VK_BASE_VERSION_1_2) {
+version (VK_VERSION_1_2) {
     extern VkResult vkGetSemaphoreCounterValue(
         VkDevice device,
         VkSemaphore semaphore,
@@ -6574,7 +6574,7 @@ struct VkDeviceMemoryOpaqueCaptureAddressInfo {
     VkDeviceMemory memory;
 }
 
-version (VK_BASE_VERSION_1_2) {
+version (VK_VERSION_1_2) {
     extern VkDeviceAddress vkGetBufferDeviceAddress(
         VkDevice device,
         const(VkBufferDeviceAddressInfo)* pInfo,
@@ -6793,7 +6793,7 @@ struct VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures {
 
 // Promoted from VK_KHR_draw_indirect_count (extension 170)
 
-version (VK_GRAPHICS_VERSION_1_2) {
+version (VK_VERSION_1_2) {
     extern void vkCmdDrawIndirectCount(
         VkCommandBuffer commandBuffer,
         VkBuffer buffer,
@@ -6893,7 +6893,7 @@ struct VkSubpassEndInfo {
     const(void)* pNext;
 }
 
-version (VK_GRAPHICS_VERSION_1_2) {
+version (VK_VERSION_1_2) {
     extern VkResult vkCreateRenderPass2(
         VkDevice device,
         const(VkRenderPassCreateInfo2)* pCreateInfo,
@@ -7124,7 +7124,7 @@ struct VkPhysicalDeviceToolProperties {
     char[VK_MAX_EXTENSION_NAME_SIZE] layer;
 }
 
-version (VK_BASE_VERSION_1_3) {
+version (VK_VERSION_1_3) {
     extern VkResult vkGetPhysicalDeviceToolProperties(
         VkPhysicalDevice physicalDevice,
         uint* pToolCount,
@@ -7156,7 +7156,7 @@ alias VkPrivateDataSlot = OpaqueHandle!("VkPrivateDataSlot");
 
 alias VkPrivateDataSlotCreateFlags = VkFlags;
 
-version (VK_BASE_VERSION_1_3) {
+version (VK_VERSION_1_3) {
     extern VkResult vkCreatePrivateDataSlot(
         VkDevice device,
         const(VkPrivateDataSlotCreateInfo)* pCreateInfo,
@@ -7451,7 +7451,7 @@ struct VkPhysicalDeviceSynchronization2Features {
     VkBool32 synchronization2;
 }
 
-version (VK_BASE_VERSION_1_3) {
+version (VK_VERSION_1_3) {
     extern void vkCmdPipelineBarrier2(
         VkCommandBuffer commandBuffer,
         const(VkDependencyInfo)* pDependencyInfo,
@@ -7543,7 +7543,7 @@ struct VkBufferImageCopy2 {
     VkExtent3D imageExtent;
 }
 
-version (VK_BASE_VERSION_1_3) {
+version (VK_VERSION_1_3) {
     extern void vkCmdCopyBuffer2(
         VkCommandBuffer commandBuffer,
         const(VkCopyBufferInfo2)* pCopyBufferInfo,
@@ -7701,7 +7701,7 @@ struct VkDeviceImageMemoryRequirements {
     VkImageAspectFlags planeAspect;
 }
 
-version (VK_BASE_VERSION_1_3) {
+version (VK_VERSION_1_3) {
     extern void vkGetDeviceBufferMemoryRequirements(
         VkDevice device,
         const(VkDeviceBufferMemoryRequirements)* pInfo,
@@ -7782,7 +7782,7 @@ enum VkPipelineCacheCreateFlags
 
 // Promoted from VK_KHR_synchronization2 (extension 315)
 
-version (VK_COMPUTE_VERSION_1_3) {
+version (VK_VERSION_1_3) {
     extern void vkCmdSetEvent2(
         VkCommandBuffer commandBuffer,
         VkEvent event,
@@ -7974,7 +7974,7 @@ struct VkImageResolve2 {
     VkExtent3D extent;
 }
 
-version (VK_GRAPHICS_VERSION_1_3) {
+version (VK_VERSION_1_3) {
     extern void vkCmdBlitImage2(
         VkCommandBuffer commandBuffer,
         const(VkBlitImageInfo2)* pBlitImageInfo,
@@ -8060,7 +8060,7 @@ enum VkRenderingFlags
     VK_RENDERING_RESERVED_7_BIT_EXT = 128,
     VK_RENDERING_RESERVED_8_BIT_KHR = 256;
 
-version (VK_GRAPHICS_VERSION_1_3) {
+version (VK_VERSION_1_3) {
     extern void vkCmdBeginRendering(
         VkCommandBuffer commandBuffer,
         const(VkRenderingInfo)* pRenderingInfo,
@@ -8073,7 +8073,7 @@ version (VK_GRAPHICS_VERSION_1_3) {
 
 // Promoted from VK_EXT_extended_dynamic_state (Feature struct is not promoted) (extension 268)
 
-version (VK_GRAPHICS_VERSION_1_3) {
+version (VK_VERSION_1_3) {
     extern void vkCmdSetCullMode(
         VkCommandBuffer commandBuffer,
         VkCullModeFlags cullMode,
@@ -8148,7 +8148,7 @@ version (VK_GRAPHICS_VERSION_1_3) {
 
 // Promoted from VK_EXT_extended_dynamic_state2 (Feature struct and optional state are not promoted) (extension 378)
 
-version (VK_GRAPHICS_VERSION_1_3) {
+version (VK_VERSION_1_3) {
     extern void vkCmdSetRasterizerDiscardEnable(
         VkCommandBuffer commandBuffer,
         VkBool32 rasterizerDiscardEnable,
@@ -8296,7 +8296,7 @@ enum VkMemoryUnmapFlags
     VK_MEMORY_UNMAP_RESERVE_BIT_EXT = 1;
 
 
-version (VK_BASE_VERSION_1_4) {
+version (VK_VERSION_1_4) {
     extern VkResult vkMapMemory2(
         VkDevice device,
         const(VkMemoryMapInfo)* pMemoryMapInfo,
@@ -8403,7 +8403,7 @@ struct VkBufferUsageFlags2CreateInfo {
     VkBufferUsageFlags2 usage;
 }
 
-version (VK_BASE_VERSION_1_4) {
+version (VK_VERSION_1_4) {
     extern void vkGetDeviceImageSubresourceLayout(
         VkDevice device,
         const(VkDeviceImageSubresourceInfo)* pInfo,
@@ -8543,7 +8543,7 @@ struct VkHostImageCopyDevicePerformanceQuery {
     VkBool32 identicalMemoryLayout;
 }
 
-version (VK_BASE_VERSION_1_4) {
+version (VK_VERSION_1_4) {
     extern VkResult vkCopyMemoryToImage(
         VkDevice device,
         const(VkCopyMemoryToImageInfo)* pCopyMemoryToImageInfo,
@@ -8670,7 +8670,7 @@ struct VkPhysicalDevicePushDescriptorProperties {
     uint maxPushDescriptors;
 }
 
-version (VK_COMPUTE_VERSION_1_4) {
+version (VK_VERSION_1_4) {
     extern void vkCmdPushDescriptorSet(
         VkCommandBuffer commandBuffer,
         VkPipelineBindPoint pipelineBindPoint,
@@ -8732,7 +8732,7 @@ struct VkPushDescriptorSetWithTemplateInfo {
     const(void)* pData;
 }
 
-version (VK_COMPUTE_VERSION_1_4) {
+version (VK_VERSION_1_4) {
     extern void vkCmdBindDescriptorSets2(
         VkCommandBuffer commandBuffer,
         const(VkBindDescriptorSetsInfo)* pBindDescriptorSetsInfo,
@@ -8854,7 +8854,7 @@ enum VkLineRasterizationMode
     VK_LINE_RASTERIZATION_MODE_BRESENHAM_KHR = VK_LINE_RASTERIZATION_MODE_BRESENHAM,
     VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH_KHR = VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH;
 
-version (VK_GRAPHICS_VERSION_1_4) {
+version (VK_VERSION_1_4) {
     extern void vkCmdSetLineStipple(
         VkCommandBuffer commandBuffer,
         uint lineStippleFactor,
@@ -8902,7 +8902,7 @@ struct VkRenderingAreaInfo {
     VkFormat stencilAttachmentFormat;
 }
 
-version (VK_GRAPHICS_VERSION_1_4) {
+version (VK_VERSION_1_4) {
     extern void vkCmdBindIndexBuffer2(
         VkCommandBuffer commandBuffer,
         VkBuffer buffer,
@@ -8942,7 +8942,7 @@ struct VkRenderingInputAttachmentIndexInfo {
     const(uint)* pStencilInputAttachmentIndex;
 }
 
-version (VK_GRAPHICS_VERSION_1_4) {
+version (VK_VERSION_1_4) {
     extern void vkCmdSetRenderingAttachmentLocations(
         VkCommandBuffer commandBuffer,
         const(VkRenderingAttachmentLocationInfo)* pLocationInfo,

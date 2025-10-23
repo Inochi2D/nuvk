@@ -351,7 +351,7 @@ class VkRegistryEmitter {
             }
 
             if (feature.minor > 0) {
-                file.openf!"version (%s) {"(feature.name);
+                file.openf!"version (%s) {"(feature.number);
             }
 
             foreach (i, command; section.commands.map!(c => registry.commands[c]).array) {

@@ -395,6 +395,10 @@ struct VkFeature {
     bool opBinaryRight(string op : "in")(string name) const {
         return api.any!(api => api == name);
     }
+
+    @property string number() const {
+        return format!"VK_VERSION_%s_%s"(major, minor);
+    }
 }
 
 /** 
