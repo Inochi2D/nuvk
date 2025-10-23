@@ -2,7 +2,6 @@
  * Dirty hacks and fixes to dumb problems.
  */
 module vulkan.patches;
-public import vulkan.bitflags;
 
 /**
  * Template that provides a workaround for issue 20473 in D 2.111
