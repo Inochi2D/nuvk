@@ -16,4 +16,3 @@ public import vulkan.video.defines;
 
 extern (System) @nogc nothrow:
 
-

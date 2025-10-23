@@ -57,8 +57,6 @@ struct VkAccelerationStructureDenseGeometryFormatTrianglesDataAMDX {
     VkCompressedTriangleFormatAMDX format;
 }
 
-enum VkCompressedTriangleFormatAMDX {
-    VK_COMPRESSED_TRIANGLE_FORMAT_DGF1_AMDX = 0,
-}
-
-enum VK_COMPRESSED_TRIANGLE_FORMAT_DGF1_AMDX = VkCompressedTriangleFormatAMDX.VK_COMPRESSED_TRIANGLE_FORMAT_DGF1_AMDX;
+alias VkCompressedTriangleFormatAMDX = uint;
+enum VkCompressedTriangleFormatAMDX
+    VK_COMPRESSED_TRIANGLE_FORMAT_DGF1_AMDX = 0;

@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_VALVE_descriptor_set_host_mapping {
-    
     @VkProcName("vkGetDescriptorSetLayoutHostMappingInfoVALVE")
     PFN_vkGetDescriptorSetLayoutHostMappingInfoVALVE vkGetDescriptorSetLayoutHostMappingInfoVALVE;
     

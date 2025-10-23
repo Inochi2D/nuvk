@@ -38,6 +38,6 @@ struct VkPhysicalDeviceExtendedSparseAddressSpacePropertiesNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_SPARSE_ADDRESS_SPACE_PROPERTIES_NV;
     void* pNext;
     VkDeviceSize extendedSparseAddressSpaceSize;
-    VkFlags extendedSparseImageUsageFlags;
-    VkFlags extendedSparseBufferUsageFlags;
+    VkImageUsageFlags extendedSparseImageUsageFlags;
+    VkBufferUsageFlags extendedSparseBufferUsageFlags;
 }

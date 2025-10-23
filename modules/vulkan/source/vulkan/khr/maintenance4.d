@@ -27,7 +27,6 @@ version (VK_VERSION_1_2)
 
 
 struct VK_KHR_maintenance4 {
-    
     @VkProcName("vkGetDeviceBufferMemoryRequirements")
     PFN_vkGetDeviceBufferMemoryRequirements vkGetDeviceBufferMemoryRequirements;
     

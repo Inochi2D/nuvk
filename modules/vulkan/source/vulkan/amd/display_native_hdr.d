@@ -32,7 +32,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_AMD_display_native_hdr {
-    
     @VkProcName("vkSetLocalDimmingAMD")
     PFN_vkSetLocalDimmingAMD vkSetLocalDimmingAMD;
 }

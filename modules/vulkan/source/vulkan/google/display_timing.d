@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.swapchain;
 
 struct VK_GOOGLE_display_timing {
-    
     @VkProcName("vkGetRefreshCycleDurationGOOGLE")
     PFN_vkGetRefreshCycleDurationGOOGLE vkGetRefreshCycleDurationGOOGLE;
     

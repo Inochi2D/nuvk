@@ -27,7 +27,6 @@ version (VK_VERSION_1_2)
 
 
 struct VK_ARM_tensors {
-    
     @VkProcName("vkCreateTensorARM")
     PFN_vkCreateTensorARM vkCreateTensorARM;
     
@@ -69,43 +68,27 @@ enum VK_ARM_TENSORS_EXTENSION_NAME = "VK_ARM_tensors";
 alias VkTensorARM = OpaqueHandle!("VkTensorARM");
 alias VkTensorViewARM = OpaqueHandle!("VkTensorViewARM");
 
-alias VkTensorCreateFlagsARM = VkBitFlagsBase!(VkFlags64, VkTensorCreateFlagBitsARM);
 
-enum VkTensorCreateFlagBitsARM : ulong {
+alias VkTensorCreateFlagsARM = ulong;
+enum VkTensorCreateFlagsARM
     VK_TENSOR_CREATE_MUTABLE_FORMAT_BIT_ARM = 1,
     VK_TENSOR_CREATE_PROTECTED_BIT_ARM = 2,
     VK_TENSOR_CREATE_RESERVED_3_BIT_ARM = 8,
-    VK_TENSOR_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM = 4,
-}
+    VK_TENSOR_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM = 4;
 
-enum VK_TENSOR_CREATE_MUTABLE_FORMAT_BIT_ARM = VkTensorCreateFlagBitsARM.VK_TENSOR_CREATE_MUTABLE_FORMAT_BIT_ARM;
-enum VK_TENSOR_CREATE_PROTECTED_BIT_ARM = VkTensorCreateFlagBitsARM.VK_TENSOR_CREATE_PROTECTED_BIT_ARM;
-enum VK_TENSOR_CREATE_RESERVED_3_BIT_ARM = VkTensorCreateFlagBitsARM.VK_TENSOR_CREATE_RESERVED_3_BIT_ARM;
-enum VK_TENSOR_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM = VkTensorCreateFlagBitsARM.VK_TENSOR_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM;
 
-alias VkTensorViewCreateFlagsARM = VkBitFlagsBase!(VkFlags64, VkTensorViewCreateFlagBitsARM);
+alias VkTensorViewCreateFlagsARM = ulong;
+enum VkTensorViewCreateFlagsARM
+    VK_TENSOR_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM = 1;
 
-enum VkTensorViewCreateFlagBitsARM : ulong {
-    VK_TENSOR_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM = 1,
-}
 
-enum VK_TENSOR_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM = VkTensorViewCreateFlagBitsARM.VK_TENSOR_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM;
-
-alias VkTensorUsageFlagsARM = VkBitFlagsBase!(VkFlags64, VkTensorUsageFlagBitsARM);
-
-enum VkTensorUsageFlagBitsARM : ulong {
+alias VkTensorUsageFlagsARM = ulong;
+enum VkTensorUsageFlagsARM
     VK_TENSOR_USAGE_SHADER_BIT_ARM = 2,
     VK_TENSOR_USAGE_TRANSFER_SRC_BIT_ARM = 4,
     VK_TENSOR_USAGE_TRANSFER_DST_BIT_ARM = 8,
     VK_TENSOR_USAGE_IMAGE_ALIASING_BIT_ARM = 16,
-    VK_TENSOR_USAGE_DATA_GRAPH_BIT_ARM = 32,
-}
-
-enum VK_TENSOR_USAGE_SHADER_BIT_ARM = VkTensorUsageFlagBitsARM.VK_TENSOR_USAGE_SHADER_BIT_ARM;
-enum VK_TENSOR_USAGE_TRANSFER_SRC_BIT_ARM = VkTensorUsageFlagBitsARM.VK_TENSOR_USAGE_TRANSFER_SRC_BIT_ARM;
-enum VK_TENSOR_USAGE_TRANSFER_DST_BIT_ARM = VkTensorUsageFlagBitsARM.VK_TENSOR_USAGE_TRANSFER_DST_BIT_ARM;
-enum VK_TENSOR_USAGE_IMAGE_ALIASING_BIT_ARM = VkTensorUsageFlagBitsARM.VK_TENSOR_USAGE_IMAGE_ALIASING_BIT_ARM;
-enum VK_TENSOR_USAGE_DATA_GRAPH_BIT_ARM = VkTensorUsageFlagBitsARM.VK_TENSOR_USAGE_DATA_GRAPH_BIT_ARM;
+    VK_TENSOR_USAGE_DATA_GRAPH_BIT_ARM = 32;
 
 struct VkTensorDescriptionARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_TENSOR_DESCRIPTION_ARM;
@@ -115,21 +98,18 @@ struct VkTensorDescriptionARM {
     uint dimensionCount;
     const(long)* pDimensions;
     const(long)* pStrides;
-    VkFlags64 usage;
+    VkTensorUsageFlagsARM usage;
 }
 
-enum VkTensorTilingARM {
+alias VkTensorTilingARM = uint;
+enum VkTensorTilingARM
     VK_TENSOR_TILING_OPTIMAL_ARM = 0,
-    VK_TENSOR_TILING_LINEAR_ARM = 1,
-}
-
-enum VK_TENSOR_TILING_OPTIMAL_ARM = VkTensorTilingARM.VK_TENSOR_TILING_OPTIMAL_ARM;
-enum VK_TENSOR_TILING_LINEAR_ARM = VkTensorTilingARM.VK_TENSOR_TILING_LINEAR_ARM;
+    VK_TENSOR_TILING_LINEAR_ARM = 1;
 
 struct VkTensorCreateInfoARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_TENSOR_CREATE_INFO_ARM;
     const(void)* pNext;
-    VkFlags64 flags;
+    VkTensorCreateFlagsARM flags;
     const(VkTensorDescriptionARM)* pDescription;
     VkSharingMode sharingMode;
     uint queueFamilyIndexCount;
@@ -139,7 +119,7 @@ struct VkTensorCreateInfoARM {
 struct VkTensorViewCreateInfoARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_TENSOR_VIEW_CREATE_INFO_ARM;
     const(void)* pNext;
-    VkFlags64 flags;
+    VkTensorViewCreateFlagsARM flags;
     VkTensorARM tensor;
     VkFormat format;
 }
@@ -168,8 +148,8 @@ struct VkWriteDescriptorSetTensorARM {
 struct VkTensorFormatPropertiesARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_TENSOR_FORMAT_PROPERTIES_ARM;
     const(void)* pNext;
-    VkFlags64 optimalTilingTensorFeatures;
-    VkFlags64 linearTilingTensorFeatures;
+    VkFormatFeatureFlags2 optimalTilingTensorFeatures;
+    VkFormatFeatureFlags2 linearTilingTensorFeatures;
 }
 
 struct VkPhysicalDeviceTensorPropertiesARM {
@@ -187,16 +167,16 @@ struct VkPhysicalDeviceTensorPropertiesARM {
     uint maxDescriptorSetUpdateAfterBindStorageTensors;
     uint maxPerStageDescriptorUpdateAfterBindStorageTensors;
     VkBool32 shaderStorageTensorArrayNonUniformIndexingNative;
-    VkFlags shaderTensorSupportedStages;
+    VkShaderStageFlags shaderTensorSupportedStages;
 }
 
 struct VkTensorMemoryBarrierARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_TENSOR_MEMORY_BARRIER_ARM;
     const(void)* pNext;
-    VkFlags64 srcStageMask;
-    VkFlags64 srcAccessMask;
-    VkFlags64 dstStageMask;
-    VkFlags64 dstAccessMask;
+    VkPipelineStageFlags2 srcStageMask;
+    VkAccessFlags2 srcAccessMask;
+    VkPipelineStageFlags2 dstStageMask;
+    VkAccessFlags2 dstAccessMask;
     uint srcQueueFamilyIndex;
     uint dstQueueFamilyIndex;
     VkTensorARM tensor;
@@ -253,9 +233,9 @@ struct VkMemoryDedicatedAllocateInfoTensorARM {
 struct VkPhysicalDeviceExternalTensorInfoARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_TENSOR_INFO_ARM;
     const(void)* pNext;
-    VkFlags64 flags;
+    VkTensorCreateFlagsARM flags;
     const(VkTensorDescriptionARM)* pDescription;
-    VkExternalMemoryHandleTypeFlagBits handleType;
+    VkExternalMemoryHandleTypeFlags handleType;
 }
 
 struct VkExternalTensorPropertiesARM {
@@ -267,7 +247,7 @@ struct VkExternalTensorPropertiesARM {
 struct VkExternalMemoryTensorCreateInfoARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_TENSOR_CREATE_INFO_ARM;
     const(void)* pNext;
-    VkFlags handleTypes;
+    VkExternalMemoryHandleTypeFlags handleTypes;
 }
 
 alias PFN_vkCreateTensorARM = VkResult function(

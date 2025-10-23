@@ -34,7 +34,6 @@ version (VK_VERSION_1_2) {} else {
 }
 
 struct VK_NV_copy_memory_indirect {
-    
     @VkProcName("vkCmdCopyMemoryIndirectNV")
     PFN_vkCmdCopyMemoryIndirectNV vkCmdCopyMemoryIndirectNV;
     

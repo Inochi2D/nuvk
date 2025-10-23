@@ -38,7 +38,6 @@ version (VK_VERSION_1_1) {} else {
 version (Android):
 
 struct VK_ANDROID_external_memory_android_hardware_buffer {
-    
     @VkProcName("vkGetAndroidHardwareBufferPropertiesANDROID")
     PFN_vkGetAndroidHardwareBufferPropertiesANDROID vkGetAndroidHardwareBufferPropertiesANDROID;
     
@@ -67,7 +66,7 @@ struct VkAndroidHardwareBufferFormatPropertiesANDROID {
     void* pNext;
     VkFormat format;
     ulong externalFormat;
-    VkFlags formatFeatures;
+    VkFormatFeatureFlags formatFeatures;
     VkComponentMapping samplerYcbcrConversionComponents;
     VkSamplerYcbcrModelConversion suggestedYcbcrModel;
     VkSamplerYcbcrRange suggestedYcbcrRange;
@@ -93,7 +92,6 @@ struct VkExternalFormatANDROID {
     ulong externalFormat;
 }
 
-
 alias PFN_vkGetAndroidHardwareBufferPropertiesANDROID = VkResult function(
     VkDevice device,
     AHardwareBuffer* buffer,
@@ -115,7 +113,7 @@ struct VkAndroidHardwareBufferFormatProperties2ANDROID {
     void* pNext;
     VkFormat format;
     ulong externalFormat;
-    VkFlags64 formatFeatures;
+    VkFormatFeatureFlags2 formatFeatures;
     VkComponentMapping samplerYcbcrConversionComponents;
     VkSamplerYcbcrModelConversion suggestedYcbcrModel;
     VkSamplerYcbcrRange suggestedYcbcrRange;

@@ -32,7 +32,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.surface;
 
 struct VK_EXT_directfb_surface {
-    
     @VkProcName("vkCreateDirectFBSurfaceEXT")
     PFN_vkCreateDirectFBSurfaceEXT vkCreateDirectFBSurfaceEXT;
     
@@ -48,7 +47,7 @@ alias VkDirectFBSurfaceCreateFlagsEXT = VkFlags;
 struct VkDirectFBSurfaceCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_DIRECTFB_SURFACE_CREATE_INFO_EXT;
     const(void)* pNext;
-    VkFlags flags;
+    VkDirectFBSurfaceCreateFlagsEXT flags;
     IDirectFB* dfb;
     IDirectFBSurface* surface;
 }

@@ -34,7 +34,6 @@ version (VK_VERSION_1_3) {} else {
 }
 
 struct VK_NV_optical_flow {
-    
     @VkProcName("vkGetPhysicalDeviceOpticalFlowImageFormatsNV")
     PFN_vkGetPhysicalDeviceOpticalFlowImageFormatsNV vkGetPhysicalDeviceOpticalFlowImageFormatsNV;
     
@@ -63,8 +62,8 @@ struct VkPhysicalDeviceOpticalFlowFeaturesNV {
 struct VkPhysicalDeviceOpticalFlowPropertiesNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPTICAL_FLOW_PROPERTIES_NV;
     void* pNext;
-    VkFlags supportedOutputGridSizes;
-    VkFlags supportedHintGridSizes;
+    VkOpticalFlowGridSizeFlagsNV supportedOutputGridSizes;
+    VkOpticalFlowGridSizeFlagsNV supportedHintGridSizes;
     VkBool32 hintSupported;
     VkBool32 costSupported;
     VkBool32 bidirectionalFlowSupported;
@@ -76,28 +75,20 @@ struct VkPhysicalDeviceOpticalFlowPropertiesNV {
     uint maxNumRegionsOfInterest;
 }
 
-enum VkOpticalFlowUsageFlagBitsNV : uint {
+alias VkOpticalFlowUsageFlagsNV = uint;
+enum VkOpticalFlowUsageFlagsNV
     VK_OPTICAL_FLOW_USAGE_UNKNOWN_NV = 0,
     VK_OPTICAL_FLOW_USAGE_INPUT_BIT_NV = 1,
     VK_OPTICAL_FLOW_USAGE_OUTPUT_BIT_NV = 2,
     VK_OPTICAL_FLOW_USAGE_HINT_BIT_NV = 4,
     VK_OPTICAL_FLOW_USAGE_COST_BIT_NV = 8,
-    VK_OPTICAL_FLOW_USAGE_GLOBAL_FLOW_BIT_NV = 16,
-}
+    VK_OPTICAL_FLOW_USAGE_GLOBAL_FLOW_BIT_NV = 16;
 
-enum VK_OPTICAL_FLOW_USAGE_UNKNOWN_NV = VkOpticalFlowUsageFlagBitsNV.VK_OPTICAL_FLOW_USAGE_UNKNOWN_NV;
-enum VK_OPTICAL_FLOW_USAGE_INPUT_BIT_NV = VkOpticalFlowUsageFlagBitsNV.VK_OPTICAL_FLOW_USAGE_INPUT_BIT_NV;
-enum VK_OPTICAL_FLOW_USAGE_OUTPUT_BIT_NV = VkOpticalFlowUsageFlagBitsNV.VK_OPTICAL_FLOW_USAGE_OUTPUT_BIT_NV;
-enum VK_OPTICAL_FLOW_USAGE_HINT_BIT_NV = VkOpticalFlowUsageFlagBitsNV.VK_OPTICAL_FLOW_USAGE_HINT_BIT_NV;
-enum VK_OPTICAL_FLOW_USAGE_COST_BIT_NV = VkOpticalFlowUsageFlagBitsNV.VK_OPTICAL_FLOW_USAGE_COST_BIT_NV;
-enum VK_OPTICAL_FLOW_USAGE_GLOBAL_FLOW_BIT_NV = VkOpticalFlowUsageFlagBitsNV.VK_OPTICAL_FLOW_USAGE_GLOBAL_FLOW_BIT_NV;
-
-alias VkOpticalFlowUsageFlagsNV = VkBitFlagsBase!(VkFlags, VkOpticalFlowUsageFlagBitsNV);
 
 struct VkOpticalFlowImageFormatInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_OPTICAL_FLOW_IMAGE_FORMAT_INFO_NV;
     const(void)* pNext;
-    VkFlags usage;
+    VkOpticalFlowUsageFlagsNV usage;
 }
 
 struct VkOpticalFlowImageFormatPropertiesNV {
@@ -106,35 +97,24 @@ struct VkOpticalFlowImageFormatPropertiesNV {
     VkFormat format;
 }
 
-enum VkOpticalFlowGridSizeFlagBitsNV : uint {
+alias VkOpticalFlowGridSizeFlagsNV = uint;
+enum VkOpticalFlowGridSizeFlagsNV
     VK_OPTICAL_FLOW_GRID_SIZE_UNKNOWN_NV = 0,
     VK_OPTICAL_FLOW_GRID_SIZE_1X1_BIT_NV = 1,
     VK_OPTICAL_FLOW_GRID_SIZE_2X2_BIT_NV = 2,
     VK_OPTICAL_FLOW_GRID_SIZE_4X4_BIT_NV = 4,
-    VK_OPTICAL_FLOW_GRID_SIZE_8X8_BIT_NV = 8,
-}
+    VK_OPTICAL_FLOW_GRID_SIZE_8X8_BIT_NV = 8;
 
-enum VK_OPTICAL_FLOW_GRID_SIZE_UNKNOWN_NV = VkOpticalFlowGridSizeFlagBitsNV.VK_OPTICAL_FLOW_GRID_SIZE_UNKNOWN_NV;
-enum VK_OPTICAL_FLOW_GRID_SIZE_1X1_BIT_NV = VkOpticalFlowGridSizeFlagBitsNV.VK_OPTICAL_FLOW_GRID_SIZE_1X1_BIT_NV;
-enum VK_OPTICAL_FLOW_GRID_SIZE_2X2_BIT_NV = VkOpticalFlowGridSizeFlagBitsNV.VK_OPTICAL_FLOW_GRID_SIZE_2X2_BIT_NV;
-enum VK_OPTICAL_FLOW_GRID_SIZE_4X4_BIT_NV = VkOpticalFlowGridSizeFlagBitsNV.VK_OPTICAL_FLOW_GRID_SIZE_4X4_BIT_NV;
-enum VK_OPTICAL_FLOW_GRID_SIZE_8X8_BIT_NV = VkOpticalFlowGridSizeFlagBitsNV.VK_OPTICAL_FLOW_GRID_SIZE_8X8_BIT_NV;
 
-alias VkOpticalFlowGridSizeFlagsNV = VkBitFlagsBase!(VkFlags, VkOpticalFlowGridSizeFlagBitsNV);
-
-enum VkOpticalFlowPerformanceLevelNV {
+alias VkOpticalFlowPerformanceLevelNV = uint;
+enum VkOpticalFlowPerformanceLevelNV
     VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_UNKNOWN_NV = 0,
     VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_SLOW_NV = 1,
     VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_MEDIUM_NV = 2,
-    VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_FAST_NV = 3,
-}
+    VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_FAST_NV = 3;
 
-enum VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_UNKNOWN_NV = VkOpticalFlowPerformanceLevelNV.VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_UNKNOWN_NV;
-enum VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_SLOW_NV = VkOpticalFlowPerformanceLevelNV.VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_SLOW_NV;
-enum VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_MEDIUM_NV = VkOpticalFlowPerformanceLevelNV.VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_MEDIUM_NV;
-enum VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_FAST_NV = VkOpticalFlowPerformanceLevelNV.VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_FAST_NV;
-
-enum VkOpticalFlowSessionBindingPointNV {
+alias VkOpticalFlowSessionBindingPointNV = uint;
+enum VkOpticalFlowSessionBindingPointNV
     VK_OPTICAL_FLOW_SESSION_BINDING_POINT_UNKNOWN_NV = 0,
     VK_OPTICAL_FLOW_SESSION_BINDING_POINT_INPUT_NV = 1,
     VK_OPTICAL_FLOW_SESSION_BINDING_POINT_REFERENCE_NV = 2,
@@ -143,42 +123,21 @@ enum VkOpticalFlowSessionBindingPointNV {
     VK_OPTICAL_FLOW_SESSION_BINDING_POINT_BACKWARD_FLOW_VECTOR_NV = 5,
     VK_OPTICAL_FLOW_SESSION_BINDING_POINT_COST_NV = 6,
     VK_OPTICAL_FLOW_SESSION_BINDING_POINT_BACKWARD_COST_NV = 7,
-    VK_OPTICAL_FLOW_SESSION_BINDING_POINT_GLOBAL_FLOW_NV = 8,
-}
+    VK_OPTICAL_FLOW_SESSION_BINDING_POINT_GLOBAL_FLOW_NV = 8;
 
-enum VK_OPTICAL_FLOW_SESSION_BINDING_POINT_UNKNOWN_NV = VkOpticalFlowSessionBindingPointNV.VK_OPTICAL_FLOW_SESSION_BINDING_POINT_UNKNOWN_NV;
-enum VK_OPTICAL_FLOW_SESSION_BINDING_POINT_INPUT_NV = VkOpticalFlowSessionBindingPointNV.VK_OPTICAL_FLOW_SESSION_BINDING_POINT_INPUT_NV;
-enum VK_OPTICAL_FLOW_SESSION_BINDING_POINT_REFERENCE_NV = VkOpticalFlowSessionBindingPointNV.VK_OPTICAL_FLOW_SESSION_BINDING_POINT_REFERENCE_NV;
-enum VK_OPTICAL_FLOW_SESSION_BINDING_POINT_HINT_NV = VkOpticalFlowSessionBindingPointNV.VK_OPTICAL_FLOW_SESSION_BINDING_POINT_HINT_NV;
-enum VK_OPTICAL_FLOW_SESSION_BINDING_POINT_FLOW_VECTOR_NV = VkOpticalFlowSessionBindingPointNV.VK_OPTICAL_FLOW_SESSION_BINDING_POINT_FLOW_VECTOR_NV;
-enum VK_OPTICAL_FLOW_SESSION_BINDING_POINT_BACKWARD_FLOW_VECTOR_NV = VkOpticalFlowSessionBindingPointNV.VK_OPTICAL_FLOW_SESSION_BINDING_POINT_BACKWARD_FLOW_VECTOR_NV;
-enum VK_OPTICAL_FLOW_SESSION_BINDING_POINT_COST_NV = VkOpticalFlowSessionBindingPointNV.VK_OPTICAL_FLOW_SESSION_BINDING_POINT_COST_NV;
-enum VK_OPTICAL_FLOW_SESSION_BINDING_POINT_BACKWARD_COST_NV = VkOpticalFlowSessionBindingPointNV.VK_OPTICAL_FLOW_SESSION_BINDING_POINT_BACKWARD_COST_NV;
-enum VK_OPTICAL_FLOW_SESSION_BINDING_POINT_GLOBAL_FLOW_NV = VkOpticalFlowSessionBindingPointNV.VK_OPTICAL_FLOW_SESSION_BINDING_POINT_GLOBAL_FLOW_NV;
-
-enum VkOpticalFlowSessionCreateFlagBitsNV : uint {
+alias VkOpticalFlowSessionCreateFlagsNV = uint;
+enum VkOpticalFlowSessionCreateFlagsNV
     VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_HINT_BIT_NV = 1,
     VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_COST_BIT_NV = 2,
     VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_GLOBAL_FLOW_BIT_NV = 4,
     VK_OPTICAL_FLOW_SESSION_CREATE_ALLOW_REGIONS_BIT_NV = 8,
-    VK_OPTICAL_FLOW_SESSION_CREATE_BOTH_DIRECTIONS_BIT_NV = 16,
-}
+    VK_OPTICAL_FLOW_SESSION_CREATE_BOTH_DIRECTIONS_BIT_NV = 16;
 
-enum VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_HINT_BIT_NV = VkOpticalFlowSessionCreateFlagBitsNV.VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_HINT_BIT_NV;
-enum VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_COST_BIT_NV = VkOpticalFlowSessionCreateFlagBitsNV.VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_COST_BIT_NV;
-enum VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_GLOBAL_FLOW_BIT_NV = VkOpticalFlowSessionCreateFlagBitsNV.VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_GLOBAL_FLOW_BIT_NV;
-enum VK_OPTICAL_FLOW_SESSION_CREATE_ALLOW_REGIONS_BIT_NV = VkOpticalFlowSessionCreateFlagBitsNV.VK_OPTICAL_FLOW_SESSION_CREATE_ALLOW_REGIONS_BIT_NV;
-enum VK_OPTICAL_FLOW_SESSION_CREATE_BOTH_DIRECTIONS_BIT_NV = VkOpticalFlowSessionCreateFlagBitsNV.VK_OPTICAL_FLOW_SESSION_CREATE_BOTH_DIRECTIONS_BIT_NV;
 
-alias VkOpticalFlowSessionCreateFlagsNV = VkBitFlagsBase!(VkFlags, VkOpticalFlowSessionCreateFlagBitsNV);
+alias VkOpticalFlowExecuteFlagsNV = uint;
+enum VkOpticalFlowExecuteFlagsNV
+    VK_OPTICAL_FLOW_EXECUTE_DISABLE_TEMPORAL_HINTS_BIT_NV = 1;
 
-enum VkOpticalFlowExecuteFlagBitsNV : uint {
-    VK_OPTICAL_FLOW_EXECUTE_DISABLE_TEMPORAL_HINTS_BIT_NV = 1,
-}
-
-enum VK_OPTICAL_FLOW_EXECUTE_DISABLE_TEMPORAL_HINTS_BIT_NV = VkOpticalFlowExecuteFlagBitsNV.VK_OPTICAL_FLOW_EXECUTE_DISABLE_TEMPORAL_HINTS_BIT_NV;
-
-alias VkOpticalFlowExecuteFlagsNV = VkBitFlagsBase!(VkFlags, VkOpticalFlowExecuteFlagBitsNV);
 
 alias VkOpticalFlowSessionNV = OpaqueHandle!("VkOpticalFlowSessionNV");
 
@@ -190,10 +149,10 @@ struct VkOpticalFlowSessionCreateInfoNV {
     VkFormat imageFormat;
     VkFormat flowVectorFormat;
     VkFormat costFormat;
-    VkFlags outputGridSize;
-    VkFlags hintGridSize;
+    VkOpticalFlowGridSizeFlagsNV outputGridSize;
+    VkOpticalFlowGridSizeFlagsNV hintGridSize;
     VkOpticalFlowPerformanceLevelNV performanceLevel;
-    VkFlags flags;
+    VkOpticalFlowSessionCreateFlagsNV flags;
 }
 
 struct VkOpticalFlowSessionCreatePrivateDataInfoNV {
@@ -207,7 +166,7 @@ struct VkOpticalFlowSessionCreatePrivateDataInfoNV {
 struct VkOpticalFlowExecuteInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_OPTICAL_FLOW_EXECUTE_INFO_NV;
     void* pNext;
-    VkFlags flags;
+    VkOpticalFlowExecuteFlagsNV flags;
     uint regionCount;
     const(VkRect2D)* pRegions;
 }

@@ -34,7 +34,6 @@ public import vulkan.nv.external_memory;
 version (Windows):
 
 struct VK_NV_external_memory_win32 {
-    
     @VkProcName("vkGetMemoryWin32HandleNV")
     PFN_vkGetMemoryWin32HandleNV vkGetMemoryWin32HandleNV;
 }
@@ -46,7 +45,7 @@ import vulkan.nv.external_memory_capabilities : VkExternalMemoryHandleTypeFlagsN
 struct VkImportMemoryWin32HandleInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_NV;
     const(void)* pNext;
-    VkFlags handleType;
+    VkExternalMemoryHandleTypeFlagsNV handleType;
     HANDLE handle;
 }
 

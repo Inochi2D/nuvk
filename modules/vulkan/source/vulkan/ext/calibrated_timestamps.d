@@ -31,7 +31,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_calibrated_timestamps {
-    
     @VkProcName("vkGetPhysicalDeviceCalibrateableTimeDomainsKHR")
     PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsKHR vkGetPhysicalDeviceCalibrateableTimeDomainsKHR;
     

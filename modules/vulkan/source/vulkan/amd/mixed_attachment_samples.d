@@ -36,6 +36,6 @@ struct VkAttachmentSampleCountInfoAMD {
     VkStructureType sType = VK_STRUCTURE_TYPE_ATTACHMENT_SAMPLE_COUNT_INFO_AMD;
     const(void)* pNext;
     uint colorAttachmentCount;
-    const(VkSampleCountFlagBits)* pColorAttachmentSamples;
-    VkSampleCountFlagBits depthStencilAttachmentSamples;
+    const(VkSampleCountFlags)* pColorAttachmentSamples;
+    VkSampleCountFlags depthStencilAttachmentSamples;
 }

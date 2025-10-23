@@ -29,7 +29,6 @@ public import vulkan.qcom.tile_properties;
 public import vulkan.khr.get_physical_device_properties2;
 
 struct VK_QCOM_tile_shading {
-    
     @VkProcName("vkCmdDispatchTileQCOM")
     PFN_vkCmdDispatchTileQCOM vkCmdDispatchTileQCOM;
     
@@ -74,7 +73,7 @@ struct VkPhysicalDeviceTileShadingPropertiesQCOM {
 struct VkRenderPassTileShadingCreateInfoQCOM {
     VkStructureType sType = VK_STRUCTURE_TYPE_RENDER_PASS_TILE_SHADING_CREATE_INFO_QCOM;
     const(void)* pNext;
-    VkFlags flags;
+    VkTileShadingRenderPassFlagsQCOM flags;
     VkExtent2D tileApronSize;
 }
 
@@ -93,15 +92,11 @@ struct VkDispatchTileInfoQCOM {
     const(void)* pNext;
 }
 
-alias VkTileShadingRenderPassFlagsQCOM = VkBitFlagsBase!(VkFlags, VkTileShadingRenderPassFlagBitsQCOM);
 
-enum VkTileShadingRenderPassFlagBitsQCOM : uint {
+alias VkTileShadingRenderPassFlagsQCOM = uint;
+enum VkTileShadingRenderPassFlagsQCOM
     VK_TILE_SHADING_RENDER_PASS_ENABLE_BIT_QCOM = 1,
-    VK_TILE_SHADING_RENDER_PASS_PER_TILE_EXECUTION_BIT_QCOM = 2,
-}
-
-enum VK_TILE_SHADING_RENDER_PASS_ENABLE_BIT_QCOM = VkTileShadingRenderPassFlagBitsQCOM.VK_TILE_SHADING_RENDER_PASS_ENABLE_BIT_QCOM;
-enum VK_TILE_SHADING_RENDER_PASS_PER_TILE_EXECUTION_BIT_QCOM = VkTileShadingRenderPassFlagBitsQCOM.VK_TILE_SHADING_RENDER_PASS_PER_TILE_EXECUTION_BIT_QCOM;
+    VK_TILE_SHADING_RENDER_PASS_PER_TILE_EXECUTION_BIT_QCOM = 2;
 
 alias PFN_vkCmdDispatchTileQCOM = void function(
     VkCommandBuffer commandBuffer,

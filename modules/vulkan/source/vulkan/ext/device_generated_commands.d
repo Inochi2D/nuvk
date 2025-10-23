@@ -33,7 +33,6 @@ version (VK_VERSION_1_3) {} else {
 }
 
 struct VK_EXT_device_generated_commands {
-    
     @VkProcName("vkGetGeneratedCommandsMemoryRequirementsEXT")
     PFN_vkGetGeneratedCommandsMemoryRequirementsEXT vkGetGeneratedCommandsMemoryRequirementsEXT;
     
@@ -82,10 +81,10 @@ struct VkPhysicalDeviceDeviceGeneratedCommandsPropertiesEXT {
     uint maxIndirectCommandsTokenCount;
     uint maxIndirectCommandsTokenOffset;
     uint maxIndirectCommandsIndirectStride;
-    VkFlags supportedIndirectCommandsInputModes;
-    VkFlags supportedIndirectCommandsShaderStages;
-    VkFlags supportedIndirectCommandsShaderStagesPipelineBinding;
-    VkFlags supportedIndirectCommandsShaderStagesShaderBinding;
+    VkIndirectCommandsInputModeFlagsEXT supportedIndirectCommandsInputModes;
+    VkShaderStageFlags supportedIndirectCommandsShaderStages;
+    VkShaderStageFlags supportedIndirectCommandsShaderStagesPipelineBinding;
+    VkShaderStageFlags supportedIndirectCommandsShaderStagesShaderBinding;
     VkBool32 deviceGeneratedCommandsTransformFeedback;
     VkBool32 deviceGeneratedCommandsMultiDrawIndirectCount;
 }
@@ -133,7 +132,7 @@ struct VkIndirectExecutionSetShaderInfoEXT {
 struct VkGeneratedCommandsInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_GENERATED_COMMANDS_INFO_EXT;
     const(void)* pNext;
-    VkFlags shaderStages;
+    VkShaderStageFlags shaderStages;
     VkIndirectExecutionSetEXT indirectExecutionSet;
     VkIndirectCommandsLayoutEXT indirectCommandsLayout;
     VkDeviceAddress indirectAddress;
@@ -155,8 +154,8 @@ struct VkWriteIndirectExecutionSetPipelineEXT {
 struct VkIndirectCommandsLayoutCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_INDIRECT_COMMANDS_LAYOUT_CREATE_INFO_EXT;
     const(void)* pNext;
-    VkFlags flags;
-    VkFlags shaderStages;
+    VkIndirectCommandsLayoutUsageFlagsEXT flags;
+    VkShaderStageFlags shaderStages;
     uint indirectStride;
     VkPipelineLayout pipelineLayout;
     uint tokenCount;
@@ -188,7 +187,7 @@ struct VkBindVertexBufferIndirectCommandEXT {
 }
 
 struct VkIndirectCommandsIndexBufferTokenEXT {
-    VkIndirectCommandsInputModeFlagBitsEXT mode;
+    VkIndirectCommandsInputModeFlagsEXT mode;
 }
 
 struct VkBindIndexBufferIndirectCommandEXT {
@@ -203,7 +202,7 @@ struct VkIndirectCommandsPushConstantTokenEXT {
 
 struct VkIndirectCommandsExecutionSetTokenEXT {
     VkIndirectExecutionSetInfoTypeEXT type;
-    VkFlags shaderStages;
+    VkShaderStageFlags shaderStages;
 }
 
 union VkIndirectCommandsTokenDataEXT {
@@ -216,7 +215,8 @@ union VkIndirectCommandsTokenDataEXT {
 alias VkIndirectCommandsLayoutEXT = OpaqueHandle!("VkIndirectCommandsLayoutEXT");
 alias VkIndirectExecutionSetEXT = OpaqueHandle!("VkIndirectExecutionSetEXT");
 
-enum VkIndirectCommandsTokenTypeEXT {
+alias VkIndirectCommandsTokenTypeEXT = uint;
+enum VkIndirectCommandsTokenTypeEXT
     VK_INDIRECT_COMMANDS_TOKEN_TYPE_EXECUTION_SET_EXT = 0,
     VK_INDIRECT_COMMANDS_TOKEN_TYPE_PUSH_CONSTANT_EXT = 1,
     VK_INDIRECT_COMMANDS_TOKEN_TYPE_SEQUENCE_INDEX_EXT = 2,
@@ -231,52 +231,24 @@ enum VkIndirectCommandsTokenTypeEXT {
     VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_COUNT_NV_EXT = 1000202003,
     VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_EXT = 1000328000,
     VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_COUNT_EXT = 1000328001,
-    VK_INDIRECT_COMMANDS_TOKEN_TYPE_TRACE_RAYS2_EXT = 1000386004,
-}
+    VK_INDIRECT_COMMANDS_TOKEN_TYPE_TRACE_RAYS2_EXT = 1000386004;
 
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_EXECUTION_SET_EXT = VkIndirectCommandsTokenTypeEXT.VK_INDIRECT_COMMANDS_TOKEN_TYPE_EXECUTION_SET_EXT;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_PUSH_CONSTANT_EXT = VkIndirectCommandsTokenTypeEXT.VK_INDIRECT_COMMANDS_TOKEN_TYPE_PUSH_CONSTANT_EXT;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_SEQUENCE_INDEX_EXT = VkIndirectCommandsTokenTypeEXT.VK_INDIRECT_COMMANDS_TOKEN_TYPE_SEQUENCE_INDEX_EXT;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_INDEX_BUFFER_EXT = VkIndirectCommandsTokenTypeEXT.VK_INDIRECT_COMMANDS_TOKEN_TYPE_INDEX_BUFFER_EXT;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_VERTEX_BUFFER_EXT = VkIndirectCommandsTokenTypeEXT.VK_INDIRECT_COMMANDS_TOKEN_TYPE_VERTEX_BUFFER_EXT;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_INDEXED_EXT = VkIndirectCommandsTokenTypeEXT.VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_INDEXED_EXT;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_EXT = VkIndirectCommandsTokenTypeEXT.VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_EXT;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_INDEXED_COUNT_EXT = VkIndirectCommandsTokenTypeEXT.VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_INDEXED_COUNT_EXT;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_COUNT_EXT = VkIndirectCommandsTokenTypeEXT.VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_COUNT_EXT;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_DISPATCH_EXT = VkIndirectCommandsTokenTypeEXT.VK_INDIRECT_COMMANDS_TOKEN_TYPE_DISPATCH_EXT;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_NV_EXT = VkIndirectCommandsTokenTypeEXT.VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_NV_EXT;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_COUNT_NV_EXT = VkIndirectCommandsTokenTypeEXT.VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_COUNT_NV_EXT;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_EXT = VkIndirectCommandsTokenTypeEXT.VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_EXT;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_COUNT_EXT = VkIndirectCommandsTokenTypeEXT.VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_COUNT_EXT;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_TRACE_RAYS2_EXT = VkIndirectCommandsTokenTypeEXT.VK_INDIRECT_COMMANDS_TOKEN_TYPE_TRACE_RAYS2_EXT;
-
-enum VkIndirectExecutionSetInfoTypeEXT {
+alias VkIndirectExecutionSetInfoTypeEXT = uint;
+enum VkIndirectExecutionSetInfoTypeEXT
     VK_INDIRECT_EXECUTION_SET_INFO_TYPE_PIPELINES_EXT = 0,
-    VK_INDIRECT_EXECUTION_SET_INFO_TYPE_SHADER_OBJECTS_EXT = 1,
-}
+    VK_INDIRECT_EXECUTION_SET_INFO_TYPE_SHADER_OBJECTS_EXT = 1;
 
-enum VK_INDIRECT_EXECUTION_SET_INFO_TYPE_PIPELINES_EXT = VkIndirectExecutionSetInfoTypeEXT.VK_INDIRECT_EXECUTION_SET_INFO_TYPE_PIPELINES_EXT;
-enum VK_INDIRECT_EXECUTION_SET_INFO_TYPE_SHADER_OBJECTS_EXT = VkIndirectExecutionSetInfoTypeEXT.VK_INDIRECT_EXECUTION_SET_INFO_TYPE_SHADER_OBJECTS_EXT;
 
-alias VkIndirectCommandsLayoutUsageFlagsEXT = VkBitFlagsBase!(VkFlags, VkIndirectCommandsLayoutUsageFlagBitsEXT);
-
-enum VkIndirectCommandsLayoutUsageFlagBitsEXT : uint {
+alias VkIndirectCommandsLayoutUsageFlagsEXT = uint;
+enum VkIndirectCommandsLayoutUsageFlagsEXT
     VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_EXT = 1,
-    VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_EXT = 2,
-}
+    VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_EXT = 2;
 
-enum VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_EXT = VkIndirectCommandsLayoutUsageFlagBitsEXT.VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_EXT;
-enum VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_EXT = VkIndirectCommandsLayoutUsageFlagBitsEXT.VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_EXT;
 
-alias VkIndirectCommandsInputModeFlagsEXT = VkBitFlagsBase!(VkFlags, VkIndirectCommandsInputModeFlagBitsEXT);
-
-enum VkIndirectCommandsInputModeFlagBitsEXT : uint {
+alias VkIndirectCommandsInputModeFlagsEXT = uint;
+enum VkIndirectCommandsInputModeFlagsEXT
     VK_INDIRECT_COMMANDS_INPUT_MODE_VULKAN_INDEX_BUFFER_EXT = 1,
-    VK_INDIRECT_COMMANDS_INPUT_MODE_DXGI_INDEX_BUFFER_EXT = 2,
-}
-
-enum VK_INDIRECT_COMMANDS_INPUT_MODE_VULKAN_INDEX_BUFFER_EXT = VkIndirectCommandsInputModeFlagBitsEXT.VK_INDIRECT_COMMANDS_INPUT_MODE_VULKAN_INDEX_BUFFER_EXT;
-enum VK_INDIRECT_COMMANDS_INPUT_MODE_DXGI_INDEX_BUFFER_EXT = VkIndirectCommandsInputModeFlagBitsEXT.VK_INDIRECT_COMMANDS_INPUT_MODE_DXGI_INDEX_BUFFER_EXT;
+    VK_INDIRECT_COMMANDS_INPUT_MODE_DXGI_INDEX_BUFFER_EXT = 2;
 
 struct VkIndirectExecutionSetShaderLayoutInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_INDIRECT_EXECUTION_SET_SHADER_LAYOUT_INFO_EXT;

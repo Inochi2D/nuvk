@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_KHR_push_descriptor {
-    
     @VkProcName("vkCmdPushDescriptorSet")
     PFN_vkCmdPushDescriptorSet vkCmdPushDescriptorSet;
     @VkProcName("vkCmdPushDescriptorSetWithTemplate")

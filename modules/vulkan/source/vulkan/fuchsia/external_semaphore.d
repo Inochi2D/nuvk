@@ -33,7 +33,6 @@ public import vulkan.khr.external_semaphore;
 public import vulkan.khr.external_semaphore_capabilities;
 
 struct VK_FUCHSIA_external_semaphore {
-    
     @VkProcName("vkImportSemaphoreZirconHandleFUCHSIA")
     PFN_vkImportSemaphoreZirconHandleFUCHSIA vkImportSemaphoreZirconHandleFUCHSIA;
     
@@ -48,8 +47,8 @@ struct VkImportSemaphoreZirconHandleInfoFUCHSIA {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_ZIRCON_HANDLE_INFO_FUCHSIA;
     const(void)* pNext;
     VkSemaphore semaphore;
-    VkFlags flags;
-    VkExternalSemaphoreHandleTypeFlagBits handleType;
+    VkSemaphoreImportFlags flags;
+    VkExternalSemaphoreHandleTypeFlags handleType;
     zx_handle_t zirconHandle;
 }
 
@@ -57,7 +56,7 @@ struct VkSemaphoreGetZirconHandleInfoFUCHSIA {
     VkStructureType sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_ZIRCON_HANDLE_INFO_FUCHSIA;
     const(void)* pNext;
     VkSemaphore semaphore;
-    VkExternalSemaphoreHandleTypeFlagBits handleType;
+    VkExternalSemaphoreHandleTypeFlags handleType;
 }
 
 alias PFN_vkImportSemaphoreZirconHandleFUCHSIA = VkResult function(

@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_NV_cooperative_matrix {
-    
     @VkProcName("vkGetPhysicalDeviceCooperativeMatrixPropertiesNV")
     PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesNV vkGetPhysicalDeviceCooperativeMatrixPropertiesNV;
 }
@@ -67,7 +66,7 @@ struct VkPhysicalDeviceCooperativeMatrixFeaturesNV {
 struct VkPhysicalDeviceCooperativeMatrixPropertiesNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_PROPERTIES_NV;
     void* pNext;
-    VkFlags cooperativeMatrixSupportedStages;
+    VkShaderStageFlags cooperativeMatrixSupportedStages;
 }
 
 alias PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesNV = VkResult function(

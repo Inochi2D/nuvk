@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.display;
 
 struct VK_EXT_direct_mode_display {
-    
     @VkProcName("vkReleaseDisplayEXT")
     PFN_vkReleaseDisplayEXT vkReleaseDisplayEXT;
 }

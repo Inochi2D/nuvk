@@ -269,6 +269,10 @@ class VkRegistryParser {
             result.bitvalues = requires.idup;
         }
 
+        if (result.bitvalues) {
+            registry.flags.require(result.bitvalues, result.name);
+        }
+
         if (auto alias_ = element.getAttribute("alias")) {
             result.alias_ = alias_.idup;
         }
@@ -349,6 +353,13 @@ class VkRegistryParser {
 
             auto whole = line[0 .. $ - nameLength].strip;
             param.type = parseTypeString(type.textContent, whole);
+
+            foreach (match; param.type.matchAll(regex(`[a-zA-Z0-9_]+`))) {
+                if (match.hit != "const") {
+                    param.utype = match.hit;
+                    break;
+                }
+            }
 
             result.params ~= __rvalue(param);
         }

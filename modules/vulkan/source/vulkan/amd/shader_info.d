@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 struct VK_AMD_shader_info {
-    
     @VkProcName("vkGetShaderInfoAMD")
     PFN_vkGetShaderInfoAMD vkGetShaderInfoAMD;
 }
@@ -34,15 +33,11 @@ struct VK_AMD_shader_info {
 enum VK_AMD_SHADER_INFO_SPEC_VERSION = 1;
 enum VK_AMD_SHADER_INFO_EXTENSION_NAME = "VK_AMD_shader_info";
 
-enum VkShaderInfoTypeAMD {
+alias VkShaderInfoTypeAMD = uint;
+enum VkShaderInfoTypeAMD
     VK_SHADER_INFO_TYPE_STATISTICS_AMD = 0,
     VK_SHADER_INFO_TYPE_BINARY_AMD = 1,
-    VK_SHADER_INFO_TYPE_DISASSEMBLY_AMD = 2,
-}
-
-enum VK_SHADER_INFO_TYPE_STATISTICS_AMD = VkShaderInfoTypeAMD.VK_SHADER_INFO_TYPE_STATISTICS_AMD;
-enum VK_SHADER_INFO_TYPE_BINARY_AMD = VkShaderInfoTypeAMD.VK_SHADER_INFO_TYPE_BINARY_AMD;
-enum VK_SHADER_INFO_TYPE_DISASSEMBLY_AMD = VkShaderInfoTypeAMD.VK_SHADER_INFO_TYPE_DISASSEMBLY_AMD;
+    VK_SHADER_INFO_TYPE_DISASSEMBLY_AMD = 2;
 
 struct VkShaderResourceUsageAMD {
     uint numUsedVgprs;
@@ -53,7 +48,7 @@ struct VkShaderResourceUsageAMD {
 }
 
 struct VkShaderStatisticsInfoAMD {
-    VkFlags shaderStageMask;
+    VkShaderStageFlags shaderStageMask;
     VkShaderResourceUsageAMD resourceUsage;
     uint numPhysicalVgprs;
     uint numPhysicalSgprs;
@@ -65,7 +60,7 @@ struct VkShaderStatisticsInfoAMD {
 alias PFN_vkGetShaderInfoAMD = VkResult function(
     VkDevice device,
     VkPipeline pipeline,
-    VkShaderStageFlagBits shaderStage,
+    VkShaderStageFlags shaderStage,
     VkShaderInfoTypeAMD infoType,
     size_t* pInfoSize,
     void* pInfo,

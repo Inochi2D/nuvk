@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.display;
 
 struct VK_KHR_get_display_properties2 {
-    
     @VkProcName("vkGetPhysicalDeviceDisplayProperties2KHR")
     PFN_vkGetPhysicalDeviceDisplayProperties2KHR vkGetPhysicalDeviceDisplayProperties2KHR;
     

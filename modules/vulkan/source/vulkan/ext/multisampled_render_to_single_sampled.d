@@ -49,5 +49,5 @@ struct VkMultisampledRenderToSingleSampledInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_INFO_EXT;
     const(void)* pNext;
     VkBool32 multisampledRenderToSingleSampledEnable;
-    VkSampleCountFlagBits rasterizationSamples;
+    VkSampleCountFlags rasterizationSamples;
 }

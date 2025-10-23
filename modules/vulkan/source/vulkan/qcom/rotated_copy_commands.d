@@ -32,9 +32,9 @@ version (VK_VERSION_1_3) {} else {
 enum VK_QCOM_ROTATED_COPY_COMMANDS_SPEC_VERSION = 2;
 enum VK_QCOM_ROTATED_COPY_COMMANDS_EXTENSION_NAME = "VK_QCOM_rotated_copy_commands";
 
-import vulkan.khr.surface : VkSurfaceTransformFlagBitsKHR;
+import vulkan.khr.surface : VkSurfaceTransformFlagsKHR;
 struct VkCopyCommandTransformInfoQCOM {
     VkStructureType sType = VK_STRUCTURE_TYPE_COPY_COMMAND_TRANSFORM_INFO_QCOM;
     const(void)* pNext;
-    VkSurfaceTransformFlagBitsKHR transform;
+    VkSurfaceTransformFlagsKHR transform;
 }

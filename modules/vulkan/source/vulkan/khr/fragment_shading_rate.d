@@ -33,7 +33,6 @@ version (VK_VERSION_1_2) {} else {
 }
 
 struct VK_KHR_fragment_shading_rate {
-    
     @VkProcName("vkGetPhysicalDeviceFragmentShadingRatesKHR")
     PFN_vkGetPhysicalDeviceFragmentShadingRatesKHR vkGetPhysicalDeviceFragmentShadingRatesKHR;
     
@@ -44,19 +43,13 @@ struct VK_KHR_fragment_shading_rate {
 enum VK_KHR_FRAGMENT_SHADING_RATE_SPEC_VERSION = 2;
 enum VK_KHR_FRAGMENT_SHADING_RATE_EXTENSION_NAME = "VK_KHR_fragment_shading_rate";
 
-enum VkFragmentShadingRateCombinerOpKHR {
+alias VkFragmentShadingRateCombinerOpKHR = uint;
+enum VkFragmentShadingRateCombinerOpKHR
     VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR = 0,
     VK_FRAGMENT_SHADING_RATE_COMBINER_OP_REPLACE_KHR = 1,
     VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MIN_KHR = 2,
     VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MAX_KHR = 3,
-    VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MUL_KHR = 4,
-}
-
-enum VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR = VkFragmentShadingRateCombinerOpKHR.VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR;
-enum VK_FRAGMENT_SHADING_RATE_COMBINER_OP_REPLACE_KHR = VkFragmentShadingRateCombinerOpKHR.VK_FRAGMENT_SHADING_RATE_COMBINER_OP_REPLACE_KHR;
-enum VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MIN_KHR = VkFragmentShadingRateCombinerOpKHR.VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MIN_KHR;
-enum VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MAX_KHR = VkFragmentShadingRateCombinerOpKHR.VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MAX_KHR;
-enum VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MUL_KHR = VkFragmentShadingRateCombinerOpKHR.VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MUL_KHR;
+    VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MUL_KHR = 4;
 
 struct VkFragmentShadingRateAttachmentInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_FRAGMENT_SHADING_RATE_ATTACHMENT_INFO_KHR;
@@ -92,7 +85,7 @@ struct VkPhysicalDeviceFragmentShadingRatePropertiesKHR {
     VkExtent2D maxFragmentSize;
     uint maxFragmentSizeAspectRatio;
     uint maxFragmentShadingRateCoverageSamples;
-    VkSampleCountFlagBits maxFragmentShadingRateRasterizationSamples;
+    VkSampleCountFlags maxFragmentShadingRateRasterizationSamples;
     VkBool32 fragmentShadingRateWithShaderDepthStencilWrites;
     VkBool32 fragmentShadingRateWithSampleMask;
     VkBool32 fragmentShadingRateWithShaderSampleMask;
@@ -105,7 +98,7 @@ struct VkPhysicalDeviceFragmentShadingRatePropertiesKHR {
 struct VkPhysicalDeviceFragmentShadingRateKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_KHR;
     void* pNext;
-    VkFlags sampleCounts;
+    VkSampleCountFlags sampleCounts;
     VkExtent2D fragmentSize;
 }
 

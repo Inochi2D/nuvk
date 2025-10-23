@@ -37,7 +37,6 @@ version (VK_VERSION_1_3) {} else {
 }
 
 struct VK_EXT_descriptor_buffer {
-    
     @VkProcName("vkGetDescriptorSetLayoutSizeEXT")
     PFN_vkGetDescriptorSetLayoutSizeEXT vkGetDescriptorSetLayoutSizeEXT;
     
@@ -139,7 +138,7 @@ struct VkDescriptorBufferBindingInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_INFO_EXT;
     const(void)* pNext;
     VkDeviceAddress address;
-    VkFlags usage;
+    VkBufferUsageFlags usage;
 }
 
 struct VkDescriptorBufferBindingPushDescriptorBufferHandleEXT {

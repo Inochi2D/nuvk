@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_KHR_external_semaphore_capabilities {
-    
     @VkProcName("vkGetPhysicalDeviceExternalSemaphoreProperties")
     PFN_vkGetPhysicalDeviceExternalSemaphoreProperties vkGetPhysicalDeviceExternalSemaphoreProperties;
 }
@@ -40,11 +39,11 @@ enum VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME = "VK_KHR_external_se
 
 alias VkExternalSemaphoreHandleTypeFlagsKHR = VkExternalSemaphoreHandleTypeFlags;
 
-alias VkExternalSemaphoreHandleTypeFlagBitsKHR = VkExternalSemaphoreHandleTypeFlagBits;
+alias VkExternalSemaphoreHandleTypeFlagBitsKHR = VkExternalSemaphoreHandleTypeFlags;
 
 alias VkExternalSemaphoreFeatureFlagsKHR = VkExternalSemaphoreFeatureFlags;
 
-alias VkExternalSemaphoreFeatureFlagBitsKHR = VkExternalSemaphoreFeatureFlagBits;
+alias VkExternalSemaphoreFeatureFlagBitsKHR = VkExternalSemaphoreFeatureFlags;
 
 alias VkPhysicalDeviceExternalSemaphoreInfoKHR = VkPhysicalDeviceExternalSemaphoreInfo;
 

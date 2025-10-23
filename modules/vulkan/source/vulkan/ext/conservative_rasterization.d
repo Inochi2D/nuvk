@@ -49,19 +49,15 @@ struct VkPhysicalDeviceConservativeRasterizationPropertiesEXT {
 struct VkPipelineRasterizationConservativeStateCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_CONSERVATIVE_STATE_CREATE_INFO_EXT;
     const(void)* pNext;
-    VkFlags flags;
+    VkPipelineRasterizationConservativeStateCreateFlagsEXT flags;
     VkConservativeRasterizationModeEXT conservativeRasterizationMode;
     float extraPrimitiveOverestimationSize;
 }
 
 alias VkPipelineRasterizationConservativeStateCreateFlagsEXT = VkFlags;
 
-enum VkConservativeRasterizationModeEXT {
+alias VkConservativeRasterizationModeEXT = uint;
+enum VkConservativeRasterizationModeEXT
     VK_CONSERVATIVE_RASTERIZATION_MODE_DISABLED_EXT = 0,
     VK_CONSERVATIVE_RASTERIZATION_MODE_OVERESTIMATE_EXT = 1,
-    VK_CONSERVATIVE_RASTERIZATION_MODE_UNDERESTIMATE_EXT = 2,
-}
-
-enum VK_CONSERVATIVE_RASTERIZATION_MODE_DISABLED_EXT = VkConservativeRasterizationModeEXT.VK_CONSERVATIVE_RASTERIZATION_MODE_DISABLED_EXT;
-enum VK_CONSERVATIVE_RASTERIZATION_MODE_OVERESTIMATE_EXT = VkConservativeRasterizationModeEXT.VK_CONSERVATIVE_RASTERIZATION_MODE_OVERESTIMATE_EXT;
-enum VK_CONSERVATIVE_RASTERIZATION_MODE_UNDERESTIMATE_EXT = VkConservativeRasterizationModeEXT.VK_CONSERVATIVE_RASTERIZATION_MODE_UNDERESTIMATE_EXT;
+    VK_CONSERVATIVE_RASTERIZATION_MODE_UNDERESTIMATE_EXT = 2;

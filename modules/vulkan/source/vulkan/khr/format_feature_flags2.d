@@ -34,6 +34,6 @@ enum VK_KHR_FORMAT_FEATURE_FLAGS_2_EXTENSION_NAME = "VK_KHR_format_feature_flags
 
 alias VkFormatFeatureFlags2KHR = VkFormatFeatureFlags2;
 
-alias VkFormatFeatureFlagBits2KHR = VkFormatFeatureFlagBits2;
+alias VkFormatFeatureFlagBits2KHR = VkFormatFeatureFlags2;
 
 alias VkFormatProperties3KHR = VkFormatProperties3;

@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_KHR_line_rasterization {
-    
     @VkProcName("vkCmdSetLineStipple")
     PFN_vkCmdSetLineStipple vkCmdSetLineStipple;
 }

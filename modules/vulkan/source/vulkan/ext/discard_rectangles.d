@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_discard_rectangles {
-    
     @VkProcName("vkCmdSetDiscardRectangleEXT")
     PFN_vkCmdSetDiscardRectangleEXT vkCmdSetDiscardRectangleEXT;
     
@@ -53,7 +52,7 @@ struct VkPhysicalDeviceDiscardRectanglePropertiesEXT {
 struct VkPipelineDiscardRectangleStateCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_DISCARD_RECTANGLE_STATE_CREATE_INFO_EXT;
     const(void)* pNext;
-    VkFlags flags;
+    VkPipelineDiscardRectangleStateCreateFlagsEXT flags;
     VkDiscardRectangleModeEXT discardRectangleMode;
     uint discardRectangleCount;
     const(VkRect2D)* pDiscardRectangles;
@@ -61,13 +60,10 @@ struct VkPipelineDiscardRectangleStateCreateInfoEXT {
 
 alias VkPipelineDiscardRectangleStateCreateFlagsEXT = VkFlags;
 
-enum VkDiscardRectangleModeEXT {
+alias VkDiscardRectangleModeEXT = uint;
+enum VkDiscardRectangleModeEXT
     VK_DISCARD_RECTANGLE_MODE_INCLUSIVE_EXT = 0,
-    VK_DISCARD_RECTANGLE_MODE_EXCLUSIVE_EXT = 1,
-}
-
-enum VK_DISCARD_RECTANGLE_MODE_INCLUSIVE_EXT = VkDiscardRectangleModeEXT.VK_DISCARD_RECTANGLE_MODE_INCLUSIVE_EXT;
-enum VK_DISCARD_RECTANGLE_MODE_EXCLUSIVE_EXT = VkDiscardRectangleModeEXT.VK_DISCARD_RECTANGLE_MODE_EXCLUSIVE_EXT;
+    VK_DISCARD_RECTANGLE_MODE_EXCLUSIVE_EXT = 1;
 
 alias PFN_vkCmdSetDiscardRectangleEXT = void function(
     VkCommandBuffer commandBuffer,

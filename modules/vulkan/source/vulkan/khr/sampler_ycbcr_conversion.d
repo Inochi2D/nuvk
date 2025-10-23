@@ -33,7 +33,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_KHR_sampler_ycbcr_conversion {
-    
     @VkProcName("vkCreateSamplerYcbcrConversion")
     PFN_vkCreateSamplerYcbcrConversion vkCreateSamplerYcbcrConversion;
     

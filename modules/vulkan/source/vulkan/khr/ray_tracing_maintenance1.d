@@ -29,7 +29,6 @@ public import vulkan.khr.acceleration_structure;
 
 struct VK_KHR_ray_tracing_maintenance1 {
     
-    
     @VkProcName("vkCmdTraceRaysIndirect2KHR")
     PFN_vkCmdTraceRaysIndirect2KHR vkCmdTraceRaysIndirect2KHR;
     

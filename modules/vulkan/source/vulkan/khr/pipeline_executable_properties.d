@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_KHR_pipeline_executable_properties {
-    
     @VkProcName("vkGetPipelineExecutablePropertiesKHR")
     PFN_vkGetPipelineExecutablePropertiesKHR vkGetPipelineExecutablePropertiesKHR;
     
@@ -59,7 +58,7 @@ struct VkPipelineInfoKHR {
 struct VkPipelineExecutablePropertiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_EXECUTABLE_PROPERTIES_KHR;
     void* pNext;
-    VkFlags stages;
+    VkShaderStageFlags stages;
     char[VK_MAX_DESCRIPTION_SIZE] name;
     char[VK_MAX_DESCRIPTION_SIZE] description;
     uint subgroupSize;
@@ -72,17 +71,12 @@ struct VkPipelineExecutableInfoKHR {
     uint executableIndex;
 }
 
-enum VkPipelineExecutableStatisticFormatKHR {
+alias VkPipelineExecutableStatisticFormatKHR = uint;
+enum VkPipelineExecutableStatisticFormatKHR
     VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_BOOL32_KHR = 0,
     VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_INT64_KHR = 1,
     VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_UINT64_KHR = 2,
-    VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_FLOAT64_KHR = 3,
-}
-
-enum VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_BOOL32_KHR = VkPipelineExecutableStatisticFormatKHR.VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_BOOL32_KHR;
-enum VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_INT64_KHR = VkPipelineExecutableStatisticFormatKHR.VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_INT64_KHR;
-enum VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_UINT64_KHR = VkPipelineExecutableStatisticFormatKHR.VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_UINT64_KHR;
-enum VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_FLOAT64_KHR = VkPipelineExecutableStatisticFormatKHR.VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_FLOAT64_KHR;
+    VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_FLOAT64_KHR = 3;
 
 union VkPipelineExecutableStatisticValueKHR {
     VkBool32 b32;

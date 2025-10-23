@@ -31,7 +31,6 @@ public import vulkan.khr.surface;
 public import vulkan.khr.get_surface_capabilities2;
 
 struct VK_KHR_present_wait2 {
-    
     @VkProcName("vkWaitForPresent2KHR")
     PFN_vkWaitForPresent2KHR vkWaitForPresent2KHR;
 }

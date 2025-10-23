@@ -32,6 +32,6 @@ enum VK_KHR_EXTERNAL_FENCE_EXTENSION_NAME = "VK_KHR_external_fence";
 
 alias VkFenceImportFlagsKHR = VkFenceImportFlags;
 
-alias VkFenceImportFlagBitsKHR = VkFenceImportFlagBits;
+alias VkFenceImportFlagBitsKHR = VkFenceImportFlags;
 
 alias VkExportFenceCreateInfoKHR = VkExportFenceCreateInfo;

@@ -33,7 +33,6 @@ version (VK_VERSION_1_3) {} else {
 }
 
 struct VK_EXT_shader_object {
-    
     @VkProcName("vkCreateShadersEXT")
     PFN_vkCreateShadersEXT vkCreateShadersEXT;
     
@@ -204,7 +203,8 @@ enum VK_EXT_SHADER_OBJECT_EXTENSION_NAME = "VK_EXT_shader_object";
 
 alias VkShaderEXT = OpaqueHandle!("VkShaderEXT");
 
-enum VkShaderCreateFlagBitsEXT : uint {
+alias VkShaderCreateFlagsEXT = uint;
+enum VkShaderCreateFlagsEXT
     VK_SHADER_CREATE_LINK_STAGE_BIT_EXT = 1,
     VK_SHADER_CREATE_RESERVED_17_BIT_IMG = 131072,
     VK_SHADER_CREATE_RESERVED_10_BIT_KHR = 1024,
@@ -223,38 +223,13 @@ enum VkShaderCreateFlagBitsEXT : uint {
     VK_SHADER_CREATE_RESERVED_13_BIT_EXT = 8192,
     VK_SHADER_CREATE_RESERVED_14_BIT_EXT = 16384,
     VK_SHADER_CREATE_RESERVED_15_BIT_EXT = 32768,
-    VK_SHADER_CREATE_RESERVED_18_BIT_KHR = 262144,
-}
+    VK_SHADER_CREATE_RESERVED_18_BIT_KHR = 262144;
 
-enum VK_SHADER_CREATE_LINK_STAGE_BIT_EXT = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_LINK_STAGE_BIT_EXT;
-enum VK_SHADER_CREATE_RESERVED_17_BIT_IMG = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_RESERVED_17_BIT_IMG;
-enum VK_SHADER_CREATE_RESERVED_10_BIT_KHR = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_RESERVED_10_BIT_KHR;
-enum VK_SHADER_CREATE_RESERVED_11_BIT_KHR = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_RESERVED_11_BIT_KHR;
-enum VK_SHADER_CREATE_RESERVED_16_BIT_KHR = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_RESERVED_16_BIT_KHR;
-enum VK_SHADER_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT_EXT = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT_EXT;
-enum VK_SHADER_CREATE_REQUIRE_FULL_SUBGROUPS_BIT_EXT = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_REQUIRE_FULL_SUBGROUPS_BIT_EXT;
-enum VK_SHADER_CREATE_NO_TASK_SHADER_BIT_EXT = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_NO_TASK_SHADER_BIT_EXT;
-enum VK_SHADER_CREATE_DISPATCH_BASE_BIT_EXT = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_DISPATCH_BASE_BIT_EXT;
-enum VK_SHADER_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_EXT = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_EXT;
-enum VK_SHADER_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT;
-enum VK_SHADER_CREATE_INDIRECT_BINDABLE_BIT_EXT = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_INDIRECT_BINDABLE_BIT_EXT;
-enum VK_SHADER_CREATE_RESERVED_8_BIT_EXT = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_RESERVED_8_BIT_EXT;
-enum VK_SHADER_CREATE_RESERVED_9_BIT_EXT = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_RESERVED_9_BIT_EXT;
-enum VK_SHADER_CREATE_RESERVED_12_BIT_EXT = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_RESERVED_12_BIT_EXT;
-enum VK_SHADER_CREATE_RESERVED_13_BIT_EXT = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_RESERVED_13_BIT_EXT;
-enum VK_SHADER_CREATE_RESERVED_14_BIT_EXT = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_RESERVED_14_BIT_EXT;
-enum VK_SHADER_CREATE_RESERVED_15_BIT_EXT = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_RESERVED_15_BIT_EXT;
-enum VK_SHADER_CREATE_RESERVED_18_BIT_KHR = VkShaderCreateFlagBitsEXT.VK_SHADER_CREATE_RESERVED_18_BIT_KHR;
 
-alias VkShaderCreateFlagsEXT = VkBitFlagsBase!(VkFlags, VkShaderCreateFlagBitsEXT);
-
-enum VkShaderCodeTypeEXT {
+alias VkShaderCodeTypeEXT = uint;
+enum VkShaderCodeTypeEXT
     VK_SHADER_CODE_TYPE_BINARY_EXT = 0,
-    VK_SHADER_CODE_TYPE_SPIRV_EXT = 1,
-}
-
-enum VK_SHADER_CODE_TYPE_BINARY_EXT = VkShaderCodeTypeEXT.VK_SHADER_CODE_TYPE_BINARY_EXT;
-enum VK_SHADER_CODE_TYPE_SPIRV_EXT = VkShaderCodeTypeEXT.VK_SHADER_CODE_TYPE_SPIRV_EXT;
+    VK_SHADER_CODE_TYPE_SPIRV_EXT = 1;
 
 struct VkPhysicalDeviceShaderObjectFeaturesEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_FEATURES_EXT;
@@ -272,9 +247,9 @@ struct VkPhysicalDeviceShaderObjectPropertiesEXT {
 struct VkShaderCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT;
     const(void)* pNext;
-    VkFlags flags;
-    VkShaderStageFlagBits stage;
-    VkFlags nextStage;
+    VkShaderCreateFlagsEXT flags;
+    VkShaderStageFlags stage;
+    VkShaderStageFlags nextStage;
     VkShaderCodeTypeEXT codeType;
     size_t codeSize;
     const(void)* pCode;
@@ -348,7 +323,7 @@ alias PFN_vkGetShaderBinaryDataEXT = VkResult function(
 alias PFN_vkCmdBindShadersEXT = void function(
     VkCommandBuffer commandBuffer,
     uint stageCount,
-    const(VkShaderStageFlagBits)* pStages,
+    const(VkShaderStageFlags)* pStages,
     const(VkShaderEXT)* pShaders,
 );
 
@@ -473,12 +448,12 @@ alias PFN_vkCmdSetPolygonModeEXT = void function(
 
 alias PFN_vkCmdSetRasterizationSamplesEXT = void function(
     VkCommandBuffer commandBuffer,
-    VkSampleCountFlagBits rasterizationSamples,
+    VkSampleCountFlags rasterizationSamples,
 );
 
 alias PFN_vkCmdSetSampleMaskEXT = void function(
     VkCommandBuffer commandBuffer,
-    VkSampleCountFlagBits samples,
+    VkSampleCountFlags samples,
     const(VkSampleMask)* pSampleMask,
 );
 

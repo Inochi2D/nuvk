@@ -28,17 +28,17 @@ version (VK_VERSION_1_2)
 enum VK_QCOM_RENDER_PASS_TRANSFORM_SPEC_VERSION = 5;
 enum VK_QCOM_RENDER_PASS_TRANSFORM_EXTENSION_NAME = "VK_QCOM_render_pass_transform";
 
-import vulkan.khr.surface : VkSurfaceTransformFlagBitsKHR;
+import vulkan.khr.surface : VkSurfaceTransformFlagsKHR;
 struct VkRenderPassTransformBeginInfoQCOM {
     VkStructureType sType = VK_STRUCTURE_TYPE_RENDER_PASS_TRANSFORM_BEGIN_INFO_QCOM;
     const(void)* pNext;
-    VkSurfaceTransformFlagBitsKHR transform;
+    VkSurfaceTransformFlagsKHR transform;
 }
 
-import vulkan.khr.surface : VkSurfaceTransformFlagBitsKHR;
+import vulkan.khr.surface : VkSurfaceTransformFlagsKHR;
 struct VkCommandBufferInheritanceRenderPassTransformInfoQCOM {
     VkStructureType sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_RENDER_PASS_TRANSFORM_INFO_QCOM;
     const(void)* pNext;
-    VkSurfaceTransformFlagBitsKHR transform;
+    VkSurfaceTransformFlagsKHR transform;
     VkRect2D renderArea;
 }

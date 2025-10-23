@@ -30,7 +30,6 @@ version (VK_VERSION_1_3) {} else {
 }
 
 struct VK_KHR_dynamic_rendering_local_read {
-    
     @VkProcName("vkCmdSetRenderingAttachmentLocations")
     PFN_vkCmdSetRenderingAttachmentLocations vkCmdSetRenderingAttachmentLocations;
     

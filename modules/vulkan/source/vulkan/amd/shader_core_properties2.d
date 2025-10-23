@@ -33,10 +33,9 @@ enum VK_AMD_SHADER_CORE_PROPERTIES_2_EXTENSION_NAME = "VK_AMD_shader_core_proper
 struct VkPhysicalDeviceShaderCoreProperties2AMD {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_2_AMD;
     void* pNext;
-    VkFlags shaderCoreFeatures;
+    VkShaderCorePropertiesFlagsAMD shaderCoreFeatures;
     uint activeComputeUnitCount;
 }
 
-enum VkShaderCorePropertiesFlagBitsAMD : uint;
+alias VkShaderCorePropertiesFlagsAMD = uint;
 
-alias VkShaderCorePropertiesFlagsAMD = VkBitFlagsBase!(VkFlags, VkShaderCorePropertiesFlagBitsAMD);

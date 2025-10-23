@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.swapchain;
 
 struct VK_EXT_hdr_metadata {
-    
     @VkProcName("vkSetHdrMetadataEXT")
     PFN_vkSetHdrMetadataEXT vkSetHdrMetadataEXT;
 }

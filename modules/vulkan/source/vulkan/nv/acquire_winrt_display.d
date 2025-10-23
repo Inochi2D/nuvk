@@ -33,7 +33,6 @@ public import vulkan.ext.direct_mode_display;
 version (Windows):
 
 struct VK_NV_acquire_winrt_display {
-    
     @VkProcName("vkAcquireWinrtDisplayNV")
     PFN_vkAcquireWinrtDisplayNV vkAcquireWinrtDisplayNV;
     

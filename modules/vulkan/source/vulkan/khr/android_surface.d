@@ -33,7 +33,6 @@ public import vulkan.khr.surface;
 version (Android):
 
 struct VK_KHR_android_surface {
-    
     @VkProcName("vkCreateAndroidSurfaceKHR")
     PFN_vkCreateAndroidSurfaceKHR vkCreateAndroidSurfaceKHR;
 }
@@ -41,13 +40,12 @@ struct VK_KHR_android_surface {
 enum VK_KHR_ANDROID_SURFACE_SPEC_VERSION = 6;
 enum VK_KHR_ANDROID_SURFACE_EXTENSION_NAME = "VK_KHR_android_surface";
 
-
 alias VkAndroidSurfaceCreateFlagsKHR = VkFlags;
 
 struct VkAndroidSurfaceCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
     const(void)* pNext;
-    VkFlags flags;
+    VkAndroidSurfaceCreateFlagsKHR flags;
     ANativeWindow* window;
 }
 

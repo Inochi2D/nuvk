@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 struct VK_KHR_bind_memory2 {
-    
     @VkProcName("vkBindBufferMemory2")
     PFN_vkBindBufferMemory2 vkBindBufferMemory2;
     

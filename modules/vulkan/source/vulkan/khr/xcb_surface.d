@@ -32,7 +32,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.surface;
 
 struct VK_KHR_xcb_surface {
-    
     @VkProcName("vkCreateXcbSurfaceKHR")
     PFN_vkCreateXcbSurfaceKHR vkCreateXcbSurfaceKHR;
     
@@ -48,7 +47,7 @@ alias VkXcbSurfaceCreateFlagsKHR = VkFlags;
 struct VkXcbSurfaceCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
     const(void)* pNext;
-    VkFlags flags;
+    VkXcbSurfaceCreateFlagsKHR flags;
     xcb_connection_t* connection;
     xcb_window_t window;
 }

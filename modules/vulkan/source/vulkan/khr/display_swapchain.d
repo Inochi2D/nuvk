@@ -29,7 +29,6 @@ public import vulkan.khr.display;
 public import vulkan.khr.swapchain;
 
 struct VK_KHR_display_swapchain {
-    
     @VkProcName("vkCreateSharedSwapchainsKHR")
     PFN_vkCreateSharedSwapchainsKHR vkCreateSharedSwapchainsKHR;
 }

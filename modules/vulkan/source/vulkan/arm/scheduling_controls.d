@@ -45,13 +45,10 @@ struct VkPhysicalDeviceSchedulingControlsFeaturesARM {
 struct VkPhysicalDeviceSchedulingControlsPropertiesARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_PROPERTIES_ARM;
     void* pNext;
-    VkFlags64 schedulingControlsFlags;
+    VkPhysicalDeviceSchedulingControlsFlagsARM schedulingControlsFlags;
 }
 
-alias VkPhysicalDeviceSchedulingControlsFlagsARM = VkBitFlagsBase!(VkFlags64, VkPhysicalDeviceSchedulingControlsFlagBitsARM);
 
-enum VkPhysicalDeviceSchedulingControlsFlagBitsARM : ulong {
-    VK_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_SHADER_CORE_COUNT_ARM = 1,
-}
-
-enum VK_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_SHADER_CORE_COUNT_ARM = VkPhysicalDeviceSchedulingControlsFlagBitsARM.VK_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_SHADER_CORE_COUNT_ARM;
+alias VkPhysicalDeviceSchedulingControlsFlagsARM = ulong;
+enum VkPhysicalDeviceSchedulingControlsFlagsARM
+    VK_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_SHADER_CORE_COUNT_ARM = 1;

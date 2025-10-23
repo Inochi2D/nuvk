@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 struct VK_KHR_map_memory2 {
-    
     @VkProcName("vkMapMemory2")
     PFN_vkMapMemory2 vkMapMemory2;
     
@@ -41,7 +40,7 @@ alias VkMemoryMapInfoKHR = VkMemoryMapInfo;
 
 alias VkMemoryUnmapInfoKHR = VkMemoryUnmapInfo;
 
-alias VkMemoryUnmapFlagBitsKHR = VkMemoryUnmapFlagBits;
+alias VkMemoryUnmapFlagBitsKHR = VkMemoryUnmapFlags;
 
 alias VkMemoryUnmapFlagsKHR = VkMemoryUnmapFlags;
 

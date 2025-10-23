@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_KHR_external_memory_fd {
-    
     @VkProcName("vkGetMemoryFdKHR")
     PFN_vkGetMemoryFdKHR vkGetMemoryFdKHR;
     
@@ -44,7 +43,7 @@ enum VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME = "VK_KHR_external_memory_fd";
 struct VkImportMemoryFdInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR;
     const(void)* pNext;
-    VkExternalMemoryHandleTypeFlagBits handleType;
+    VkExternalMemoryHandleTypeFlags handleType;
     int fd;
 }
 
@@ -58,7 +57,7 @@ struct VkMemoryGetFdInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR;
     const(void)* pNext;
     VkDeviceMemory memory;
-    VkExternalMemoryHandleTypeFlagBits handleType;
+    VkExternalMemoryHandleTypeFlags handleType;
 }
 
 alias PFN_vkGetMemoryFdKHR = VkResult function(
@@ -69,7 +68,7 @@ alias PFN_vkGetMemoryFdKHR = VkResult function(
 
 alias PFN_vkGetMemoryFdPropertiesKHR = VkResult function(
     VkDevice device,
-    VkExternalMemoryHandleTypeFlagBits handleType,
+    VkExternalMemoryHandleTypeFlags handleType,
     int fd,
     VkMemoryFdPropertiesKHR* pMemoryFdProperties,
 );

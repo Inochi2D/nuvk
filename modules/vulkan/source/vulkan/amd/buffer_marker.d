@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 struct VK_AMD_buffer_marker {
-    
     @VkProcName("vkCmdWriteBufferMarkerAMD")
     PFN_vkCmdWriteBufferMarkerAMD vkCmdWriteBufferMarkerAMD;
     @VkProcName("vkCmdWriteBufferMarker2AMD")
@@ -38,7 +37,7 @@ enum VK_AMD_BUFFER_MARKER_EXTENSION_NAME = "VK_AMD_buffer_marker";
 
 alias PFN_vkCmdWriteBufferMarkerAMD = void function(
     VkCommandBuffer commandBuffer,
-    VkPipelineStageFlagBits pipelineStage,
+    VkPipelineStageFlags pipelineStage,
     VkBuffer dstBuffer,
     VkDeviceSize dstOffset,
     uint marker,

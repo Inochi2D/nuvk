@@ -30,7 +30,6 @@ public import vulkan.khr.surface_maintenance1;
 public import vulkan.khr.get_physical_device_properties2;
 
 struct VK_KHR_swapchain_maintenance1 {
-    
     @VkProcName("vkReleaseSwapchainImagesKHR")
     PFN_vkReleaseSwapchainImagesKHR vkReleaseSwapchainImagesKHR;
 }
@@ -71,9 +70,9 @@ import vulkan.khr.surface_maintenance1 : VkPresentScalingFlagsKHR, VkPresentGrav
 struct VkSwapchainPresentScalingCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_SCALING_CREATE_INFO_KHR;
     const(void)* pNext;
-    VkFlags scalingBehavior;
-    VkFlags presentGravityX;
-    VkFlags presentGravityY;
+    VkPresentScalingFlagsKHR scalingBehavior;
+    VkPresentGravityFlagsKHR presentGravityX;
+    VkPresentGravityFlagsKHR presentGravityY;
 }
 
 import vulkan.khr.swapchain : VkSwapchainKHR;

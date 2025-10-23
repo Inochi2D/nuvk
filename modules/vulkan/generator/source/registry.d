@@ -61,6 +61,9 @@ class VkRegistry {
     /** Map symbol names to their extension. */
     bool[string][string] sources;
 
+    /** Map flagbits enums to flags enums. */
+    string[string] flags;
+
     /** Find the provenance of a given symbol. */
     inout(VkExtension)* provenance(const ref VkType type) inout {
         return provenance(type.name);
@@ -73,6 +76,11 @@ class VkRegistry {
         }
 
         return null;
+    }
+
+    /** Convert a flagbits enum name to a flags enum name. */
+    inout(string) toFlags(string name) inout {
+        return flags.get(name, name);
     }
 
     /** Special enum which isn't really an enum. */
@@ -116,6 +124,7 @@ struct VkDefineType {
     alias base this;
 
     @property bool funclike() const => value.empty;
+
     @property bool commented() const => value.startsWith("//");
 }
 
@@ -164,12 +173,14 @@ struct VkEnumType {
 
     alias base this;
 
+    /** Move-construct an instance of this type. */
     this(return scope typeof(this) other) {
         foreach (i, ref field; other.tupleof) {
             this.tupleof[i] = __rvalue(field);
         }
     }
 
+    /** D type corresponding to the bit width of this enum's backing type. */
     @property string backingType() const {
         final switch (width) {
             case VkBitWidth.U32:
@@ -214,6 +225,8 @@ struct VkEnumMember {
     @property bool hasAlias() const => !alias_.empty;
 
     @property bool isDeprecated() const => !deprecated_.empty;
+
+    @property string valueOrAlias() const => alias_ ? alias_ : value;
 }
 
 /** 
@@ -323,12 +336,14 @@ struct VkCommand {
     string[] errors;
     string comment;
 
+    /** Move-construct an instance of this type. */
     this(return scope typeof(this) other) {
         foreach (i, ref field; other.tupleof) {
             this.tupleof[i] = __rvalue(field);
         }
     }
 
+    /** Generate a function pointer type from the signature of this command. */
     @property VkFuncPtrType funcptr() const {
         VkFuncPtrType result;
 
@@ -592,6 +607,9 @@ enum VkBitWidth {
     U64,
 }
 
+/** 
+ * Convert a type category string to its enum value.
+ */
 VkTypeCategory toVkTypeCategory(Char)(in Char[] value) {
     import std.format : format;
 
@@ -619,6 +637,9 @@ VkTypeCategory toVkTypeCategory(Char)(in Char[] value) {
     }
 }
 
+/** 
+ * Convert an extension type string to its enum value.
+ */
 VkExtensionType toVkExtensionType(Char)(in Char[] value) {
     import std.format : format;
 
@@ -630,6 +651,9 @@ VkExtensionType toVkExtensionType(Char)(in Char[] value) {
     }
 }
 
+/**
+ * D keywords which have been found to conflict with some member/param names.
+ */
 const bool[string] keywords = [
     "module": true,
     "version": true,

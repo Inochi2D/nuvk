@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.surface;
 
 struct VK_EXT_headless_surface {
-    
     @VkProcName("vkCreateHeadlessSurfaceEXT")
     PFN_vkCreateHeadlessSurfaceEXT vkCreateHeadlessSurfaceEXT;
 }
@@ -41,7 +40,7 @@ alias VkHeadlessSurfaceCreateFlagsEXT = VkFlags;
 struct VkHeadlessSurfaceCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_HEADLESS_SURFACE_CREATE_INFO_EXT;
     const(void)* pNext;
-    VkFlags flags;
+    VkHeadlessSurfaceCreateFlagsEXT flags;
 }
 
 import vulkan.khr.surface : VkSurfaceKHR;

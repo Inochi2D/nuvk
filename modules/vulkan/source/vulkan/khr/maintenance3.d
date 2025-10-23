@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_KHR_maintenance3 {
-    
     @VkProcName("vkGetDescriptorSetLayoutSupport")
     PFN_vkGetDescriptorSetLayoutSupport vkGetDescriptorSetLayoutSupport;
 }

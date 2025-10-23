@@ -33,7 +33,7 @@ alias VkPipelineCoverageToColorStateCreateFlagsNV = VkFlags;
 struct VkPipelineCoverageToColorStateCreateInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_TO_COLOR_STATE_CREATE_INFO_NV;
     const(void)* pNext;
-    VkFlags flags;
+    VkPipelineCoverageToColorStateCreateFlagsNV flags;
     VkBool32 coverageToColorEnable;
     uint coverageToColorLocation;
 }

@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_KHR_copy_commands2 {
-    
     @VkProcName("vkCmdCopyBuffer2")
     PFN_vkCmdCopyBuffer2 vkCmdCopyBuffer2;
     

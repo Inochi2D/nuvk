@@ -33,7 +33,6 @@ public import vulkan.ext.surface_maintenance1;
 public import vulkan.khr.swapchain;
 
 struct VK_EXT_swapchain_maintenance1 {
-    
     @VkProcName("vkReleaseSwapchainImagesKHR")
     PFN_vkReleaseSwapchainImagesKHR vkReleaseSwapchainImagesKHR;
 }

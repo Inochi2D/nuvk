@@ -33,7 +33,6 @@ version (VK_VERSION_1_2) {} else {
 }
 
 struct VK_NV_memory_decompression {
-    
     @VkProcName("vkCmdDecompressMemoryNV")
     PFN_vkCmdDecompressMemoryNV vkCmdDecompressMemoryNV;
     
@@ -44,20 +43,17 @@ struct VK_NV_memory_decompression {
 enum VK_NV_MEMORY_DECOMPRESSION_SPEC_VERSION = 1;
 enum VK_NV_MEMORY_DECOMPRESSION_EXTENSION_NAME = "VK_NV_memory_decompression";
 
-enum VkMemoryDecompressionMethodFlagBitsNV : ulong {
-    VK_MEMORY_DECOMPRESSION_METHOD_GDEFLATE_1_0_BIT_NV = 1,
-}
+alias VkMemoryDecompressionMethodFlagsNV = ulong;
+enum VkMemoryDecompressionMethodFlagsNV
+    VK_MEMORY_DECOMPRESSION_METHOD_GDEFLATE_1_0_BIT_NV = 1;
 
-enum VK_MEMORY_DECOMPRESSION_METHOD_GDEFLATE_1_0_BIT_NV = VkMemoryDecompressionMethodFlagBitsNV.VK_MEMORY_DECOMPRESSION_METHOD_GDEFLATE_1_0_BIT_NV;
-
-alias VkMemoryDecompressionMethodFlagsNV = VkBitFlagsBase!(VkFlags64, VkMemoryDecompressionMethodFlagBitsNV);
 
 struct VkDecompressMemoryRegionNV {
     VkDeviceAddress srcAddress;
     VkDeviceAddress dstAddress;
     VkDeviceSize compressedSize;
     VkDeviceSize decompressedSize;
-    VkFlags64 decompressionMethod;
+    VkMemoryDecompressionMethodFlagsNV decompressionMethod;
 }
 
 struct VkPhysicalDeviceMemoryDecompressionFeaturesNV {
@@ -69,7 +65,7 @@ struct VkPhysicalDeviceMemoryDecompressionFeaturesNV {
 struct VkPhysicalDeviceMemoryDecompressionPropertiesNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_PROPERTIES_NV;
     void* pNext;
-    VkFlags64 decompressionMethods;
+    VkMemoryDecompressionMethodFlagsNV decompressionMethods;
     ulong maxDecompressionIndirectCount;
 }
 

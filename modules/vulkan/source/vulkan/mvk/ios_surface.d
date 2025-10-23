@@ -33,7 +33,6 @@ public import vulkan.khr.surface;
 version (iOS):
 
 struct VK_MVK_ios_surface {
-    
     @VkProcName("vkCreateIOSSurfaceMVK")
     PFN_vkCreateIOSSurfaceMVK vkCreateIOSSurfaceMVK;
 }
@@ -46,7 +45,7 @@ alias VkIOSSurfaceCreateFlagsMVK = VkFlags;
 struct VkIOSSurfaceCreateInfoMVK {
     VkStructureType sType = VK_STRUCTURE_TYPE_IOS_SURFACE_CREATE_INFO_MVK;
     const(void)* pNext;
-    VkFlags flags;
+    VkIOSSurfaceCreateFlagsMVK flags;
     const(void)* pView;
 }
 

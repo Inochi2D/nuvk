@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_HUAWEI_cluster_culling_shader {
-    
     @VkProcName("vkCmdDrawClusterHUAWEI")
     PFN_vkCmdDrawClusterHUAWEI vkCmdDrawClusterHUAWEI;
     

@@ -41,12 +41,12 @@ struct VkAccelerationStructureMotionInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MOTION_INFO_NV;
     const(void)* pNext;
     uint maxInstances;
-    VkFlags flags;
+    VkAccelerationStructureMotionInfoFlagsNV flags;
 }
 
 struct VkAccelerationStructureMotionInstanceNV {
     VkAccelerationStructureMotionInstanceTypeNV type;
-    VkFlags flags;
+    VkAccelerationStructureMotionInstanceFlagsNV flags;
     VkAccelerationStructureMotionInstanceDataNV data;
 }
 
@@ -63,7 +63,7 @@ struct VkAccelerationStructureMatrixMotionInstanceNV {
     uint instanceCustomIndex:24;
     uint mask:8;
     uint instanceShaderBindingTableRecordOffset:24;
-    VkFlags flags:8;
+    VkGeometryInstanceFlagsKHR flags:8;
     ulong accelerationStructureReference;
     mixin DMD20473;
 }
@@ -75,7 +75,7 @@ struct VkAccelerationStructureSRTMotionInstanceNV {
     uint instanceCustomIndex:24;
     uint mask:8;
     uint instanceShaderBindingTableRecordOffset:24;
-    VkFlags flags:8;
+    VkGeometryInstanceFlagsKHR flags:8;
     ulong accelerationStructureReference;
     mixin DMD20473;
 }
@@ -99,15 +99,11 @@ struct VkSRTDataNV {
     float tz;
 }
 
-enum VkAccelerationStructureMotionInstanceTypeNV {
+alias VkAccelerationStructureMotionInstanceTypeNV = uint;
+enum VkAccelerationStructureMotionInstanceTypeNV
     VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_STATIC_NV = 0,
     VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_MATRIX_MOTION_NV = 1,
-    VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_SRT_MOTION_NV = 2,
-}
-
-enum VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_STATIC_NV = VkAccelerationStructureMotionInstanceTypeNV.VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_STATIC_NV;
-enum VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_MATRIX_MOTION_NV = VkAccelerationStructureMotionInstanceTypeNV.VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_MATRIX_MOTION_NV;
-enum VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_SRT_MOTION_NV = VkAccelerationStructureMotionInstanceTypeNV.VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_SRT_MOTION_NV;
+    VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_SRT_MOTION_NV = 2;
 
 struct VkPhysicalDeviceRayTracingMotionBlurFeaturesNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_MOTION_BLUR_FEATURES_NV;

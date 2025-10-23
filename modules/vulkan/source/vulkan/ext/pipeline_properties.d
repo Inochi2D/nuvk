@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_pipeline_properties {
-    
     @VkProcName("vkGetPipelinePropertiesEXT")
     PFN_vkGetPipelinePropertiesEXT vkGetPipelinePropertiesEXT;
 }

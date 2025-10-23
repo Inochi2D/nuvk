@@ -28,7 +28,7 @@ version (VK_VERSION_1_2)
 enum VK_EXT_PIPELINE_CREATION_FEEDBACK_SPEC_VERSION = 1;
 enum VK_EXT_PIPELINE_CREATION_FEEDBACK_EXTENSION_NAME = "VK_EXT_pipeline_creation_feedback";
 
-alias VkPipelineCreationFeedbackFlagBitsEXT = VkPipelineCreationFeedbackFlagBits;
+alias VkPipelineCreationFeedbackFlagBitsEXT = VkPipelineCreationFeedbackFlags;
 
 alias VkPipelineCreationFeedbackFlagsEXT = VkPipelineCreationFeedbackFlags;
 

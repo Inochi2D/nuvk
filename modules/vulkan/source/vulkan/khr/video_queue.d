@@ -30,7 +30,6 @@ version (VK_VERSION_1_3) {} else {
 }
 
 struct VK_KHR_video_queue {
-    
     @VkProcName("vkGetPhysicalDeviceVideoCapabilitiesKHR")
     PFN_vkGetPhysicalDeviceVideoCapabilitiesKHR vkGetPhysicalDeviceVideoCapabilitiesKHR;
     
@@ -74,7 +73,8 @@ enum VK_KHR_VIDEO_QUEUE_EXTENSION_NAME = "VK_KHR_video_queue";
 alias VkVideoSessionKHR = OpaqueHandle!("VkVideoSessionKHR");
 alias VkVideoSessionParametersKHR = OpaqueHandle!("VkVideoSessionParametersKHR");
 
-enum VkVideoCodecOperationFlagBitsKHR : uint {
+alias VkVideoCodecOperationFlagsKHR = uint;
+enum VkVideoCodecOperationFlagsKHR
     VK_VIDEO_CODEC_OPERATION_NONE_KHR = 0,
     VK_VIDEO_CODEC_OPERATION_ENCODE_H264_BIT_KHR = 65536,
     VK_VIDEO_CODEC_OPERATION_ENCODE_H265_BIT_KHR = 131072,
@@ -82,93 +82,51 @@ enum VkVideoCodecOperationFlagBitsKHR : uint {
     VK_VIDEO_CODEC_OPERATION_DECODE_H265_BIT_KHR = 2,
     VK_VIDEO_CODEC_OPERATION_DECODE_AV1_BIT_KHR = 4,
     VK_VIDEO_CODEC_OPERATION_ENCODE_AV1_BIT_KHR = 262144,
-    VK_VIDEO_CODEC_OPERATION_DECODE_VP9_BIT_KHR = 8,
-}
+    VK_VIDEO_CODEC_OPERATION_DECODE_VP9_BIT_KHR = 8;
 
-enum VK_VIDEO_CODEC_OPERATION_NONE_KHR = VkVideoCodecOperationFlagBitsKHR.VK_VIDEO_CODEC_OPERATION_NONE_KHR;
-enum VK_VIDEO_CODEC_OPERATION_ENCODE_H264_BIT_KHR = VkVideoCodecOperationFlagBitsKHR.VK_VIDEO_CODEC_OPERATION_ENCODE_H264_BIT_KHR;
-enum VK_VIDEO_CODEC_OPERATION_ENCODE_H265_BIT_KHR = VkVideoCodecOperationFlagBitsKHR.VK_VIDEO_CODEC_OPERATION_ENCODE_H265_BIT_KHR;
-enum VK_VIDEO_CODEC_OPERATION_DECODE_H264_BIT_KHR = VkVideoCodecOperationFlagBitsKHR.VK_VIDEO_CODEC_OPERATION_DECODE_H264_BIT_KHR;
-enum VK_VIDEO_CODEC_OPERATION_DECODE_H265_BIT_KHR = VkVideoCodecOperationFlagBitsKHR.VK_VIDEO_CODEC_OPERATION_DECODE_H265_BIT_KHR;
-enum VK_VIDEO_CODEC_OPERATION_DECODE_AV1_BIT_KHR = VkVideoCodecOperationFlagBitsKHR.VK_VIDEO_CODEC_OPERATION_DECODE_AV1_BIT_KHR;
-enum VK_VIDEO_CODEC_OPERATION_ENCODE_AV1_BIT_KHR = VkVideoCodecOperationFlagBitsKHR.VK_VIDEO_CODEC_OPERATION_ENCODE_AV1_BIT_KHR;
-enum VK_VIDEO_CODEC_OPERATION_DECODE_VP9_BIT_KHR = VkVideoCodecOperationFlagBitsKHR.VK_VIDEO_CODEC_OPERATION_DECODE_VP9_BIT_KHR;
 
-alias VkVideoCodecOperationFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoCodecOperationFlagBitsKHR);
-
-enum VkVideoChromaSubsamplingFlagBitsKHR : uint {
+alias VkVideoChromaSubsamplingFlagsKHR = uint;
+enum VkVideoChromaSubsamplingFlagsKHR
     VK_VIDEO_CHROMA_SUBSAMPLING_INVALID_KHR = 0,
     VK_VIDEO_CHROMA_SUBSAMPLING_MONOCHROME_BIT_KHR = 1,
     VK_VIDEO_CHROMA_SUBSAMPLING_420_BIT_KHR = 2,
     VK_VIDEO_CHROMA_SUBSAMPLING_422_BIT_KHR = 4,
-    VK_VIDEO_CHROMA_SUBSAMPLING_444_BIT_KHR = 8,
-}
+    VK_VIDEO_CHROMA_SUBSAMPLING_444_BIT_KHR = 8;
 
-enum VK_VIDEO_CHROMA_SUBSAMPLING_INVALID_KHR = VkVideoChromaSubsamplingFlagBitsKHR.VK_VIDEO_CHROMA_SUBSAMPLING_INVALID_KHR;
-enum VK_VIDEO_CHROMA_SUBSAMPLING_MONOCHROME_BIT_KHR = VkVideoChromaSubsamplingFlagBitsKHR.VK_VIDEO_CHROMA_SUBSAMPLING_MONOCHROME_BIT_KHR;
-enum VK_VIDEO_CHROMA_SUBSAMPLING_420_BIT_KHR = VkVideoChromaSubsamplingFlagBitsKHR.VK_VIDEO_CHROMA_SUBSAMPLING_420_BIT_KHR;
-enum VK_VIDEO_CHROMA_SUBSAMPLING_422_BIT_KHR = VkVideoChromaSubsamplingFlagBitsKHR.VK_VIDEO_CHROMA_SUBSAMPLING_422_BIT_KHR;
-enum VK_VIDEO_CHROMA_SUBSAMPLING_444_BIT_KHR = VkVideoChromaSubsamplingFlagBitsKHR.VK_VIDEO_CHROMA_SUBSAMPLING_444_BIT_KHR;
 
-alias VkVideoChromaSubsamplingFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoChromaSubsamplingFlagBitsKHR);
-
-enum VkVideoComponentBitDepthFlagBitsKHR : uint {
+alias VkVideoComponentBitDepthFlagsKHR = uint;
+enum VkVideoComponentBitDepthFlagsKHR
     VK_VIDEO_COMPONENT_BIT_DEPTH_INVALID_KHR = 0,
     VK_VIDEO_COMPONENT_BIT_DEPTH_8_BIT_KHR = 1,
     VK_VIDEO_COMPONENT_BIT_DEPTH_10_BIT_KHR = 4,
-    VK_VIDEO_COMPONENT_BIT_DEPTH_12_BIT_KHR = 16,
-}
+    VK_VIDEO_COMPONENT_BIT_DEPTH_12_BIT_KHR = 16;
 
-enum VK_VIDEO_COMPONENT_BIT_DEPTH_INVALID_KHR = VkVideoComponentBitDepthFlagBitsKHR.VK_VIDEO_COMPONENT_BIT_DEPTH_INVALID_KHR;
-enum VK_VIDEO_COMPONENT_BIT_DEPTH_8_BIT_KHR = VkVideoComponentBitDepthFlagBitsKHR.VK_VIDEO_COMPONENT_BIT_DEPTH_8_BIT_KHR;
-enum VK_VIDEO_COMPONENT_BIT_DEPTH_10_BIT_KHR = VkVideoComponentBitDepthFlagBitsKHR.VK_VIDEO_COMPONENT_BIT_DEPTH_10_BIT_KHR;
-enum VK_VIDEO_COMPONENT_BIT_DEPTH_12_BIT_KHR = VkVideoComponentBitDepthFlagBitsKHR.VK_VIDEO_COMPONENT_BIT_DEPTH_12_BIT_KHR;
 
-alias VkVideoComponentBitDepthFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoComponentBitDepthFlagBitsKHR);
-
-enum VkVideoCapabilityFlagBitsKHR : uint {
+alias VkVideoCapabilityFlagsKHR = uint;
+enum VkVideoCapabilityFlagsKHR
     VK_VIDEO_CAPABILITY_PROTECTED_CONTENT_BIT_KHR = 1,
-    VK_VIDEO_CAPABILITY_SEPARATE_REFERENCE_IMAGES_BIT_KHR = 2,
-}
+    VK_VIDEO_CAPABILITY_SEPARATE_REFERENCE_IMAGES_BIT_KHR = 2;
 
-enum VK_VIDEO_CAPABILITY_PROTECTED_CONTENT_BIT_KHR = VkVideoCapabilityFlagBitsKHR.VK_VIDEO_CAPABILITY_PROTECTED_CONTENT_BIT_KHR;
-enum VK_VIDEO_CAPABILITY_SEPARATE_REFERENCE_IMAGES_BIT_KHR = VkVideoCapabilityFlagBitsKHR.VK_VIDEO_CAPABILITY_SEPARATE_REFERENCE_IMAGES_BIT_KHR;
 
-alias VkVideoCapabilityFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoCapabilityFlagBitsKHR);
-
-enum VkVideoSessionCreateFlagBitsKHR : uint {
+alias VkVideoSessionCreateFlagsKHR = uint;
+enum VkVideoSessionCreateFlagsKHR
     VK_VIDEO_SESSION_CREATE_PROTECTED_CONTENT_BIT_KHR = 1,
     VK_VIDEO_SESSION_CREATE_ALLOW_ENCODE_PARAMETER_OPTIMIZATIONS_BIT_KHR = 2,
     VK_VIDEO_SESSION_CREATE_INLINE_QUERIES_BIT_KHR = 4,
     VK_VIDEO_SESSION_CREATE_ALLOW_ENCODE_QUANTIZATION_DELTA_MAP_BIT_KHR = 8,
     VK_VIDEO_SESSION_CREATE_ALLOW_ENCODE_EMPHASIS_MAP_BIT_KHR = 16,
-    VK_VIDEO_SESSION_CREATE_INLINE_SESSION_PARAMETERS_BIT_KHR = 32,
-}
+    VK_VIDEO_SESSION_CREATE_INLINE_SESSION_PARAMETERS_BIT_KHR = 32;
 
-enum VK_VIDEO_SESSION_CREATE_PROTECTED_CONTENT_BIT_KHR = VkVideoSessionCreateFlagBitsKHR.VK_VIDEO_SESSION_CREATE_PROTECTED_CONTENT_BIT_KHR;
-enum VK_VIDEO_SESSION_CREATE_ALLOW_ENCODE_PARAMETER_OPTIMIZATIONS_BIT_KHR = VkVideoSessionCreateFlagBitsKHR.VK_VIDEO_SESSION_CREATE_ALLOW_ENCODE_PARAMETER_OPTIMIZATIONS_BIT_KHR;
-enum VK_VIDEO_SESSION_CREATE_INLINE_QUERIES_BIT_KHR = VkVideoSessionCreateFlagBitsKHR.VK_VIDEO_SESSION_CREATE_INLINE_QUERIES_BIT_KHR;
-enum VK_VIDEO_SESSION_CREATE_ALLOW_ENCODE_QUANTIZATION_DELTA_MAP_BIT_KHR = VkVideoSessionCreateFlagBitsKHR.VK_VIDEO_SESSION_CREATE_ALLOW_ENCODE_QUANTIZATION_DELTA_MAP_BIT_KHR;
-enum VK_VIDEO_SESSION_CREATE_ALLOW_ENCODE_EMPHASIS_MAP_BIT_KHR = VkVideoSessionCreateFlagBitsKHR.VK_VIDEO_SESSION_CREATE_ALLOW_ENCODE_EMPHASIS_MAP_BIT_KHR;
-enum VK_VIDEO_SESSION_CREATE_INLINE_SESSION_PARAMETERS_BIT_KHR = VkVideoSessionCreateFlagBitsKHR.VK_VIDEO_SESSION_CREATE_INLINE_SESSION_PARAMETERS_BIT_KHR;
-
-alias VkVideoSessionCreateFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoSessionCreateFlagBitsKHR);
-import vulkan.khr.video_encode_quantization_map : VkVideoSessionParametersCreateFlagBitsKHR;
-alias VkVideoSessionParametersCreateFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoSessionParametersCreateFlagBitsKHR);
+import vulkan.khr.video_encode_quantization_map : VkVideoSessionParametersCreateFlagsKHR;
 alias VkVideoBeginCodingFlagsKHR = VkFlags;
 alias VkVideoEndCodingFlagsKHR = VkFlags;
 
-enum VkVideoCodingControlFlagBitsKHR : uint {
+alias VkVideoCodingControlFlagsKHR = uint;
+enum VkVideoCodingControlFlagsKHR
     VK_VIDEO_CODING_CONTROL_RESET_BIT_KHR = 1,
     VK_VIDEO_CODING_CONTROL_ENCODE_RATE_CONTROL_BIT_KHR = 2,
-    VK_VIDEO_CODING_CONTROL_ENCODE_QUALITY_LEVEL_BIT_KHR = 4,
-}
+    VK_VIDEO_CODING_CONTROL_ENCODE_QUALITY_LEVEL_BIT_KHR = 4;
 
-enum VK_VIDEO_CODING_CONTROL_RESET_BIT_KHR = VkVideoCodingControlFlagBitsKHR.VK_VIDEO_CODING_CONTROL_RESET_BIT_KHR;
-enum VK_VIDEO_CODING_CONTROL_ENCODE_RATE_CONTROL_BIT_KHR = VkVideoCodingControlFlagBitsKHR.VK_VIDEO_CODING_CONTROL_ENCODE_RATE_CONTROL_BIT_KHR;
-enum VK_VIDEO_CODING_CONTROL_ENCODE_QUALITY_LEVEL_BIT_KHR = VkVideoCodingControlFlagBitsKHR.VK_VIDEO_CODING_CONTROL_ENCODE_QUALITY_LEVEL_BIT_KHR;
-
-alias VkVideoCodingControlFlagsKHR = VkBitFlagsBase!(VkFlags, VkVideoCodingControlFlagBitsKHR);
 
 struct VkQueueFamilyQueryResultStatusPropertiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_QUERY_RESULT_STATUS_PROPERTIES_KHR;
@@ -176,31 +134,26 @@ struct VkQueueFamilyQueryResultStatusPropertiesKHR {
     VkBool32 queryResultStatusSupport;
 }
 
-enum VkQueryResultStatusKHR {
+alias VkQueryResultStatusKHR = uint;
+enum VkQueryResultStatusKHR
     VK_QUERY_RESULT_STATUS_ERROR_KHR = -1,
     VK_QUERY_RESULT_STATUS_NOT_READY_KHR = 0,
     VK_QUERY_RESULT_STATUS_COMPLETE_KHR = 1,
-    VK_QUERY_RESULT_STATUS_INSUFFICIENT_BITSTREAM_BUFFER_RANGE_KHR = -1000299000,
-}
-
-enum VK_QUERY_RESULT_STATUS_ERROR_KHR = VkQueryResultStatusKHR.VK_QUERY_RESULT_STATUS_ERROR_KHR;
-enum VK_QUERY_RESULT_STATUS_NOT_READY_KHR = VkQueryResultStatusKHR.VK_QUERY_RESULT_STATUS_NOT_READY_KHR;
-enum VK_QUERY_RESULT_STATUS_COMPLETE_KHR = VkQueryResultStatusKHR.VK_QUERY_RESULT_STATUS_COMPLETE_KHR;
-enum VK_QUERY_RESULT_STATUS_INSUFFICIENT_BITSTREAM_BUFFER_RANGE_KHR = VkQueryResultStatusKHR.VK_QUERY_RESULT_STATUS_INSUFFICIENT_BITSTREAM_BUFFER_RANGE_KHR;
+    VK_QUERY_RESULT_STATUS_INSUFFICIENT_BITSTREAM_BUFFER_RANGE_KHR = -1000299000;
 
 struct VkQueueFamilyVideoPropertiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_VIDEO_PROPERTIES_KHR;
     void* pNext;
-    VkFlags videoCodecOperations;
+    VkVideoCodecOperationFlagsKHR videoCodecOperations;
 }
 
 struct VkVideoProfileInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_PROFILE_INFO_KHR;
     const(void)* pNext;
-    VkVideoCodecOperationFlagBitsKHR videoCodecOperation;
-    VkFlags chromaSubsampling;
-    VkFlags lumaBitDepth;
-    VkFlags chromaBitDepth;
+    VkVideoCodecOperationFlagsKHR videoCodecOperation;
+    VkVideoChromaSubsamplingFlagsKHR chromaSubsampling;
+    VkVideoComponentBitDepthFlagsKHR lumaBitDepth;
+    VkVideoComponentBitDepthFlagsKHR chromaBitDepth;
 }
 
 struct VkVideoProfileListInfoKHR {
@@ -213,7 +166,7 @@ struct VkVideoProfileListInfoKHR {
 struct VkVideoCapabilitiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_CAPABILITIES_KHR;
     void* pNext;
-    VkFlags flags;
+    VkVideoCapabilityFlagsKHR flags;
     VkDeviceSize minBitstreamBufferOffsetAlignment;
     VkDeviceSize minBitstreamBufferSizeAlignment;
     VkExtent2D pictureAccessGranularity;
@@ -227,7 +180,7 @@ struct VkVideoCapabilitiesKHR {
 struct VkPhysicalDeviceVideoFormatInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_FORMAT_INFO_KHR;
     const(void)* pNext;
-    VkFlags imageUsage;
+    VkImageUsageFlags imageUsage;
 }
 
 struct VkVideoFormatPropertiesKHR {
@@ -235,10 +188,10 @@ struct VkVideoFormatPropertiesKHR {
     void* pNext;
     VkFormat format;
     VkComponentMapping componentMapping;
-    VkFlags imageCreateFlags;
+    VkImageCreateFlags imageCreateFlags;
     VkImageType imageType;
     VkImageTiling imageTiling;
-    VkFlags imageUsageFlags;
+    VkImageUsageFlags imageUsageFlags;
 }
 
 struct VkVideoPictureResourceInfoKHR {
@@ -277,7 +230,7 @@ struct VkVideoSessionCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_SESSION_CREATE_INFO_KHR;
     const(void)* pNext;
     uint queueFamilyIndex;
-    VkFlags flags;
+    VkVideoSessionCreateFlagsKHR flags;
     const(VkVideoProfileInfoKHR)* pVideoProfile;
     VkFormat pictureFormat;
     VkExtent2D maxCodedExtent;
@@ -290,7 +243,7 @@ struct VkVideoSessionCreateInfoKHR {
 struct VkVideoSessionParametersCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_SESSION_PARAMETERS_CREATE_INFO_KHR;
     const(void)* pNext;
-    VkFlags flags;
+    VkVideoSessionParametersCreateFlagsKHR flags;
     VkVideoSessionParametersKHR videoSessionParametersTemplate;
     VkVideoSessionKHR videoSession;
 }
@@ -304,7 +257,7 @@ struct VkVideoSessionParametersUpdateInfoKHR {
 struct VkVideoBeginCodingInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_BEGIN_CODING_INFO_KHR;
     const(void)* pNext;
-    VkFlags flags;
+    VkVideoBeginCodingFlagsKHR flags;
     VkVideoSessionKHR videoSession;
     VkVideoSessionParametersKHR videoSessionParameters;
     uint referenceSlotCount;
@@ -314,13 +267,13 @@ struct VkVideoBeginCodingInfoKHR {
 struct VkVideoEndCodingInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_END_CODING_INFO_KHR;
     const(void)* pNext;
-    VkFlags flags;
+    VkVideoEndCodingFlagsKHR flags;
 }
 
 struct VkVideoCodingControlInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_CODING_CONTROL_INFO_KHR;
     const(void)* pNext;
-    VkFlags flags;
+    VkVideoCodingControlFlagsKHR flags;
 }
 
 alias PFN_vkGetPhysicalDeviceVideoCapabilitiesKHR = VkResult function(

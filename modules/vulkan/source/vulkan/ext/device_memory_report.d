@@ -41,7 +41,7 @@ struct VkPhysicalDeviceDeviceMemoryReportFeaturesEXT {
 struct VkDeviceDeviceMemoryReportCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_DEVICE_DEVICE_MEMORY_REPORT_CREATE_INFO_EXT;
     const(void)* pNext;
-    VkFlags flags;
+    VkDeviceMemoryReportFlagsEXT flags;
     PFN_vkDeviceMemoryReportCallbackEXT pfnUserCallback;
     void* pUserData;
 }
@@ -49,7 +49,7 @@ struct VkDeviceDeviceMemoryReportCreateInfoEXT {
 struct VkDeviceMemoryReportCallbackDataEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_DEVICE_MEMORY_REPORT_CALLBACK_DATA_EXT;
     void* pNext;
-    VkFlags flags;
+    VkDeviceMemoryReportFlagsEXT flags;
     VkDeviceMemoryReportEventTypeEXT type;
     ulong memoryObjectId;
     VkDeviceSize size;
@@ -60,19 +60,13 @@ struct VkDeviceMemoryReportCallbackDataEXT {
 
 alias VkDeviceMemoryReportFlagsEXT = VkFlags;
 
-enum VkDeviceMemoryReportEventTypeEXT {
+alias VkDeviceMemoryReportEventTypeEXT = uint;
+enum VkDeviceMemoryReportEventTypeEXT
     VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_ALLOCATE_EXT = 0,
     VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_FREE_EXT = 1,
     VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_IMPORT_EXT = 2,
     VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_UNIMPORT_EXT = 3,
-    VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_ALLOCATION_FAILED_EXT = 4,
-}
-
-enum VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_ALLOCATE_EXT = VkDeviceMemoryReportEventTypeEXT.VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_ALLOCATE_EXT;
-enum VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_FREE_EXT = VkDeviceMemoryReportEventTypeEXT.VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_FREE_EXT;
-enum VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_IMPORT_EXT = VkDeviceMemoryReportEventTypeEXT.VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_IMPORT_EXT;
-enum VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_UNIMPORT_EXT = VkDeviceMemoryReportEventTypeEXT.VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_UNIMPORT_EXT;
-enum VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_ALLOCATION_FAILED_EXT = VkDeviceMemoryReportEventTypeEXT.VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_ALLOCATION_FAILED_EXT;
+    VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_ALLOCATION_FAILED_EXT = 4;
 
 alias PFN_vkDeviceMemoryReportCallbackEXT = void function(
     const(VkDeviceMemoryReportCallbackDataEXT)* pCallbackData,

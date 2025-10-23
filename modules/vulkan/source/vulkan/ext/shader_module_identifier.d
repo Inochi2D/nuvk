@@ -33,7 +33,6 @@ version (VK_VERSION_1_3) {} else {
 }
 
 struct VK_EXT_shader_module_identifier {
-    
     @VkProcName("vkGetShaderModuleIdentifierEXT")
     PFN_vkGetShaderModuleIdentifierEXT vkGetShaderModuleIdentifierEXT;
     

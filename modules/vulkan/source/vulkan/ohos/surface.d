@@ -32,7 +32,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.surface;
 
 struct VK_OHOS_surface {
-    
     @VkProcName("vkCreateSurfaceOHOS")
     PFN_vkCreateSurfaceOHOS vkCreateSurfaceOHOS;
 }
@@ -45,10 +44,9 @@ alias VkSurfaceCreateFlagsOHOS = VkFlags;
 struct VkSurfaceCreateInfoOHOS {
     VkStructureType sType = VK_STRUCTURE_TYPE_SURFACE_CREATE_INFO_OHOS;
     const(void)* pNext;
-    VkFlags flags;
+    VkSurfaceCreateFlagsOHOS flags;
     OHNativeWindow* window;
 }
-
 
 import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateSurfaceOHOS = VkResult function(

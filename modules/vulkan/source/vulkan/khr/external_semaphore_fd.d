@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_KHR_external_semaphore_fd {
-    
     @VkProcName("vkImportSemaphoreFdKHR")
     PFN_vkImportSemaphoreFdKHR vkImportSemaphoreFdKHR;
     
@@ -45,8 +44,8 @@ struct VkImportSemaphoreFdInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_FD_INFO_KHR;
     const(void)* pNext;
     VkSemaphore semaphore;
-    VkFlags flags;
-    VkExternalSemaphoreHandleTypeFlagBits handleType;
+    VkSemaphoreImportFlags flags;
+    VkExternalSemaphoreHandleTypeFlags handleType;
     int fd;
 }
 
@@ -54,7 +53,7 @@ struct VkSemaphoreGetFdInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR;
     const(void)* pNext;
     VkSemaphore semaphore;
-    VkExternalSemaphoreHandleTypeFlagBits handleType;
+    VkExternalSemaphoreHandleTypeFlags handleType;
 }
 
 alias PFN_vkImportSemaphoreFdKHR = VkResult function(

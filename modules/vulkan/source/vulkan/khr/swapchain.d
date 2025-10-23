@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.surface;
 
 struct VK_KHR_swapchain {
-    
     @VkProcName("vkCreateSwapchainKHR")
     PFN_vkCreateSwapchainKHR vkCreateSwapchainKHR;
     
@@ -62,7 +61,8 @@ struct VK_KHR_swapchain {
 enum VK_KHR_SWAPCHAIN_SPEC_VERSION = 70;
 enum VK_KHR_SWAPCHAIN_EXTENSION_NAME = "VK_KHR_swapchain";
 
-enum VkSwapchainCreateFlagBitsKHR : uint {
+alias VkSwapchainCreateFlagsKHR = uint;
+enum VkSwapchainCreateFlagsKHR
     VK_SWAPCHAIN_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR = 1,
     VK_SWAPCHAIN_CREATE_PROTECTED_BIT_KHR = 2,
     VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR = 4,
@@ -73,40 +73,26 @@ enum VkSwapchainCreateFlagBitsKHR : uint {
     VK_SWAPCHAIN_CREATE_PRESENT_ID_2_BIT_KHR = 64,
     VK_SWAPCHAIN_CREATE_PRESENT_WAIT_2_BIT_KHR = 128,
     VK_SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_KHR = 8,
-    VK_SWAPCHAIN_CREATE_RESERVED_8_BIT_EXT = 256,
-}
+    VK_SWAPCHAIN_CREATE_RESERVED_8_BIT_EXT = 256;
 
-enum VK_SWAPCHAIN_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR = VkSwapchainCreateFlagBitsKHR.VK_SWAPCHAIN_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR;
-enum VK_SWAPCHAIN_CREATE_PROTECTED_BIT_KHR = VkSwapchainCreateFlagBitsKHR.VK_SWAPCHAIN_CREATE_PROTECTED_BIT_KHR;
-enum VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR = VkSwapchainCreateFlagBitsKHR.VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR;
-enum VK_SWAPCHAIN_CREATE_RESERVED_9_BIT_EXT = VkSwapchainCreateFlagBitsKHR.VK_SWAPCHAIN_CREATE_RESERVED_9_BIT_EXT;
-enum VK_SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_EXT = VK_SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_KHR;
-enum VK_SWAPCHAIN_CREATE_RESERVED_5_BIT_EXT = VkSwapchainCreateFlagBitsKHR.VK_SWAPCHAIN_CREATE_RESERVED_5_BIT_EXT;
-enum VK_SWAPCHAIN_CREATE_RESERVED_4_BIT_EXT = VkSwapchainCreateFlagBitsKHR.VK_SWAPCHAIN_CREATE_RESERVED_4_BIT_EXT;
-enum VK_SWAPCHAIN_CREATE_PRESENT_ID_2_BIT_KHR = VkSwapchainCreateFlagBitsKHR.VK_SWAPCHAIN_CREATE_PRESENT_ID_2_BIT_KHR;
-enum VK_SWAPCHAIN_CREATE_PRESENT_WAIT_2_BIT_KHR = VkSwapchainCreateFlagBitsKHR.VK_SWAPCHAIN_CREATE_PRESENT_WAIT_2_BIT_KHR;
-enum VK_SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_KHR = VkSwapchainCreateFlagBitsKHR.VK_SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_KHR;
-enum VK_SWAPCHAIN_CREATE_RESERVED_8_BIT_EXT = VkSwapchainCreateFlagBitsKHR.VK_SWAPCHAIN_CREATE_RESERVED_8_BIT_EXT;
 
-alias VkSwapchainCreateFlagsKHR = VkBitFlagsBase!(VkFlags, VkSwapchainCreateFlagBitsKHR);
-
-import vulkan.khr.surface : VkSurfaceKHR, VkColorSpaceKHR, VkSurfaceTransformFlagBitsKHR, VkCompositeAlphaFlagBitsKHR, VkPresentModeKHR;
+import vulkan.khr.surface : VkSurfaceKHR, VkColorSpaceKHR, VkCompositeAlphaFlagsKHR, VkPresentModeKHR;
 struct VkSwapchainCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     const(void)* pNext;
-    VkFlags flags;
+    VkSwapchainCreateFlagsKHR flags;
     VkSurfaceKHR surface;
     uint minImageCount;
     VkFormat imageFormat;
     VkColorSpaceKHR imageColorSpace;
     VkExtent2D imageExtent;
     uint imageArrayLayers;
-    VkFlags imageUsage;
+    VkImageUsageFlags imageUsage;
     VkSharingMode imageSharingMode;
     uint queueFamilyIndexCount;
     const(uint)* pQueueFamilyIndices;
-    VkSurfaceTransformFlagBitsKHR preTransform;
-    VkCompositeAlphaFlagBitsKHR compositeAlpha;
+    VkSurfaceTransformFlagsKHR preTransform;
+    VkCompositeAlphaFlagsKHR compositeAlpha;
     VkPresentModeKHR presentMode;
     VkBool32 clipped;
     VkSwapchainKHR oldSwapchain;
@@ -183,25 +169,19 @@ struct VkAcquireNextImageInfoKHR {
     uint deviceMask;
 }
 
-enum VkDeviceGroupPresentModeFlagBitsKHR : uint {
+alias VkDeviceGroupPresentModeFlagsKHR = uint;
+enum VkDeviceGroupPresentModeFlagsKHR
     VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR = 1,
     VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR = 2,
     VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR = 4,
-    VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR = 8,
-}
+    VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR = 8;
 
-enum VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR = VkDeviceGroupPresentModeFlagBitsKHR.VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR;
-enum VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR = VkDeviceGroupPresentModeFlagBitsKHR.VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR;
-enum VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR = VkDeviceGroupPresentModeFlagBitsKHR.VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR;
-enum VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR = VkDeviceGroupPresentModeFlagBitsKHR.VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR;
-
-alias VkDeviceGroupPresentModeFlagsKHR = VkBitFlagsBase!(VkFlags, VkDeviceGroupPresentModeFlagBitsKHR);
 
 struct VkDeviceGroupPresentCapabilitiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_CAPABILITIES_KHR;
     void* pNext;
     uint[VK_MAX_DEVICE_GROUP_SIZE] presentMask;
-    VkFlags modes;
+    VkDeviceGroupPresentModeFlagsKHR modes;
 }
 
 struct VkDeviceGroupPresentInfoKHR {
@@ -209,13 +189,13 @@ struct VkDeviceGroupPresentInfoKHR {
     const(void)* pNext;
     uint swapchainCount;
     const(uint)* pDeviceMasks;
-    VkDeviceGroupPresentModeFlagBitsKHR mode;
+    VkDeviceGroupPresentModeFlagsKHR mode;
 }
 
 struct VkDeviceGroupSwapchainCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_SWAPCHAIN_CREATE_INFO_KHR;
     const(void)* pNext;
-    VkFlags modes;
+    VkDeviceGroupPresentModeFlagsKHR modes;
 }
 
 alias PFN_vkGetDeviceGroupPresentCapabilitiesKHR = VkResult function(

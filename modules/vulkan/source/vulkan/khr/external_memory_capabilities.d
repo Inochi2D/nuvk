@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_KHR_external_memory_capabilities {
-    
     @VkProcName("vkGetPhysicalDeviceExternalBufferProperties")
     PFN_vkGetPhysicalDeviceExternalBufferProperties vkGetPhysicalDeviceExternalBufferProperties;
 }
@@ -41,11 +40,11 @@ enum VK_LUID_SIZE_KHR = VK_LUID_SIZE;
 
 alias VkExternalMemoryHandleTypeFlagsKHR = VkExternalMemoryHandleTypeFlags;
 
-alias VkExternalMemoryHandleTypeFlagBitsKHR = VkExternalMemoryHandleTypeFlagBits;
+alias VkExternalMemoryHandleTypeFlagBitsKHR = VkExternalMemoryHandleTypeFlags;
 
 alias VkExternalMemoryFeatureFlagsKHR = VkExternalMemoryFeatureFlags;
 
-alias VkExternalMemoryFeatureFlagBitsKHR = VkExternalMemoryFeatureFlagBits;
+alias VkExternalMemoryFeatureFlagBitsKHR = VkExternalMemoryFeatureFlags;
 
 alias VkExternalMemoryPropertiesKHR = VkExternalMemoryProperties;
 

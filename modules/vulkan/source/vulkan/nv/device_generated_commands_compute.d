@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.nv.device_generated_commands;
 
 struct VK_NV_device_generated_commands_compute {
-    
     @VkProcName("vkGetPipelineIndirectMemoryRequirementsNV")
     PFN_vkGetPipelineIndirectMemoryRequirementsNV vkGetPipelineIndirectMemoryRequirementsNV;
     

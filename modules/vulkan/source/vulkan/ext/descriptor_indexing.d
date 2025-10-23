@@ -43,6 +43,6 @@ alias VkDescriptorSetVariableDescriptorCountAllocateInfoEXT = VkDescriptorSetVar
 
 alias VkDescriptorSetVariableDescriptorCountLayoutSupportEXT = VkDescriptorSetVariableDescriptorCountLayoutSupport;
 
-alias VkDescriptorBindingFlagBitsEXT = VkDescriptorBindingFlagBits;
+alias VkDescriptorBindingFlagBitsEXT = VkDescriptorBindingFlags;
 
 alias VkDescriptorBindingFlagsEXT = VkDescriptorBindingFlags;

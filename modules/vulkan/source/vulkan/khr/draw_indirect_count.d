@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 struct VK_KHR_draw_indirect_count {
-    
     @VkProcName("vkCmdDrawIndirectCount")
     PFN_vkCmdDrawIndirectCount vkCmdDrawIndirectCount;
     

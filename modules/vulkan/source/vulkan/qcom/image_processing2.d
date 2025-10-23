@@ -49,10 +49,7 @@ struct VkSamplerBlockMatchWindowCreateInfoQCOM {
     VkBlockMatchWindowCompareModeQCOM windowCompareMode;
 }
 
-enum VkBlockMatchWindowCompareModeQCOM {
+alias VkBlockMatchWindowCompareModeQCOM = uint;
+enum VkBlockMatchWindowCompareModeQCOM
     VK_BLOCK_MATCH_WINDOW_COMPARE_MODE_MIN_QCOM = 0,
-    VK_BLOCK_MATCH_WINDOW_COMPARE_MODE_MAX_QCOM = 1,
-}
-
-enum VK_BLOCK_MATCH_WINDOW_COMPARE_MODE_MIN_QCOM = VkBlockMatchWindowCompareModeQCOM.VK_BLOCK_MATCH_WINDOW_COMPARE_MODE_MIN_QCOM;
-enum VK_BLOCK_MATCH_WINDOW_COMPARE_MODE_MAX_QCOM = VkBlockMatchWindowCompareModeQCOM.VK_BLOCK_MATCH_WINDOW_COMPARE_MODE_MAX_QCOM;
+    VK_BLOCK_MATCH_WINDOW_COMPARE_MODE_MAX_QCOM = 1;

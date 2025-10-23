@@ -30,7 +30,6 @@ version (VK_VERSION_1_2) {} else {
 }
 
 struct VK_EXT_mesh_shader {
-    
     @VkProcName("vkCmdDrawMeshTasksEXT")
     PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
     

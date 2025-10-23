@@ -76,7 +76,7 @@ struct App {
         vulkan = registries[0];
         video = registries[1];
 
-        if (!input.list.empty) {
+        if (input.list) {
             foreach (ls; input.list) {
                 switch (ls) {
                     case "platforms":
@@ -131,60 +131,64 @@ struct App {
                         listExtensions(vulkan);
                         break;
 
+                    case "flags":
+                        listFlags(vulkan);
+                        break;
+
                     default:
                         logger.warn("<u>%s</u> is not listable", ls);
                         break;
                 }
             }
-        }
+        } else {
+            if (input.names == ["*"]) {
+                input.names = ["core"] ~ (vulkan.extensions[] ~ video.extensions[])
+                    .filter!(e => e.usable)
+                    .map!(e => e.name)
+                    .array;
+            }
 
-        if (input.names == ["*"]) {
-            input.names = ["core"] ~ (vulkan.extensions[] ~ video.extensions[])
-                .filter!(e => e.usable)
-                .map!(e => e.name)
-                .array;
-        }
+            foreach (name; input.names) {
+                switch (name) {
+                    case "core":
+                        const filename = "source/vulkan/core.d";
+                        logger.info("<orange>%s</orange> - Vulkan Core", filename);
+                        emitVkCore(vulkan, input.dryrun ? stdout : File(filename, "wt"), logger);
+                        break;
 
-        foreach (name; input.names) {
-            switch (name) {
-                case "core":
-                    const filename = "source/vulkan/core.d";
-                    logger.info("<orange>%s</orange> - Vulkan Core", filename);
-                    emitVkCore(vulkan, input.dryrun ? stdout : File(filename, "wt"), logger);
-                    break;
-
-                case "vulkan_video_codecs_common":
-                    const filename = "source/vulkan/video/common.d";
-                    logger.info("<orange>%s</orange> - Video Common", filename);
-                    if (!input.dryrun) {
-                        mkdirRecurse("source/vulkan/video");
-                    }
-                    emitVidCommon(video, input.dryrun ? stdout : File(filename, "wt"), logger);
-                    break;
-
-                default:
-                    if (auto ext = name in vulkan.extensions) {
-                        if (input.platforms.get(ext.platform, true)) {
-                            const filename = format!"source/vulkan/%s/%s.d"(ext.prefix, ext.shortName);
-                            logger.info("<orange>%s</orange> - Vulkan Extension <yellow>%s</yellow>", filename, ext.name);
-                            if (!input.dryrun) {
-                                mkdirRecurse(dirName(filename));
-                            }
-                            emitVkExt(vulkan, *ext, input.dryrun ? stdout : File(filename, "wt"), logger);
+                    case "vulkan_video_codecs_common":
+                        const filename = "source/vulkan/video/common.d";
+                        logger.info("<orange>%s</orange> - Video Common", filename);
+                        if (!input.dryrun) {
+                            mkdirRecurse("source/vulkan/video");
                         }
-                    } else if (auto ext = name in video.extensions) {
-                        if (input.platforms.get(ext.platform, true)) {
-                            const filename = format!"source/vulkan/video/%s.d"(ext.shortName);
-                            logger.info("<orange>%s</orange> - Video Extension <yellow>%s</yellow>", filename, ext.name);
-                            if (!input.dryrun) {
-                                mkdirRecurse("source/vulkan/video");
+                        emitVidCommon(video, input.dryrun ? stdout : File(filename, "wt"), logger);
+                        break;
+
+                    default:
+                        if (auto ext = name in vulkan.extensions) {
+                            if (input.platforms.get(ext.platform, true)) {
+                                const filename = format!"source/vulkan/%s/%s.d"(ext.prefix, ext.shortName);
+                                logger.info("<orange>%s</orange> - Vulkan Extension <yellow>%s</yellow>", filename, ext.name);
+                                if (!input.dryrun) {
+                                    mkdirRecurse(dirName(filename));
+                                }
+                                emitVkExt(vulkan, *ext, input.dryrun ? stdout : File(filename, "wt"), logger);
                             }
-                            emitVidExt(video, *ext, input.dryrun ? stdout : File(filename, "wt"), logger);
+                        } else if (auto ext = name in video.extensions) {
+                            if (input.platforms.get(ext.platform, true)) {
+                                const filename = format!"source/vulkan/video/%s.d"(ext.shortName);
+                                logger.info("<orange>%s</orange> - Video Extension <yellow>%s</yellow>", filename, ext.name);
+                                if (!input.dryrun) {
+                                    mkdirRecurse("source/vulkan/video");
+                                }
+                                emitVidExt(video, *ext, input.dryrun ? stdout : File(filename, "wt"), logger);
+                            }
+                        } else {
+                            logger.warn("unable to find extension <yellow>%s</yellow>", name);
                         }
-                    } else {
-                        logger.warn("unable to find extension <yellow>%s</yellow>", name);
-                    }
-                    break;
+                        break;
+                }
             }
         }
 
@@ -251,7 +255,9 @@ struct App {
 
     private void listBitmasks(ref VkRegistry registry) {
         foreach (ref bitmask; registry.bitmasks) {
-            if (bitmask.bitvalues.empty) {
+            if (bitmask.alias_) {
+                logger.info("<lgreen>%s</lgreen> -&gt; <lblue>%s</lblue>", bitmask.name, bitmask.alias_);
+            } else if (bitmask.bitvalues.empty) {
                 logger.info("<lgreen>%s</lgreen> : <lblue>%s</lblue>", bitmask.name, bitmask.backing);
             } else {
                 logger.info("<lgreen>%s</lgreen> : <lgreen>%s</lgreen>", bitmask.name, bitmask.bitvalues);
@@ -417,6 +423,12 @@ struct App {
 
         if (registry.extensions.length == 0) {
             logger.info("<grey>%s</grey>", "(no extensions)");
+        }
+    }
+
+    private void listFlags(ref VkRegistry registry) {
+        foreach (src, dest; registry.flags) {
+            logger.info("%s -&gt; %s", src, dest);
         }
     }
 

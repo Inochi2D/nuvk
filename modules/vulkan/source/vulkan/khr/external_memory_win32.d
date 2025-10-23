@@ -35,7 +35,6 @@ version (VK_VERSION_1_1) {} else {
 version (Windows):
 
 struct VK_KHR_external_memory_win32 {
-    
     @VkProcName("vkGetMemoryWin32HandleKHR")
     PFN_vkGetMemoryWin32HandleKHR vkGetMemoryWin32HandleKHR;
     
@@ -49,7 +48,7 @@ enum VK_KHR_EXTERNAL_MEMORY_WIN32_EXTENSION_NAME = "VK_KHR_external_memory_win32
 struct VkImportMemoryWin32HandleInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_KHR;
     const(void)* pNext;
-    VkExternalMemoryHandleTypeFlagBits handleType;
+    VkExternalMemoryHandleTypeFlags handleType;
     HANDLE handle;
     LPCWSTR name;
 }
@@ -72,7 +71,7 @@ struct VkMemoryGetWin32HandleInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_MEMORY_GET_WIN32_HANDLE_INFO_KHR;
     const(void)* pNext;
     VkDeviceMemory memory;
-    VkExternalMemoryHandleTypeFlagBits handleType;
+    VkExternalMemoryHandleTypeFlags handleType;
 }
 
 alias PFN_vkGetMemoryWin32HandleKHR = VkResult function(
@@ -83,7 +82,7 @@ alias PFN_vkGetMemoryWin32HandleKHR = VkResult function(
 
 alias PFN_vkGetMemoryWin32HandlePropertiesKHR = VkResult function(
     VkDevice device,
-    VkExternalMemoryHandleTypeFlagBits handleType,
+    VkExternalMemoryHandleTypeFlags handleType,
     HANDLE handle,
     VkMemoryWin32HandlePropertiesKHR* pMemoryWin32HandleProperties,
 );

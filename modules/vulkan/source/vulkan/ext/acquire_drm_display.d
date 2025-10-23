@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.ext.direct_mode_display;
 
 struct VK_EXT_acquire_drm_display {
-    
     @VkProcName("vkAcquireDrmDisplayEXT")
     PFN_vkAcquireDrmDisplayEXT vkAcquireDrmDisplayEXT;
     

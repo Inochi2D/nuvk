@@ -34,7 +34,6 @@ version (VK_VERSION_1_3) {} else {
 }
 
 struct VK_EXT_host_image_copy {
-    
     @VkProcName("vkCopyMemoryToImage")
     PFN_vkCopyMemoryToImage vkCopyMemoryToImage;
     
@@ -58,7 +57,7 @@ alias VkPhysicalDeviceHostImageCopyFeaturesEXT = VkPhysicalDeviceHostImageCopyFe
 
 alias VkPhysicalDeviceHostImageCopyPropertiesEXT = VkPhysicalDeviceHostImageCopyProperties;
 
-alias VkHostImageCopyFlagBitsEXT = VkHostImageCopyFlagBits;
+alias VkHostImageCopyFlagBitsEXT = VkHostImageCopyFlags;
 
 alias VkHostImageCopyFlagsEXT = VkHostImageCopyFlags;
 

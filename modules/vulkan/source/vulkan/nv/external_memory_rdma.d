@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_NV_external_memory_rdma {
-    
     @VkProcName("vkGetMemoryRemoteAddressNV")
     PFN_vkGetMemoryRemoteAddressNV vkGetMemoryRemoteAddressNV;
 }
@@ -44,7 +43,7 @@ struct VkMemoryGetRemoteAddressInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_MEMORY_GET_REMOTE_ADDRESS_INFO_NV;
     const(void)* pNext;
     VkDeviceMemory memory;
-    VkExternalMemoryHandleTypeFlagBits handleType;
+    VkExternalMemoryHandleTypeFlags handleType;
 }
 
 struct VkPhysicalDeviceExternalMemoryRDMAFeaturesNV {

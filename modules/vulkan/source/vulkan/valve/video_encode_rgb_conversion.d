@@ -42,10 +42,10 @@ struct VkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE {
 struct VkVideoEncodeRgbConversionCapabilitiesVALVE {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_RGB_CONVERSION_CAPABILITIES_VALVE;
     void* pNext;
-    VkFlags rgbModels;
-    VkFlags rgbRanges;
-    VkFlags xChromaOffsets;
-    VkFlags yChromaOffsets;
+    VkVideoEncodeRgbModelConversionFlagsVALVE rgbModels;
+    VkVideoEncodeRgbRangeCompressionFlagsVALVE rgbRanges;
+    VkVideoEncodeRgbChromaOffsetFlagsVALVE xChromaOffsets;
+    VkVideoEncodeRgbChromaOffsetFlagsVALVE yChromaOffsets;
 }
 
 struct VkVideoEncodeProfileRgbConversionInfoVALVE {
@@ -57,44 +57,29 @@ struct VkVideoEncodeProfileRgbConversionInfoVALVE {
 struct VkVideoEncodeSessionRgbConversionCreateInfoVALVE {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_SESSION_RGB_CONVERSION_CREATE_INFO_VALVE;
     const(void)* pNext;
-    VkVideoEncodeRgbModelConversionFlagBitsVALVE rgbModel;
-    VkVideoEncodeRgbRangeCompressionFlagBitsVALVE rgbRange;
-    VkVideoEncodeRgbChromaOffsetFlagBitsVALVE xChromaOffset;
-    VkVideoEncodeRgbChromaOffsetFlagBitsVALVE yChromaOffset;
+    VkVideoEncodeRgbModelConversionFlagsVALVE rgbModel;
+    VkVideoEncodeRgbRangeCompressionFlagsVALVE rgbRange;
+    VkVideoEncodeRgbChromaOffsetFlagsVALVE xChromaOffset;
+    VkVideoEncodeRgbChromaOffsetFlagsVALVE yChromaOffset;
 }
 
-enum VkVideoEncodeRgbModelConversionFlagBitsVALVE : uint {
+alias VkVideoEncodeRgbModelConversionFlagsVALVE = uint;
+enum VkVideoEncodeRgbModelConversionFlagsVALVE
     VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_RGB_IDENTITY_BIT_VALVE = 1,
     VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_YCBCR_IDENTITY_BIT_VALVE = 2,
     VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_YCBCR_709_BIT_VALVE = 4,
     VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_YCBCR_601_BIT_VALVE = 8,
-    VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_YCBCR_2020_BIT_VALVE = 16,
-}
+    VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_YCBCR_2020_BIT_VALVE = 16;
 
-enum VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_RGB_IDENTITY_BIT_VALVE = VkVideoEncodeRgbModelConversionFlagBitsVALVE.VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_RGB_IDENTITY_BIT_VALVE;
-enum VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_YCBCR_IDENTITY_BIT_VALVE = VkVideoEncodeRgbModelConversionFlagBitsVALVE.VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_YCBCR_IDENTITY_BIT_VALVE;
-enum VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_YCBCR_709_BIT_VALVE = VkVideoEncodeRgbModelConversionFlagBitsVALVE.VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_YCBCR_709_BIT_VALVE;
-enum VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_YCBCR_601_BIT_VALVE = VkVideoEncodeRgbModelConversionFlagBitsVALVE.VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_YCBCR_601_BIT_VALVE;
-enum VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_YCBCR_2020_BIT_VALVE = VkVideoEncodeRgbModelConversionFlagBitsVALVE.VK_VIDEO_ENCODE_RGB_MODEL_CONVERSION_YCBCR_2020_BIT_VALVE;
 
-alias VkVideoEncodeRgbModelConversionFlagsVALVE = VkBitFlagsBase!(VkFlags, VkVideoEncodeRgbModelConversionFlagBitsVALVE);
-
-enum VkVideoEncodeRgbRangeCompressionFlagBitsVALVE : uint {
+alias VkVideoEncodeRgbRangeCompressionFlagsVALVE = uint;
+enum VkVideoEncodeRgbRangeCompressionFlagsVALVE
     VK_VIDEO_ENCODE_RGB_RANGE_COMPRESSION_FULL_RANGE_BIT_VALVE = 1,
-    VK_VIDEO_ENCODE_RGB_RANGE_COMPRESSION_NARROW_RANGE_BIT_VALVE = 2,
-}
+    VK_VIDEO_ENCODE_RGB_RANGE_COMPRESSION_NARROW_RANGE_BIT_VALVE = 2;
 
-enum VK_VIDEO_ENCODE_RGB_RANGE_COMPRESSION_FULL_RANGE_BIT_VALVE = VkVideoEncodeRgbRangeCompressionFlagBitsVALVE.VK_VIDEO_ENCODE_RGB_RANGE_COMPRESSION_FULL_RANGE_BIT_VALVE;
-enum VK_VIDEO_ENCODE_RGB_RANGE_COMPRESSION_NARROW_RANGE_BIT_VALVE = VkVideoEncodeRgbRangeCompressionFlagBitsVALVE.VK_VIDEO_ENCODE_RGB_RANGE_COMPRESSION_NARROW_RANGE_BIT_VALVE;
 
-alias VkVideoEncodeRgbRangeCompressionFlagsVALVE = VkBitFlagsBase!(VkFlags, VkVideoEncodeRgbRangeCompressionFlagBitsVALVE);
-
-enum VkVideoEncodeRgbChromaOffsetFlagBitsVALVE : uint {
+alias VkVideoEncodeRgbChromaOffsetFlagsVALVE = uint;
+enum VkVideoEncodeRgbChromaOffsetFlagsVALVE
     VK_VIDEO_ENCODE_RGB_CHROMA_OFFSET_COSITED_EVEN_BIT_VALVE = 1,
-    VK_VIDEO_ENCODE_RGB_CHROMA_OFFSET_MIDPOINT_BIT_VALVE = 2,
-}
+    VK_VIDEO_ENCODE_RGB_CHROMA_OFFSET_MIDPOINT_BIT_VALVE = 2;
 
-enum VK_VIDEO_ENCODE_RGB_CHROMA_OFFSET_COSITED_EVEN_BIT_VALVE = VkVideoEncodeRgbChromaOffsetFlagBitsVALVE.VK_VIDEO_ENCODE_RGB_CHROMA_OFFSET_COSITED_EVEN_BIT_VALVE;
-enum VK_VIDEO_ENCODE_RGB_CHROMA_OFFSET_MIDPOINT_BIT_VALVE = VkVideoEncodeRgbChromaOffsetFlagBitsVALVE.VK_VIDEO_ENCODE_RGB_CHROMA_OFFSET_MIDPOINT_BIT_VALVE;
-
-alias VkVideoEncodeRgbChromaOffsetFlagsVALVE = VkBitFlagsBase!(VkFlags, VkVideoEncodeRgbChromaOffsetFlagBitsVALVE);

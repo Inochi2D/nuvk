@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.cooperative_matrix;
 
 struct VK_NV_cooperative_matrix2 {
-    
     @VkProcName("vkGetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV")
     PFN_vkGetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV vkGetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV;
 }

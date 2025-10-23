@@ -29,7 +29,6 @@ public import vulkan.khr.present_id;
 public import vulkan.khr.swapchain;
 
 struct VK_KHR_present_wait {
-    
     @VkProcName("vkWaitForPresentKHR")
     PFN_vkWaitForPresentKHR vkWaitForPresentKHR;
 }

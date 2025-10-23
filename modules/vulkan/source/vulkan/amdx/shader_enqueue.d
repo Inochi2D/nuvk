@@ -37,7 +37,6 @@ version (VK_VERSION_1_3) {} else {
 }
 
 struct VK_AMDX_shader_enqueue {
-    
     @VkProcName("vkCreateExecutionGraphPipelinesAMDX")
     PFN_vkCreateExecutionGraphPipelinesAMDX vkCreateExecutionGraphPipelinesAMDX;
     
@@ -96,7 +95,7 @@ import vulkan.khr.pipeline_library : VkPipelineLibraryCreateInfoKHR;
 struct VkExecutionGraphPipelineCreateInfoAMDX {
     VkStructureType sType = VK_STRUCTURE_TYPE_EXECUTION_GRAPH_PIPELINE_CREATE_INFO_AMDX;
     const(void)* pNext;
-    VkFlags flags;
+    VkPipelineCreateFlags flags;
     uint stageCount;
     const(VkPipelineShaderStageCreateInfo)* pStages;
     const(VkPipelineLibraryCreateInfoKHR)* pLibraryInfo;

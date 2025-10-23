@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_extended_dynamic_state3 {
-    
     @VkProcName("vkCmdSetDepthClampEnableEXT")
     PFN_vkCmdSetDepthClampEnableEXT vkCmdSetDepthClampEnableEXT;
     
@@ -204,12 +203,12 @@ alias PFN_vkCmdSetPolygonModeEXT = void function(
 
 alias PFN_vkCmdSetRasterizationSamplesEXT = void function(
     VkCommandBuffer commandBuffer,
-    VkSampleCountFlagBits rasterizationSamples,
+    VkSampleCountFlags rasterizationSamples,
 );
 
 alias PFN_vkCmdSetSampleMaskEXT = void function(
     VkCommandBuffer commandBuffer,
-    VkSampleCountFlagBits samples,
+    VkSampleCountFlags samples,
     const(VkSampleMask)* pSampleMask,
 );
 

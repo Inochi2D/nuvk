@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_NV_scissor_exclusive {
-    
     @VkProcName("vkCmdSetExclusiveScissorEnableNV")
     PFN_vkCmdSetExclusiveScissorEnableNV vkCmdSetExclusiveScissorEnableNV;
     

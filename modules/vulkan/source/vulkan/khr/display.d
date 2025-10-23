@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.surface;
 
 struct VK_KHR_display {
-    
     @VkProcName("vkGetPhysicalDeviceDisplayPropertiesKHR")
     PFN_vkGetPhysicalDeviceDisplayPropertiesKHR vkGetPhysicalDeviceDisplayPropertiesKHR;
     
@@ -61,7 +60,7 @@ alias VkDisplayModeCreateFlagsKHR = VkFlags;
 struct VkDisplayModeCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR;
     const(void)* pNext;
-    VkFlags flags;
+    VkDisplayModeCreateFlagsKHR flags;
     VkDisplayModeParametersKHR parameters;
 }
 
@@ -77,22 +76,16 @@ struct VkDisplayModePropertiesKHR {
     VkDisplayModeParametersKHR parameters;
 }
 
-enum VkDisplayPlaneAlphaFlagBitsKHR : uint {
+alias VkDisplayPlaneAlphaFlagsKHR = uint;
+enum VkDisplayPlaneAlphaFlagsKHR
     VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR = 1,
     VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR = 2,
     VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_BIT_KHR = 4,
-    VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR = 8,
-}
+    VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR = 8;
 
-enum VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR = VkDisplayPlaneAlphaFlagBitsKHR.VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR;
-enum VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR = VkDisplayPlaneAlphaFlagBitsKHR.VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR;
-enum VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_BIT_KHR = VkDisplayPlaneAlphaFlagBitsKHR.VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_BIT_KHR;
-enum VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR = VkDisplayPlaneAlphaFlagBitsKHR.VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR;
-
-alias VkDisplayPlaneAlphaFlagsKHR = VkBitFlagsBase!(VkFlags, VkDisplayPlaneAlphaFlagBitsKHR);
 
 struct VkDisplayPlaneCapabilitiesKHR {
-    VkFlags supportedAlpha;
+    VkDisplayPlaneAlphaFlagsKHR supportedAlpha;
     VkOffset2D minSrcPosition;
     VkOffset2D maxSrcPosition;
     VkExtent2D minSrcExtent;
@@ -113,29 +106,27 @@ struct VkDisplayPropertiesKHR {
     const(char)* displayName;
     VkExtent2D physicalDimensions;
     VkExtent2D physicalResolution;
-    VkFlags supportedTransforms;
+    VkSurfaceTransformFlagsKHR supportedTransforms;
     VkBool32 planeReorderPossible;
     VkBool32 persistentContent;
 }
 
 alias VkDisplaySurfaceCreateFlagsKHR = VkFlags;
 
-import vulkan.khr.surface : VkSurfaceTransformFlagBitsKHR;
 struct VkDisplaySurfaceCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR;
     const(void)* pNext;
-    VkFlags flags;
+    VkDisplaySurfaceCreateFlagsKHR flags;
     VkDisplayModeKHR displayMode;
     uint planeIndex;
     uint planeStackIndex;
-    VkSurfaceTransformFlagBitsKHR transform;
+    VkSurfaceTransformFlagsKHR transform;
     float globalAlpha;
-    VkDisplayPlaneAlphaFlagBitsKHR alphaMode;
+    VkDisplayPlaneAlphaFlagsKHR alphaMode;
     VkExtent2D imageExtent;
 }
 
-import vulkan.khr.surface : VkSurfaceTransformFlagBitsKHR;
-alias VkSurfaceTransformFlagsKHR = VkBitFlagsBase!(VkFlags, VkSurfaceTransformFlagBitsKHR);
+import vulkan.khr.surface : VkSurfaceTransformFlagsKHR;
 
 alias PFN_vkGetPhysicalDeviceDisplayPropertiesKHR = VkResult function(
     VkPhysicalDevice physicalDevice,

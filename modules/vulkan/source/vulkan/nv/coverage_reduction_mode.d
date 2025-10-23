@@ -31,7 +31,6 @@ version (VK_VERSION_1_1) {} else {
 public import vulkan.nv.framebuffer_mixed_samples;
 
 struct VK_NV_coverage_reduction_mode {
-    
     @VkProcName("vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV")
     PFN_vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV;
 }
@@ -48,27 +47,24 @@ struct VkPhysicalDeviceCoverageReductionModeFeaturesNV {
 struct VkPipelineCoverageReductionStateCreateInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_REDUCTION_STATE_CREATE_INFO_NV;
     const(void)* pNext;
-    VkFlags flags;
+    VkPipelineCoverageReductionStateCreateFlagsNV flags;
     VkCoverageReductionModeNV coverageReductionMode;
 }
 
 alias VkPipelineCoverageReductionStateCreateFlagsNV = VkFlags;
 
-enum VkCoverageReductionModeNV {
+alias VkCoverageReductionModeNV = uint;
+enum VkCoverageReductionModeNV
     VK_COVERAGE_REDUCTION_MODE_MERGE_NV = 0,
-    VK_COVERAGE_REDUCTION_MODE_TRUNCATE_NV = 1,
-}
-
-enum VK_COVERAGE_REDUCTION_MODE_MERGE_NV = VkCoverageReductionModeNV.VK_COVERAGE_REDUCTION_MODE_MERGE_NV;
-enum VK_COVERAGE_REDUCTION_MODE_TRUNCATE_NV = VkCoverageReductionModeNV.VK_COVERAGE_REDUCTION_MODE_TRUNCATE_NV;
+    VK_COVERAGE_REDUCTION_MODE_TRUNCATE_NV = 1;
 
 struct VkFramebufferMixedSamplesCombinationNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_MIXED_SAMPLES_COMBINATION_NV;
     void* pNext;
     VkCoverageReductionModeNV coverageReductionMode;
-    VkSampleCountFlagBits rasterizationSamples;
-    VkFlags depthStencilSamples;
-    VkFlags colorSamples;
+    VkSampleCountFlags rasterizationSamples;
+    VkSampleCountFlags depthStencilSamples;
+    VkSampleCountFlags colorSamples;
 }
 
 alias PFN_vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV = VkResult function(

@@ -37,7 +37,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_fragment_density_map_offset {
-    
     @VkProcName("vkCmdEndRendering2EXT")
     PFN_vkCmdEndRendering2EXT vkCmdEndRendering2EXT;
 }

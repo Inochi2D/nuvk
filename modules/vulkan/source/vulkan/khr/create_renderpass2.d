@@ -31,7 +31,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_KHR_create_renderpass2 {
-    
     @VkProcName("vkCreateRenderPass2")
     PFN_vkCreateRenderPass2 vkCreateRenderPass2;
     

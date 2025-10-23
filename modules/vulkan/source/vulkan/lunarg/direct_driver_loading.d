@@ -30,18 +30,15 @@ enum VK_LUNARG_DIRECT_DRIVER_LOADING_EXTENSION_NAME = "VK_LUNARG_direct_driver_l
 
 alias VkDirectDriverLoadingFlagsLUNARG = VkFlags;
 
-enum VkDirectDriverLoadingModeLUNARG {
+alias VkDirectDriverLoadingModeLUNARG = uint;
+enum VkDirectDriverLoadingModeLUNARG
     VK_DIRECT_DRIVER_LOADING_MODE_EXCLUSIVE_LUNARG = 0,
-    VK_DIRECT_DRIVER_LOADING_MODE_INCLUSIVE_LUNARG = 1,
-}
-
-enum VK_DIRECT_DRIVER_LOADING_MODE_EXCLUSIVE_LUNARG = VkDirectDriverLoadingModeLUNARG.VK_DIRECT_DRIVER_LOADING_MODE_EXCLUSIVE_LUNARG;
-enum VK_DIRECT_DRIVER_LOADING_MODE_INCLUSIVE_LUNARG = VkDirectDriverLoadingModeLUNARG.VK_DIRECT_DRIVER_LOADING_MODE_INCLUSIVE_LUNARG;
+    VK_DIRECT_DRIVER_LOADING_MODE_INCLUSIVE_LUNARG = 1;
 
 struct VkDirectDriverLoadingInfoLUNARG {
     VkStructureType sType = VK_STRUCTURE_TYPE_DIRECT_DRIVER_LOADING_INFO_LUNARG;
     void* pNext;
-    VkFlags flags;
+    VkDirectDriverLoadingFlagsLUNARG flags;
     PFN_vkGetInstanceProcAddrLUNARG pfnGetInstanceProcAddr;
 }
 

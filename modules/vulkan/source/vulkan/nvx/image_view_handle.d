@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 struct VK_NVX_image_view_handle {
-    
     @VkProcName("vkGetImageViewHandleNVX")
     PFN_vkGetImageViewHandleNVX vkGetImageViewHandleNVX;
     

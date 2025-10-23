@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_transform_feedback {
-    
     @VkProcName("vkCmdBindTransformFeedbackBuffersEXT")
     PFN_vkCmdBindTransformFeedbackBuffersEXT vkCmdBindTransformFeedbackBuffersEXT;
     
@@ -78,7 +77,7 @@ struct VkPhysicalDeviceTransformFeedbackPropertiesEXT {
 struct VkPipelineRasterizationStateStreamCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_STREAM_CREATE_INFO_EXT;
     const(void)* pNext;
-    VkFlags flags;
+    VkPipelineRasterizationStateStreamCreateFlagsEXT flags;
     uint rasterizationStream;
 }
 

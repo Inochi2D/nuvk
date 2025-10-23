@@ -42,24 +42,18 @@ struct VkPhysicalDeviceAddressBindingReportFeaturesEXT {
 struct VkDeviceAddressBindingCallbackDataEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_DEVICE_ADDRESS_BINDING_CALLBACK_DATA_EXT;
     void* pNext;
-    VkFlags flags;
+    VkDeviceAddressBindingFlagsEXT flags;
     VkDeviceAddress baseAddress;
     VkDeviceSize size;
     VkDeviceAddressBindingTypeEXT bindingType;
 }
 
-alias VkDeviceAddressBindingFlagsEXT = VkBitFlagsBase!(VkFlags, VkDeviceAddressBindingFlagBitsEXT);
 
-enum VkDeviceAddressBindingFlagBitsEXT : uint {
-    VK_DEVICE_ADDRESS_BINDING_INTERNAL_OBJECT_BIT_EXT = 1,
-}
+alias VkDeviceAddressBindingFlagsEXT = uint;
+enum VkDeviceAddressBindingFlagsEXT
+    VK_DEVICE_ADDRESS_BINDING_INTERNAL_OBJECT_BIT_EXT = 1;
 
-enum VK_DEVICE_ADDRESS_BINDING_INTERNAL_OBJECT_BIT_EXT = VkDeviceAddressBindingFlagBitsEXT.VK_DEVICE_ADDRESS_BINDING_INTERNAL_OBJECT_BIT_EXT;
-
-enum VkDeviceAddressBindingTypeEXT {
+alias VkDeviceAddressBindingTypeEXT = uint;
+enum VkDeviceAddressBindingTypeEXT
     VK_DEVICE_ADDRESS_BINDING_TYPE_BIND_EXT = 0,
-    VK_DEVICE_ADDRESS_BINDING_TYPE_UNBIND_EXT = 1,
-}
-
-enum VK_DEVICE_ADDRESS_BINDING_TYPE_BIND_EXT = VkDeviceAddressBindingTypeEXT.VK_DEVICE_ADDRESS_BINDING_TYPE_BIND_EXT;
-enum VK_DEVICE_ADDRESS_BINDING_TYPE_UNBIND_EXT = VkDeviceAddressBindingTypeEXT.VK_DEVICE_ADDRESS_BINDING_TYPE_UNBIND_EXT;
+    VK_DEVICE_ADDRESS_BINDING_TYPE_UNBIND_EXT = 1;
