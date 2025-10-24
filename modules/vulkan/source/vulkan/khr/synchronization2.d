@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_KHR_synchronization2 {
-    
     @VkProcName("vkCmdSetEvent2")
     PFN_vkCmdSetEvent2 vkCmdSetEvent2;
     
@@ -70,11 +69,11 @@ alias VkFlags64 = ulong;
 
 alias VkPipelineStageFlags2KHR = VkPipelineStageFlags2;
 
-alias VkPipelineStageFlagBits2KHR = VkPipelineStageFlagBits2;
+alias VkPipelineStageFlagBits2KHR = VkPipelineStageFlags2;
 
 alias VkAccessFlags2KHR = VkAccessFlags2;
 
-alias VkAccessFlagBits2KHR = VkAccessFlagBits2;
+alias VkAccessFlagBits2KHR = VkAccessFlags2;
 
 alias VkMemoryBarrier2KHR = VkMemoryBarrier2;
 
@@ -90,7 +89,7 @@ alias VkSemaphoreSubmitInfoKHR = VkSemaphoreSubmitInfo;
 
 alias VkCommandBufferSubmitInfoKHR = VkCommandBufferSubmitInfo;
 
-alias VkSubmitFlagBitsKHR = VkSubmitFlagBits;
+alias VkSubmitFlagBitsKHR = VkSubmitFlags;
 
 alias VkSubmitFlagsKHR = VkSubmitFlags;
 

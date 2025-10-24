@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_vertex_input_dynamic_state {
-    
     @VkProcName("vkCmdSetVertexInputEXT")
     PFN_vkCmdSetVertexInputEXT vkCmdSetVertexInputEXT;
 }

@@ -33,7 +33,6 @@ public import vulkan.ext.surface_maintenance1;
 public import vulkan.khr.swapchain;
 
 struct VK_EXT_swapchain_maintenance1 {
-    
     @VkProcName("vkReleaseSwapchainImagesKHR")
     PFN_vkReleaseSwapchainImagesKHR vkReleaseSwapchainImagesKHR;
 }
@@ -41,18 +40,25 @@ struct VK_EXT_swapchain_maintenance1 {
 enum VK_EXT_SWAPCHAIN_MAINTENANCE_1_SPEC_VERSION = 1;
 enum VK_EXT_SWAPCHAIN_MAINTENANCE_1_EXTENSION_NAME = "VK_EXT_swapchain_maintenance1";
 
+import vulkan.khr.swapchain_maintenance1 : VkPhysicalDeviceSwapchainMaintenance1FeaturesKHR;
 alias VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT = VkPhysicalDeviceSwapchainMaintenance1FeaturesKHR;
 
+import vulkan.khr.swapchain_maintenance1 : VkSwapchainPresentFenceInfoKHR;
 alias VkSwapchainPresentFenceInfoEXT = VkSwapchainPresentFenceInfoKHR;
 
+import vulkan.khr.swapchain_maintenance1 : VkSwapchainPresentModesCreateInfoKHR;
 alias VkSwapchainPresentModesCreateInfoEXT = VkSwapchainPresentModesCreateInfoKHR;
 
+import vulkan.khr.swapchain_maintenance1 : VkSwapchainPresentModeInfoKHR;
 alias VkSwapchainPresentModeInfoEXT = VkSwapchainPresentModeInfoKHR;
 
+import vulkan.khr.swapchain_maintenance1 : VkSwapchainPresentScalingCreateInfoKHR;
 alias VkSwapchainPresentScalingCreateInfoEXT = VkSwapchainPresentScalingCreateInfoKHR;
 
+import vulkan.khr.swapchain_maintenance1 : VkReleaseSwapchainImagesInfoKHR;
 alias VkReleaseSwapchainImagesInfoEXT = VkReleaseSwapchainImagesInfoKHR;
 
+import vulkan.khr.swapchain_maintenance1 : VkReleaseSwapchainImagesInfoKHR;
 alias PFN_vkReleaseSwapchainImagesKHR = VkResult function(
     VkDevice device,
     const(VkReleaseSwapchainImagesInfoKHR)* pReleaseInfo,

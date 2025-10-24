@@ -26,12 +26,10 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 version (VK_VERSION_1_3) {} else {
-    version (VK_VERSION_1_1):
     public import vulkan.khr.dynamic_rendering;
 }
 
 struct VK_KHR_maintenance5 {
-    
     @VkProcName("vkCmdBindIndexBuffer2")
     PFN_vkCmdBindIndexBuffer2 vkCmdBindIndexBuffer2;
     
@@ -111,12 +109,12 @@ alias PFN_vkGetImageSubresourceLayout2 = void function(
 
 alias VkPipelineCreateFlags2KHR = VkPipelineCreateFlags2;
 
-alias VkPipelineCreateFlagBits2KHR = VkPipelineCreateFlagBits2;
+alias VkPipelineCreateFlagBits2KHR = VkPipelineCreateFlags2;
 
 alias VkPipelineCreateFlags2CreateInfoKHR = VkPipelineCreateFlags2CreateInfo;
 
 alias VkBufferUsageFlags2KHR = VkBufferUsageFlags2;
 
-alias VkBufferUsageFlagBits2KHR = VkBufferUsageFlagBits2;
+alias VkBufferUsageFlagBits2KHR = VkBufferUsageFlags2;
 
 alias VkBufferUsageFlags2CreateInfoKHR = VkBufferUsageFlags2CreateInfo;

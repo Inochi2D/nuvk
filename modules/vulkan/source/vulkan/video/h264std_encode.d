@@ -75,12 +75,14 @@ struct StdVideoEncodeH264ReferenceListsInfoFlags {
     mixin DMD20473;
 }
 
+import vulkan.video.h264std : StdVideoH264ModificationOfPicNumsIdc;
 struct StdVideoEncodeH264RefListModEntry {
     StdVideoH264ModificationOfPicNumsIdc modification_of_pic_nums_idc;
     ushort abs_diff_pic_num_minus1;
     ushort long_term_pic_num;
 }
 
+import vulkan.video.h264std : StdVideoH264MemMgmtControlOp;
 struct StdVideoEncodeH264RefPicMarkingEntry {
     StdVideoH264MemMgmtControlOp memory_management_control_operation;
     ushort difference_of_pic_nums_minus1;
@@ -104,6 +106,7 @@ struct StdVideoEncodeH264ReferenceListsInfo {
     const(StdVideoEncodeH264RefPicMarkingEntry)* pRefPicMarkingOperations;
 }
 
+import vulkan.video.h264std : StdVideoH264PictureType;
 struct StdVideoEncodeH264PictureInfo {
     StdVideoEncodeH264PictureInfoFlags flags;
     ubyte seq_parameter_set_id;
@@ -117,6 +120,7 @@ struct StdVideoEncodeH264PictureInfo {
     const(StdVideoEncodeH264ReferenceListsInfo)* pRefLists;
 }
 
+import vulkan.video.h264std : StdVideoH264PictureType;
 struct StdVideoEncodeH264ReferenceInfo {
     StdVideoEncodeH264ReferenceInfoFlags flags;
     StdVideoH264PictureType primary_pic_type;
@@ -127,6 +131,7 @@ struct StdVideoEncodeH264ReferenceInfo {
     ubyte temporal_id;
 }
 
+import vulkan.video.h264std : StdVideoH264SliceType, StdVideoH264CabacInitIdc, StdVideoH264DisableDeblockingFilterIdc;
 struct StdVideoEncodeH264SliceHeader {
     StdVideoEncodeH264SliceHeaderFlags flags;
     uint first_mb_in_slice;

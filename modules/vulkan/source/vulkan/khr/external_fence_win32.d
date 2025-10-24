@@ -33,7 +33,6 @@ public import vulkan.khr.external_fence;
 version (Windows):
 
 struct VK_KHR_external_fence_win32 {
-    
     @VkProcName("vkImportFenceWin32HandleKHR")
     PFN_vkImportFenceWin32HandleKHR vkImportFenceWin32HandleKHR;
     
@@ -48,8 +47,8 @@ struct VkImportFenceWin32HandleInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_FENCE_WIN32_HANDLE_INFO_KHR;
     const(void)* pNext;
     VkFence fence;
-    VkFlags flags;
-    VkExternalFenceHandleTypeFlagBits handleType;
+    VkFenceImportFlags flags;
+    VkExternalFenceHandleTypeFlags handleType;
     HANDLE handle;
     LPCWSTR name;
 }
@@ -66,7 +65,7 @@ struct VkFenceGetWin32HandleInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_FENCE_GET_WIN32_HANDLE_INFO_KHR;
     const(void)* pNext;
     VkFence fence;
-    VkExternalFenceHandleTypeFlagBits handleType;
+    VkExternalFenceHandleTypeFlags handleType;
 }
 
 alias PFN_vkImportFenceWin32HandleKHR = VkResult function(

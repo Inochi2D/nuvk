@@ -35,7 +35,6 @@ version (VK_VERSION_1_1) {} else {
 public import vulkan.fuchsia.external_memory;
 
 struct VK_FUCHSIA_buffer_collection {
-    
     @VkProcName("vkCreateBufferCollectionFUCHSIA")
     PFN_vkCreateBufferCollectionFUCHSIA vkCreateBufferCollectionFUCHSIA;
     
@@ -82,7 +81,7 @@ struct VkBufferConstraintsInfoFUCHSIA {
     VkStructureType sType = VK_STRUCTURE_TYPE_BUFFER_CONSTRAINTS_INFO_FUCHSIA;
     const(void)* pNext;
     VkBufferCreateInfo createInfo;
-    VkFlags requiredFormatFeatures;
+    VkFormatFeatureFlags requiredFormatFeatures;
     VkBufferCollectionConstraintsInfoFUCHSIA bufferCollectionConstraints;
 }
 
@@ -100,7 +99,7 @@ struct VkBufferCollectionPropertiesFUCHSIA {
     uint bufferCount;
     uint createInfoIndex;
     ulong sysmemPixelFormat;
-    VkFlags formatFeatures;
+    VkFormatFeatureFlags formatFeatures;
     VkSysmemColorSpaceFUCHSIA sysmemColorSpaceIndex;
     VkComponentMapping samplerYcbcrConversionComponents;
     VkSamplerYcbcrModelConversion suggestedYcbcrModel;
@@ -117,21 +116,14 @@ struct VkSysmemColorSpaceFUCHSIA {
     uint colorSpace;
 }
 
-enum VkImageConstraintsInfoFlagBitsFUCHSIA : uint {
+alias VkImageConstraintsInfoFlagsFUCHSIA = uint;
+enum VkImageConstraintsInfoFlagsFUCHSIA
     VK_IMAGE_CONSTRAINTS_INFO_CPU_READ_RARELY_FUCHSIA = 1,
     VK_IMAGE_CONSTRAINTS_INFO_CPU_READ_OFTEN_FUCHSIA = 2,
     VK_IMAGE_CONSTRAINTS_INFO_CPU_WRITE_RARELY_FUCHSIA = 4,
     VK_IMAGE_CONSTRAINTS_INFO_CPU_WRITE_OFTEN_FUCHSIA = 8,
-    VK_IMAGE_CONSTRAINTS_INFO_PROTECTED_OPTIONAL_FUCHSIA = 16,
-}
+    VK_IMAGE_CONSTRAINTS_INFO_PROTECTED_OPTIONAL_FUCHSIA = 16;
 
-enum VK_IMAGE_CONSTRAINTS_INFO_CPU_READ_RARELY_FUCHSIA = VkImageConstraintsInfoFlagBitsFUCHSIA.VK_IMAGE_CONSTRAINTS_INFO_CPU_READ_RARELY_FUCHSIA;
-enum VK_IMAGE_CONSTRAINTS_INFO_CPU_READ_OFTEN_FUCHSIA = VkImageConstraintsInfoFlagBitsFUCHSIA.VK_IMAGE_CONSTRAINTS_INFO_CPU_READ_OFTEN_FUCHSIA;
-enum VK_IMAGE_CONSTRAINTS_INFO_CPU_WRITE_RARELY_FUCHSIA = VkImageConstraintsInfoFlagBitsFUCHSIA.VK_IMAGE_CONSTRAINTS_INFO_CPU_WRITE_RARELY_FUCHSIA;
-enum VK_IMAGE_CONSTRAINTS_INFO_CPU_WRITE_OFTEN_FUCHSIA = VkImageConstraintsInfoFlagBitsFUCHSIA.VK_IMAGE_CONSTRAINTS_INFO_CPU_WRITE_OFTEN_FUCHSIA;
-enum VK_IMAGE_CONSTRAINTS_INFO_PROTECTED_OPTIONAL_FUCHSIA = VkImageConstraintsInfoFlagBitsFUCHSIA.VK_IMAGE_CONSTRAINTS_INFO_PROTECTED_OPTIONAL_FUCHSIA;
-
-alias VkImageConstraintsInfoFlagsFUCHSIA = VkFlags;
 
 struct VkImageConstraintsInfoFUCHSIA {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMAGE_CONSTRAINTS_INFO_FUCHSIA;
@@ -139,15 +131,15 @@ struct VkImageConstraintsInfoFUCHSIA {
     uint formatConstraintsCount;
     const(VkImageFormatConstraintsInfoFUCHSIA)* pFormatConstraints;
     VkBufferCollectionConstraintsInfoFUCHSIA bufferCollectionConstraints;
-    VkFlags flags;
+    VkImageConstraintsInfoFlagsFUCHSIA flags;
 }
 
 struct VkImageFormatConstraintsInfoFUCHSIA {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_CONSTRAINTS_INFO_FUCHSIA;
     const(void)* pNext;
     VkImageCreateInfo imageCreateInfo;
-    VkFlags requiredFormatFeatures;
-    VkFlags flags;
+    VkFormatFeatureFlags requiredFormatFeatures;
+    VkImageFormatConstraintsFlagsFUCHSIA flags;
     ulong sysmemPixelFormat;
     uint colorSpaceCount;
     const(VkSysmemColorSpaceFUCHSIA)* pColorSpaces;

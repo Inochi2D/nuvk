@@ -31,7 +31,6 @@ public import vulkan.khr.surface;
 public import vulkan.khr.get_surface_capabilities2;
 
 struct VK_KHR_present_wait2 {
-    
     @VkProcName("vkWaitForPresent2KHR")
     PFN_vkWaitForPresent2KHR vkWaitForPresent2KHR;
 }
@@ -58,6 +57,7 @@ struct VkPresentWait2InfoKHR {
     ulong timeout;
 }
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkWaitForPresent2KHR = VkResult function(
     VkDevice device,
     VkSwapchainKHR swapchain,

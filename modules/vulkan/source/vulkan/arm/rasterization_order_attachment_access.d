@@ -33,4 +33,5 @@ version (VK_VERSION_1_1) {} else {
 enum VK_ARM_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_SPEC_VERSION = 1;
 enum VK_ARM_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_EXTENSION_NAME = "VK_ARM_rasterization_order_attachment_access";
 
+import vulkan.ext.rasterization_order_attachment_access : VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT;
 alias VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM = VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT;

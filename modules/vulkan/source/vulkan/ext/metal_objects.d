@@ -30,7 +30,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 struct VK_EXT_metal_objects {
-    
     @VkProcName("vkExportMetalObjectsEXT")
     PFN_vkExportMetalObjectsEXT vkExportMetalObjectsEXT;
 }
@@ -38,28 +37,20 @@ struct VK_EXT_metal_objects {
 enum VK_EXT_METAL_OBJECTS_SPEC_VERSION = 2;
 enum VK_EXT_METAL_OBJECTS_EXTENSION_NAME = "VK_EXT_metal_objects";
 
-enum VkExportMetalObjectTypeFlagBitsEXT : uint {
+alias VkExportMetalObjectTypeFlagsEXT = uint;
+enum VkExportMetalObjectTypeFlagsEXT
     VK_EXPORT_METAL_OBJECT_TYPE_METAL_DEVICE_BIT_EXT = 1,
     VK_EXPORT_METAL_OBJECT_TYPE_METAL_COMMAND_QUEUE_BIT_EXT = 2,
     VK_EXPORT_METAL_OBJECT_TYPE_METAL_BUFFER_BIT_EXT = 4,
     VK_EXPORT_METAL_OBJECT_TYPE_METAL_TEXTURE_BIT_EXT = 8,
     VK_EXPORT_METAL_OBJECT_TYPE_METAL_IOSURFACE_BIT_EXT = 16,
-    VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT = 32,
-}
+    VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT = 32;
 
-enum VK_EXPORT_METAL_OBJECT_TYPE_METAL_DEVICE_BIT_EXT = VkExportMetalObjectTypeFlagBitsEXT.VK_EXPORT_METAL_OBJECT_TYPE_METAL_DEVICE_BIT_EXT;
-enum VK_EXPORT_METAL_OBJECT_TYPE_METAL_COMMAND_QUEUE_BIT_EXT = VkExportMetalObjectTypeFlagBitsEXT.VK_EXPORT_METAL_OBJECT_TYPE_METAL_COMMAND_QUEUE_BIT_EXT;
-enum VK_EXPORT_METAL_OBJECT_TYPE_METAL_BUFFER_BIT_EXT = VkExportMetalObjectTypeFlagBitsEXT.VK_EXPORT_METAL_OBJECT_TYPE_METAL_BUFFER_BIT_EXT;
-enum VK_EXPORT_METAL_OBJECT_TYPE_METAL_TEXTURE_BIT_EXT = VkExportMetalObjectTypeFlagBitsEXT.VK_EXPORT_METAL_OBJECT_TYPE_METAL_TEXTURE_BIT_EXT;
-enum VK_EXPORT_METAL_OBJECT_TYPE_METAL_IOSURFACE_BIT_EXT = VkExportMetalObjectTypeFlagBitsEXT.VK_EXPORT_METAL_OBJECT_TYPE_METAL_IOSURFACE_BIT_EXT;
-enum VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT = VkExportMetalObjectTypeFlagBitsEXT.VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT;
-
-alias VkExportMetalObjectTypeFlagsEXT = VkFlags;
 
 struct VkExportMetalObjectCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECT_CREATE_INFO_EXT;
     const(void)* pNext;
-    VkExportMetalObjectTypeFlagBitsEXT exportObjectType;
+    VkExportMetalObjectTypeFlagsEXT exportObjectType;
 }
 
 struct VkExportMetalObjectsInfoEXT {
@@ -99,14 +90,14 @@ struct VkExportMetalTextureInfoEXT {
     VkImage image;
     VkImageView imageView;
     VkBufferView bufferView;
-    VkImageAspectFlagBits plane;
+    VkImageAspectFlags plane;
     MTLTexture_id mtlTexture;
 }
 
 struct VkImportMetalTextureInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_METAL_TEXTURE_INFO_EXT;
     const(void)* pNext;
-    VkImageAspectFlagBits plane;
+    VkImageAspectFlags plane;
     MTLTexture_id mtlTexture;
 }
 
@@ -136,7 +127,6 @@ struct VkImportMetalSharedEventInfoEXT {
     const(void)* pNext;
     MTLSharedEvent_id mtlSharedEvent;
 }
-
 
 alias PFN_vkExportMetalObjectsEXT = void function(
     VkDevice device,

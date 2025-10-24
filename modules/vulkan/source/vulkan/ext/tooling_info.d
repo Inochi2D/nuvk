@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 struct VK_EXT_tooling_info {
-    
     @VkProcName("vkGetPhysicalDeviceToolProperties")
     PFN_vkGetPhysicalDeviceToolProperties vkGetPhysicalDeviceToolProperties;
     
@@ -37,7 +36,7 @@ struct VK_EXT_tooling_info {
 enum VK_EXT_TOOLING_INFO_SPEC_VERSION = 1;
 enum VK_EXT_TOOLING_INFO_EXTENSION_NAME = "VK_EXT_tooling_info";
 
-alias VkToolPurposeFlagBitsEXT = VkToolPurposeFlagBits;
+alias VkToolPurposeFlagBitsEXT = VkToolPurposeFlags;
 
 alias VkToolPurposeFlagsEXT = VkToolPurposeFlags;
 

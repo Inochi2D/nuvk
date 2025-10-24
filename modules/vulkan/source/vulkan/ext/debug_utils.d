@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 struct VK_EXT_debug_utils {
-    
     @VkProcName("vkSetDebugUtilsObjectNameEXT")
     PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT;
     
@@ -65,7 +64,7 @@ enum VK_EXT_DEBUG_UTILS_SPEC_VERSION = 2;
 enum VK_EXT_DEBUG_UTILS_EXTENSION_NAME = "VK_EXT_debug_utils";
 
 alias PFN_vkDebugUtilsMessengerCallbackEXT = VkBool32 function(
-    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+    VkDebugUtilsMessageSeverityFlagsEXT messageSeverity,
     VkDebugUtilsMessageTypeFlagsEXT messageTypes,
     const(VkDebugUtilsMessengerCallbackDataEXT)* pCallbackData,
     void* pUserData,
@@ -78,38 +77,26 @@ struct VkDebugUtilsLabelEXT {
     float[4] color;
 }
 
-enum VkDebugUtilsMessageSeverityFlagBitsEXT : uint {
+alias VkDebugUtilsMessageSeverityFlagsEXT = uint;
+enum VkDebugUtilsMessageSeverityFlagsEXT
     VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT = 1,
     VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT = 16,
     VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT = 256,
-    VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT = 4096,
-}
+    VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT = 4096;
 
-enum VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT = VkDebugUtilsMessageSeverityFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
-enum VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT = VkDebugUtilsMessageSeverityFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
-enum VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT = VkDebugUtilsMessageSeverityFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
-enum VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT = VkDebugUtilsMessageSeverityFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 
-alias VkDebugUtilsMessageSeverityFlagsEXT = VkFlags;
-
-enum VkDebugUtilsMessageTypeFlagBitsEXT : uint {
+alias VkDebugUtilsMessageTypeFlagsEXT = uint;
+enum VkDebugUtilsMessageTypeFlagsEXT
     VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT = 1,
     VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT = 2,
     VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT = 4,
-    VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT = 8,
-}
+    VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT = 8;
 
-enum VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT = VkDebugUtilsMessageTypeFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT;
-enum VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT = VkDebugUtilsMessageTypeFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
-enum VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT = VkDebugUtilsMessageTypeFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-enum VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT = VkDebugUtilsMessageTypeFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT;
-
-alias VkDebugUtilsMessageTypeFlagsEXT = VkFlags;
 
 struct VkDebugUtilsMessengerCallbackDataEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT;
     const(void)* pNext;
-    VkFlags flags;
+    VkDebugUtilsMessengerCallbackDataFlagsEXT flags;
     const(char)* pMessageIdName;
     int messageIdNumber;
     const(char)* pMessage;
@@ -127,9 +114,9 @@ alias VkDebugUtilsMessengerCreateFlagsEXT = VkFlags;
 struct VkDebugUtilsMessengerCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
     const(void)* pNext;
-    VkFlags flags;
-    VkFlags messageSeverity;
-    VkFlags messageType;
+    VkDebugUtilsMessengerCreateFlagsEXT flags;
+    VkDebugUtilsMessageSeverityFlagsEXT messageSeverity;
+    VkDebugUtilsMessageTypeFlagsEXT messageType;
     PFN_vkDebugUtilsMessengerCallbackEXT pfnUserCallback;
     void* pUserData;
 }
@@ -207,7 +194,7 @@ alias PFN_vkDestroyDebugUtilsMessengerEXT = void function(
 
 alias PFN_vkSubmitDebugUtilsMessageEXT = void function(
     VkInstance instance,
-    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+    VkDebugUtilsMessageSeverityFlagsEXT messageSeverity,
     VkDebugUtilsMessageTypeFlagsEXT messageTypes,
     const(VkDebugUtilsMessengerCallbackDataEXT)* pCallbackData,
 );

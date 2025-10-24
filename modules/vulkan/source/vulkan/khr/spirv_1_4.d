@@ -25,7 +25,6 @@ version (VK_VERSION_1_3)
 version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
-version (VK_VERSION_1_1):
 public import vulkan.khr.shader_float_controls;
 
 enum VK_KHR_SPIRV_1_4_SPEC_VERSION = 1;

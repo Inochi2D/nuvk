@@ -33,4 +33,5 @@ version (VK_VERSION_1_1) {} else {
 enum VK_NV_COMPUTE_SHADER_DERIVATIVES_SPEC_VERSION = 1;
 enum VK_NV_COMPUTE_SHADER_DERIVATIVES_EXTENSION_NAME = "VK_NV_compute_shader_derivatives";
 
+import vulkan.khr.compute_shader_derivatives : VkPhysicalDeviceComputeShaderDerivativesFeaturesKHR;
 alias VkPhysicalDeviceComputeShaderDerivativesFeaturesNV = VkPhysicalDeviceComputeShaderDerivativesFeaturesKHR;

@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.display;
 
 struct VK_EXT_display_surface_counter {
-    
     @VkProcName("vkGetPhysicalDeviceSurfaceCapabilities2EXT")
     PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT vkGetPhysicalDeviceSurfaceCapabilities2EXT;
 }
@@ -36,17 +35,13 @@ struct VK_EXT_display_surface_counter {
 enum VK_EXT_DISPLAY_SURFACE_COUNTER_SPEC_VERSION = 1;
 enum VK_EXT_DISPLAY_SURFACE_COUNTER_EXTENSION_NAME = "VK_EXT_display_surface_counter";
 
-alias VkSurfaceCounterFlagsEXT = VkFlags;
 
-enum VkSurfaceCounterFlagBitsEXT : uint {
+alias VkSurfaceCounterFlagsEXT = uint;
+enum VkSurfaceCounterFlagsEXT
     VK_SURFACE_COUNTER_VBLANK_BIT_EXT = 1,
-    VK_SURFACE_COUNTER_VBLANK_EXT = VK_SURFACE_COUNTER_VBLANK_BIT_EXT,
-}
+    VK_SURFACE_COUNTER_VBLANK_EXT = VK_SURFACE_COUNTER_VBLANK_BIT_EXT;
 
-enum VK_SURFACE_COUNTER_VBLANK_BIT_EXT = VkSurfaceCounterFlagBitsEXT.VK_SURFACE_COUNTER_VBLANK_BIT_EXT;
-deprecated("aliased")
-enum VK_SURFACE_COUNTER_VBLANK_EXT = VK_SURFACE_COUNTER_VBLANK_BIT_EXT;
-
+import vulkan.khr.surface : VkSurfaceTransformFlagsKHR, VkSurfaceTransformFlagsKHR, VkCompositeAlphaFlagsKHR;
 struct VkSurfaceCapabilities2EXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_EXT;
     void* pNext;
@@ -56,13 +51,14 @@ struct VkSurfaceCapabilities2EXT {
     VkExtent2D minImageExtent;
     VkExtent2D maxImageExtent;
     uint maxImageArrayLayers;
-    VkFlags supportedTransforms;
-    VkSurfaceTransformFlagBitsKHR currentTransform;
-    VkFlags supportedCompositeAlpha;
-    VkFlags supportedUsageFlags;
-    VkFlags supportedSurfaceCounters;
+    VkSurfaceTransformFlagsKHR supportedTransforms;
+    VkSurfaceTransformFlagsKHR currentTransform;
+    VkCompositeAlphaFlagsKHR supportedCompositeAlpha;
+    VkImageUsageFlags supportedUsageFlags;
+    VkSurfaceCounterFlagsEXT supportedSurfaceCounters;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT = VkResult function(
     VkPhysicalDevice physicalDevice,
     VkSurfaceKHR surface,

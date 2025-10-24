@@ -32,7 +32,6 @@ version (VK_VERSION_1_2)
 public import vulkan.ext.direct_mode_display;
 
 struct VK_EXT_acquire_xlib_display {
-    
     @VkProcName("vkAcquireXlibDisplayEXT")
     PFN_vkAcquireXlibDisplayEXT vkAcquireXlibDisplayEXT;
     
@@ -43,12 +42,14 @@ struct VK_EXT_acquire_xlib_display {
 enum VK_EXT_ACQUIRE_XLIB_DISPLAY_SPEC_VERSION = 1;
 enum VK_EXT_ACQUIRE_XLIB_DISPLAY_EXTENSION_NAME = "VK_EXT_acquire_xlib_display";
 
+import vulkan.khr.display : VkDisplayKHR;
 alias PFN_vkAcquireXlibDisplayEXT = VkResult function(
     VkPhysicalDevice physicalDevice,
     Display* dpy,
     VkDisplayKHR display,
 );
 
+import vulkan.khr.display : VkDisplayKHR;
 alias PFN_vkGetRandROutputDisplayEXT = VkResult function(
     VkPhysicalDevice physicalDevice,
     Display* dpy,

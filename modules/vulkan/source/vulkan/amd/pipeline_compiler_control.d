@@ -28,12 +28,11 @@ version (VK_VERSION_1_2)
 enum VK_AMD_PIPELINE_COMPILER_CONTROL_SPEC_VERSION = 1;
 enum VK_AMD_PIPELINE_COMPILER_CONTROL_EXTENSION_NAME = "VK_AMD_pipeline_compiler_control";
 
-enum VkPipelineCompilerControlFlagBitsAMD : uint;
+alias VkPipelineCompilerControlFlagsAMD = uint;
 
-alias VkPipelineCompilerControlFlagsAMD = VkFlags;
 
 struct VkPipelineCompilerControlCreateInfoAMD {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_COMPILER_CONTROL_CREATE_INFO_AMD;
     const(void)* pNext;
-    VkFlags compilerControlFlags;
+    VkPipelineCompilerControlFlagsAMD compilerControlFlags;
 }

@@ -32,7 +32,6 @@ public import vulkan.khr.get_surface_capabilities2;
 public import vulkan.khr.swapchain;
 
 struct VK_KHR_shared_presentable_image {
-    
     @VkProcName("vkGetSwapchainStatusKHR")
     PFN_vkGetSwapchainStatusKHR vkGetSwapchainStatusKHR;
 }
@@ -43,9 +42,10 @@ enum VK_KHR_SHARED_PRESENTABLE_IMAGE_EXTENSION_NAME = "VK_KHR_shared_presentable
 struct VkSharedPresentSurfaceCapabilitiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_SHARED_PRESENT_SURFACE_CAPABILITIES_KHR;
     void* pNext;
-    VkFlags sharedPresentSupportedUsageFlags;
+    VkImageUsageFlags sharedPresentSupportedUsageFlags;
 }
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkGetSwapchainStatusKHR = VkResult function(
     VkDevice device,
     VkSwapchainKHR swapchain,

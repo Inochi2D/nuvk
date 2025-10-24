@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_color_write_enable {
-    
     @VkProcName("vkCmdSetColorWriteEnableEXT")
     PFN_vkCmdSetColorWriteEnableEXT vkCmdSetColorWriteEnableEXT;
 }

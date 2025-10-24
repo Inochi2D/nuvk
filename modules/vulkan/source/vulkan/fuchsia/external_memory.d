@@ -35,7 +35,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_FUCHSIA_external_memory {
-    
     @VkProcName("vkGetMemoryZirconHandleFUCHSIA")
     PFN_vkGetMemoryZirconHandleFUCHSIA vkGetMemoryZirconHandleFUCHSIA;
     
@@ -49,7 +48,7 @@ enum VK_FUCHSIA_EXTERNAL_MEMORY_EXTENSION_NAME = "VK_FUCHSIA_external_memory";
 struct VkImportMemoryZirconHandleInfoFUCHSIA {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_ZIRCON_HANDLE_INFO_FUCHSIA;
     const(void)* pNext;
-    VkExternalMemoryHandleTypeFlagBits handleType;
+    VkExternalMemoryHandleTypeFlags handleType;
     zx_handle_t handle;
 }
 
@@ -63,7 +62,7 @@ struct VkMemoryGetZirconHandleInfoFUCHSIA {
     VkStructureType sType = VK_STRUCTURE_TYPE_MEMORY_GET_ZIRCON_HANDLE_INFO_FUCHSIA;
     const(void)* pNext;
     VkDeviceMemory memory;
-    VkExternalMemoryHandleTypeFlagBits handleType;
+    VkExternalMemoryHandleTypeFlags handleType;
 }
 
 alias PFN_vkGetMemoryZirconHandleFUCHSIA = VkResult function(
@@ -74,7 +73,7 @@ alias PFN_vkGetMemoryZirconHandleFUCHSIA = VkResult function(
 
 alias PFN_vkGetMemoryZirconHandlePropertiesFUCHSIA = VkResult function(
     VkDevice device,
-    VkExternalMemoryHandleTypeFlagBits handleType,
+    VkExternalMemoryHandleTypeFlags handleType,
     zx_handle_t zirconHandle,
     VkMemoryZirconHandlePropertiesFUCHSIA* pMemoryZirconHandleProperties,
 );

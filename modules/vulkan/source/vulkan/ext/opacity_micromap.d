@@ -31,7 +31,6 @@ version (VK_VERSION_1_3) {} else {
 public import vulkan.khr.acceleration_structure;
 
 struct VK_EXT_opacity_micromap {
-    
     @VkProcName("vkCreateMicromapEXT")
     PFN_vkCreateMicromapEXT vkCreateMicromapEXT;
     
@@ -78,19 +77,17 @@ struct VK_EXT_opacity_micromap {
 enum VK_EXT_OPACITY_MICROMAP_SPEC_VERSION = 2;
 enum VK_EXT_OPACITY_MICROMAP_EXTENSION_NAME = "VK_EXT_opacity_micromap";
 
-enum VkMicromapTypeEXT {
+alias VkMicromapTypeEXT = uint;
+enum VkMicromapTypeEXT
     VK_MICROMAP_TYPE_OPACITY_MICROMAP_EXT = 0,
-    VK_MICROMAP_TYPE_DISPLACEMENT_MICROMAP_NV = 1000397000,
-}
+    VK_MICROMAP_TYPE_DISPLACEMENT_MICROMAP_NV = 1000397000;
 
-enum VK_MICROMAP_TYPE_OPACITY_MICROMAP_EXT = VkMicromapTypeEXT.VK_MICROMAP_TYPE_OPACITY_MICROMAP_EXT;
-enum VK_MICROMAP_TYPE_DISPLACEMENT_MICROMAP_NV = VkMicromapTypeEXT.VK_MICROMAP_TYPE_DISPLACEMENT_MICROMAP_NV;
-
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressKHR, VkDeviceOrHostAddressConstKHR;
 struct VkMicromapBuildInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_MICROMAP_BUILD_INFO_EXT;
     const(void)* pNext;
     VkMicromapTypeEXT type;
-    VkFlags flags;
+    VkBuildMicromapFlagsEXT flags;
     VkBuildMicromapModeEXT mode;
     VkMicromapEXT dstMicromap;
     uint usageCountsCount;
@@ -111,7 +108,7 @@ struct VkMicromapUsageEXT {
 struct VkMicromapCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_MICROMAP_CREATE_INFO_EXT;
     const(void)* pNext;
-    VkFlags createFlags;
+    VkMicromapCreateFlagsEXT createFlags;
     VkBuffer buffer;
     VkDeviceSize offset;
     VkDeviceSize size;
@@ -121,29 +118,19 @@ struct VkMicromapCreateInfoEXT {
 
 alias VkMicromapEXT = OpaqueHandle!("VkMicromapEXT");
 
-enum VkBuildMicromapFlagBitsEXT : uint {
+alias VkBuildMicromapFlagsEXT = uint;
+enum VkBuildMicromapFlagsEXT
     VK_BUILD_MICROMAP_PREFER_FAST_TRACE_BIT_EXT = 1,
     VK_BUILD_MICROMAP_PREFER_FAST_BUILD_BIT_EXT = 2,
-    VK_BUILD_MICROMAP_ALLOW_COMPACTION_BIT_EXT = 4,
-}
+    VK_BUILD_MICROMAP_ALLOW_COMPACTION_BIT_EXT = 4;
 
-enum VK_BUILD_MICROMAP_PREFER_FAST_TRACE_BIT_EXT = VkBuildMicromapFlagBitsEXT.VK_BUILD_MICROMAP_PREFER_FAST_TRACE_BIT_EXT;
-enum VK_BUILD_MICROMAP_PREFER_FAST_BUILD_BIT_EXT = VkBuildMicromapFlagBitsEXT.VK_BUILD_MICROMAP_PREFER_FAST_BUILD_BIT_EXT;
-enum VK_BUILD_MICROMAP_ALLOW_COMPACTION_BIT_EXT = VkBuildMicromapFlagBitsEXT.VK_BUILD_MICROMAP_ALLOW_COMPACTION_BIT_EXT;
 
-alias VkBuildMicromapFlagsEXT = VkFlags;
-
-enum VkCopyMicromapModeEXT {
+alias VkCopyMicromapModeEXT = uint;
+enum VkCopyMicromapModeEXT
     VK_COPY_MICROMAP_MODE_CLONE_EXT = 0,
     VK_COPY_MICROMAP_MODE_SERIALIZE_EXT = 1,
     VK_COPY_MICROMAP_MODE_DESERIALIZE_EXT = 2,
-    VK_COPY_MICROMAP_MODE_COMPACT_EXT = 3,
-}
-
-enum VK_COPY_MICROMAP_MODE_CLONE_EXT = VkCopyMicromapModeEXT.VK_COPY_MICROMAP_MODE_CLONE_EXT;
-enum VK_COPY_MICROMAP_MODE_SERIALIZE_EXT = VkCopyMicromapModeEXT.VK_COPY_MICROMAP_MODE_SERIALIZE_EXT;
-enum VK_COPY_MICROMAP_MODE_DESERIALIZE_EXT = VkCopyMicromapModeEXT.VK_COPY_MICROMAP_MODE_DESERIALIZE_EXT;
-enum VK_COPY_MICROMAP_MODE_COMPACT_EXT = VkCopyMicromapModeEXT.VK_COPY_MICROMAP_MODE_COMPACT_EXT;
+    VK_COPY_MICROMAP_MODE_COMPACT_EXT = 3;
 
 struct VkPhysicalDeviceOpacityMicromapFeaturesEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPACITY_MICROMAP_FEATURES_EXT;
@@ -166,6 +153,7 @@ struct VkMicromapVersionInfoEXT {
     const(ubyte)* pVersionData;
 }
 
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressKHR;
 struct VkCopyMicromapToMemoryInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_COPY_MICROMAP_TO_MEMORY_INFO_EXT;
     const(void)* pNext;
@@ -174,6 +162,7 @@ struct VkCopyMicromapToMemoryInfoEXT {
     VkCopyMicromapModeEXT mode;
 }
 
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressConstKHR;
 struct VkCopyMemoryToMicromapInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_COPY_MEMORY_TO_MICROMAP_INFO_EXT;
     const(void)* pNext;
@@ -190,19 +179,14 @@ struct VkCopyMicromapInfoEXT {
     VkCopyMicromapModeEXT mode;
 }
 
-enum VkMicromapCreateFlagBitsEXT : uint {
-    VK_MICROMAP_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_EXT = 1,
-}
+alias VkMicromapCreateFlagsEXT = uint;
+enum VkMicromapCreateFlagsEXT
+    VK_MICROMAP_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_EXT = 1;
 
-enum VK_MICROMAP_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_EXT = VkMicromapCreateFlagBitsEXT.VK_MICROMAP_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_EXT;
 
-alias VkMicromapCreateFlagsEXT = VkFlags;
-
-enum VkBuildMicromapModeEXT {
-    VK_BUILD_MICROMAP_MODE_BUILD_EXT = 0,
-}
-
-enum VK_BUILD_MICROMAP_MODE_BUILD_EXT = VkBuildMicromapModeEXT.VK_BUILD_MICROMAP_MODE_BUILD_EXT;
+alias VkBuildMicromapModeEXT = uint;
+enum VkBuildMicromapModeEXT
+    VK_BUILD_MICROMAP_MODE_BUILD_EXT = 0;
 
 struct VkMicromapBuildSizesInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_MICROMAP_BUILD_SIZES_INFO_EXT;
@@ -212,14 +196,12 @@ struct VkMicromapBuildSizesInfoEXT {
     VkBool32 discardable;
 }
 
-enum VkOpacityMicromapFormatEXT {
+alias VkOpacityMicromapFormatEXT = uint;
+enum VkOpacityMicromapFormatEXT
     VK_OPACITY_MICROMAP_FORMAT_2_STATE_EXT = 1,
-    VK_OPACITY_MICROMAP_FORMAT_4_STATE_EXT = 2,
-}
+    VK_OPACITY_MICROMAP_FORMAT_4_STATE_EXT = 2;
 
-enum VK_OPACITY_MICROMAP_FORMAT_2_STATE_EXT = VkOpacityMicromapFormatEXT.VK_OPACITY_MICROMAP_FORMAT_2_STATE_EXT;
-enum VK_OPACITY_MICROMAP_FORMAT_4_STATE_EXT = VkOpacityMicromapFormatEXT.VK_OPACITY_MICROMAP_FORMAT_4_STATE_EXT;
-
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressConstKHR;
 struct VkAccelerationStructureTrianglesOpacityMicromapEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_TRIANGLES_OPACITY_MICROMAP_EXT;
     void* pNext;
@@ -239,19 +221,13 @@ struct VkMicromapTriangleEXT {
     ushort format;
 }
 
-enum VkOpacityMicromapSpecialIndexEXT {
+alias VkOpacityMicromapSpecialIndexEXT = uint;
+enum VkOpacityMicromapSpecialIndexEXT
     VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_TRANSPARENT_EXT = -1,
     VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_OPAQUE_EXT = -2,
     VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_UNKNOWN_TRANSPARENT_EXT = -3,
     VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_UNKNOWN_OPAQUE_EXT = -4,
-    VK_OPACITY_MICROMAP_SPECIAL_INDEX_CLUSTER_GEOMETRY_DISABLE_OPACITY_MICROMAP_NV = -5,
-}
-
-enum VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_TRANSPARENT_EXT = VkOpacityMicromapSpecialIndexEXT.VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_TRANSPARENT_EXT;
-enum VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_OPAQUE_EXT = VkOpacityMicromapSpecialIndexEXT.VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_OPAQUE_EXT;
-enum VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_UNKNOWN_TRANSPARENT_EXT = VkOpacityMicromapSpecialIndexEXT.VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_UNKNOWN_TRANSPARENT_EXT;
-enum VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_UNKNOWN_OPAQUE_EXT = VkOpacityMicromapSpecialIndexEXT.VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_UNKNOWN_OPAQUE_EXT;
-enum VK_OPACITY_MICROMAP_SPECIAL_INDEX_CLUSTER_GEOMETRY_DISABLE_OPACITY_MICROMAP_NV = VkOpacityMicromapSpecialIndexEXT.VK_OPACITY_MICROMAP_SPECIAL_INDEX_CLUSTER_GEOMETRY_DISABLE_OPACITY_MICROMAP_NV;
+    VK_OPACITY_MICROMAP_SPECIAL_INDEX_CLUSTER_GEOMETRY_DISABLE_OPACITY_MICROMAP_NV = -5;
 
 alias PFN_vkCreateMicromapEXT = VkResult function(
     VkDevice device,
@@ -272,6 +248,7 @@ alias PFN_vkCmdBuildMicromapsEXT = void function(
     const(VkMicromapBuildInfoEXT)* pInfos,
 );
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkBuildMicromapsEXT = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,
@@ -279,18 +256,21 @@ alias PFN_vkBuildMicromapsEXT = VkResult function(
     const(VkMicromapBuildInfoEXT)* pInfos,
 );
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkCopyMicromapEXT = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,
     const(VkCopyMicromapInfoEXT)* pInfo,
 );
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkCopyMicromapToMemoryEXT = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,
     const(VkCopyMicromapToMemoryInfoEXT)* pInfo,
 );
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkCopyMemoryToMicromapEXT = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,
@@ -331,12 +311,14 @@ alias PFN_vkCmdWriteMicromapsPropertiesEXT = void function(
     uint firstQuery,
 );
 
+import vulkan.khr.acceleration_structure : VkAccelerationStructureCompatibilityKHR;
 alias PFN_vkGetDeviceMicromapCompatibilityEXT = void function(
     VkDevice device,
     const(VkMicromapVersionInfoEXT)* pVersionInfo,
     VkAccelerationStructureCompatibilityKHR* pCompatibility,
 );
 
+import vulkan.khr.acceleration_structure : VkAccelerationStructureBuildTypeKHR;
 alias PFN_vkGetMicromapBuildSizesEXT = void function(
     VkDevice device,
     VkAccelerationStructureBuildTypeKHR buildType,

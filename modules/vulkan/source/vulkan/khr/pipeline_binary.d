@@ -30,7 +30,6 @@ version (VK_VERSION_1_4) {} else {
 }
 
 struct VK_KHR_pipeline_binary {
-    
     @VkProcName("vkCreatePipelineBinariesKHR")
     PFN_vkCreatePipelineBinariesKHR vkCreatePipelineBinariesKHR;
     

@@ -37,6 +37,7 @@ struct VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV {
     VkBool32 linearSweptSpheres;
 }
 
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressConstKHR;
 struct VkAccelerationStructureGeometryLinearSweptSpheresDataNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_LINEAR_SWEPT_SPHERES_DATA_NV;
     const(void)* pNext;
@@ -53,6 +54,7 @@ struct VkAccelerationStructureGeometryLinearSweptSpheresDataNV {
     VkRayTracingLssPrimitiveEndCapsModeNV endCapsMode;
 }
 
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressConstKHR;
 struct VkAccelerationStructureGeometrySpheresDataNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_SPHERES_DATA_NV;
     const(void)* pNext;
@@ -67,18 +69,12 @@ struct VkAccelerationStructureGeometrySpheresDataNV {
     VkDeviceSize indexStride;
 }
 
-enum VkRayTracingLssIndexingModeNV {
+alias VkRayTracingLssIndexingModeNV = uint;
+enum VkRayTracingLssIndexingModeNV
     VK_RAY_TRACING_LSS_INDEXING_MODE_LIST_NV = 0,
-    VK_RAY_TRACING_LSS_INDEXING_MODE_SUCCESSIVE_NV = 1,
-}
+    VK_RAY_TRACING_LSS_INDEXING_MODE_SUCCESSIVE_NV = 1;
 
-enum VK_RAY_TRACING_LSS_INDEXING_MODE_LIST_NV = VkRayTracingLssIndexingModeNV.VK_RAY_TRACING_LSS_INDEXING_MODE_LIST_NV;
-enum VK_RAY_TRACING_LSS_INDEXING_MODE_SUCCESSIVE_NV = VkRayTracingLssIndexingModeNV.VK_RAY_TRACING_LSS_INDEXING_MODE_SUCCESSIVE_NV;
-
-enum VkRayTracingLssPrimitiveEndCapsModeNV {
+alias VkRayTracingLssPrimitiveEndCapsModeNV = uint;
+enum VkRayTracingLssPrimitiveEndCapsModeNV
     VK_RAY_TRACING_LSS_PRIMITIVE_END_CAPS_MODE_NONE_NV = 0,
-    VK_RAY_TRACING_LSS_PRIMITIVE_END_CAPS_MODE_CHAINED_NV = 1,
-}
-
-enum VK_RAY_TRACING_LSS_PRIMITIVE_END_CAPS_MODE_NONE_NV = VkRayTracingLssPrimitiveEndCapsModeNV.VK_RAY_TRACING_LSS_PRIMITIVE_END_CAPS_MODE_NONE_NV;
-enum VK_RAY_TRACING_LSS_PRIMITIVE_END_CAPS_MODE_CHAINED_NV = VkRayTracingLssPrimitiveEndCapsModeNV.VK_RAY_TRACING_LSS_PRIMITIVE_END_CAPS_MODE_CHAINED_NV;
+    VK_RAY_TRACING_LSS_PRIMITIVE_END_CAPS_MODE_CHAINED_NV = 1;

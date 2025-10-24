@@ -34,7 +34,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_external_memory_metal {
-    
     @VkProcName("vkGetMemoryMetalHandleEXT")
     PFN_vkGetMemoryMetalHandleEXT vkGetMemoryMetalHandleEXT;
     
@@ -48,7 +47,7 @@ enum VK_EXT_EXTERNAL_MEMORY_METAL_EXTENSION_NAME = "VK_EXT_external_memory_metal
 struct VkImportMemoryMetalHandleInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_METAL_HANDLE_INFO_EXT;
     const(void)* pNext;
-    VkExternalMemoryHandleTypeFlagBits handleType;
+    VkExternalMemoryHandleTypeFlags handleType;
     void* handle;
 }
 
@@ -62,7 +61,7 @@ struct VkMemoryGetMetalHandleInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_MEMORY_GET_METAL_HANDLE_INFO_EXT;
     const(void)* pNext;
     VkDeviceMemory memory;
-    VkExternalMemoryHandleTypeFlagBits handleType;
+    VkExternalMemoryHandleTypeFlags handleType;
 }
 
 alias PFN_vkGetMemoryMetalHandleEXT = VkResult function(
@@ -73,7 +72,7 @@ alias PFN_vkGetMemoryMetalHandleEXT = VkResult function(
 
 alias PFN_vkGetMemoryMetalHandlePropertiesEXT = VkResult function(
     VkDevice device,
-    VkExternalMemoryHandleTypeFlagBits handleType,
+    VkExternalMemoryHandleTypeFlags handleType,
     const(void)* pHandle,
     VkMemoryMetalHandlePropertiesEXT* pMemoryMetalHandleProperties,
 );

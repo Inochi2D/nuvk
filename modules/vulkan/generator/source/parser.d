@@ -263,8 +263,14 @@ class VkRegistryParser {
         VkBitmaskType result;
         result.base = base;
 
-        if (auto requires = element.getAttribute("requires")) {
-            result.requires = requires.idup;
+        if (auto bitvalues = element.getAttribute("bitvalues")) {
+            result.bitvalues = bitvalues.idup;
+        } else if (auto requires = element.getAttribute("requires")) {
+            result.bitvalues = requires.idup;
+        }
+
+        if (result.bitvalues) {
+            registry.flags.require(result.bitvalues, result.name);
         }
 
         if (auto alias_ = element.getAttribute("alias")) {
@@ -348,6 +354,13 @@ class VkRegistryParser {
             auto whole = line[0 .. $ - nameLength].strip;
             param.type = parseTypeString(type.textContent, whole);
 
+            foreach (match; param.type.matchAll(regex(`[a-zA-Z0-9_]+`))) {
+                if (match.hit != "const") {
+                    param.utype = match.hit;
+                    break;
+                }
+            }
+
             result.params ~= __rvalue(param);
         }
 
@@ -398,6 +411,7 @@ class VkRegistryParser {
                     auto postfix = child.textContent[$ - postNameLength + member.name.length .. $ - commentLength];
                     auto whole = child.textContent[0 .. $ - postNameLength] ~ postfix;
                     member.type = parseTypeString(type.textContent, whole, width: &member.width);
+                    member.utype = type.textContent.idup;
                 }
             }
 
@@ -758,6 +772,7 @@ class VkRegistryParser {
                     auto postfix = child.textContent[$ - postNameLength + param.name.length .. $];
                     auto whole = child.textContent[0 .. $ - postNameLength] ~ postfix;
                     param.type = parseTypeString(type.textContent, whole, refify: !param.optional);
+                    param.utype = type.textContent.idup;
                 }
             }
 
@@ -924,15 +939,21 @@ class VkRegistryParser {
             foreach (child; sectiontag.childElements) {
                 switch (child.tagName) {
                     case "enum":
-                        parseSectionEnum(section, child, result.number);
+                        if (auto name = parseSectionEnum(section, child, result.number)) {
+                            registry.sources[name][result.name] = true;
+                        }
                         break;
 
                     case "type":
-                        parseSectionType(section, child);
+                        if (auto name = parseSectionType(section, child)) {
+                            registry.sources[name][result.name] = true;
+                        }
                         break;
 
                     case "command":
-                        parseSectionCommand(section, child);
+                        if (auto name = parseSectionCommand(section, child)) {
+                            registry.sources[name][result.name] = true;
+                        }
                         break;
 
                     case "feature":
@@ -963,7 +984,7 @@ class VkRegistryParser {
      * <enum extends="enumname" ...> is for extending existing enums.
      * <enum alias="somename" ...> is for aliasing some other enum member.
      */
-    private void parseSectionEnum(ref VkSection section, XmlElement element, int ext = 0) {
+    private string parseSectionEnum(ref VkSection section, XmlElement element, int ext = 0) {
         if (auto name = element.getAttribute("name")) {
             VkEnumMember member;
             member.name = name.idup;
@@ -1009,15 +1030,23 @@ class VkRegistryParser {
                     section.mconsts ~= member;
                 }
             }
+
+            return member.name;
         }
+
+        return null;
     }
 
-    private void parseSectionType(ref VkSection section, XmlElement element) {
-        section.types ~= element.getAttribute("name").idup;
+    private string parseSectionType(ref VkSection section, XmlElement element) {
+        auto name = element.getAttribute("name").idup;
+        section.types ~= name;
+        return name;
     }
 
-    private void parseSectionCommand(ref VkSection section, XmlElement element) {
-        section.commands ~= element.getAttribute("name").idup;
+    private string parseSectionCommand(ref VkSection section, XmlElement element) {
+        auto name = element.getAttribute("name").idup;
+        section.commands ~= name;
+        return name;
     }
 
     /** 

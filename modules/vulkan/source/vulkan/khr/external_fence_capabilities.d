@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_KHR_external_fence_capabilities {
-    
     @VkProcName("vkGetPhysicalDeviceExternalFenceProperties")
     PFN_vkGetPhysicalDeviceExternalFenceProperties vkGetPhysicalDeviceExternalFenceProperties;
 }
@@ -40,11 +39,11 @@ enum VK_KHR_EXTERNAL_FENCE_CAPABILITIES_EXTENSION_NAME = "VK_KHR_external_fence_
 
 alias VkExternalFenceHandleTypeFlagsKHR = VkExternalFenceHandleTypeFlags;
 
-alias VkExternalFenceHandleTypeFlagBitsKHR = VkExternalFenceHandleTypeFlagBits;
+alias VkExternalFenceHandleTypeFlagBitsKHR = VkExternalFenceHandleTypeFlags;
 
 alias VkExternalFenceFeatureFlagsKHR = VkExternalFenceFeatureFlags;
 
-alias VkExternalFenceFeatureFlagBitsKHR = VkExternalFenceFeatureFlagBits;
+alias VkExternalFenceFeatureFlagBitsKHR = VkExternalFenceFeatureFlags;
 
 alias VkPhysicalDeviceExternalFenceInfoKHR = VkPhysicalDeviceExternalFenceInfo;
 

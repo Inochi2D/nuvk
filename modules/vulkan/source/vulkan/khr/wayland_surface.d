@@ -32,7 +32,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.surface;
 
 struct VK_KHR_wayland_surface {
-    
     @VkProcName("vkCreateWaylandSurfaceKHR")
     PFN_vkCreateWaylandSurfaceKHR vkCreateWaylandSurfaceKHR;
     
@@ -48,11 +47,12 @@ alias VkWaylandSurfaceCreateFlagsKHR = VkFlags;
 struct VkWaylandSurfaceCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
     const(void)* pNext;
-    VkFlags flags;
+    VkWaylandSurfaceCreateFlagsKHR flags;
     wl_display* display;
     wl_surface* surface;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateWaylandSurfaceKHR = VkResult function(
     VkInstance instance,
     const(VkWaylandSurfaceCreateInfoKHR)* pCreateInfo,

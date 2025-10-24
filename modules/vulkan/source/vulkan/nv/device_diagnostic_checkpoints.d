@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_NV_device_diagnostic_checkpoints {
-    
     @VkProcName("vkCmdSetCheckpointNV")
     PFN_vkCmdSetCheckpointNV vkCmdSetCheckpointNV;
     
@@ -46,13 +45,13 @@ enum VK_NV_DEVICE_DIAGNOSTIC_CHECKPOINTS_EXTENSION_NAME = "VK_NV_device_diagnost
 struct VkQueueFamilyCheckpointPropertiesNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_CHECKPOINT_PROPERTIES_NV;
     void* pNext;
-    VkFlags checkpointExecutionStageMask;
+    VkPipelineStageFlags checkpointExecutionStageMask;
 }
 
 struct VkCheckpointDataNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_CHECKPOINT_DATA_NV;
     void* pNext;
-    VkPipelineStageFlagBits stage;
+    VkPipelineStageFlags stage;
     void* pCheckpointMarker;
 }
 
@@ -74,13 +73,13 @@ version (VK_VERSION_1_3) {} else {
 struct VkQueueFamilyCheckpointProperties2NV {
     VkStructureType sType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_CHECKPOINT_PROPERTIES_2_NV;
     void* pNext;
-    VkFlags64 checkpointExecutionStageMask;
+    VkPipelineStageFlags2 checkpointExecutionStageMask;
 }
 
 struct VkCheckpointData2NV {
     VkStructureType sType = VK_STRUCTURE_TYPE_CHECKPOINT_DATA_2_NV;
     void* pNext;
-    VkFlags64 stage;
+    VkPipelineStageFlags2 stage;
     void* pCheckpointMarker;
 }
 

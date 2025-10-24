@@ -32,7 +32,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.surface;
 
 struct VK_EXT_metal_surface {
-    
     @VkProcName("vkCreateMetalSurfaceEXT")
     PFN_vkCreateMetalSurfaceEXT vkCreateMetalSurfaceEXT;
 }
@@ -45,11 +44,11 @@ alias VkMetalSurfaceCreateFlagsEXT = VkFlags;
 struct VkMetalSurfaceCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
     const(void)* pNext;
-    VkFlags flags;
+    VkMetalSurfaceCreateFlagsEXT flags;
     const(CAMetalLayer)* pLayer;
 }
 
-
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateMetalSurfaceEXT = VkResult function(
     VkInstance instance,
     const(VkMetalSurfaceCreateInfoEXT)* pCreateInfo,

@@ -37,7 +37,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_QNX_external_memory_screen_buffer {
-    
     @VkProcName("vkGetScreenBufferPropertiesQNX")
     PFN_vkGetScreenBufferPropertiesQNX vkGetScreenBufferPropertiesQNX;
 }
@@ -58,7 +57,7 @@ struct VkScreenBufferFormatPropertiesQNX {
     VkFormat format;
     ulong externalFormat;
     ulong screenUsage;
-    VkFlags formatFeatures;
+    VkFormatFeatureFlags formatFeatures;
     VkComponentMapping samplerYcbcrConversionComponents;
     VkSamplerYcbcrModelConversion suggestedYcbcrModel;
     VkSamplerYcbcrRange suggestedYcbcrRange;

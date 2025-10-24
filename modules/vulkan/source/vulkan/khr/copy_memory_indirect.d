@@ -31,7 +31,6 @@ version (VK_VERSION_1_2) {} else {
 }
 
 struct VK_KHR_copy_memory_indirect {
-    
     @VkProcName("vkCmdCopyMemoryIndirectKHR")
     PFN_vkCmdCopyMemoryIndirectKHR vkCmdCopyMemoryIndirectKHR;
     
@@ -48,17 +47,12 @@ struct VkStridedDeviceAddressRangeKHR {
     VkDeviceSize stride;
 }
 
-enum VkAddressCopyFlagBitsKHR : uint {
+alias VkAddressCopyFlagsKHR = uint;
+enum VkAddressCopyFlagsKHR
     VK_ADDRESS_COPY_DEVICE_LOCAL_BIT_KHR = 1,
     VK_ADDRESS_COPY_SPARSE_BIT_KHR = 2,
-    VK_ADDRESS_COPY_PROTECTED_BIT_KHR = 4,
-}
+    VK_ADDRESS_COPY_PROTECTED_BIT_KHR = 4;
 
-enum VK_ADDRESS_COPY_DEVICE_LOCAL_BIT_KHR = VkAddressCopyFlagBitsKHR.VK_ADDRESS_COPY_DEVICE_LOCAL_BIT_KHR;
-enum VK_ADDRESS_COPY_SPARSE_BIT_KHR = VkAddressCopyFlagBitsKHR.VK_ADDRESS_COPY_SPARSE_BIT_KHR;
-enum VK_ADDRESS_COPY_PROTECTED_BIT_KHR = VkAddressCopyFlagBitsKHR.VK_ADDRESS_COPY_PROTECTED_BIT_KHR;
-
-alias VkAddressCopyFlagsKHR = VkFlags;
 
 struct VkCopyMemoryIndirectCommandKHR {
     VkDeviceAddress srcAddress;
@@ -69,8 +63,8 @@ struct VkCopyMemoryIndirectCommandKHR {
 struct VkCopyMemoryIndirectInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_COPY_MEMORY_INDIRECT_INFO_KHR;
     const(void)* pNext;
-    VkFlags srcCopyFlags;
-    VkFlags dstCopyFlags;
+    VkAddressCopyFlagsKHR srcCopyFlags;
+    VkAddressCopyFlagsKHR dstCopyFlags;
     uint copyCount;
     VkStridedDeviceAddressRangeKHR copyAddressRange;
 }
@@ -87,7 +81,7 @@ struct VkCopyMemoryToImageIndirectCommandKHR {
 struct VkCopyMemoryToImageIndirectInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_COPY_MEMORY_TO_IMAGE_INDIRECT_INFO_KHR;
     const(void)* pNext;
-    VkFlags srcCopyFlags;
+    VkAddressCopyFlagsKHR srcCopyFlags;
     uint copyCount;
     VkStridedDeviceAddressRangeKHR copyAddressRange;
     VkImage dstImage;
@@ -105,7 +99,7 @@ struct VkPhysicalDeviceCopyMemoryIndirectFeaturesKHR {
 struct VkPhysicalDeviceCopyMemoryIndirectPropertiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_PROPERTIES_KHR;
     void* pNext;
-    VkFlags supportedQueues;
+    VkQueueFlags supportedQueues;
 }
 
 alias PFN_vkCmdCopyMemoryIndirectKHR = void function(

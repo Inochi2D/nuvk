@@ -37,7 +37,6 @@ version (VK_VERSION_1_3) {} else {
 }
 
 struct VK_EXT_descriptor_buffer {
-    
     @VkProcName("vkGetDescriptorSetLayoutSizeEXT")
     PFN_vkGetDescriptorSetLayoutSizeEXT vkGetDescriptorSetLayoutSizeEXT;
     
@@ -139,7 +138,7 @@ struct VkDescriptorBufferBindingInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_INFO_EXT;
     const(void)* pNext;
     VkDeviceAddress address;
-    VkFlags usage;
+    VkBufferUsageFlags usage;
 }
 
 struct VkDescriptorBufferBindingPushDescriptorBufferHandleEXT {
@@ -268,6 +267,8 @@ alias PFN_vkGetSamplerOpaqueCaptureDescriptorDataEXT = VkResult function(
 public import vulkan.khr.acceleration_structure;
 public import vulkan.nv.ray_tracing;
 
+import vulkan.khr.acceleration_structure : VkAccelerationStructureKHR;
+import vulkan.nv.ray_tracing : VkAccelerationStructureNV;
 struct VkAccelerationStructureCaptureDescriptorDataInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CAPTURE_DESCRIPTOR_DATA_INFO_EXT;
     const(void)* pNext;

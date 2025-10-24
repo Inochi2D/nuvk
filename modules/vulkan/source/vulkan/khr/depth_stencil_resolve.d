@@ -36,6 +36,6 @@ alias VkSubpassDescriptionDepthStencilResolveKHR = VkSubpassDescriptionDepthSten
 
 alias VkPhysicalDeviceDepthStencilResolvePropertiesKHR = VkPhysicalDeviceDepthStencilResolveProperties;
 
-alias VkResolveModeFlagBitsKHR = VkResolveModeFlagBits;
+alias VkResolveModeFlagBitsKHR = VkResolveModeFlags;
 
 alias VkResolveModeFlagsKHR = VkResolveModeFlags;

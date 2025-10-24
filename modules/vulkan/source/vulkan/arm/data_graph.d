@@ -26,11 +26,9 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 public import vulkan.khr.deferred_host_operations;
-version (VK_VERSION_1_3):
 public import vulkan.khr.maintenance5;
 
 struct VK_ARM_data_graph {
-    
     @VkProcName("vkCreateDataGraphPipelinesARM")
     PFN_vkCreateDataGraphPipelinesARM vkCreateDataGraphPipelinesARM;
     
@@ -82,17 +80,13 @@ struct VkPhysicalDeviceDataGraphFeaturesARM {
 
 alias VkDataGraphPipelineSessionARM = OpaqueHandle!("VkDataGraphPipelineSessionARM");
 
-enum VkDataGraphPipelineSessionBindPointARM {
-    VK_DATA_GRAPH_PIPELINE_SESSION_BIND_POINT_TRANSIENT_ARM = 0,
-}
+alias VkDataGraphPipelineSessionBindPointARM = uint;
+enum VkDataGraphPipelineSessionBindPointARM
+    VK_DATA_GRAPH_PIPELINE_SESSION_BIND_POINT_TRANSIENT_ARM = 0;
 
-enum VK_DATA_GRAPH_PIPELINE_SESSION_BIND_POINT_TRANSIENT_ARM = VkDataGraphPipelineSessionBindPointARM.VK_DATA_GRAPH_PIPELINE_SESSION_BIND_POINT_TRANSIENT_ARM;
-
-enum VkDataGraphPipelineSessionBindPointTypeARM {
-    VK_DATA_GRAPH_PIPELINE_SESSION_BIND_POINT_TYPE_MEMORY_ARM = 0,
-}
-
-enum VK_DATA_GRAPH_PIPELINE_SESSION_BIND_POINT_TYPE_MEMORY_ARM = VkDataGraphPipelineSessionBindPointTypeARM.VK_DATA_GRAPH_PIPELINE_SESSION_BIND_POINT_TYPE_MEMORY_ARM;
+alias VkDataGraphPipelineSessionBindPointTypeARM = uint;
+enum VkDataGraphPipelineSessionBindPointTypeARM
+    VK_DATA_GRAPH_PIPELINE_SESSION_BIND_POINT_TYPE_MEMORY_ARM = 0;
 
 struct VkDataGraphPipelineConstantARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_CONSTANT_ARM;
@@ -115,10 +109,11 @@ struct VkDataGraphPipelineCompilerControlCreateInfoARM {
     const(char)* pVendorOptions;
 }
 
+import vulkan.khr.maintenance5 : VkPipelineCreateFlags2KHR;
 struct VkDataGraphPipelineCreateInfoARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_CREATE_INFO_ARM;
     const(void)* pNext;
-    VkFlags64 flags;
+    VkPipelineCreateFlags2KHR flags;
     VkPipelineLayout layout;
     uint resourceInfoCount;
     const(VkDataGraphPipelineResourceInfoARM)* pResourceInfos;
@@ -137,17 +132,14 @@ struct VkDataGraphPipelineShaderModuleCreateInfoARM {
 struct VkDataGraphPipelineSessionCreateInfoARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_SESSION_CREATE_INFO_ARM;
     const(void)* pNext;
-    VkFlags64 flags;
+    VkDataGraphPipelineSessionCreateFlagsARM flags;
     VkPipeline dataGraphPipeline;
 }
 
-alias VkDataGraphPipelineSessionCreateFlagsARM = VkFlags64;
 
-enum VkDataGraphPipelineSessionCreateFlagBitsARM : ulong {
-    VK_DATA_GRAPH_PIPELINE_SESSION_CREATE_PROTECTED_BIT_ARM = 1,
-}
-
-enum VK_DATA_GRAPH_PIPELINE_SESSION_CREATE_PROTECTED_BIT_ARM = VkDataGraphPipelineSessionCreateFlagBitsARM.VK_DATA_GRAPH_PIPELINE_SESSION_CREATE_PROTECTED_BIT_ARM;
+alias VkDataGraphPipelineSessionCreateFlagsARM = ulong;
+enum VkDataGraphPipelineSessionCreateFlagsARM
+    VK_DATA_GRAPH_PIPELINE_SESSION_CREATE_PROTECTED_BIT_ARM = 1;
 
 struct VkDataGraphPipelineSessionBindPointRequirementsInfoARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_SESSION_BIND_POINT_REQUIREMENTS_INFO_ARM;
@@ -196,13 +188,10 @@ struct VkDataGraphPipelinePropertyQueryResultARM {
     void* pData;
 }
 
-enum VkDataGraphPipelinePropertyARM {
+alias VkDataGraphPipelinePropertyARM = uint;
+enum VkDataGraphPipelinePropertyARM
     VK_DATA_GRAPH_PIPELINE_PROPERTY_CREATION_LOG_ARM = 0,
-    VK_DATA_GRAPH_PIPELINE_PROPERTY_IDENTIFIER_ARM = 1,
-}
-
-enum VK_DATA_GRAPH_PIPELINE_PROPERTY_CREATION_LOG_ARM = VkDataGraphPipelinePropertyARM.VK_DATA_GRAPH_PIPELINE_PROPERTY_CREATION_LOG_ARM;
-enum VK_DATA_GRAPH_PIPELINE_PROPERTY_IDENTIFIER_ARM = VkDataGraphPipelinePropertyARM.VK_DATA_GRAPH_PIPELINE_PROPERTY_IDENTIFIER_ARM;
+    VK_DATA_GRAPH_PIPELINE_PROPERTY_IDENTIFIER_ARM = 1;
 
 struct VkDataGraphPipelineIdentifierCreateInfoARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_IDENTIFIER_CREATE_INFO_ARM;
@@ -211,27 +200,22 @@ struct VkDataGraphPipelineIdentifierCreateInfoARM {
     const(ubyte)* pIdentifier;
 }
 
-alias VkDataGraphPipelineDispatchFlagsARM = VkFlags64;
 
-enum VkDataGraphPipelineDispatchFlagBitsARM : ulong;
+alias VkDataGraphPipelineDispatchFlagsARM = ulong;
 
 struct VkDataGraphPipelineDispatchInfoARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_DISPATCH_INFO_ARM;
     void* pNext;
-    VkFlags64 flags;
+    VkDataGraphPipelineDispatchFlagsARM flags;
 }
 
-enum VkPhysicalDeviceDataGraphProcessingEngineTypeARM {
-    VK_PHYSICAL_DEVICE_DATA_GRAPH_PROCESSING_ENGINE_TYPE_DEFAULT_ARM = 0,
-}
+alias VkPhysicalDeviceDataGraphProcessingEngineTypeARM = uint;
+enum VkPhysicalDeviceDataGraphProcessingEngineTypeARM
+    VK_PHYSICAL_DEVICE_DATA_GRAPH_PROCESSING_ENGINE_TYPE_DEFAULT_ARM = 0;
 
-enum VK_PHYSICAL_DEVICE_DATA_GRAPH_PROCESSING_ENGINE_TYPE_DEFAULT_ARM = VkPhysicalDeviceDataGraphProcessingEngineTypeARM.VK_PHYSICAL_DEVICE_DATA_GRAPH_PROCESSING_ENGINE_TYPE_DEFAULT_ARM;
-
-enum VkPhysicalDeviceDataGraphOperationTypeARM {
-    VK_PHYSICAL_DEVICE_DATA_GRAPH_OPERATION_TYPE_SPIRV_EXTENDED_INSTRUCTION_SET_ARM = 0,
-}
-
-enum VK_PHYSICAL_DEVICE_DATA_GRAPH_OPERATION_TYPE_SPIRV_EXTENDED_INSTRUCTION_SET_ARM = VkPhysicalDeviceDataGraphOperationTypeARM.VK_PHYSICAL_DEVICE_DATA_GRAPH_OPERATION_TYPE_SPIRV_EXTENDED_INSTRUCTION_SET_ARM;
+alias VkPhysicalDeviceDataGraphOperationTypeARM = uint;
+enum VkPhysicalDeviceDataGraphOperationTypeARM
+    VK_PHYSICAL_DEVICE_DATA_GRAPH_OPERATION_TYPE_SPIRV_EXTENDED_INSTRUCTION_SET_ARM = 0;
 
 struct VkPhysicalDeviceDataGraphProcessingEngineARM {
     VkPhysicalDeviceDataGraphProcessingEngineTypeARM type;
@@ -262,8 +246,8 @@ struct VkPhysicalDeviceQueueFamilyDataGraphProcessingEngineInfoARM {
 struct VkQueueFamilyDataGraphProcessingEnginePropertiesARM {
     VkStructureType sType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_DATA_GRAPH_PROCESSING_ENGINE_PROPERTIES_ARM;
     const(void)* pNext;
-    VkFlags foreignSemaphoreHandleTypes;
-    VkFlags foreignMemoryHandleTypes;
+    VkExternalSemaphoreHandleTypeFlags foreignSemaphoreHandleTypes;
+    VkExternalMemoryHandleTypeFlags foreignMemoryHandleTypes;
 }
 
 struct VkPhysicalDeviceDataGraphOperationSupportARM {
@@ -272,6 +256,7 @@ struct VkPhysicalDeviceDataGraphOperationSupportARM {
     uint version_;
 }
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkCreateDataGraphPipelinesARM = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,

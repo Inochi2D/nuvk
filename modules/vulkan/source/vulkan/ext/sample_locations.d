@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_sample_locations {
-    
     @VkProcName("vkCmdSetSampleLocationsEXT")
     PFN_vkCmdSetSampleLocationsEXT vkCmdSetSampleLocationsEXT;
     
@@ -49,7 +48,7 @@ struct VkSampleLocationEXT {
 struct VkSampleLocationsInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT;
     const(void)* pNext;
-    VkSampleCountFlagBits sampleLocationsPerPixel;
+    VkSampleCountFlags sampleLocationsPerPixel;
     VkExtent2D sampleLocationGridSize;
     uint sampleLocationsCount;
     const(VkSampleLocationEXT)* pSampleLocations;
@@ -84,7 +83,7 @@ struct VkPipelineSampleLocationsStateCreateInfoEXT {
 struct VkPhysicalDeviceSampleLocationsPropertiesEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLE_LOCATIONS_PROPERTIES_EXT;
     void* pNext;
-    VkFlags sampleLocationSampleCounts;
+    VkSampleCountFlags sampleLocationSampleCounts;
     VkExtent2D maxSampleLocationGridSize;
     float[2] sampleLocationCoordinateRange;
     uint sampleLocationSubPixelBits;
@@ -104,6 +103,6 @@ alias PFN_vkCmdSetSampleLocationsEXT = void function(
 
 alias PFN_vkGetPhysicalDeviceMultisamplePropertiesEXT = void function(
     VkPhysicalDevice physicalDevice,
-    VkSampleCountFlagBits samples,
+    VkSampleCountFlags samples,
     VkMultisamplePropertiesEXT* pMultisampleProperties,
 );

@@ -32,7 +32,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.surface;
 
 struct VK_KHR_xlib_surface {
-    
     @VkProcName("vkCreateXlibSurfaceKHR")
     PFN_vkCreateXlibSurfaceKHR vkCreateXlibSurfaceKHR;
     
@@ -48,11 +47,12 @@ alias VkXlibSurfaceCreateFlagsKHR = VkFlags;
 struct VkXlibSurfaceCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
     const(void)* pNext;
-    VkFlags flags;
+    VkXlibSurfaceCreateFlagsKHR flags;
     Display* dpy;
     Window window;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateXlibSurfaceKHR = VkResult function(
     VkInstance instance,
     const(VkXlibSurfaceCreateInfoKHR)* pCreateInfo,

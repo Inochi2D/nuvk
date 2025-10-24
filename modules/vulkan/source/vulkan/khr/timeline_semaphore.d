@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_KHR_timeline_semaphore {
-    
     @VkProcName("vkGetSemaphoreCounterValue")
     PFN_vkGetSemaphoreCounterValue vkGetSemaphoreCounterValue;
     
@@ -54,7 +53,7 @@ alias VkSemaphoreTypeCreateInfoKHR = VkSemaphoreTypeCreateInfo;
 
 alias VkTimelineSemaphoreSubmitInfoKHR = VkTimelineSemaphoreSubmitInfo;
 
-alias VkSemaphoreWaitFlagBitsKHR = VkSemaphoreWaitFlagBits;
+alias VkSemaphoreWaitFlagBitsKHR = VkSemaphoreWaitFlags;
 
 alias VkSemaphoreWaitFlagsKHR = VkSemaphoreWaitFlags;
 

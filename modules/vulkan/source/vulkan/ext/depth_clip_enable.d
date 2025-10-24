@@ -41,7 +41,7 @@ struct VkPhysicalDeviceDepthClipEnableFeaturesEXT {
 struct VkPipelineRasterizationDepthClipStateCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_DEPTH_CLIP_STATE_CREATE_INFO_EXT;
     const(void)* pNext;
-    VkFlags flags;
+    VkPipelineRasterizationDepthClipStateCreateFlagsEXT flags;
     VkBool32 depthClipEnable;
 }
 

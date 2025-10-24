@@ -32,7 +32,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_AMD_display_native_hdr {
-    
     @VkProcName("vkSetLocalDimmingAMD")
     PFN_vkSetLocalDimmingAMD vkSetLocalDimmingAMD;
 }
@@ -52,6 +51,7 @@ struct VkSwapchainDisplayNativeHdrCreateInfoAMD {
     VkBool32 localDimmingEnable;
 }
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkSetLocalDimmingAMD = void function(
     VkDevice device,
     VkSwapchainKHR swapChain,

@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.display;
 
 struct VK_EXT_direct_mode_display {
-    
     @VkProcName("vkReleaseDisplayEXT")
     PFN_vkReleaseDisplayEXT vkReleaseDisplayEXT;
 }
@@ -36,6 +35,7 @@ struct VK_EXT_direct_mode_display {
 enum VK_EXT_DIRECT_MODE_DISPLAY_SPEC_VERSION = 1;
 enum VK_EXT_DIRECT_MODE_DISPLAY_EXTENSION_NAME = "VK_EXT_direct_mode_display";
 
+import vulkan.khr.display : VkDisplayKHR;
 alias PFN_vkReleaseDisplayEXT = VkResult function(
     VkPhysicalDevice physicalDevice,
     VkDisplayKHR display,

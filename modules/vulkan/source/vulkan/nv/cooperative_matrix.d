@@ -15,8 +15,6 @@ import numem.core.types : OpaqueHandle;
 import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
-import vulkan.khr.shader_bfloat16;
-import vulkan.khr.cooperative_matrix;
 
 extern (System) @nogc nothrow:
 
@@ -32,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_NV_cooperative_matrix {
-    
     @VkProcName("vkGetPhysicalDeviceCooperativeMatrixPropertiesNV")
     PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesNV vkGetPhysicalDeviceCooperativeMatrixPropertiesNV;
 }
@@ -53,8 +50,10 @@ struct VkCooperativeMatrixPropertiesNV {
     VkScopeNV scope_;
 }
 
+import vulkan.khr.cooperative_matrix : VkScopeKHR;
 alias VkScopeNV = VkScopeKHR;
 
+import vulkan.khr.cooperative_matrix : VkComponentTypeKHR;
 alias VkComponentTypeNV = VkComponentTypeKHR;
 
 struct VkPhysicalDeviceCooperativeMatrixFeaturesNV {
@@ -67,7 +66,7 @@ struct VkPhysicalDeviceCooperativeMatrixFeaturesNV {
 struct VkPhysicalDeviceCooperativeMatrixPropertiesNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_PROPERTIES_NV;
     void* pNext;
-    VkFlags cooperativeMatrixSupportedStages;
+    VkShaderStageFlags cooperativeMatrixSupportedStages;
 }
 
 alias PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesNV = VkResult function(

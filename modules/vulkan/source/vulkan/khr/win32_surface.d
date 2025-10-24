@@ -33,7 +33,6 @@ public import vulkan.khr.surface;
 version (Windows):
 
 struct VK_KHR_win32_surface {
-    
     @VkProcName("vkCreateWin32SurfaceKHR")
     PFN_vkCreateWin32SurfaceKHR vkCreateWin32SurfaceKHR;
     
@@ -49,11 +48,12 @@ alias VkWin32SurfaceCreateFlagsKHR = VkFlags;
 struct VkWin32SurfaceCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
     const(void)* pNext;
-    VkFlags flags;
+    VkWin32SurfaceCreateFlagsKHR flags;
     HINSTANCE hinstance;
     HWND hwnd;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateWin32SurfaceKHR = VkResult function(
     VkInstance instance,
     const(VkWin32SurfaceCreateInfoKHR)* pCreateInfo,

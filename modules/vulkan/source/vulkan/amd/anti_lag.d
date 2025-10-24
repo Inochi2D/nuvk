@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 struct VK_AMD_anti_lag {
-    
     @VkProcName("vkAntiLagUpdateAMD")
     PFN_vkAntiLagUpdateAMD vkAntiLagUpdateAMD;
 }
@@ -55,23 +54,16 @@ struct VkAntiLagPresentationInfoAMD {
     ulong frameIndex;
 }
 
-enum VkAntiLagModeAMD {
+alias VkAntiLagModeAMD = uint;
+enum VkAntiLagModeAMD
     VK_ANTI_LAG_MODE_DRIVER_CONTROL_AMD = 0,
     VK_ANTI_LAG_MODE_ON_AMD = 1,
-    VK_ANTI_LAG_MODE_OFF_AMD = 2,
-}
+    VK_ANTI_LAG_MODE_OFF_AMD = 2;
 
-enum VK_ANTI_LAG_MODE_DRIVER_CONTROL_AMD = VkAntiLagModeAMD.VK_ANTI_LAG_MODE_DRIVER_CONTROL_AMD;
-enum VK_ANTI_LAG_MODE_ON_AMD = VkAntiLagModeAMD.VK_ANTI_LAG_MODE_ON_AMD;
-enum VK_ANTI_LAG_MODE_OFF_AMD = VkAntiLagModeAMD.VK_ANTI_LAG_MODE_OFF_AMD;
-
-enum VkAntiLagStageAMD {
+alias VkAntiLagStageAMD = uint;
+enum VkAntiLagStageAMD
     VK_ANTI_LAG_STAGE_INPUT_AMD = 0,
-    VK_ANTI_LAG_STAGE_PRESENT_AMD = 1,
-}
-
-enum VK_ANTI_LAG_STAGE_INPUT_AMD = VkAntiLagStageAMD.VK_ANTI_LAG_STAGE_INPUT_AMD;
-enum VK_ANTI_LAG_STAGE_PRESENT_AMD = VkAntiLagStageAMD.VK_ANTI_LAG_STAGE_PRESENT_AMD;
+    VK_ANTI_LAG_STAGE_PRESENT_AMD = 1;
 
 alias PFN_vkAntiLagUpdateAMD = void function(
     VkDevice device,

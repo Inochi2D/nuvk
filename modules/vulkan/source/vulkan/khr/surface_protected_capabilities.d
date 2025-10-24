@@ -25,7 +25,6 @@ version (VK_VERSION_1_3)
 version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
-version (VK_VERSION_1_1):
 public import vulkan.khr.get_surface_capabilities2;
 
 enum VK_KHR_SURFACE_PROTECTED_CAPABILITIES_SPEC_VERSION = 1;

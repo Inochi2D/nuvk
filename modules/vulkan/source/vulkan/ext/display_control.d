@@ -29,7 +29,6 @@ public import vulkan.khr.swapchain;
 public import vulkan.ext.display_surface_counter;
 
 struct VK_EXT_display_control {
-    
     @VkProcName("vkDisplayPowerControlEXT")
     PFN_vkDisplayPowerControlEXT vkDisplayPowerControlEXT;
     
@@ -46,27 +45,19 @@ struct VK_EXT_display_control {
 enum VK_EXT_DISPLAY_CONTROL_SPEC_VERSION = 1;
 enum VK_EXT_DISPLAY_CONTROL_EXTENSION_NAME = "VK_EXT_display_control";
 
-enum VkDisplayPowerStateEXT {
+alias VkDisplayPowerStateEXT = uint;
+enum VkDisplayPowerStateEXT
     VK_DISPLAY_POWER_STATE_OFF_EXT = 0,
     VK_DISPLAY_POWER_STATE_SUSPEND_EXT = 1,
-    VK_DISPLAY_POWER_STATE_ON_EXT = 2,
-}
+    VK_DISPLAY_POWER_STATE_ON_EXT = 2;
 
-enum VK_DISPLAY_POWER_STATE_OFF_EXT = VkDisplayPowerStateEXT.VK_DISPLAY_POWER_STATE_OFF_EXT;
-enum VK_DISPLAY_POWER_STATE_SUSPEND_EXT = VkDisplayPowerStateEXT.VK_DISPLAY_POWER_STATE_SUSPEND_EXT;
-enum VK_DISPLAY_POWER_STATE_ON_EXT = VkDisplayPowerStateEXT.VK_DISPLAY_POWER_STATE_ON_EXT;
+alias VkDeviceEventTypeEXT = uint;
+enum VkDeviceEventTypeEXT
+    VK_DEVICE_EVENT_TYPE_DISPLAY_HOTPLUG_EXT = 0;
 
-enum VkDeviceEventTypeEXT {
-    VK_DEVICE_EVENT_TYPE_DISPLAY_HOTPLUG_EXT = 0,
-}
-
-enum VK_DEVICE_EVENT_TYPE_DISPLAY_HOTPLUG_EXT = VkDeviceEventTypeEXT.VK_DEVICE_EVENT_TYPE_DISPLAY_HOTPLUG_EXT;
-
-enum VkDisplayEventTypeEXT {
-    VK_DISPLAY_EVENT_TYPE_FIRST_PIXEL_OUT_EXT = 0,
-}
-
-enum VK_DISPLAY_EVENT_TYPE_FIRST_PIXEL_OUT_EXT = VkDisplayEventTypeEXT.VK_DISPLAY_EVENT_TYPE_FIRST_PIXEL_OUT_EXT;
+alias VkDisplayEventTypeEXT = uint;
+enum VkDisplayEventTypeEXT
+    VK_DISPLAY_EVENT_TYPE_FIRST_PIXEL_OUT_EXT = 0;
 
 struct VkDisplayPowerInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_DISPLAY_POWER_INFO_EXT;
@@ -86,12 +77,14 @@ struct VkDisplayEventInfoEXT {
     VkDisplayEventTypeEXT displayEvent;
 }
 
+import vulkan.ext.display_surface_counter : VkSurfaceCounterFlagsEXT;
 struct VkSwapchainCounterCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_SWAPCHAIN_COUNTER_CREATE_INFO_EXT;
     const(void)* pNext;
-    VkFlags surfaceCounters;
+    VkSurfaceCounterFlagsEXT surfaceCounters;
 }
 
+import vulkan.khr.display : VkDisplayKHR;
 alias PFN_vkDisplayPowerControlEXT = VkResult function(
     VkDevice device,
     VkDisplayKHR display,
@@ -105,6 +98,7 @@ alias PFN_vkRegisterDeviceEventEXT = VkResult function(
     ref VkFence pFence,
 );
 
+import vulkan.khr.display : VkDisplayKHR;
 alias PFN_vkRegisterDisplayEventEXT = VkResult function(
     VkDevice device,
     VkDisplayKHR display,
@@ -113,9 +107,11 @@ alias PFN_vkRegisterDisplayEventEXT = VkResult function(
     ref VkFence pFence,
 );
 
+import vulkan.ext.display_surface_counter : VkSurfaceCounterFlagsEXT;
+import vulkan.khr.swapchain : VkSwapchainKHR;
 alias PFN_vkGetSwapchainCounterEXT = VkResult function(
     VkDevice device,
     VkSwapchainKHR swapchain,
-    VkSurfaceCounterFlagBitsEXT counter,
+    VkSurfaceCounterFlagsEXT counter,
     ulong* pCounterValue,
 );

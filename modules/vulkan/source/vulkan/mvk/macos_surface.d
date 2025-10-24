@@ -33,7 +33,6 @@ public import vulkan.khr.surface;
 version (OSX):
 
 struct VK_MVK_macos_surface {
-    
     @VkProcName("vkCreateMacOSSurfaceMVK")
     PFN_vkCreateMacOSSurfaceMVK vkCreateMacOSSurfaceMVK;
 }
@@ -46,10 +45,11 @@ alias VkMacOSSurfaceCreateFlagsMVK = VkFlags;
 struct VkMacOSSurfaceCreateInfoMVK {
     VkStructureType sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
     const(void)* pNext;
-    VkFlags flags;
+    VkMacOSSurfaceCreateFlagsMVK flags;
     const(void)* pView;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateMacOSSurfaceMVK = VkResult function(
     VkInstance instance,
     const(VkMacOSSurfaceCreateInfoMVK)* pCreateInfo,

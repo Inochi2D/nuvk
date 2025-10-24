@@ -31,7 +31,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_QCOM_tile_memory_heap {
-    
     @VkProcName("vkCmdBindTileMemoryQCOM")
     PFN_vkCmdBindTileMemoryQCOM vkCmdBindTileMemoryQCOM;
     

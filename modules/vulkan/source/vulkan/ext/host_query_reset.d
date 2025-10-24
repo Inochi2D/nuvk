@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_host_query_reset {
-    
     @VkProcName("vkResetQueryPool")
     PFN_vkResetQueryPool vkResetQueryPool;
 }

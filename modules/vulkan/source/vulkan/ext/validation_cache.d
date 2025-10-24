@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 struct VK_EXT_validation_cache {
-    
     @VkProcName("vkCreateValidationCacheEXT")
     PFN_vkCreateValidationCacheEXT vkCreateValidationCacheEXT;
     
@@ -48,7 +47,7 @@ alias VkValidationCacheEXT = OpaqueHandle!("VkValidationCacheEXT");
 struct VkValidationCacheCreateInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_VALIDATION_CACHE_CREATE_INFO_EXT;
     const(void)* pNext;
-    VkFlags flags;
+    VkValidationCacheCreateFlagsEXT flags;
     size_t initialDataSize;
     const(void)* pInitialData;
 }
@@ -59,11 +58,9 @@ struct VkShaderModuleValidationCacheCreateInfoEXT {
     VkValidationCacheEXT validationCache;
 }
 
-enum VkValidationCacheHeaderVersionEXT {
-    VK_VALIDATION_CACHE_HEADER_VERSION_ONE_EXT = 1,
-}
-
-enum VK_VALIDATION_CACHE_HEADER_VERSION_ONE_EXT = VkValidationCacheHeaderVersionEXT.VK_VALIDATION_CACHE_HEADER_VERSION_ONE_EXT;
+alias VkValidationCacheHeaderVersionEXT = uint;
+enum VkValidationCacheHeaderVersionEXT
+    VK_VALIDATION_CACHE_HEADER_VERSION_ONE_EXT = 1;
 
 alias VkValidationCacheCreateFlagsEXT = VkFlags;
 

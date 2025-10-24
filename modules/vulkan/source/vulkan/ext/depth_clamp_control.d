@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_depth_clamp_control {
-    
     @VkProcName("vkCmdSetDepthClampRangeEXT")
     PFN_vkCmdSetDepthClampRangeEXT vkCmdSetDepthClampRangeEXT;
 }
@@ -51,13 +50,10 @@ struct VkPipelineViewportDepthClampControlCreateInfoEXT {
     const(VkDepthClampRangeEXT)* pDepthClampRange;
 }
 
-enum VkDepthClampModeEXT {
+alias VkDepthClampModeEXT = uint;
+enum VkDepthClampModeEXT
     VK_DEPTH_CLAMP_MODE_VIEWPORT_RANGE_EXT = 0,
-    VK_DEPTH_CLAMP_MODE_USER_DEFINED_RANGE_EXT = 1,
-}
-
-enum VK_DEPTH_CLAMP_MODE_VIEWPORT_RANGE_EXT = VkDepthClampModeEXT.VK_DEPTH_CLAMP_MODE_VIEWPORT_RANGE_EXT;
-enum VK_DEPTH_CLAMP_MODE_USER_DEFINED_RANGE_EXT = VkDepthClampModeEXT.VK_DEPTH_CLAMP_MODE_USER_DEFINED_RANGE_EXT;
+    VK_DEPTH_CLAMP_MODE_USER_DEFINED_RANGE_EXT = 1;
 
 struct VkDepthClampRangeEXT {
     float minDepthClamp;

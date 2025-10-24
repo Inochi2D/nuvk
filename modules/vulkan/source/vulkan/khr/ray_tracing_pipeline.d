@@ -15,7 +15,6 @@ import numem.core.types : OpaqueHandle;
 import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
-import vulkan.khr.pipeline_library;
 
 extern (System) @nogc nothrow:
 
@@ -32,7 +31,6 @@ version (VK_VERSION_1_2) {} else {
 }
 
 struct VK_KHR_ray_tracing_pipeline {
-    
     @VkProcName("vkCmdTraceRaysKHR")
     PFN_vkCmdTraceRaysKHR vkCmdTraceRaysKHR;
     
@@ -71,26 +69,20 @@ struct VkRayTracingShaderGroupCreateInfoKHR {
     const(void)* pShaderGroupCaptureReplayHandle;
 }
 
-enum VkRayTracingShaderGroupTypeKHR {
+alias VkRayTracingShaderGroupTypeKHR = uint;
+enum VkRayTracingShaderGroupTypeKHR
     VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR = 0,
     VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR = 1,
     VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR = 2,
     VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR,
     VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR,
-    VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_NV = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR,
-}
+    VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_NV = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
 
-enum VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR = VkRayTracingShaderGroupTypeKHR.VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
-enum VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR = VkRayTracingShaderGroupTypeKHR.VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
-enum VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR = VkRayTracingShaderGroupTypeKHR.VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
-enum VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
-enum VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
-enum VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_NV = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
-
+import vulkan.khr.pipeline_library : VkPipelineLibraryCreateInfoKHR;
 struct VkRayTracingPipelineCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR;
     const(void)* pNext;
-    VkFlags flags;
+    VkPipelineCreateFlags flags;
     uint stageCount;
     const(VkPipelineShaderStageCreateInfo)* pStages;
     uint groupCount;
@@ -146,17 +138,12 @@ struct VkRayTracingPipelineInterfaceCreateInfoKHR {
     uint maxPipelineRayHitAttributeSize;
 }
 
-enum VkShaderGroupShaderKHR {
+alias VkShaderGroupShaderKHR = uint;
+enum VkShaderGroupShaderKHR
     VK_SHADER_GROUP_SHADER_GENERAL_KHR = 0,
     VK_SHADER_GROUP_SHADER_CLOSEST_HIT_KHR = 1,
     VK_SHADER_GROUP_SHADER_ANY_HIT_KHR = 2,
-    VK_SHADER_GROUP_SHADER_INTERSECTION_KHR = 3,
-}
-
-enum VK_SHADER_GROUP_SHADER_GENERAL_KHR = VkShaderGroupShaderKHR.VK_SHADER_GROUP_SHADER_GENERAL_KHR;
-enum VK_SHADER_GROUP_SHADER_CLOSEST_HIT_KHR = VkShaderGroupShaderKHR.VK_SHADER_GROUP_SHADER_CLOSEST_HIT_KHR;
-enum VK_SHADER_GROUP_SHADER_ANY_HIT_KHR = VkShaderGroupShaderKHR.VK_SHADER_GROUP_SHADER_ANY_HIT_KHR;
-enum VK_SHADER_GROUP_SHADER_INTERSECTION_KHR = VkShaderGroupShaderKHR.VK_SHADER_GROUP_SHADER_INTERSECTION_KHR;
+    VK_SHADER_GROUP_SHADER_INTERSECTION_KHR = 3;
 
 alias PFN_vkCmdTraceRaysKHR = void function(
     VkCommandBuffer commandBuffer,
@@ -169,6 +156,7 @@ alias PFN_vkCmdTraceRaysKHR = void function(
     uint depth,
 );
 
+import vulkan.khr.deferred_host_operations : VkDeferredOperationKHR;
 alias PFN_vkCreateRayTracingPipelinesKHR = VkResult function(
     VkDevice device,
     VkDeferredOperationKHR deferredOperation,

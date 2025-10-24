@@ -33,21 +33,15 @@ public import vulkan.khr.video_encode_queue;
 enum VK_KHR_VIDEO_ENCODE_QUANTIZATION_MAP_SPEC_VERSION = 2;
 enum VK_KHR_VIDEO_ENCODE_QUANTIZATION_MAP_EXTENSION_NAME = "VK_KHR_video_encode_quantization_map";
 
-enum VkVideoEncodeFlagBitsKHR : uint {
+alias VkVideoEncodeFlagsKHR = uint;
+enum VkVideoEncodeFlagsKHR
     VK_VIDEO_ENCODE_INTRA_REFRESH_BIT_KHR = 4,
     VK_VIDEO_ENCODE_WITH_QUANTIZATION_DELTA_MAP_BIT_KHR = 1,
-    VK_VIDEO_ENCODE_WITH_EMPHASIS_MAP_BIT_KHR = 2,
-}
+    VK_VIDEO_ENCODE_WITH_EMPHASIS_MAP_BIT_KHR = 2;
 
-enum VK_VIDEO_ENCODE_INTRA_REFRESH_BIT_KHR = VkVideoEncodeFlagBitsKHR.VK_VIDEO_ENCODE_INTRA_REFRESH_BIT_KHR;
-enum VK_VIDEO_ENCODE_WITH_QUANTIZATION_DELTA_MAP_BIT_KHR = VkVideoEncodeFlagBitsKHR.VK_VIDEO_ENCODE_WITH_QUANTIZATION_DELTA_MAP_BIT_KHR;
-enum VK_VIDEO_ENCODE_WITH_EMPHASIS_MAP_BIT_KHR = VkVideoEncodeFlagBitsKHR.VK_VIDEO_ENCODE_WITH_EMPHASIS_MAP_BIT_KHR;
-
-enum VkVideoSessionParametersCreateFlagBitsKHR : uint {
-    VK_VIDEO_SESSION_PARAMETERS_CREATE_QUANTIZATION_MAP_COMPATIBLE_BIT_KHR = 1,
-}
-
-enum VK_VIDEO_SESSION_PARAMETERS_CREATE_QUANTIZATION_MAP_COMPATIBLE_BIT_KHR = VkVideoSessionParametersCreateFlagBitsKHR.VK_VIDEO_SESSION_PARAMETERS_CREATE_QUANTIZATION_MAP_COMPATIBLE_BIT_KHR;
+alias VkVideoSessionParametersCreateFlagsKHR = uint;
+enum VkVideoSessionParametersCreateFlagsKHR
+    VK_VIDEO_SESSION_PARAMETERS_CREATE_QUANTIZATION_MAP_COMPATIBLE_BIT_KHR = 1;
 
 struct VkVideoEncodeQuantizationMapCapabilitiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_QUANTIZATION_MAP_CAPABILITIES_KHR;
@@ -98,10 +92,11 @@ struct VkVideoEncodeH265QuantizationMapCapabilitiesKHR {
     int maxQpDelta;
 }
 
+import vulkan.khr.video_encode_h265 : VkVideoEncodeH265CtbSizeFlagsKHR;
 struct VkVideoFormatH265QuantizationMapPropertiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_FORMAT_H265_QUANTIZATION_MAP_PROPERTIES_KHR;
     void* pNext;
-    VkFlags compatibleCtbSizes;
+    VkVideoEncodeH265CtbSizeFlagsKHR compatibleCtbSizes;
 }
 
 public import vulkan.khr.video_encode_av1;
@@ -113,8 +108,9 @@ struct VkVideoEncodeAV1QuantizationMapCapabilitiesKHR {
     int maxQIndexDelta;
 }
 
+import vulkan.khr.video_encode_av1 : VkVideoEncodeAV1SuperblockSizeFlagsKHR;
 struct VkVideoFormatAV1QuantizationMapPropertiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_VIDEO_FORMAT_AV1_QUANTIZATION_MAP_PROPERTIES_KHR;
     void* pNext;
-    VkFlags compatibleSuperblockSizes;
+    VkVideoEncodeAV1SuperblockSizeFlagsKHR compatibleSuperblockSizes;
 }

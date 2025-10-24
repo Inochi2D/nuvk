@@ -31,7 +31,6 @@ version (VK_VERSION_1_3) {} else {
 public import vulkan.khr.ray_tracing_pipeline;
 
 struct VK_HUAWEI_invocation_mask {
-    
     @VkProcName("vkCmdBindInvocationMaskHUAWEI")
     PFN_vkCmdBindInvocationMaskHUAWEI vkCmdBindInvocationMaskHUAWEI;
 }

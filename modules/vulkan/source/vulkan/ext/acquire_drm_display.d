@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.ext.direct_mode_display;
 
 struct VK_EXT_acquire_drm_display {
-    
     @VkProcName("vkAcquireDrmDisplayEXT")
     PFN_vkAcquireDrmDisplayEXT vkAcquireDrmDisplayEXT;
     
@@ -39,12 +38,14 @@ struct VK_EXT_acquire_drm_display {
 enum VK_EXT_ACQUIRE_DRM_DISPLAY_SPEC_VERSION = 1;
 enum VK_EXT_ACQUIRE_DRM_DISPLAY_EXTENSION_NAME = "VK_EXT_acquire_drm_display";
 
+import vulkan.khr.display : VkDisplayKHR;
 alias PFN_vkAcquireDrmDisplayEXT = VkResult function(
     VkPhysicalDevice physicalDevice,
     int drmFd,
     VkDisplayKHR display,
 );
 
+import vulkan.khr.display : VkDisplayKHR;
 alias PFN_vkGetDrmDisplayEXT = VkResult function(
     VkPhysicalDevice physicalDevice,
     int drmFd,

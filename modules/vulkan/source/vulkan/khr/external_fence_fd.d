@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_KHR_external_fence_fd {
-    
     @VkProcName("vkImportFenceFdKHR")
     PFN_vkImportFenceFdKHR vkImportFenceFdKHR;
     
@@ -45,8 +44,8 @@ struct VkImportFenceFdInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_FENCE_FD_INFO_KHR;
     const(void)* pNext;
     VkFence fence;
-    VkFlags flags;
-    VkExternalFenceHandleTypeFlagBits handleType;
+    VkFenceImportFlags flags;
+    VkExternalFenceHandleTypeFlags handleType;
     int fd;
 }
 
@@ -54,7 +53,7 @@ struct VkFenceGetFdInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_FENCE_GET_FD_INFO_KHR;
     const(void)* pNext;
     VkFence fence;
-    VkExternalFenceHandleTypeFlagBits handleType;
+    VkExternalFenceHandleTypeFlags handleType;
 }
 
 alias PFN_vkImportFenceFdKHR = VkResult function(

@@ -35,7 +35,6 @@ version (VK_VERSION_1_2) {} else {
 }
 
 struct VK_EXT_image_drm_format_modifier {
-    
     @VkProcName("vkGetImageDrmFormatModifierPropertiesEXT")
     PFN_vkGetImageDrmFormatModifierPropertiesEXT vkGetImageDrmFormatModifierPropertiesEXT;
 }
@@ -53,7 +52,7 @@ struct VkDrmFormatModifierPropertiesListEXT {
 struct VkDrmFormatModifierPropertiesEXT {
     ulong drmFormatModifier;
     uint drmFormatModifierPlaneCount;
-    VkFlags drmFormatModifierTilingFeatures;
+    VkFormatFeatureFlags drmFormatModifierTilingFeatures;
 }
 
 struct VkPhysicalDeviceImageDrmFormatModifierInfoEXT {
@@ -106,5 +105,5 @@ struct VkDrmFormatModifierPropertiesList2EXT {
 struct VkDrmFormatModifierProperties2EXT {
     ulong drmFormatModifier;
     uint drmFormatModifierPlaneCount;
-    VkFlags64 drmFormatModifierTilingFeatures;
+    VkFormatFeatureFlags2 drmFormatModifierTilingFeatures;
 }

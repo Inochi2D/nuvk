@@ -32,7 +32,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.surface;
 
 struct VK_FUCHSIA_imagepipe_surface {
-    
     @VkProcName("vkCreateImagePipeSurfaceFUCHSIA")
     PFN_vkCreateImagePipeSurfaceFUCHSIA vkCreateImagePipeSurfaceFUCHSIA;
 }
@@ -45,10 +44,11 @@ alias VkImagePipeSurfaceCreateFlagsFUCHSIA = VkFlags;
 struct VkImagePipeSurfaceCreateInfoFUCHSIA {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMAGEPIPE_SURFACE_CREATE_INFO_FUCHSIA;
     const(void)* pNext;
-    VkFlags flags;
+    VkImagePipeSurfaceCreateFlagsFUCHSIA flags;
     zx_handle_t imagePipeHandle;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateImagePipeSurfaceFUCHSIA = VkResult function(
     VkInstance instance,
     const(VkImagePipeSurfaceCreateInfoFUCHSIA)* pCreateInfo,

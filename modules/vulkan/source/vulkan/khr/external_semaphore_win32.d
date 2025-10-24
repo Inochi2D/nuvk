@@ -33,7 +33,6 @@ public import vulkan.khr.external_semaphore;
 version (Windows):
 
 struct VK_KHR_external_semaphore_win32 {
-    
     @VkProcName("vkImportSemaphoreWin32HandleKHR")
     PFN_vkImportSemaphoreWin32HandleKHR vkImportSemaphoreWin32HandleKHR;
     
@@ -48,8 +47,8 @@ struct VkImportSemaphoreWin32HandleInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_WIN32_HANDLE_INFO_KHR;
     const(void)* pNext;
     VkSemaphore semaphore;
-    VkFlags flags;
-    VkExternalSemaphoreHandleTypeFlagBits handleType;
+    VkSemaphoreImportFlags flags;
+    VkExternalSemaphoreHandleTypeFlags handleType;
     HANDLE handle;
     LPCWSTR name;
 }
@@ -75,7 +74,7 @@ struct VkSemaphoreGetWin32HandleInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_WIN32_HANDLE_INFO_KHR;
     const(void)* pNext;
     VkSemaphore semaphore;
-    VkExternalSemaphoreHandleTypeFlagBits handleType;
+    VkExternalSemaphoreHandleTypeFlags handleType;
 }
 
 alias PFN_vkImportSemaphoreWin32HandleKHR = VkResult function(

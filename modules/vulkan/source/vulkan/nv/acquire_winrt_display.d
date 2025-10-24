@@ -33,7 +33,6 @@ public import vulkan.ext.direct_mode_display;
 version (Windows):
 
 struct VK_NV_acquire_winrt_display {
-    
     @VkProcName("vkAcquireWinrtDisplayNV")
     PFN_vkAcquireWinrtDisplayNV vkAcquireWinrtDisplayNV;
     
@@ -44,11 +43,13 @@ struct VK_NV_acquire_winrt_display {
 enum VK_NV_ACQUIRE_WINRT_DISPLAY_SPEC_VERSION = 1;
 enum VK_NV_ACQUIRE_WINRT_DISPLAY_EXTENSION_NAME = "VK_NV_acquire_winrt_display";
 
+import vulkan.khr.display : VkDisplayKHR;
 alias PFN_vkAcquireWinrtDisplayNV = VkResult function(
     VkPhysicalDevice physicalDevice,
     VkDisplayKHR display,
 );
 
+import vulkan.khr.display : VkDisplayKHR;
 alias PFN_vkGetWinrtDisplayNV = VkResult function(
     VkPhysicalDevice physicalDevice,
     uint deviceRelativeId,

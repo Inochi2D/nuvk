@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 struct VK_KHR_get_physical_device_properties2 {
-    
     @VkProcName("vkGetPhysicalDeviceFeatures2")
     PFN_vkGetPhysicalDeviceFeatures2 vkGetPhysicalDeviceFeatures2;
     

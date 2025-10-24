@@ -32,7 +32,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.surface;
 
 struct VK_QNX_screen_surface {
-    
     @VkProcName("vkCreateScreenSurfaceQNX")
     PFN_vkCreateScreenSurfaceQNX vkCreateScreenSurfaceQNX;
     
@@ -48,11 +47,12 @@ alias VkScreenSurfaceCreateFlagsQNX = VkFlags;
 struct VkScreenSurfaceCreateInfoQNX {
     VkStructureType sType = VK_STRUCTURE_TYPE_SCREEN_SURFACE_CREATE_INFO_QNX;
     const(void)* pNext;
-    VkFlags flags;
+    VkScreenSurfaceCreateFlagsQNX flags;
     _screen_context* context;
     _screen_window* window;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateScreenSurfaceQNX = VkResult function(
     VkInstance instance,
     const(VkScreenSurfaceCreateInfoQNX)* pCreateInfo,

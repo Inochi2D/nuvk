@@ -33,4 +33,5 @@ version (VK_VERSION_1_1) {} else {
 enum VK_EXT_DEPTH_CLAMP_ZERO_ONE_SPEC_VERSION = 1;
 enum VK_EXT_DEPTH_CLAMP_ZERO_ONE_EXTENSION_NAME = "VK_EXT_depth_clamp_zero_one";
 
+import vulkan.khr.depth_clamp_zero_one : VkPhysicalDeviceDepthClampZeroOneFeaturesKHR;
 alias VkPhysicalDeviceDepthClampZeroOneFeaturesEXT = VkPhysicalDeviceDepthClampZeroOneFeaturesKHR;

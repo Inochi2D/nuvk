@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.ext.memory_priority;
 
 struct VK_EXT_pageable_device_local_memory {
-    
     @VkProcName("vkSetDeviceMemoryPriorityEXT")
     PFN_vkSetDeviceMemoryPriorityEXT vkSetDeviceMemoryPriorityEXT;
 }

@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_QCOM_tile_properties {
-    
     @VkProcName("vkGetFramebufferTilePropertiesQCOM")
     PFN_vkGetFramebufferTilePropertiesQCOM vkGetFramebufferTilePropertiesQCOM;
     

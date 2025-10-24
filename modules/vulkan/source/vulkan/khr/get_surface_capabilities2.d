@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.surface;
 
 struct VK_KHR_get_surface_capabilities2 {
-    
     @VkProcName("vkGetPhysicalDeviceSurfaceCapabilities2KHR")
     PFN_vkGetPhysicalDeviceSurfaceCapabilities2KHR vkGetPhysicalDeviceSurfaceCapabilities2KHR;
     
@@ -39,18 +38,21 @@ struct VK_KHR_get_surface_capabilities2 {
 enum VK_KHR_GET_SURFACE_CAPABILITIES_2_SPEC_VERSION = 1;
 enum VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME = "VK_KHR_get_surface_capabilities2";
 
+import vulkan.khr.surface : VkSurfaceKHR;
 struct VkPhysicalDeviceSurfaceInfo2KHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR;
     const(void)* pNext;
     VkSurfaceKHR surface;
 }
 
+import vulkan.khr.surface : VkSurfaceCapabilitiesKHR;
 struct VkSurfaceCapabilities2KHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_KHR;
     void* pNext;
     VkSurfaceCapabilitiesKHR surfaceCapabilities;
 }
 
+import vulkan.khr.surface : VkSurfaceFormatKHR;
 struct VkSurfaceFormat2KHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_SURFACE_FORMAT_2_KHR;
     void* pNext;

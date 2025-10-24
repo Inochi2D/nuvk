@@ -33,6 +33,8 @@ version (VK_VERSION_1_1) {} else {
 enum VK_EXT_ROBUSTNESS_2_SPEC_VERSION = 1;
 enum VK_EXT_ROBUSTNESS_2_EXTENSION_NAME = "VK_EXT_robustness2";
 
+import vulkan.khr.robustness2 : VkPhysicalDeviceRobustness2FeaturesKHR;
 alias VkPhysicalDeviceRobustness2FeaturesEXT = VkPhysicalDeviceRobustness2FeaturesKHR;
 
+import vulkan.khr.robustness2 : VkPhysicalDeviceRobustness2PropertiesKHR;
 alias VkPhysicalDeviceRobustness2PropertiesEXT = VkPhysicalDeviceRobustness2PropertiesKHR;

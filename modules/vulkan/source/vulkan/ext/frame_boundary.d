@@ -37,7 +37,7 @@ struct VkPhysicalDeviceFrameBoundaryFeaturesEXT {
 struct VkFrameBoundaryEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_FRAME_BOUNDARY_EXT;
     const(void)* pNext;
-    VkFlags flags;
+    VkFrameBoundaryFlagsEXT flags;
     ulong frameID;
     uint imageCount;
     const(VkImage)* pImages;
@@ -48,10 +48,7 @@ struct VkFrameBoundaryEXT {
     const(void)* pTag;
 }
 
-enum VkFrameBoundaryFlagBitsEXT : uint {
-    VK_FRAME_BOUNDARY_FRAME_END_BIT_EXT = 1,
-}
+alias VkFrameBoundaryFlagsEXT = uint;
+enum VkFrameBoundaryFlagsEXT
+    VK_FRAME_BOUNDARY_FRAME_END_BIT_EXT = 1;
 
-enum VK_FRAME_BOUNDARY_FRAME_END_BIT_EXT = VkFrameBoundaryFlagBitsEXT.VK_FRAME_BOUNDARY_FRAME_END_BIT_EXT;
-
-alias VkFrameBoundaryFlagsEXT = VkFlags;

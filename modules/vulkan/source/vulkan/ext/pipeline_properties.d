@@ -15,7 +15,6 @@ import numem.core.types : OpaqueHandle;
 import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
-import vulkan.khr.pipeline_executable_properties;
 
 extern (System) @nogc nothrow:
 
@@ -31,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_pipeline_properties {
-    
     @VkProcName("vkGetPipelinePropertiesEXT")
     PFN_vkGetPipelinePropertiesEXT vkGetPipelinePropertiesEXT;
 }
@@ -39,6 +37,7 @@ struct VK_EXT_pipeline_properties {
 enum VK_EXT_PIPELINE_PROPERTIES_SPEC_VERSION = 1;
 enum VK_EXT_PIPELINE_PROPERTIES_EXTENSION_NAME = "VK_EXT_pipeline_properties";
 
+import vulkan.khr.pipeline_executable_properties : VkPipelineInfoKHR;
 alias VkPipelineInfoEXT = VkPipelineInfoKHR;
 
 struct VkPipelinePropertiesIdentifierEXT {

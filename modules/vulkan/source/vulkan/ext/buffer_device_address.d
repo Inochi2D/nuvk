@@ -31,7 +31,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_buffer_device_address {
-    
     @VkProcName("vkGetBufferDeviceAddress")
     PFN_vkGetBufferDeviceAddress vkGetBufferDeviceAddress;
 }

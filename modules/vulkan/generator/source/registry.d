@@ -19,13 +19,13 @@ class VkRegistry {
     /** Registered vendors. */
     OMap!(string, VkVendor) vendors;
 
-    /** Registered defines */
+    /** Registered defines. */
     OMap!(string, VkDefineType) defines;
 
-    /** Registered base types */
+    /** Registered base types. */
     OMap!(string, VkBasetypeType) basetypes;
 
-    /** Registered bitmasks */
+    /** Registered bitmasks. */
     OMap!(string, VkBitmaskType) bitmasks;
 
     /** Registered handles. */
@@ -46,10 +46,10 @@ class VkRegistry {
     /** Registered commands. */
     OMap!(string, VkCommand) commands;
 
-    /** Registered features */
+    /** Registered features. */
     OMap!(string, VkFeature) features;
 
-    /** Registered extensions */
+    /** Registered extensions. */
     OMap!(string, VkExtension) extensions;
 
     /** Map globals to their enums. */
@@ -57,6 +57,31 @@ class VkRegistry {
 
     /** Map types to their categories. */
     VkType[string] types;
+
+    /** Map symbol names to their extension. */
+    bool[string][string] sources;
+
+    /** Map flagbits enums to flags enums. */
+    string[string] flags;
+
+    /** Find the provenance of a given symbol. */
+    inout(VkExtension)* provenance(const ref VkType type) inout {
+        return provenance(type.name);
+    }
+
+    /** Find the provenance of a given symbol. */
+    inout(VkExtension)* provenance(string name) inout {
+        if (auto source = name in sources) {
+            return &extensions[source.keys.front];
+        }
+
+        return null;
+    }
+
+    /** Convert a flagbits enum name to a flags enum name. */
+    inout(string) toFlags(string name) inout {
+        return flags.get(name, name);
+    }
 
     /** Special enum which isn't really an enum. */
     @property ref const(VkEnumType) constants() => enums["API Constants"];
@@ -99,6 +124,7 @@ struct VkDefineType {
     alias base this;
 
     @property bool funclike() const => value.empty;
+
     @property bool commented() const => value.startsWith("//");
 }
 
@@ -117,7 +143,7 @@ struct VkBasetypeType {
  */
 struct VkBitmaskType {
     VkType base;
-    string requires;
+    string bitvalues;
     string backing;
     string alias_;
 
@@ -147,12 +173,14 @@ struct VkEnumType {
 
     alias base this;
 
+    /** Move-construct an instance of this type. */
     this(return scope typeof(this) other) {
         foreach (i, ref field; other.tupleof) {
             this.tupleof[i] = __rvalue(field);
         }
     }
 
+    /** D type corresponding to the bit width of this enum's backing type. */
     @property string backingType() const {
         final switch (width) {
             case VkBitWidth.U32:
@@ -197,6 +225,8 @@ struct VkEnumMember {
     @property bool hasAlias() const => !alias_.empty;
 
     @property bool isDeprecated() const => !deprecated_.empty;
+
+    @property string valueOrAlias() const => alias_ ? alias_ : value;
 }
 
 /** 
@@ -227,6 +257,7 @@ struct VkStructType {
 struct VkStructMember {
     string name;
     string type;
+    string utype;
     string[] values;
     bool optional = false;
     string deprecated_;
@@ -305,12 +336,14 @@ struct VkCommand {
     string[] errors;
     string comment;
 
+    /** Move-construct an instance of this type. */
     this(return scope typeof(this) other) {
         foreach (i, ref field; other.tupleof) {
             this.tupleof[i] = __rvalue(field);
         }
     }
 
+    /** Generate a function pointer type from the signature of this command. */
     @property VkFuncPtrType funcptr() const {
         VkFuncPtrType result;
 
@@ -330,6 +363,7 @@ struct VkCommand {
 struct VkParam {
     string name;
     string type;
+    string utype;
     bool optional;
     string comment;
 
@@ -361,6 +395,10 @@ struct VkFeature {
     bool opBinaryRight(string op : "in")(string name) const {
         return api.any!(api => api == name);
     }
+
+    @property string number() const {
+        return format!"VK_VERSION_%s_%s"(major, minor);
+    }
 }
 
 /** 
@@ -377,6 +415,10 @@ struct VkExtension {
     VkDepends depends = null;
     VkSection[] sections;
     string platform;
+
+    bool opBinaryRight(string op : "in")(string name) const {
+        return sections.any!(s => name in s);
+    }
 
     @property string shortName() const {
         import std.ascii;
@@ -438,6 +480,10 @@ struct VkSection {
     string[] types;
     VkEnumMember[] mconsts;
     string[] commands;
+
+    bool opBinaryRight(string op : "in")(string name) const {
+        return types.canFind(name) || mconsts.canFind!(m => m.name == name) || commands.canFind(name);
+    }
 
     @property bool empty() const => types.empty && mconsts.empty && commands.empty;
 }
@@ -565,6 +611,9 @@ enum VkBitWidth {
     U64,
 }
 
+/** 
+ * Convert a type category string to its enum value.
+ */
 VkTypeCategory toVkTypeCategory(Char)(in Char[] value) {
     import std.format : format;
 
@@ -592,6 +641,9 @@ VkTypeCategory toVkTypeCategory(Char)(in Char[] value) {
     }
 }
 
+/** 
+ * Convert an extension type string to its enum value.
+ */
 VkExtensionType toVkExtensionType(Char)(in Char[] value) {
     import std.format : format;
 
@@ -603,6 +655,9 @@ VkExtensionType toVkExtensionType(Char)(in Char[] value) {
     }
 }
 
+/**
+ * D keywords which have been found to conflict with some member/param names.
+ */
 const bool[string] keywords = [
     "module": true,
     "version": true,

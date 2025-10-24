@@ -33,7 +33,6 @@ version (VK_VERSION_1_2) {} else {
 }
 
 struct VK_KHR_dynamic_rendering {
-    
     @VkProcName("vkCmdBeginRendering")
     PFN_vkCmdBeginRendering vkCmdBeginRendering;
     
@@ -56,7 +55,7 @@ alias VkCommandBufferInheritanceRenderingInfoKHR = VkCommandBufferInheritanceRen
 
 alias VkRenderingFlagsKHR = VkRenderingFlags;
 
-alias VkRenderingFlagBitsKHR = VkRenderingFlagBits;
+alias VkRenderingFlagBitsKHR = VkRenderingFlags;
 
 alias PFN_vkCmdBeginRendering = void function(
     VkCommandBuffer commandBuffer,

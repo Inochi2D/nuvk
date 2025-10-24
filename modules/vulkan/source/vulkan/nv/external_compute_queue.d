@@ -26,7 +26,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 struct VK_NV_external_compute_queue {
-    
     @VkProcName("vkCreateExternalComputeQueueNV")
     PFN_vkCreateExternalComputeQueueNV vkCreateExternalComputeQueueNV;
     

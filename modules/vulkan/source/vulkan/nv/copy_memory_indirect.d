@@ -34,7 +34,6 @@ version (VK_VERSION_1_2) {} else {
 }
 
 struct VK_NV_copy_memory_indirect {
-    
     @VkProcName("vkCmdCopyMemoryIndirectNV")
     PFN_vkCmdCopyMemoryIndirectNV vkCmdCopyMemoryIndirectNV;
     
@@ -45,8 +44,10 @@ struct VK_NV_copy_memory_indirect {
 enum VK_NV_COPY_MEMORY_INDIRECT_SPEC_VERSION = 1;
 enum VK_NV_COPY_MEMORY_INDIRECT_EXTENSION_NAME = "VK_NV_copy_memory_indirect";
 
+import vulkan.khr.copy_memory_indirect : VkCopyMemoryIndirectCommandKHR;
 alias VkCopyMemoryIndirectCommandNV = VkCopyMemoryIndirectCommandKHR;
 
+import vulkan.khr.copy_memory_indirect : VkCopyMemoryToImageIndirectCommandKHR;
 alias VkCopyMemoryToImageIndirectCommandNV = VkCopyMemoryToImageIndirectCommandKHR;
 
 struct VkPhysicalDeviceCopyMemoryIndirectFeaturesNV {
@@ -55,6 +56,7 @@ struct VkPhysicalDeviceCopyMemoryIndirectFeaturesNV {
     VkBool32 indirectCopy;
 }
 
+import vulkan.khr.copy_memory_indirect : VkPhysicalDeviceCopyMemoryIndirectPropertiesKHR;
 alias VkPhysicalDeviceCopyMemoryIndirectPropertiesNV = VkPhysicalDeviceCopyMemoryIndirectPropertiesKHR;
 
 alias PFN_vkCmdCopyMemoryIndirectNV = void function(

@@ -31,7 +31,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.surface;
 
 struct VK_NN_vi_surface {
-    
     @VkProcName("vkCreateViSurfaceNN")
     PFN_vkCreateViSurfaceNN vkCreateViSurfaceNN;
 }
@@ -44,10 +43,11 @@ alias VkViSurfaceCreateFlagsNN = VkFlags;
 struct VkViSurfaceCreateInfoNN {
     VkStructureType sType = VK_STRUCTURE_TYPE_VI_SURFACE_CREATE_INFO_NN;
     const(void)* pNext;
-    VkFlags flags;
+    VkViSurfaceCreateFlagsNN flags;
     void* window;
 }
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkCreateViSurfaceNN = VkResult function(
     VkInstance instance,
     const(VkViSurfaceCreateInfoNN)* pCreateInfo,

@@ -31,7 +31,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_attachment_feedback_loop_dynamic_state {
-    
     @VkProcName("vkCmdSetAttachmentFeedbackLoopEnableEXT")
     PFN_vkCmdSetAttachmentFeedbackLoopEnableEXT vkCmdSetAttachmentFeedbackLoopEnableEXT;
 }

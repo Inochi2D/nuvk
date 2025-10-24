@@ -15,7 +15,6 @@ import numem.core.types : OpaqueHandle;
 import vulkan.patches;
 import vulkan.loader;
 import vulkan.core;
-import vulkan.amd.mixed_attachment_samples;
 
 extern (System) @nogc nothrow:
 
@@ -32,7 +31,7 @@ enum VK_NV_FRAMEBUFFER_MIXED_SAMPLES_EXTENSION_NAME = "VK_NV_framebuffer_mixed_s
 struct VkPipelineCoverageModulationStateCreateInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_MODULATION_STATE_CREATE_INFO_NV;
     const(void)* pNext;
-    VkFlags flags;
+    VkPipelineCoverageModulationStateCreateFlagsNV flags;
     VkCoverageModulationModeNV coverageModulationMode;
     VkBool32 coverageModulationTableEnable;
     uint coverageModulationTableCount;
@@ -41,20 +40,16 @@ struct VkPipelineCoverageModulationStateCreateInfoNV {
 
 alias VkPipelineCoverageModulationStateCreateFlagsNV = VkFlags;
 
-enum VkCoverageModulationModeNV {
+alias VkCoverageModulationModeNV = uint;
+enum VkCoverageModulationModeNV
     VK_COVERAGE_MODULATION_MODE_NONE_NV = 0,
     VK_COVERAGE_MODULATION_MODE_RGB_NV = 1,
     VK_COVERAGE_MODULATION_MODE_ALPHA_NV = 2,
-    VK_COVERAGE_MODULATION_MODE_RGBA_NV = 3,
-}
-
-enum VK_COVERAGE_MODULATION_MODE_NONE_NV = VkCoverageModulationModeNV.VK_COVERAGE_MODULATION_MODE_NONE_NV;
-enum VK_COVERAGE_MODULATION_MODE_RGB_NV = VkCoverageModulationModeNV.VK_COVERAGE_MODULATION_MODE_RGB_NV;
-enum VK_COVERAGE_MODULATION_MODE_ALPHA_NV = VkCoverageModulationModeNV.VK_COVERAGE_MODULATION_MODE_ALPHA_NV;
-enum VK_COVERAGE_MODULATION_MODE_RGBA_NV = VkCoverageModulationModeNV.VK_COVERAGE_MODULATION_MODE_RGBA_NV;
+    VK_COVERAGE_MODULATION_MODE_RGBA_NV = 3;
 
 version (VK_VERSION_1_3) {} else {
     public import vulkan.khr.dynamic_rendering;
 }
 
+import vulkan.amd.mixed_attachment_samples : VkAttachmentSampleCountInfoAMD;
 alias VkAttachmentSampleCountInfoNV = VkAttachmentSampleCountInfoAMD;

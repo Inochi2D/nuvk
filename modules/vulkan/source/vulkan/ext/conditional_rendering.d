@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_conditional_rendering {
-    
     @VkProcName("vkCmdBeginConditionalRenderingEXT")
     PFN_vkCmdBeginConditionalRenderingEXT vkCmdBeginConditionalRenderingEXT;
     
@@ -41,20 +40,17 @@ struct VK_EXT_conditional_rendering {
 enum VK_EXT_CONDITIONAL_RENDERING_SPEC_VERSION = 2;
 enum VK_EXT_CONDITIONAL_RENDERING_EXTENSION_NAME = "VK_EXT_conditional_rendering";
 
-alias VkConditionalRenderingFlagsEXT = VkFlags;
 
-enum VkConditionalRenderingFlagBitsEXT : uint {
-    VK_CONDITIONAL_RENDERING_INVERTED_BIT_EXT = 1,
-}
-
-enum VK_CONDITIONAL_RENDERING_INVERTED_BIT_EXT = VkConditionalRenderingFlagBitsEXT.VK_CONDITIONAL_RENDERING_INVERTED_BIT_EXT;
+alias VkConditionalRenderingFlagsEXT = uint;
+enum VkConditionalRenderingFlagsEXT
+    VK_CONDITIONAL_RENDERING_INVERTED_BIT_EXT = 1;
 
 struct VkConditionalRenderingBeginInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_CONDITIONAL_RENDERING_BEGIN_INFO_EXT;
     const(void)* pNext;
     VkBuffer buffer;
     VkDeviceSize offset;
-    VkFlags flags;
+    VkConditionalRenderingFlagsEXT flags;
 }
 
 struct VkPhysicalDeviceConditionalRenderingFeaturesEXT {

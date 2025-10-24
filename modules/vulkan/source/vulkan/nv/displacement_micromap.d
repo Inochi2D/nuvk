@@ -46,6 +46,8 @@ struct VkPhysicalDeviceDisplacementMicromapPropertiesNV {
     uint maxDisplacementMicromapSubdivisionLevel;
 }
 
+import vulkan.khr.acceleration_structure : VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressConstKHR, VkDeviceOrHostAddressConstKHR;
+import vulkan.ext.opacity_micromap : VkMicromapUsageEXT, VkMicromapUsageEXT, VkMicromapEXT;
 struct VkAccelerationStructureTrianglesDisplacementMicromapNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_TRIANGLES_DISPLACEMENT_MICROMAP_NV;
     void* pNext;
@@ -67,12 +69,8 @@ struct VkAccelerationStructureTrianglesDisplacementMicromapNV {
     VkMicromapEXT micromap;
 }
 
-enum VkDisplacementMicromapFormatNV {
+alias VkDisplacementMicromapFormatNV = uint;
+enum VkDisplacementMicromapFormatNV
     VK_DISPLACEMENT_MICROMAP_FORMAT_64_TRIANGLES_64_BYTES_NV = 1,
     VK_DISPLACEMENT_MICROMAP_FORMAT_256_TRIANGLES_128_BYTES_NV = 2,
-    VK_DISPLACEMENT_MICROMAP_FORMAT_1024_TRIANGLES_128_BYTES_NV = 3,
-}
-
-enum VK_DISPLACEMENT_MICROMAP_FORMAT_64_TRIANGLES_64_BYTES_NV = VkDisplacementMicromapFormatNV.VK_DISPLACEMENT_MICROMAP_FORMAT_64_TRIANGLES_64_BYTES_NV;
-enum VK_DISPLACEMENT_MICROMAP_FORMAT_256_TRIANGLES_128_BYTES_NV = VkDisplacementMicromapFormatNV.VK_DISPLACEMENT_MICROMAP_FORMAT_256_TRIANGLES_128_BYTES_NV;
-enum VK_DISPLACEMENT_MICROMAP_FORMAT_1024_TRIANGLES_128_BYTES_NV = VkDisplacementMicromapFormatNV.VK_DISPLACEMENT_MICROMAP_FORMAT_1024_TRIANGLES_128_BYTES_NV;
+    VK_DISPLACEMENT_MICROMAP_FORMAT_1024_TRIANGLES_128_BYTES_NV = 3;

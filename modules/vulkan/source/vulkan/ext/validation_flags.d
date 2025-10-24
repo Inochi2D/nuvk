@@ -36,10 +36,7 @@ struct VkValidationFlagsEXT {
     const(VkValidationCheckEXT)* pDisabledValidationChecks;
 }
 
-enum VkValidationCheckEXT {
+alias VkValidationCheckEXT = uint;
+enum VkValidationCheckEXT
     VK_VALIDATION_CHECK_ALL_EXT = 0,
-    VK_VALIDATION_CHECK_SHADERS_EXT = 1,
-}
-
-enum VK_VALIDATION_CHECK_ALL_EXT = VkValidationCheckEXT.VK_VALIDATION_CHECK_ALL_EXT;
-enum VK_VALIDATION_CHECK_SHADERS_EXT = VkValidationCheckEXT.VK_VALIDATION_CHECK_SHADERS_EXT;
+    VK_VALIDATION_CHECK_SHADERS_EXT = 1;

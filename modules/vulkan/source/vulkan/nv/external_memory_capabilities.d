@@ -27,7 +27,6 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 struct VK_NV_external_memory_capabilities {
-    
     @VkProcName("vkGetPhysicalDeviceExternalImageFormatPropertiesNV")
     PFN_vkGetPhysicalDeviceExternalImageFormatPropertiesNV vkGetPhysicalDeviceExternalImageFormatPropertiesNV;
 }
@@ -35,37 +34,26 @@ struct VK_NV_external_memory_capabilities {
 enum VK_NV_EXTERNAL_MEMORY_CAPABILITIES_SPEC_VERSION = 1;
 enum VK_NV_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME = "VK_NV_external_memory_capabilities";
 
-alias VkExternalMemoryHandleTypeFlagsNV = VkFlags;
 
-enum VkExternalMemoryHandleTypeFlagBitsNV : uint {
+alias VkExternalMemoryHandleTypeFlagsNV = uint;
+enum VkExternalMemoryHandleTypeFlagsNV
     VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT_NV = 1,
     VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_NV = 2,
     VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_BIT_NV = 4,
-    VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_KMT_BIT_NV = 8,
-}
+    VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_KMT_BIT_NV = 8;
 
-enum VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT_NV = VkExternalMemoryHandleTypeFlagBitsNV.VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT_NV;
-enum VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_NV = VkExternalMemoryHandleTypeFlagBitsNV.VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_NV;
-enum VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_BIT_NV = VkExternalMemoryHandleTypeFlagBitsNV.VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_BIT_NV;
-enum VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_KMT_BIT_NV = VkExternalMemoryHandleTypeFlagBitsNV.VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_KMT_BIT_NV;
 
-alias VkExternalMemoryFeatureFlagsNV = VkFlags;
-
-enum VkExternalMemoryFeatureFlagBitsNV : uint {
+alias VkExternalMemoryFeatureFlagsNV = uint;
+enum VkExternalMemoryFeatureFlagsNV
     VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT_NV = 1,
     VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT_NV = 2,
-    VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_NV = 4,
-}
-
-enum VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT_NV = VkExternalMemoryFeatureFlagBitsNV.VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT_NV;
-enum VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT_NV = VkExternalMemoryFeatureFlagBitsNV.VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT_NV;
-enum VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_NV = VkExternalMemoryFeatureFlagBitsNV.VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_NV;
+    VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_NV = 4;
 
 struct VkExternalImageFormatPropertiesNV {
     VkImageFormatProperties imageFormatProperties;
-    VkFlags externalMemoryFeatures;
-    VkFlags exportFromImportedHandleTypes;
-    VkFlags compatibleHandleTypes;
+    VkExternalMemoryFeatureFlagsNV externalMemoryFeatures;
+    VkExternalMemoryHandleTypeFlagsNV exportFromImportedHandleTypes;
+    VkExternalMemoryHandleTypeFlagsNV compatibleHandleTypes;
 }
 
 alias PFN_vkGetPhysicalDeviceExternalImageFormatPropertiesNV = VkResult function(

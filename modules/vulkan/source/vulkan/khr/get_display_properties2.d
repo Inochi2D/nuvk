@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.display;
 
 struct VK_KHR_get_display_properties2 {
-    
     @VkProcName("vkGetPhysicalDeviceDisplayProperties2KHR")
     PFN_vkGetPhysicalDeviceDisplayProperties2KHR vkGetPhysicalDeviceDisplayProperties2KHR;
     
@@ -45,24 +44,28 @@ struct VK_KHR_get_display_properties2 {
 enum VK_KHR_GET_DISPLAY_PROPERTIES_2_SPEC_VERSION = 1;
 enum VK_KHR_GET_DISPLAY_PROPERTIES_2_EXTENSION_NAME = "VK_KHR_get_display_properties2";
 
+import vulkan.khr.display : VkDisplayPropertiesKHR;
 struct VkDisplayProperties2KHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_DISPLAY_PROPERTIES_2_KHR;
     void* pNext;
     VkDisplayPropertiesKHR displayProperties;
 }
 
+import vulkan.khr.display : VkDisplayPlanePropertiesKHR;
 struct VkDisplayPlaneProperties2KHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_DISPLAY_PLANE_PROPERTIES_2_KHR;
     void* pNext;
     VkDisplayPlanePropertiesKHR displayPlaneProperties;
 }
 
+import vulkan.khr.display : VkDisplayModePropertiesKHR;
 struct VkDisplayModeProperties2KHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_DISPLAY_MODE_PROPERTIES_2_KHR;
     void* pNext;
     VkDisplayModePropertiesKHR displayModeProperties;
 }
 
+import vulkan.khr.display : VkDisplayModeKHR;
 struct VkDisplayPlaneInfo2KHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_DISPLAY_PLANE_INFO_2_KHR;
     const(void)* pNext;
@@ -70,6 +73,7 @@ struct VkDisplayPlaneInfo2KHR {
     uint planeIndex;
 }
 
+import vulkan.khr.display : VkDisplayPlaneCapabilitiesKHR;
 struct VkDisplayPlaneCapabilities2KHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_DISPLAY_PLANE_CAPABILITIES_2_KHR;
     void* pNext;
@@ -88,6 +92,7 @@ alias PFN_vkGetPhysicalDeviceDisplayPlaneProperties2KHR = VkResult function(
     VkDisplayPlaneProperties2KHR* pProperties,
 );
 
+import vulkan.khr.display : VkDisplayKHR;
 alias PFN_vkGetDisplayModeProperties2KHR = VkResult function(
     VkPhysicalDevice physicalDevice,
     VkDisplayKHR display,

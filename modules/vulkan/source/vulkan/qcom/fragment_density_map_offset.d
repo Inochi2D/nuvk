@@ -34,8 +34,11 @@ version (VK_VERSION_1_1) {} else {
 enum VK_QCOM_FRAGMENT_DENSITY_MAP_OFFSET_SPEC_VERSION = 3;
 enum VK_QCOM_FRAGMENT_DENSITY_MAP_OFFSET_EXTENSION_NAME = "VK_QCOM_fragment_density_map_offset";
 
+import vulkan.ext.fragment_density_map_offset : VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT;
 alias VkPhysicalDeviceFragmentDensityMapOffsetFeaturesQCOM = VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT;
 
+import vulkan.ext.fragment_density_map_offset : VkPhysicalDeviceFragmentDensityMapOffsetPropertiesEXT;
 alias VkPhysicalDeviceFragmentDensityMapOffsetPropertiesQCOM = VkPhysicalDeviceFragmentDensityMapOffsetPropertiesEXT;
 
+import vulkan.ext.fragment_density_map_offset : VkRenderPassFragmentDensityMapOffsetEndInfoEXT;
 alias VkSubpassFragmentDensityMapOffsetEndInfoQCOM = VkRenderPassFragmentDensityMapOffsetEndInfoEXT;

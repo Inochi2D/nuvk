@@ -25,10 +25,8 @@ version (VK_VERSION_1_3)
 version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
-version (VK_VERSION_1_1):
 
 struct VK_KHR_maintenance6 {
-    
     @VkProcName("vkCmdBindDescriptorSets2")
     PFN_vkCmdBindDescriptorSets2 vkCmdBindDescriptorSets2;
     
@@ -93,7 +91,7 @@ public import vulkan.ext.descriptor_buffer;
 struct VkSetDescriptorBufferOffsetsInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_SET_DESCRIPTOR_BUFFER_OFFSETS_INFO_EXT;
     const(void)* pNext;
-    VkFlags stageFlags;
+    VkShaderStageFlags stageFlags;
     VkPipelineLayout layout;
     uint firstSet;
     uint setCount;
@@ -104,7 +102,7 @@ struct VkSetDescriptorBufferOffsetsInfoEXT {
 struct VkBindDescriptorBufferEmbeddedSamplersInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_BIND_DESCRIPTOR_BUFFER_EMBEDDED_SAMPLERS_INFO_EXT;
     const(void)* pNext;
-    VkFlags stageFlags;
+    VkShaderStageFlags stageFlags;
     VkPipelineLayout layout;
     uint set;
 }

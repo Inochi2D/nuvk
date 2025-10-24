@@ -32,6 +32,6 @@ enum VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME = "VK_KHR_external_semaphore";
 
 alias VkSemaphoreImportFlagsKHR = VkSemaphoreImportFlags;
 
-alias VkSemaphoreImportFlagBitsKHR = VkSemaphoreImportFlagBits;
+alias VkSemaphoreImportFlagBitsKHR = VkSemaphoreImportFlags;
 
 alias VkExportSemaphoreCreateInfoKHR = VkExportSemaphoreCreateInfo;

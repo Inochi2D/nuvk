@@ -28,7 +28,6 @@ version (VK_VERSION_1_2)
 public import vulkan.khr.device_group_creation;
 
 struct VK_KHR_device_group {
-    
     @VkProcName("vkGetDeviceGroupPeerMemoryFeatures")
     PFN_vkGetDeviceGroupPeerMemoryFeatures vkGetDeviceGroupPeerMemoryFeatures;
     
@@ -57,11 +56,11 @@ enum VK_KHR_DEVICE_GROUP_EXTENSION_NAME = "VK_KHR_device_group";
 
 alias VkPeerMemoryFeatureFlagsKHR = VkPeerMemoryFeatureFlags;
 
-alias VkPeerMemoryFeatureFlagBitsKHR = VkPeerMemoryFeatureFlagBits;
+alias VkPeerMemoryFeatureFlagBitsKHR = VkPeerMemoryFeatureFlags;
 
 alias VkMemoryAllocateFlagsKHR = VkMemoryAllocateFlags;
 
-alias VkMemoryAllocateFlagBitsKHR = VkMemoryAllocateFlagBits;
+alias VkMemoryAllocateFlagBitsKHR = VkMemoryAllocateFlags;
 
 alias VkMemoryAllocateFlagsInfoKHR = VkMemoryAllocateFlagsInfo;
 
@@ -104,25 +103,19 @@ alias VkBindImageMemoryDeviceGroupInfoKHR = VkBindImageMemoryDeviceGroupInfo;
 
 public import vulkan.khr.surface;
 
-enum VkDeviceGroupPresentModeFlagBitsKHR : uint {
+alias VkDeviceGroupPresentModeFlagsKHR = uint;
+enum VkDeviceGroupPresentModeFlagsKHR
     VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR = 1,
     VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR = 2,
     VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR = 4,
-    VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR = 8,
-}
+    VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR = 8;
 
-enum VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR = VkDeviceGroupPresentModeFlagBitsKHR.VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR;
-enum VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR = VkDeviceGroupPresentModeFlagBitsKHR.VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR;
-enum VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR = VkDeviceGroupPresentModeFlagBitsKHR.VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR;
-enum VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR = VkDeviceGroupPresentModeFlagBitsKHR.VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR;
-
-alias VkDeviceGroupPresentModeFlagsKHR = VkFlags;
 
 struct VkDeviceGroupPresentCapabilitiesKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_CAPABILITIES_KHR;
     void* pNext;
     uint[VK_MAX_DEVICE_GROUP_SIZE] presentMask;
-    VkFlags modes;
+    VkDeviceGroupPresentModeFlagsKHR modes;
 }
 
 alias PFN_vkGetDeviceGroupPresentCapabilitiesKHR = VkResult function(
@@ -130,12 +123,14 @@ alias PFN_vkGetDeviceGroupPresentCapabilitiesKHR = VkResult function(
     VkDeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities,
 );
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkGetDeviceGroupSurfacePresentModesKHR = VkResult function(
     VkDevice device,
     VkSurfaceKHR surface,
     VkDeviceGroupPresentModeFlagsKHR* pModes,
 );
 
+import vulkan.khr.surface : VkSurfaceKHR;
 alias PFN_vkGetPhysicalDevicePresentRectanglesKHR = VkResult function(
     VkPhysicalDevice physicalDevice,
     VkSurfaceKHR surface,
@@ -145,12 +140,14 @@ alias PFN_vkGetPhysicalDevicePresentRectanglesKHR = VkResult function(
 
 public import vulkan.khr.swapchain;
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 struct VkImageSwapchainCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHR;
     const(void)* pNext;
     VkSwapchainKHR swapchain;
 }
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 struct VkBindImageMemorySwapchainInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHR;
     const(void)* pNext;
@@ -158,6 +155,7 @@ struct VkBindImageMemorySwapchainInfoKHR {
     uint imageIndex;
 }
 
+import vulkan.khr.swapchain : VkSwapchainKHR;
 struct VkAcquireNextImageInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR;
     const(void)* pNext;
@@ -173,13 +171,13 @@ struct VkDeviceGroupPresentInfoKHR {
     const(void)* pNext;
     uint swapchainCount;
     const(uint)* pDeviceMasks;
-    VkDeviceGroupPresentModeFlagBitsKHR mode;
+    VkDeviceGroupPresentModeFlagsKHR mode;
 }
 
 struct VkDeviceGroupSwapchainCreateInfoKHR {
     VkStructureType sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_SWAPCHAIN_CREATE_INFO_KHR;
     const(void)* pNext;
-    VkFlags modes;
+    VkDeviceGroupPresentModeFlagsKHR modes;
 }
 
 alias PFN_vkAcquireNextImage2KHR = VkResult function(

@@ -52,10 +52,7 @@ struct VkPipelineRasterizationProvokingVertexStateCreateInfoEXT {
     VkProvokingVertexModeEXT provokingVertexMode;
 }
 
-enum VkProvokingVertexModeEXT {
+alias VkProvokingVertexModeEXT = uint;
+enum VkProvokingVertexModeEXT
     VK_PROVOKING_VERTEX_MODE_FIRST_VERTEX_EXT = 0,
-    VK_PROVOKING_VERTEX_MODE_LAST_VERTEX_EXT = 1,
-}
-
-enum VK_PROVOKING_VERTEX_MODE_FIRST_VERTEX_EXT = VkProvokingVertexModeEXT.VK_PROVOKING_VERTEX_MODE_FIRST_VERTEX_EXT;
-enum VK_PROVOKING_VERTEX_MODE_LAST_VERTEX_EXT = VkProvokingVertexModeEXT.VK_PROVOKING_VERTEX_MODE_LAST_VERTEX_EXT;
+    VK_PROVOKING_VERTEX_MODE_LAST_VERTEX_EXT = 1;

@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_extended_dynamic_state {
-    
     @VkProcName("vkCmdSetCullMode")
     PFN_vkCmdSetCullMode vkCmdSetCullMode;
     

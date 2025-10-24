@@ -33,7 +33,6 @@ version (VK_VERSION_1_3) {} else {
 }
 
 struct VK_HUAWEI_subpass_shading {
-    
     @VkProcName("vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI")
     PFN_vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI;
     

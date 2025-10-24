@@ -30,7 +30,6 @@ version (VK_VERSION_1_1) {} else {
 }
 
 struct VK_EXT_external_memory_host {
-    
     @VkProcName("vkGetMemoryHostPointerPropertiesEXT")
     PFN_vkGetMemoryHostPointerPropertiesEXT vkGetMemoryHostPointerPropertiesEXT;
 }
@@ -41,7 +40,7 @@ enum VK_EXT_EXTERNAL_MEMORY_HOST_EXTENSION_NAME = "VK_EXT_external_memory_host";
 struct VkImportMemoryHostPointerInfoEXT {
     VkStructureType sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT;
     const(void)* pNext;
-    VkExternalMemoryHandleTypeFlagBits handleType;
+    VkExternalMemoryHandleTypeFlags handleType;
     void* pHostPointer;
 }
 
@@ -59,7 +58,7 @@ struct VkPhysicalDeviceExternalMemoryHostPropertiesEXT {
 
 alias PFN_vkGetMemoryHostPointerPropertiesEXT = VkResult function(
     VkDevice device,
-    VkExternalMemoryHandleTypeFlagBits handleType,
+    VkExternalMemoryHandleTypeFlags handleType,
     const(void)* pHostPointer,
     VkMemoryHostPointerPropertiesEXT* pMemoryHostPointerProperties,
 );

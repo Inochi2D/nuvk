@@ -26,12 +26,10 @@ version (VK_VERSION_1_2)
     version = VK_VERSION_1_1;
 
 version (VK_VERSION_1_2) {} else {
-    version (VK_VERSION_1_1):
     public import vulkan.khr.buffer_device_address;
 }
 
 struct VK_NV_device_generated_commands {
-    
     @VkProcName("vkGetGeneratedCommandsMemoryRequirementsNV")
     PFN_vkGetGeneratedCommandsMemoryRequirementsNV vkGetGeneratedCommandsMemoryRequirementsNV;
     
@@ -112,17 +110,15 @@ struct VkSetStateFlagsIndirectCommandNV {
     uint data;
 }
 
-enum VkIndirectStateFlagBitsNV : uint {
-    VK_INDIRECT_STATE_FLAG_FRONTFACE_BIT_NV = 1,
-}
+alias VkIndirectStateFlagsNV = uint;
+enum VkIndirectStateFlagsNV
+    VK_INDIRECT_STATE_FLAG_FRONTFACE_BIT_NV = 1;
 
-enum VK_INDIRECT_STATE_FLAG_FRONTFACE_BIT_NV = VkIndirectStateFlagBitsNV.VK_INDIRECT_STATE_FLAG_FRONTFACE_BIT_NV;
-
-alias VkIndirectStateFlagsNV = VkFlags;
 
 alias VkIndirectCommandsLayoutNV = OpaqueHandle!("VkIndirectCommandsLayoutNV");
 
-enum VkIndirectCommandsTokenTypeNV {
+alias VkIndirectCommandsTokenTypeNV = uint;
+enum VkIndirectCommandsTokenTypeNV
     VK_INDIRECT_COMMANDS_TOKEN_TYPE_SHADER_GROUP_NV = 0,
     VK_INDIRECT_COMMANDS_TOKEN_TYPE_STATE_FLAGS_NV = 1,
     VK_INDIRECT_COMMANDS_TOKEN_TYPE_INDEX_BUFFER_NV = 2,
@@ -133,32 +129,14 @@ enum VkIndirectCommandsTokenTypeNV {
     VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_TASKS_NV = 7,
     VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_NV = 1000328000,
     VK_INDIRECT_COMMANDS_TOKEN_TYPE_PIPELINE_NV = 1000428003,
-    VK_INDIRECT_COMMANDS_TOKEN_TYPE_DISPATCH_NV = 1000428004,
-}
+    VK_INDIRECT_COMMANDS_TOKEN_TYPE_DISPATCH_NV = 1000428004;
 
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_SHADER_GROUP_NV = VkIndirectCommandsTokenTypeNV.VK_INDIRECT_COMMANDS_TOKEN_TYPE_SHADER_GROUP_NV;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_STATE_FLAGS_NV = VkIndirectCommandsTokenTypeNV.VK_INDIRECT_COMMANDS_TOKEN_TYPE_STATE_FLAGS_NV;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_INDEX_BUFFER_NV = VkIndirectCommandsTokenTypeNV.VK_INDIRECT_COMMANDS_TOKEN_TYPE_INDEX_BUFFER_NV;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_VERTEX_BUFFER_NV = VkIndirectCommandsTokenTypeNV.VK_INDIRECT_COMMANDS_TOKEN_TYPE_VERTEX_BUFFER_NV;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_PUSH_CONSTANT_NV = VkIndirectCommandsTokenTypeNV.VK_INDIRECT_COMMANDS_TOKEN_TYPE_PUSH_CONSTANT_NV;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_INDEXED_NV = VkIndirectCommandsTokenTypeNV.VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_INDEXED_NV;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_NV = VkIndirectCommandsTokenTypeNV.VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_NV;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_TASKS_NV = VkIndirectCommandsTokenTypeNV.VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_TASKS_NV;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_NV = VkIndirectCommandsTokenTypeNV.VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_NV;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_PIPELINE_NV = VkIndirectCommandsTokenTypeNV.VK_INDIRECT_COMMANDS_TOKEN_TYPE_PIPELINE_NV;
-enum VK_INDIRECT_COMMANDS_TOKEN_TYPE_DISPATCH_NV = VkIndirectCommandsTokenTypeNV.VK_INDIRECT_COMMANDS_TOKEN_TYPE_DISPATCH_NV;
-
-enum VkIndirectCommandsLayoutUsageFlagBitsNV : uint {
+alias VkIndirectCommandsLayoutUsageFlagsNV = uint;
+enum VkIndirectCommandsLayoutUsageFlagsNV
     VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_NV = 1,
     VK_INDIRECT_COMMANDS_LAYOUT_USAGE_INDEXED_SEQUENCES_BIT_NV = 2,
-    VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_NV = 4,
-}
+    VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_NV = 4;
 
-enum VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_NV = VkIndirectCommandsLayoutUsageFlagBitsNV.VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_NV;
-enum VK_INDIRECT_COMMANDS_LAYOUT_USAGE_INDEXED_SEQUENCES_BIT_NV = VkIndirectCommandsLayoutUsageFlagBitsNV.VK_INDIRECT_COMMANDS_LAYOUT_USAGE_INDEXED_SEQUENCES_BIT_NV;
-enum VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_NV = VkIndirectCommandsLayoutUsageFlagBitsNV.VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_NV;
-
-alias VkIndirectCommandsLayoutUsageFlagsNV = VkFlags;
 
 struct VkIndirectCommandsStreamNV {
     VkBuffer buffer;
@@ -174,10 +152,10 @@ struct VkIndirectCommandsLayoutTokenNV {
     uint vertexBindingUnit;
     VkBool32 vertexDynamicStride;
     VkPipelineLayout pushconstantPipelineLayout;
-    VkFlags pushconstantShaderStageFlags;
+    VkShaderStageFlags pushconstantShaderStageFlags;
     uint pushconstantOffset;
     uint pushconstantSize;
-    VkFlags indirectStateFlags;
+    VkIndirectStateFlagsNV indirectStateFlags;
     uint indexTypeCount;
     const(VkIndexType)* pIndexTypes;
     const(uint)* pIndexTypeValues;
@@ -186,7 +164,7 @@ struct VkIndirectCommandsLayoutTokenNV {
 struct VkIndirectCommandsLayoutCreateInfoNV {
     VkStructureType sType = VK_STRUCTURE_TYPE_INDIRECT_COMMANDS_LAYOUT_CREATE_INFO_NV;
     const(void)* pNext;
-    VkFlags flags;
+    VkIndirectCommandsLayoutUsageFlagsNV flags;
     VkPipelineBindPoint pipelineBindPoint;
     uint tokenCount;
     const(VkIndirectCommandsLayoutTokenNV)* pTokens;
